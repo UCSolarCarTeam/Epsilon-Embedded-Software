@@ -35,9 +35,6 @@ build/
 # CubeMX
 STM32L152-Discovery.elf.launch
 .mxproject
-.project
-.mxproject
-.cproject
 .dep/
 
 # Other
