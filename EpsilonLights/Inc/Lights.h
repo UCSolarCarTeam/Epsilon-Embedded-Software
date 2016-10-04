@@ -15,7 +15,8 @@
 #define INTERIOR_PIN GPIO_PIN_7
 #define BMS_STROBE_PIN GPIO_PIN_8
 
-typedef struct LightsRequests {
+typedef struct LightsRequests
+{
     bool headlightsOff;
     bool headlightsLow;
     bool headlightsHigh;

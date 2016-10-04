@@ -4,69 +4,79 @@
 
 #include "Lights.h"
 
-void updateLights(void const* arg) {
+void updateLights(void const* arg)
+{
     LightsRequests* requests = (LightsRequests*) arg;
-    for(;;) {
+
+    for (;;)
+    {
         requests->interior = true;
     }
 }
 
-void reportLightsToCan(void const* arg) {
+void reportLightsToCan(void const* arg)
+{
     const uint32_t DELAY_MS = 200;
     uint32_t prevWakeTime = osKernelSysTick();
-    for(;;) {
+
+    for (;;)
+    {
         osDelayUntil(&prevWakeTime, DELAY_MS);
-
         // REPORT CAN
-
         prevWakeTime = osKernelSysTick();
     }
 }
 
-void setLowBeams(bool set) {
-
+void setLowBeams(bool set)
+{
 }
 
-bool readLowBeams() {
+bool readLowBeams()
+{
     return true;
 }
 
-void setHighBeams(bool set) {
-
+void setHighBeams(bool set)
+{
 }
 
-bool readHighBeams() {
+bool readHighBeams()
+{
     return true;
 }
 
-void setBrakeLights(bool set) {
-
+void setBrakeLights(bool set)
+{
 }
 
-bool readBrakeLights() {
+bool readBrakeLights()
+{
     return true;
 }
 
-void setLeftSignal(bool set) {
-
+void setLeftSignal(bool set)
+{
 }
 
-bool readLeftSignal() {
+bool readLeftSignal()
+{
     return true;
 }
 
-void setRightSignal(bool set) {
-
+void setRightSignal(bool set)
+{
 }
 
-bool readRightSignal() {
+bool readRightSignal()
+{
     return true;
 }
 
-void setBmsStrobe(bool set) {
-
+void setBmsStrobe(bool set)
+{
 }
 
-bool readBmsStrobe() {
+bool readBmsStrobe()
+{
     return true;
 }
