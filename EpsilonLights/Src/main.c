@@ -375,38 +375,6 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler */ 
 }
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-  switch(GPIO_Pin) {
-    case HEADLIGHTS_OFF_PIN:
-      lightsRequests.headlightsOff = !lightsRequests.headlightsOff;
-      break;
-    case HEADLIGHTS_LOW_PIN:
-      lightsRequests.headlightsLow = !lightsRequests.headlightsLow;
-      break;
-    case HEADLIGHTS_HIGH_PIN:
-      lightsRequests.headlightsHigh = !lightsRequests.headlightsHigh;
-      break;
-    case SIGNAL_RIGHT_PIN:
-      lightsRequests.signalRight = !lightsRequests.signalRight;
-      break;
-    case SIGNAL_LEFT_PIN:
-      lightsRequests.signalLeft = !lightsRequests.signalLeft;
-      break;
-    case HAZARD_PIN:
-      lightsRequests.hazard = !lightsRequests.hazard;
-      break;
-    case INTERIOR_PIN:
-      lightsRequests.interior = !lightsRequests.interior;
-      break;
-    case BMS_STROBE_PIN:
-      lightsRequests.bmsStrobe = !lightsRequests.bmsStrobe;
-      break;
-    default:
-      break; 
- }
-}
-
 #ifdef USE_FULL_ASSERT
 
 /**
