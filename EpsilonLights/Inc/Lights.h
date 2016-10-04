@@ -6,6 +6,7 @@
 #include "stm32f4xx_hal_conf.h"
 #include "stm32f4xx_hal_gpio.h"
 
+#define LIGHTS_GPIO_PERIPHERAL GPIOA
 #define HEADLIGHTS_OFF_PIN GPIO_PIN_1
 #define HEADLIGHTS_LOW_PIN GPIO_PIN_2
 #define HEADLIGHTS_HIGH_PIN GPIO_PIN_3
@@ -28,24 +29,7 @@ typedef struct LightsRequests
 } LightsRequests;
 
 void updateLights(void const* arg);
-
 void reportLightsToCan(void const* arg);
+void setLightsGpio(bool set, uint16_t lightsPin);
+bool readLightsGpio(uint16_t GPIO_Pin);
 
-
-void setLowBeams(bool set);
-bool readLowBeams();
-
-void setHighBeams(bool set);
-bool readHighBeams();
-
-void setBrakeLights(bool set);
-bool readBrakeLights();
-
-void setLeftSignal(bool set);
-bool readLeftSignal();
-
-void setRightSignal(bool set);
-bool readRightSignal();
-
-void setBmsStrobe(bool set);
-bool readBmsStrobe();

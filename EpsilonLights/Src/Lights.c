@@ -22,61 +22,18 @@ void reportLightsToCan(void const* arg)
     for (;;)
     {
         osDelayUntil(&prevWakeTime, DELAY_MS);
-        // REPORT CAN
+        // TODO report CAN
         prevWakeTime = osKernelSysTick();
     }
 }
 
-void setLowBeams(bool set)
+void setLightsGpio(bool set, uint16_t lightsPin)
 {
+    HAL_GPIO_WritePin(LIGHTS_GPIO_PERIPHERAL, lightsPin, set);
 }
 
-bool readLowBeams()
+bool readLightsGpio(uint16_t lightsPin)
 {
-    return true;
+    return HAL_GPIO_ReadPin(LIGHTS_GPIO_PERIPHERAL, lightsPin);;
 }
 
-void setHighBeams(bool set)
-{
-}
-
-bool readHighBeams()
-{
-    return true;
-}
-
-void setBrakeLights(bool set)
-{
-}
-
-bool readBrakeLights()
-{
-    return true;
-}
-
-void setLeftSignal(bool set)
-{
-}
-
-bool readLeftSignal()
-{
-    return true;
-}
-
-void setRightSignal(bool set)
-{
-}
-
-bool readRightSignal()
-{
-    return true;
-}
-
-void setBmsStrobe(bool set)
-{
-}
-
-bool readBmsStrobe()
-{
-    return true;
-}
