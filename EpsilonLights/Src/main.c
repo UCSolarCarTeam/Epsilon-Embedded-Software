@@ -42,11 +42,22 @@
 /* Private variables ---------------------------------------------------------*/
 CAN_HandleTypeDef hcan2;
 
-osThreadId defaultTaskHandle;
+osThreadId lightsTaskHandle;
+osThreadId lightsCanTaskHandle;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
+LightsRequests lightsRequests =
+{
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -54,7 +65,6 @@ void SystemClock_Config(void);
 void Error_Handler(void);
 static void MX_GPIO_Init(void);
 static void MX_CAN2_Init(void);
-void StartDefaultTask(void const* argument);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -90,8 +100,10 @@ int main(void)
     /* USER CODE END RTOS_TIMERS */
     /* Create the thread(s) */
     /* definition and creation of defaultTask */
-    osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
-    defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+    osThreadDef(lightsTask, updateLights, osPriorityNormal, 1, 0);
+    lightsTaskHandle = osThreadCreate(osThread(lightsTask), &lightsRequests);
+    osThreadDef(lightsCanTask, reportLightsToCan, osPriorityNormal, 1, 0);
+    lightsCanTaskHandle = osThreadCreate(osThread(lightsCanTask), NULL);
     /* USER CODE BEGIN RTOS_THREADS */
     /* add threads, ... */
     /* USER CODE END RTOS_THREADS */
@@ -100,18 +112,6 @@ int main(void)
     /* USER CODE END RTOS_QUEUES */
     /* Start scheduler */
     osKernelStart();
-
-    /* We should never get here as control is now taken by the scheduler */
-
-    /* Infinite loop */
-    /* USER CODE BEGIN WHILE */
-    while (1)
-    {
-        /* USER CODE END WHILE */
-        /* USER CODE BEGIN 3 */
-    }
-
-    /* USER CODE END 3 */
 }
 
 /** System Clock Configuration
@@ -239,19 +239,6 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
-
-/* StartDefaultTask function */
-void StartDefaultTask(void const* argument)
-{
-    /* USER CODE BEGIN 5 */
-    /* Infinite loop */
-    for (;;)
-    {
-        osDelay(1);
-    }
-
-    /* USER CODE END 5 */
-}
 
 /**
   * @brief  This function is executed in case of error occurrence.
