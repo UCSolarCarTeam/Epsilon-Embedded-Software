@@ -199,7 +199,8 @@ static void MX_GPIO_Init(void)
     /*Configure GPIO pin Output Level */
     HAL_GPIO_WritePin(OTG_FS_PowerSwitchOn_GPIO_Port, OTG_FS_PowerSwitchOn_Pin, GPIO_PIN_RESET);
     /*Configure GPIO pin Output Level */
-    HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOD, RSIGNAL_Pin | LSIGNAL_Pin | BRAKE_Pin | HHIGH_Pin
+                      | HLOW_Pin | ESTROBE_Pin, GPIO_PIN_RESET);
     /*Configure GPIO pin : OTG_FS_PowerSwitchOn_Pin */
     GPIO_InitStruct.Pin = OTG_FS_PowerSwitchOn_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -223,12 +224,14 @@ static void MX_GPIO_Init(void)
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(BOOT1_GPIO_Port, &GPIO_InitStruct);
-    /*Configure GPIO pin : LD6_Pin */
-    GPIO_InitStruct.Pin = LD6_Pin;
+    /*Configure GPIO pins : RSIGNAL_Pin LSIGNAL_Pin BRAKE_Pin HHIGH_Pin
+                             HLOW_Pin ESTROBE_Pin */
+    GPIO_InitStruct.Pin = RSIGNAL_Pin | LSIGNAL_Pin | BRAKE_Pin | HHIGH_Pin
+                          | HLOW_Pin | ESTROBE_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(LD6_GPIO_Port, &GPIO_InitStruct);
+    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
     /*Configure GPIO pin : MEMS_INT2_Pin */
     GPIO_InitStruct.Pin = MEMS_INT2_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_EVT_RISING;
