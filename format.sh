@@ -6,5 +6,5 @@ if [ $# -eq 0 ]; then
 	exit 1
 fi
 
-(cd $1 && astyle "*.h" "*.c" -r --options=astylerc)
+astyle "$1/*.h" "$1/*.c" -r --options=astylerc
 find $1 -name "*.orig" -delete
