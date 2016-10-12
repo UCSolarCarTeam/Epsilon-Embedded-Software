@@ -36,7 +36,6 @@
 
 /* USER CODE BEGIN Includes */
 #include "Lights.h"
-
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -65,7 +64,6 @@ void SystemClock_Config(void);
 void Error_Handler(void);
 static void MX_GPIO_Init(void);
 static void MX_CAN2_Init(void);
-
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
 
@@ -88,6 +86,7 @@ int main(void)
     MX_GPIO_Init();
     MX_CAN2_Init();
     /* USER CODE BEGIN 2 */
+    // HAL_GPIO_WritePin(GPIOA, LED1_Pin, 1);
     /* USER CODE END 2 */
     /* USER CODE BEGIN RTOS_MUTEX */
     /* add mutexes, ... */
@@ -100,18 +99,29 @@ int main(void)
     /* USER CODE END RTOS_TIMERS */
     /* Create the thread(s) */
     /* definition and creation of defaultTask */
-    osThreadDef(lightsTask, updateLights, osPriorityNormal, 1, 0);
-    lightsTaskHandle = osThreadCreate(osThread(lightsTask), &lightsRequests);
-    osThreadDef(lightsCanTask, reportLightsToCan, osPriorityNormal, 1, 0);
-    lightsCanTaskHandle = osThreadCreate(osThread(lightsCanTask), NULL);
     /* USER CODE BEGIN RTOS_THREADS */
-    /* add threads, ... */
+    osThreadDef(lightsTask, updateLights, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    lightsTaskHandle = osThreadCreate(osThread(lightsTask), &lightsRequests);
+    osThreadDef(lightsCanTask, reportLightsToCan, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    lightsCanTaskHandle = osThreadCreate(osThread(lightsCanTask), NULL);
     /* USER CODE END RTOS_THREADS */
     /* USER CODE BEGIN RTOS_QUEUES */
     /* add queues, ... */
     /* USER CODE END RTOS_QUEUES */
     /* Start scheduler */
     osKernelStart();
+
+    /* We should never get here as control is now taken by the scheduler */
+
+    /* Infinite loop */
+    /* USER CODE BEGIN WHILE */
+    while (1)
+    {
+        /* USER CODE END WHILE */
+        /* USER CODE BEGIN 3 */
+    }
+
+    /* USER CODE END 3 */
 }
 
 /** System Clock Configuration
@@ -159,7 +169,7 @@ static void MX_CAN2_Init(void)
 {
     hcan2.Instance = CAN2;
     hcan2.Init.Prescaler = 4;
-    hcan2.Init.Mode = CAN_MODE_NORMAL;
+    hcan2.Init.Mode = CAN_MODE_LOOPBACK;
     hcan2.Init.SJW = CAN_SJW_1TQ;
     hcan2.Init.BS1 = CAN_BS1_5TQ;
     hcan2.Init.BS2 = CAN_BS2_4TQ;
@@ -182,9 +192,6 @@ static void MX_CAN2_Init(void)
         * Output
         * EVENT_OUT
         * EXTI
-     PA5   ------> SPI1_SCK
-     PA6   ------> SPI1_MISO
-     PA7   ------> SPI1_MOSI
 */
 static void MX_GPIO_Init(void)
 {
@@ -198,6 +205,8 @@ static void MX_GPIO_Init(void)
     __HAL_RCC_GPIOE_CLK_ENABLE();
     /*Configure GPIO pin Output Level */
     HAL_GPIO_WritePin(OTG_FS_PowerSwitchOn_GPIO_Port, OTG_FS_PowerSwitchOn_Pin, GPIO_PIN_RESET);
+    /*Configure GPIO pin Output Level */
+    HAL_GPIO_WritePin(GPIOA, LED0_Pin | LED1_Pin | LED2_Pin, GPIO_PIN_RESET);
     /*Configure GPIO pin Output Level */
     HAL_GPIO_WritePin(GPIOD, RSIGNAL_Pin | LSIGNAL_Pin | BRAKE_Pin | HHIGH_Pin
                       | HLOW_Pin | ESTROBE_Pin, GPIO_PIN_RESET);
@@ -214,10 +223,9 @@ static void MX_GPIO_Init(void)
     HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
     /*Configure GPIO pins : LED0_Pin LED1_Pin LED2_Pin */
     GPIO_InitStruct.Pin = LED0_Pin | LED1_Pin | LED2_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    GPIO_InitStruct.Alternate = GPIO_AF5_SPI1;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
     /*Configure GPIO pin : BOOT1_Pin */
     GPIO_InitStruct.Pin = BOOT1_Pin;
@@ -242,6 +250,7 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
+
 
 /**
   * @brief  This function is executed in case of error occurrence.

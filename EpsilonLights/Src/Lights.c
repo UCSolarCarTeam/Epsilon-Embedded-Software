@@ -16,24 +16,26 @@ void updateLights(void const* arg)
 
 void reportLightsToCan(void const* arg)
 {
-    const uint32_t DELAY_MS = 200;
+    const uint32_t DELAY_MS = 1000;
     uint32_t prevWakeTime = osKernelSysTick();
 
     for (;;)
     {
         osDelayUntil(&prevWakeTime, DELAY_MS);
+        HAL_GPIO_TogglePin(GPIOA, LED2_Pin);
+        // osDelay(1000);
         // TODO report CAN
-        prevWakeTime = osKernelSysTick();
+        // prevWakeTime = osKernelSysTick();
     }
 }
 
 void setLightsGpio(bool set, uint16_t lightsPin)
 {
-    HAL_GPIO_WritePin(LIGHTS_GPIO_PERIPHERAL, lightsPin, set);
+    HAL_GPIO_WritePin(LIGHTS_GPIO_PORT, lightsPin, set);
 }
 
 bool readLightsGpio(uint16_t lightsPin)
 {
-    return HAL_GPIO_ReadPin(LIGHTS_GPIO_PERIPHERAL, lightsPin);;
+    return HAL_GPIO_ReadPin(LIGHTS_GPIO_PORT, lightsPin);;
 }
 
