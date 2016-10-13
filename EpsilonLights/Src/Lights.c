@@ -24,7 +24,6 @@ void reportLightsToCan(void const* arg)
     {
         osDelayUntil(&prevWakeTime, DELAY_MS);
         hcan2->pTxMsg->Data[0] = 0xAD;
-        hcan2->pTxMsg->Data[1] = 0xAD;
         HAL_CAN_Transmit_IT(hcan2);
     }
 }

@@ -167,7 +167,12 @@ void SystemClock_Config(void)
 /* CAN2 init function */
 static void MX_CAN2_Init(void)
 {
+    static CanTxMsgTypeDef txMessage;
+    static CanRxMsgTypeDef rxMessage;
+
     hcan2.Instance = CAN2;
+    hcan2.pTxMsg = &txMessage;
+    hcan2.pRxMsg = &rxMessage;
     hcan2.Init.Prescaler = 4;
     hcan2.Init.Mode = CAN_MODE_LOOPBACK;
     hcan2.Init.SJW = CAN_SJW_1TQ;
@@ -204,11 +209,11 @@ static void MX_CAN2_Init(void)
     }
 
     /*##-3- Configure Transmission process #####################################*/
-    hcan2.pTxMsg->StdId = 0x0801;
-    hcan2.pTxMsg->ExtId = 0x0;
-    hcan2.pTxMsg->RTR = CAN_RTR_DATA;
-    hcan2.pTxMsg->IDE = CAN_ID_STD;
-    hcan2.pTxMsg->DLC = 2;
+    hcan2.pTxMsg->StdId = 0x711; // CAN message address
+    hcan2.pTxMsg->ExtId = 0x0; // Only used if (hcan2.pTxMsg->IDE == CAN_ID_EXT)
+    hcan2.pTxMsg->RTR = CAN_RTR_DATA; // Data request, not remote request
+    hcan2.pTxMsg->IDE = CAN_ID_STD; // Standard CAN, not Extended
+    hcan2.pTxMsg->DLC = 1; // Data size in bytes
 }
 
 /** Configure pins as
@@ -275,7 +280,7 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_CAN_TxCpltCallback(CAN_HandleTypeDef* hcan)
 {
-    HAL_GPIO_TogglePin(GPIOA, LED2_Pin);
+    HAL_GPIO_TogglePin(GPIOA, LED1_Pin);
 }
 
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
