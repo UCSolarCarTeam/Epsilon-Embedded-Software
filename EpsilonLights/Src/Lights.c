@@ -16,16 +16,16 @@ void updateLights(void const* arg)
 
 void reportLightsToCan(void const* arg)
 {
+    CAN_HandleTypeDef* hcan2 = (CAN_HandleTypeDef*) arg;
     const uint32_t DELAY_MS = 1000;
     uint32_t prevWakeTime = osKernelSysTick();
 
     for (;;)
     {
         osDelayUntil(&prevWakeTime, DELAY_MS);
-        HAL_GPIO_TogglePin(GPIOA, LED2_Pin);
-        // osDelay(1000);
-        // TODO report CAN
-        // prevWakeTime = osKernelSysTick();
+        hcan2->pTxMsg->Data[0] = 0xAD;
+        hcan2->pTxMsg->Data[1] = 0xAD;
+        HAL_CAN_Transmit_IT(hcan2);
     }
 }
 

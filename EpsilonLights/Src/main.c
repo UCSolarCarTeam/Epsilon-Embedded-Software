@@ -103,7 +103,7 @@ int main(void)
     osThreadDef(lightsTask, updateLights, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
     lightsTaskHandle = osThreadCreate(osThread(lightsTask), &lightsRequests);
     osThreadDef(lightsCanTask, reportLightsToCan, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
-    lightsCanTaskHandle = osThreadCreate(osThread(lightsCanTask), NULL);
+    lightsCanTaskHandle = osThreadCreate(osThread(lightsCanTask), &hcan2);
     /* USER CODE END RTOS_THREADS */
     /* USER CODE BEGIN RTOS_QUEUES */
     /* add queues, ... */
@@ -184,6 +184,31 @@ static void MX_CAN2_Init(void)
     {
         Error_Handler();
     }
+
+    CAN_FilterConfTypeDef sFilterConfig;
+    sFilterConfig.FilterNumber = 0;
+    sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
+    sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+    sFilterConfig.FilterIdHigh = 0x0000;
+    sFilterConfig.FilterIdLow = 0x0000;
+    sFilterConfig.FilterMaskIdHigh = 0x0000;
+    sFilterConfig.FilterMaskIdLow = 0x0000;
+    sFilterConfig.FilterFIFOAssignment = 0;
+    sFilterConfig.FilterActivation = ENABLE;
+    sFilterConfig.BankNumber = 14;
+
+    if (HAL_CAN_ConfigFilter(&hcan2, &sFilterConfig) != HAL_OK)
+    {
+        /* Filter configuration Error */
+        Error_Handler();
+    }
+
+    /*##-3- Configure Transmission process #####################################*/
+    hcan2.pTxMsg->StdId = 0x0801;
+    hcan2.pTxMsg->ExtId = 0x0;
+    hcan2.pTxMsg->RTR = CAN_RTR_DATA;
+    hcan2.pTxMsg->IDE = CAN_ID_STD;
+    hcan2.pTxMsg->DLC = 2;
 }
 
 /** Configure pins as
@@ -248,7 +273,14 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_CAN_TxCpltCallback(CAN_HandleTypeDef* hcan)
+{
+    HAL_GPIO_TogglePin(GPIOA, LED2_Pin);
+}
 
+void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
+{
+}
 /* USER CODE END 4 */
 
 
