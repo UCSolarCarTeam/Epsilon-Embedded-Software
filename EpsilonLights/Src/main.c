@@ -40,14 +40,15 @@
 
 /* Private variables ---------------------------------------------------------*/
 CAN_HandleTypeDef hcan2;
+uint8_t lightsInputs;
+uint8_t batteryStatus;
 
-osThreadId lightsTaskHandle;
-osThreadId lightsCanTaskHandle;
-osThreadId heartbeatHandle;
+static osThreadId lightsTaskHandle;
+static osThreadId lightsCanTaskHandle;
+static osThreadId heartbeatHandle;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-unsigned char lightsInputs;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -184,15 +185,15 @@ static void MX_CAN2_Init(void)
 
     CAN_FilterConfTypeDef sFilterConfig;
     sFilterConfig.FilterNumber = 0;
-    sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
-    sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
-    sFilterConfig.FilterIdHigh = 0x0000;
-    sFilterConfig.FilterIdLow = 0x0000;
-    sFilterConfig.FilterMaskIdHigh = 0x0000;
-    sFilterConfig.FilterMaskIdLow = 0x0000;
+    sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST;
+    sFilterConfig.FilterScale = CAN_FILTERSCALE_16BIT;
+    sFilterConfig.FilterIdHigh = LIGHTS_INPUT_STDID << 5; // Filter registers need to be shifted left 5 bits
+    sFilterConfig.FilterIdLow = BATTERY_STAT_STDID << 5; // Filter registers need to be shifted left 5 bits
+    sFilterConfig.FilterMaskIdHigh = 0; // Unused
+    sFilterConfig.FilterMaskIdLow = 0; // Unused
     sFilterConfig.FilterFIFOAssignment = 0;
     sFilterConfig.FilterActivation = ENABLE;
-    sFilterConfig.BankNumber = 0x2D;
+    sFilterConfig.BankNumber = 0;
 
     if (HAL_CAN_ConfigFilter(&hcan2, &sFilterConfig) != HAL_OK)
     {
@@ -270,26 +271,6 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
-{
-    if (hcan->pRxMsg->StdId == LIGHTS_HEARTBEAT_STDID &&
-            hcan->pRxMsg->IDE == CAN_ID_STD &&
-            hcan->pRxMsg->DLC == 1)
-    {
-        HAL_GPIO_TogglePin(GPIOA, LED_BLUE_Pin);
-        HAL_GPIO_TogglePin(GPIOA, LED_RED_Pin);
-        HAL_GPIO_TogglePin(GPIOA, LED_GREEN_Pin);
-    }
-
-    __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
-
-    auto status = HAL_CAN_Receive_IT(hcan, CAN_FIFO0);
-    if (status != HAL_OK)
-    {
-        /* Reception Error */
-        Error_Handler();
-    }
-}
 /* USER CODE END 4 */
 
 /**
