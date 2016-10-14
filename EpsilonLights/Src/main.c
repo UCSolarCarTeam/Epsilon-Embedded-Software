@@ -80,6 +80,7 @@ int main(void)
     MX_CAN2_Init();
 
     /* USER CODE BEGIN 2 */
+    // Setup for next CAN Receive Interrupt
     if (HAL_CAN_Receive_IT(&hcan2, CAN_FIFO0) != HAL_OK)
     {
         /* Reception Error */
@@ -88,6 +89,7 @@ int main(void)
 
     /* USER CODE END 2 */
     /* USER CODE BEGIN RTOS_MUTEX */
+    // For concurrency between sendHeartbeat() and reportLightsToCan()
     osMutexId canHandleMutex;
     osMutexDef(canHandleMutex);
     canHandleMutex = osMutexCreate(osMutex(canHandleMutex));
@@ -108,7 +110,7 @@ int main(void)
     /* definition and creation of defaultTask */
     /* USER CODE BEGIN RTOS_THREADS */
     osThreadDef(lightsTask, updateLights, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
-    lightsTaskHandle = osThreadCreate(osThread(lightsTask), &lightsInputs);
+    lightsTaskHandle = osThreadCreate(osThread(lightsTask), NULL);
     osThreadDef(lightsCanTask, reportLightsToCan, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
     lightsCanTaskHandle = osThreadCreate(osThread(lightsCanTask), canHandleMutex);
     osThreadDef(heartbeatTask, sendHeartbeat, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
@@ -164,13 +166,14 @@ void SystemClock_Config(void)
 /* CAN2 init function */
 static void MX_CAN2_Init(void)
 {
+    // CubeMX Generated | START
     static CanTxMsgTypeDef txMessage;
     static CanRxMsgTypeDef rxMessage;
     hcan2.Instance = CAN2;
     hcan2.pTxMsg = &txMessage;
     hcan2.pRxMsg = &rxMessage;
     hcan2.Init.Prescaler = 4;
-    hcan2.Init.Mode = CAN_MODE_LOOPBACK;
+    hcan2.Init.Mode = CAN_MODE_NORMAL;
     hcan2.Init.SJW = CAN_SJW_1TQ;
     hcan2.Init.BS1 = CAN_BS1_5TQ;
     hcan2.Init.BS2 = CAN_BS2_4TQ;
@@ -186,9 +189,10 @@ static void MX_CAN2_Init(void)
         Error_Handler();
     }
 
+    // CubeMX Generated | END
     CAN_FilterConfTypeDef sFilterConfig;
-    sFilterConfig.FilterNumber = 0;
-    sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST;
+    sFilterConfig.FilterNumber = 0; // Use first filter bank
+    sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
     sFilterConfig.FilterScale = CAN_FILTERSCALE_16BIT;
     sFilterConfig.FilterIdHigh = LIGHTS_INPUT_STDID << 5; // Filter registers need to be shifted left 5 bits
     sFilterConfig.FilterIdLow = BATTERY_STAT_STDID << 5; // Filter registers need to be shifted left 5 bits
@@ -196,7 +200,7 @@ static void MX_CAN2_Init(void)
     sFilterConfig.FilterMaskIdLow = 0; // Unused
     sFilterConfig.FilterFIFOAssignment = 0;
     sFilterConfig.FilterActivation = ENABLE;
-    sFilterConfig.BankNumber = 0;
+    sFilterConfig.BankNumber = 0; // Set all filter banks for CAN2
 
     if (HAL_CAN_ConfigFilter(&hcan2, &sFilterConfig) != HAL_OK)
     {
@@ -285,6 +289,7 @@ void Error_Handler(void)
 {
     /* USER CODE BEGIN Error_Handler */
     /* User can add his own implementation to report the HAL error return state */
+    // Turn on red LED when error
     HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, 1);
 
     while (1)

@@ -7,6 +7,7 @@
 #include "stm32f4xx_hal_gpio.h"
 #include "stm32f4xx_hal_can.h"
 
+// Refer to https://docs.google.com/spreadsheets/d/1soVLjeD9Sl7z7Z6cYMyn1fmn-cG7tx_pfFDsvgkCqMU/edit?usp=sharing
 #define LIGHTS_HEARTBEAT_FREQ 1000 // 1Hz = 1000ms
 #define LIGHTS_HEARTBEAT_STDID 0x710U
 
@@ -31,6 +32,12 @@ typedef union LightsStatus
     uint8_t asUint8;
 } LightsStatus;
 
+// Task for updating GPIOs
+// arg : NULL
 void updateLights(void const* arg);
+// Task for sending lights statuses via CAN
+// arg : osMutexId* canHandleMutex
 void reportLightsToCan(void const* arg);
+// Task for sending heartbeat via CAN
+// arg : osMutexId* canHandleMutex
 void sendHeartbeat(void const* arg);
