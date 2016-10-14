@@ -43,20 +43,11 @@ CAN_HandleTypeDef hcan2;
 
 osThreadId lightsTaskHandle;
 osThreadId lightsCanTaskHandle;
+osThreadId heartbeatHandle;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-LightsRequests lightsRequests =
-{
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-};
+unsigned char lightsInputs;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -96,7 +87,12 @@ int main(void)
 
     /* USER CODE END 2 */
     /* USER CODE BEGIN RTOS_MUTEX */
-    /* add mutexes, ... */
+    osMutexId canHandleMutex;
+    osMutexDef(canHandleMutex);
+    canHandleMutex = osMutexCreate(osMutex(canHandleMutex));
+    if (canHandleMutex == NULL) {
+        Error_Handler();
+    }
     /* USER CODE END RTOS_MUTEX */
     /* USER CODE BEGIN RTOS_SEMAPHORES */
     /* add semaphores, ... */
@@ -108,9 +104,11 @@ int main(void)
     /* definition and creation of defaultTask */
     /* USER CODE BEGIN RTOS_THREADS */
     osThreadDef(lightsTask, updateLights, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
-    lightsTaskHandle = osThreadCreate(osThread(lightsTask), &lightsRequests);
+    lightsTaskHandle = osThreadCreate(osThread(lightsTask), &lightsInputs);
     osThreadDef(lightsCanTask, reportLightsToCan, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
-    lightsCanTaskHandle = osThreadCreate(osThread(lightsCanTask), &hcan2);
+    lightsCanTaskHandle = osThreadCreate(osThread(lightsCanTask), canHandleMutex);
+    osThreadDef(heartbeatTask, sendHeartbeat, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    heartbeatHandle = osThreadCreate(osThread(heartbeatTask), canHandleMutex);
     /* USER CODE END RTOS_THREADS */
     /* USER CODE BEGIN RTOS_QUEUES */
     /* add queues, ... */
@@ -203,7 +201,7 @@ static void MX_CAN2_Init(void)
     }
 
     /*##-3- Configure Transmission process #####################################*/
-    hcan2.pTxMsg->StdId = 0x711; // CAN message address
+    // hcan2.pTxMsg->StdId = 0x0; // CAN message address, set in Lights.c
     hcan2.pTxMsg->ExtId = 0x0; // Only used if (hcan2.pTxMsg->IDE == CAN_ID_EXT)
     hcan2.pTxMsg->RTR = CAN_RTR_DATA; // Data request, not remote request
     hcan2.pTxMsg->IDE = CAN_ID_STD; // Standard CAN, not Extended
@@ -274,7 +272,7 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 {
-    if (hcan->pRxMsg->StdId == 0x711 &&
+    if (hcan->pRxMsg->StdId == LIGHTS_HEARTBEAT_STDID &&
             hcan->pRxMsg->IDE == CAN_ID_STD &&
             hcan->pRxMsg->DLC == 1)
     {
@@ -289,16 +287,6 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     if (status != HAL_OK)
     {
         /* Reception Error */
-        HAL_GPIO_WritePin(GPIOA, LED_RED_Pin, 0);
-        HAL_GPIO_WritePin(GPIOA, LED_BLUE_Pin, 0);
-        HAL_GPIO_WritePin(GPIOA, LED_GREEN_Pin, 0);
-        if (status == HAL_ERROR) {
-            HAL_GPIO_WritePin(GPIOA, LED_RED_Pin, 1);
-        } else if (status == HAL_BUSY) {
-            HAL_GPIO_WritePin(GPIOA, LED_BLUE_Pin, 1);            
-        } else if (status == HAL_TIMEOUT) {
-            HAL_GPIO_WritePin(GPIOA, LED_GREEN_Pin, 1);                        
-        }
         Error_Handler();
     }
 }
@@ -313,6 +301,7 @@ void Error_Handler(void)
 {
     /* USER CODE BEGIN Error_Handler */
     /* User can add his own implementation to report the HAL error return state */
+    HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, 1);
     while (1)
     {
     }

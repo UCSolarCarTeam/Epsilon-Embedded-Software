@@ -7,22 +7,13 @@
 #include "stm32f4xx_hal_gpio.h"
 #include "stm32f4xx_hal_can.h"
 
-#define LIGHTS_GPIO_PORT GPIOD
+#define LIGHTS_HEARTBEAT_FREQ 1000 // 1Hz = 1000ms
+#define LIGHTS_HEARTBEAT_STDID 0x710
 
-typedef struct LightsRequests
-{
-    bool headlightsOff;
-    bool headlightsLow;
-    bool headlightsHigh;
-    bool signalRight;
-    bool signalLeft;
-    bool hazard;
-    bool interior;
-    bool bmsStrobe;
-} LightsRequests;
+#define LIGHTS_STATUS_FREQ 200 // 5Hz = 200ms
+#define LIGHTS_STATUS_STDID 0x711
 
 void updateLights(void const* arg);
 void reportLightsToCan(void const* arg);
-void setLightsGpio(bool set, uint16_t lightsPin);
-bool readLightsGpio(uint16_t GPIO_Pin);
+void sendHeartbeat(void const* arg);
 
