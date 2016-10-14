@@ -91,9 +91,12 @@ int main(void)
     osMutexId canHandleMutex;
     osMutexDef(canHandleMutex);
     canHandleMutex = osMutexCreate(osMutex(canHandleMutex));
-    if (canHandleMutex == NULL) {
+
+    if (canHandleMutex == NULL)
+    {
         Error_Handler();
     }
+
     /* USER CODE END RTOS_MUTEX */
     /* USER CODE BEGIN RTOS_SEMAPHORES */
     /* add semaphores, ... */
@@ -283,6 +286,7 @@ void Error_Handler(void)
     /* USER CODE BEGIN Error_Handler */
     /* User can add his own implementation to report the HAL error return state */
     HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, 1);
+
     while (1)
     {
     }

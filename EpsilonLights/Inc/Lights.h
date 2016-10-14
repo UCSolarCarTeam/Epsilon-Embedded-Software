@@ -16,8 +16,10 @@
 #define LIGHTS_INPUT_STDID 0x701U
 #define BATTERY_STAT_STDID 0x6FBU
 
-typedef union LightsStatus {
-    struct {
+typedef union LightsStatus
+{
+    struct
+    {
         unsigned int lowBeams : 1;
         unsigned int highBeams : 1;
         unsigned int Brakes : 1;
