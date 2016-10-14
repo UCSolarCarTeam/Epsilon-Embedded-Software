@@ -64,6 +64,7 @@ void SystemClock_Config(void);
 void Error_Handler(void);
 static void MX_GPIO_Init(void);
 static void MX_CAN2_Init(void);
+
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
 
@@ -116,18 +117,6 @@ int main(void)
     /* USER CODE END RTOS_QUEUES */
     /* Start scheduler */
     osKernelStart();
-
-    /* We should never get here as control is now taken by the scheduler */
-
-    /* Infinite loop */
-    /* USER CODE BEGIN WHILE */
-    while (1)
-    {
-        /* USER CODE END WHILE */
-        /* USER CODE BEGIN 3 */
-    }
-
-    /* USER CODE END 3 */
 }
 
 /** System Clock Configuration
@@ -178,7 +167,6 @@ static void MX_CAN2_Init(void)
     hcan2.Instance = CAN2;
     hcan2.pTxMsg = &txMessage;
     hcan2.pRxMsg = &rxMessage;
-
     hcan2.Init.Prescaler = 4;
     hcan2.Init.Mode = CAN_MODE_LOOPBACK;
     hcan2.Init.SJW = CAN_SJW_1TQ;
@@ -242,7 +230,7 @@ static void MX_GPIO_Init(void)
     /*Configure GPIO pin Output Level */
     HAL_GPIO_WritePin(OTG_FS_PowerSwitchOn_GPIO_Port, OTG_FS_PowerSwitchOn_Pin, GPIO_PIN_RESET);
     /*Configure GPIO pin Output Level */
-    HAL_GPIO_WritePin(GPIOA, LED0_Pin | LED1_Pin | LED2_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOA, LED_RED_Pin | LED_GREEN_Pin | LED_BLUE_Pin, GPIO_PIN_RESET);
     /*Configure GPIO pin Output Level */
     HAL_GPIO_WritePin(GPIOD, RSIGNAL_Pin | LSIGNAL_Pin | BRAKE_Pin | HHIGH_Pin
                       | HLOW_Pin | ESTROBE_Pin, GPIO_PIN_RESET);
@@ -257,8 +245,8 @@ static void MX_GPIO_Init(void)
     GPIO_InitStruct.Mode = GPIO_MODE_EVT_RISING;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
-    /*Configure GPIO pins : LED0_Pin LED1_Pin LED2_Pin */
-    GPIO_InitStruct.Pin = LED0_Pin | LED1_Pin | LED2_Pin;
+    /*Configure GPIO pins : LED_RED_Pin LED_GREEN_Pin LED_BLUE_Pin */
+    GPIO_InitStruct.Pin = LED_RED_Pin | LED_GREEN_Pin | LED_BLUE_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -284,28 +272,37 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_CAN_TxCpltCallback(CAN_HandleTypeDef* hcan)
-{
-    // HAL_GPIO_TogglePin(GPIOA, LED1_Pin);
-}
-
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 {
-    if (hcan->pRxMsg->StdId == 0x711 && 
-        hcan->pRxMsg->IDE == CAN_ID_STD && 
-        hcan->pRxMsg->DLC == 1)
+    if (hcan->pRxMsg->StdId == 0x711 &&
+            hcan->pRxMsg->IDE == CAN_ID_STD &&
+            hcan->pRxMsg->DLC == 1)
     {
-        HAL_GPIO_TogglePin(GPIOA, LED1_Pin);
+        HAL_GPIO_TogglePin(GPIOA, LED_BLUE_Pin);
+        HAL_GPIO_TogglePin(GPIOA, LED_RED_Pin);
+        HAL_GPIO_TogglePin(GPIOA, LED_GREEN_Pin);
     }
+
     __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
-    if(HAL_CAN_Receive_IT(hcan, CAN_FIFO0) != HAL_OK)
+
+    auto status = HAL_CAN_Receive_IT(hcan, CAN_FIFO0);
+    if (status != HAL_OK)
     {
         /* Reception Error */
+        HAL_GPIO_WritePin(GPIOA, LED_RED_Pin, 0);
+        HAL_GPIO_WritePin(GPIOA, LED_BLUE_Pin, 0);
+        HAL_GPIO_WritePin(GPIOA, LED_GREEN_Pin, 0);
+        if (status == HAL_ERROR) {
+            HAL_GPIO_WritePin(GPIOA, LED_RED_Pin, 1);
+        } else if (status == HAL_BUSY) {
+            HAL_GPIO_WritePin(GPIOA, LED_BLUE_Pin, 1);            
+        } else if (status == HAL_TIMEOUT) {
+            HAL_GPIO_WritePin(GPIOA, LED_GREEN_Pin, 1);                        
+        }
         Error_Handler();
     }
 }
 /* USER CODE END 4 */
-
 
 /**
   * @brief  This function is executed in case of error occurrence.
@@ -316,7 +313,6 @@ void Error_Handler(void)
 {
     /* USER CODE BEGIN Error_Handler */
     /* User can add his own implementation to report the HAL error return state */
-    // HAL_GPIO_WritePin(GPIOA, LED0_Pin, 1);
     while (1)
     {
     }
