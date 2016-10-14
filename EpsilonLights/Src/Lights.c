@@ -10,7 +10,7 @@ void updateLights(void const* arg)
 
     for (;;)
     {
-        requests->interior = true;
+        // requests->interior = true;
     }
 }
 

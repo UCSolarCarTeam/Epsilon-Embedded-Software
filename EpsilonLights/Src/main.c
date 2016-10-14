@@ -85,8 +85,14 @@ int main(void)
     /* Initialize all configured peripherals */
     MX_GPIO_Init();
     MX_CAN2_Init();
+
     /* USER CODE BEGIN 2 */
-    // HAL_GPIO_WritePin(GPIOA, LED1_Pin, 1);
+    if (HAL_CAN_Receive_IT(&hcan2, CAN_FIFO0) != HAL_OK)
+    {
+        /* Reception Error */
+        Error_Handler();
+    }
+
     /* USER CODE END 2 */
     /* USER CODE BEGIN RTOS_MUTEX */
     /* add mutexes, ... */
@@ -169,10 +175,10 @@ static void MX_CAN2_Init(void)
 {
     static CanTxMsgTypeDef txMessage;
     static CanRxMsgTypeDef rxMessage;
-
     hcan2.Instance = CAN2;
     hcan2.pTxMsg = &txMessage;
     hcan2.pRxMsg = &rxMessage;
+
     hcan2.Init.Prescaler = 4;
     hcan2.Init.Mode = CAN_MODE_LOOPBACK;
     hcan2.Init.SJW = CAN_SJW_1TQ;
@@ -200,7 +206,7 @@ static void MX_CAN2_Init(void)
     sFilterConfig.FilterMaskIdLow = 0x0000;
     sFilterConfig.FilterFIFOAssignment = 0;
     sFilterConfig.FilterActivation = ENABLE;
-    sFilterConfig.BankNumber = 14;
+    sFilterConfig.BankNumber = 0x2D;
 
     if (HAL_CAN_ConfigFilter(&hcan2, &sFilterConfig) != HAL_OK)
     {
@@ -280,11 +286,23 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_CAN_TxCpltCallback(CAN_HandleTypeDef* hcan)
 {
-    HAL_GPIO_TogglePin(GPIOA, LED1_Pin);
+    // HAL_GPIO_TogglePin(GPIOA, LED1_Pin);
 }
 
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 {
+    if (hcan->pRxMsg->StdId == 0x711 && 
+        hcan->pRxMsg->IDE == CAN_ID_STD && 
+        hcan->pRxMsg->DLC == 1)
+    {
+        HAL_GPIO_TogglePin(GPIOA, LED1_Pin);
+    }
+    __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
+    if(HAL_CAN_Receive_IT(hcan, CAN_FIFO0) != HAL_OK)
+    {
+        /* Reception Error */
+        Error_Handler();
+    }
 }
 /* USER CODE END 4 */
 
@@ -298,6 +316,7 @@ void Error_Handler(void)
 {
     /* USER CODE BEGIN Error_Handler */
     /* User can add his own implementation to report the HAL error return state */
+    // HAL_GPIO_WritePin(GPIOA, LED0_Pin, 1);
     while (1)
     {
     }
