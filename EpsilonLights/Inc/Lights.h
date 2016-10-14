@@ -22,7 +22,7 @@ typedef union LightsStatus
     {
         unsigned int lowBeams : 1;
         unsigned int highBeams : 1;
-        unsigned int Brakes : 1;
+        unsigned int brakes : 1;
         unsigned int leftSignal : 1;
         unsigned int rightSignal : 1;
         unsigned int bmsStrobeLight : 1;
@@ -34,4 +34,3 @@ typedef union LightsStatus
 void updateLights(void const* arg);
 void reportLightsToCan(void const* arg);
 void sendHeartbeat(void const* arg);
-

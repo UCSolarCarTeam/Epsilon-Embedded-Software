@@ -34,15 +34,13 @@ void reportLightsToCan(void const* arg)
         }
 
         hcan2.pTxMsg->StdId = LIGHTS_STATUS_STDID;
-        LightsStatus stat = {{
-                HAL_GPIO_ReadPin(HLOW_GPIO_Port, HLOW_Pin),
-                HAL_GPIO_ReadPin(HHIGH_GPIO_Port, HHIGH_Pin),
-                HAL_GPIO_ReadPin(BRAKE_GPIO_Port, BRAKE_Pin),
-                HAL_GPIO_ReadPin(LSIGNAL_GPIO_Port, LSIGNAL_Pin),
-                HAL_GPIO_ReadPin(RSIGNAL_GPIO_Port, RSIGNAL_Pin),
-                HAL_GPIO_ReadPin(ESTROBE_GPIO_Port, ESTROBE_Pin)
-            }
-        };
+        LightsStatus stat = {0};
+        stat.lowBeams = HAL_GPIO_ReadPin(HLOW_GPIO_Port, HLOW_Pin);
+        stat.highBeams = HAL_GPIO_ReadPin(HHIGH_GPIO_Port, HHIGH_Pin);
+        stat.brakes = HAL_GPIO_ReadPin(BRAKE_GPIO_Port, BRAKE_Pin);
+        stat.leftSignal = HAL_GPIO_ReadPin(LSIGNAL_GPIO_Port, LSIGNAL_Pin);
+        stat.rightSignal = HAL_GPIO_ReadPin(RSIGNAL_GPIO_Port, RSIGNAL_Pin);
+        stat.bmsStrobeLight = HAL_GPIO_ReadPin(ESTROBE_GPIO_Port, ESTROBE_Pin);
         hcan2.pTxMsg->Data[0] = stat.asUint8;
         HAL_CAN_Transmit_IT(&hcan2);
 
