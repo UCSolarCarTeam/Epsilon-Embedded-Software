@@ -4,18 +4,48 @@
 
 extern CAN_HandleTypeDef hcan2; // main.c
 extern uint8_t lightsInputs;
-extern uint8_t batteryStatus;
+extern uint8_t batteryStatus[];
 
 void updateLights(void const* arg)
 {
     unsigned char* inputs = (unsigned char*) arg;
     // One time osDelayUntil intialization
     uint32_t prevWakeTime = osKernelSysTick();
+    // Store inputs values
+    char headlightsOff;
+    char headlightsLow;
+    char headlightsHigh;
+    char rightSignal;
+    char leftSignal;
+    char hazards;
 
+    // NOTE: All Lights Out pins are active low
     for (;;)
     {
-        osDelayUntil(&prevWakeTime, 10);
-        // requests->interior = true;
+        osDelayUntil(&prevWakeTime, LIGHTS_UPDATE_FREQ);
+        headlightsOff = (lightsInputs >> HOFF_INPUT_INDEX) & 1;
+        headlightsLow = (lightsInputs >> HLOW_INPUT_INDEX) & 1;
+        headlightsHigh = (lightsInputs >> HHIGH_INPUT_INDEX) & 1;
+        rightSignal = (lightsInputs >> RSIGNAL_INPUT_INDEX) & 1;
+        leftSignal = (lightsInputs >> RSIGNAL_INPUT_INDEX) & 1;
+        hazards = (lightsInputs >> HAZARDS_INPUT_INDEX) & 1;
+
+        /* UPDATE HEADLIGHTS */
+
+        if (headlightsOff && headlightsLow + headlightsHigh)
+        {
+            // Error state, turn headlights off
+            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, 1);
+            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, 1);
+        }
+        else
+        {
+            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, !headlightsLow);
+            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, !headlightsHigh);
+        }
+
+        /* UPDATE SIGNAL LIGHTS */
+        /* UPDATE EMERGENCY STROBE */
     }
 }
 
@@ -74,7 +104,7 @@ void sendHeartbeat(void const* arg)
 
         if (osMutexWait(canHandleMutex, 0) != osOK)
         {
-            Error_Handler();
+            continue;
         }
 
         // Set CAN msg address
@@ -86,7 +116,7 @@ void sendHeartbeat(void const* arg)
 
         if (osMutexRelease(canHandleMutex) != osOK)
         {
-            Error_Handler();
+            continue;
         }
     }
 }
@@ -100,15 +130,14 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     {
         lightsInputs = msg->Data[0];
     }
-    else if (msg->StdId == BATTERY_STAT_STDID)
+    else if (msg->StdId == BATTERY_STAT_STDID && msg->DLC == 4)
     {
-        batteryStatus = msg->Data[4];
+        batteryStatus[0] = msg->Data[0];
+        batteryStatus[1] = msg->Data[1];
+        batteryStatus[2] = msg->Data[2];
+        batteryStatus[3] = msg->Data[3];
     }
 
     __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
-
-    if (HAL_CAN_Receive_IT(hcan, CAN_FIFO0) != HAL_OK)
-    {
-        Error_Handler();
-    }
+    HAL_CAN_Receive_IT(hcan, CAN_FIFO0);
 }

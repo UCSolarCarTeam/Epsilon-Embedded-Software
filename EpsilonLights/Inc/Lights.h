@@ -8,6 +8,8 @@
 #include "stm32f4xx_hal_can.h"
 
 // Refer to https://docs.google.com/spreadsheets/d/1soVLjeD9Sl7z7Z6cYMyn1fmn-cG7tx_pfFDsvgkCqMU/edit?usp=sharing
+#define LIGHTS_UPDATE_FREQ 10 // Every 10ms
+
 #define LIGHTS_HEARTBEAT_FREQ 1000 // 1Hz = 1000ms
 #define LIGHTS_HEARTBEAT_STDID 0x710U
 
@@ -15,6 +17,13 @@
 #define LIGHTS_STATUS_STDID 0x711U
 
 #define LIGHTS_INPUT_STDID 0x701U
+#define HOFF_INPUT_INDEX 0
+#define HLOW_INPUT_INDEX 1
+#define HHIGH_INPUT_INDEX 2
+#define RSIGNAL_INPUT_INDEX 3
+#define LSIGNAL_INPUT_INDEX 4
+#define HAZARDS_INPUT_INDEX 5
+
 #define BATTERY_STAT_STDID 0x6FBU
 
 typedef union LightsStatus
