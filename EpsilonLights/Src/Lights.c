@@ -4,7 +4,7 @@
 
 extern CAN_HandleTypeDef hcan2; // main.c
 extern uint8_t lightsInputs;
-extern uint8_t batteryStatus[];
+extern uint8_t batteryStatus[4];
 
 void updateLights(void const* arg)
 {
@@ -46,6 +46,11 @@ void updateLights(void const* arg)
 
         /* UPDATE SIGNAL LIGHTS */
         /* UPDATE EMERGENCY STROBE */
+        if (batteryStatus[0] & BATTERY_CRIT_FAULT_MASK) {
+            HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, 0);
+        } else {
+            HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, 1);
+        }
     }
 }
 
