@@ -42,6 +42,7 @@
 CAN_HandleTypeDef hcan2;
 uint8_t lightsInputs; // Initialized to 0
 uint8_t batteryStatus[4]; // Initialized to {0, 0, 0, 0}
+SigLightsHandle sigLightsHandle;
 
 static osThreadId lightsTaskHandle;
 static osThreadId lightsCanTaskHandle;

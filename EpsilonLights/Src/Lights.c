@@ -5,10 +5,10 @@
 extern CAN_HandleTypeDef hcan2; // main.c
 extern uint8_t lightsInputs;
 extern uint8_t batteryStatus[4];
+extern SigLightsHandle sigLightsHandle;
 
 void updateLights(void const* arg)
 {
-    unsigned char* inputs = (unsigned char*) arg;
     // One time osDelayUntil intialization
     uint32_t prevWakeTime = osKernelSysTick();
     // Store inputs values
@@ -35,8 +35,8 @@ void updateLights(void const* arg)
         if (headlightsOff && headlightsLow + headlightsHigh)
         {
             // Error state, turn headlights off
-            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, 1);
-            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, 1);
+            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_OFF);
+            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, LIGHT_OFF);
         }
         else
         {
@@ -45,11 +45,98 @@ void updateLights(void const* arg)
         }
 
         /* UPDATE SIGNAL LIGHTS */
+        // Set to enable or disable for use in blinkSignalLights
+        if (hazards)
+        {
+            sigLightsHandle.left = 1;
+            sigLightsHandle.right = 1;
+        }
+        else
+        {
+            sigLightsHandle.left = leftSignal;
+            sigLightsHandle.right = rightSignal;
+        }
+
         /* UPDATE EMERGENCY STROBE */
-        if (batteryStatus[0] & BATTERY_CRIT_FAULT_MASK) {
-            HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, 0);
-        } else {
-            HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, 1);
+        if (batteryStatus[0] & BATTERY_CRIT_FAULT_MASK)
+        {
+            HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_ON);
+        }
+        else
+        {
+            HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_OFF);
+        }
+    }
+}
+
+// Reasoning for complexity
+// Blinkers should turn on immediately if they are turned on from an off state
+// Blinkers should turn off immediately if they are turned off
+// Blinking frequency should be constant if multiple signal inputs are turned on asynchornously
+//      Example: Signal Left ENABLED
+//               ~200ms pass
+//               Hazards Enabled <- (Left blinker should not reset at this point)
+void blinkSignalLights(void const* arg)
+{
+    // One time osDelayUntil intialization
+    uint32_t prevWakeTime = osKernelSysTick();
+    // If blinkerTimer is within (0 - BLINKER_FREQ), turn blinkers on
+    // If blinkerTimer is within (BLINKER_FREQ - BLINKER_FREQ*2), keep blinkers off
+    // If blinkerTimer is greater than (BLINKER_FREQ*2) reset blinkerTimer to 0
+    uint32_t blinkerTimer = 0;
+    // If both signal lights disabled, prevSigState = 0 (DISABLED)
+    // else prevSigState = 1 (ENABLED)
+    uint8_t prevSigState = 0;
+
+    for (;;)
+    {
+        osDelayUntil(&prevWakeTime, LIGHTS_UPDATE_FREQ);
+
+        // Check if both signa lights inputs are DISABLED
+        if (!sigLightsHandle.left && !sigLightsHandle.right) // Going to DISABLED
+        {
+            // Reset blinker state and turn blinkers off
+            HAL_GPIO_WritePin(RSIGNAL_GPIO_Port, RSIGNAL_Pin, LIGHT_OFF);
+            HAL_GPIO_WritePin(LSIGNAL_GPIO_Port, LSIGNAL_Pin, LIGHT_OFF);
+            // blinkerTimer will be reset to 0 on ENABLE
+            prevSigState = 0;
+        }
+        else if (!prevSigState) // Going from DISABLED to ENABLED
+        {
+            HAL_GPIO_WritePin(RSIGNAL_GPIO_Port, RSIGNAL_Pin, LIGHT_ON);
+            HAL_GPIO_WritePin(LSIGNAL_GPIO_Port, LSIGNAL_Pin, LIGHT_ON);
+            // Prepare to keep blinkers on (If blinkerTimer is within (0 - BLINKER_FREQ), turn blinkers on)
+            blinkerTimer = 0;
+            prevSigState = 1;
+        }
+        else // Going from ENABLED to ENABLED
+        {
+            // Handle Blinking the signal lights
+            if (blinkerTimer >= BLINKER_FREQ)
+            {
+                // If blinkerTimer is within (BLINKER_FREQ - BLINKER_FREQ*2), keep blinkers off
+                HAL_GPIO_WritePin(RSIGNAL_GPIO_Port, RSIGNAL_Pin, LIGHT_OFF);
+                HAL_GPIO_WritePin(LSIGNAL_GPIO_Port, LSIGNAL_Pin, LIGHT_OFF);
+            }
+            else
+            {
+                // If blinkerTimer is within (0 - BLINKER_FREQ), turn blinkers on
+                HAL_GPIO_WritePin(RSIGNAL_GPIO_Port, RSIGNAL_Pin, !sigLightsHandle.right);
+                HAL_GPIO_WritePin(LSIGNAL_GPIO_Port, LSIGNAL_Pin, !sigLightsHandle.left);
+            }
+
+            // Update blinker timer
+            if (blinkerTimer > BLINKER_FREQ * 2)
+            {
+                // If blinkerTimer is greater than (BLINKER_FREQ*2) reset blinkerTimer to 0
+                blinkerTimer = 0;
+            }
+            else
+            {
+                blinkerTimer += LIGHTS_UPDATE_FREQ;
+            }
+
+            // Keep prevSigState = 1
         }
     }
 }
