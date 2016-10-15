@@ -47,6 +47,7 @@ SigLightsHandle sigLightsHandle;
 static osThreadId lightsTaskHandle;
 static osThreadId lightsCanTaskHandle;
 static osThreadId heartbeatHandle;
+static osThreadId blinkLightsHandle;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
@@ -116,6 +117,8 @@ int main(void)
     lightsCanTaskHandle = osThreadCreate(osThread(lightsCanTask), canHandleMutex);
     osThreadDef(heartbeatTask, sendHeartbeat, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
     heartbeatHandle = osThreadCreate(osThread(heartbeatTask), canHandleMutex);
+    osThreadDef(blinkLightsTask, blinkSignalLights, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    blinkLightsHandle = osThreadCreate(osThread(blinkLightsTask), NULL);
     /* USER CODE END RTOS_THREADS */
     /* USER CODE BEGIN RTOS_QUEUES */
     /* add queues, ... */
