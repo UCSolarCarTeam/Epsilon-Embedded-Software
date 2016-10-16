@@ -111,12 +111,16 @@ int main(void)
     /* Create the thread(s) */
     /* definition and creation of defaultTask */
     /* USER CODE BEGIN RTOS_THREADS */
+    // Setup task to update physical lights
     osThreadDef(lightsTask, updateLights, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
     lightsTaskHandle = osThreadCreate(osThread(lightsTask), NULL);
+    // Setup task to report lights status to CAN
     osThreadDef(lightsCanTask, reportLightsToCan, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
     lightsCanTaskHandle = osThreadCreate(osThread(lightsCanTask), canHandleMutex);
+    // Setup task to report heartbeat to CAN
     osThreadDef(heartbeatTask, sendHeartbeat, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
     heartbeatHandle = osThreadCreate(osThread(heartbeatTask), canHandleMutex);
+    // Setup task to handle blinking left and right signal lights
     osThreadDef(blinkLightsTask, blinkSignalLights, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
     blinkLightsHandle = osThreadCreate(osThread(blinkLightsTask), NULL);
     /* USER CODE END RTOS_THREADS */
