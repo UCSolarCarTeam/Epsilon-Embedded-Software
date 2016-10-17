@@ -40,6 +40,9 @@
 
 /* Private variables ---------------------------------------------------------*/
 CAN_HandleTypeDef hcan2;
+
+/* USER CODE BEGIN PV */
+/* Private variables ---------------------------------------------------------*/
 uint8_t lightsInputs; // Initialized to 0
 uint8_t batteryStatus[4]; // Initialized to {0, 0, 0, 0}
 SigLightsHandle sigLightsHandle;
@@ -48,9 +51,6 @@ static osThreadId lightsTaskHandle;
 static osThreadId lightsCanTaskHandle;
 static osThreadId heartbeatHandle;
 static osThreadId blinkLightsHandle;
-
-/* USER CODE BEGIN PV */
-/* Private variables ---------------------------------------------------------*/
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -58,8 +58,10 @@ void SystemClock_Config(void);
 void Error_Handler(void);
 static void MX_GPIO_Init(void);
 static void MX_CAN2_Init(void);
+void StartDefaultTask(void const* argument);
 
 /* USER CODE BEGIN PFP */
+static void MX_CAN2_UserInit(void);
 /* Private function prototypes -----------------------------------------------*/
 
 /* USER CODE END PFP */
@@ -82,6 +84,7 @@ int main(void)
     MX_CAN2_Init();
 
     /* USER CODE BEGIN 2 */
+    MX_CAN2_UserInit();
     // Setup for next CAN Receive Interrupt
     if (HAL_CAN_Receive_IT(&hcan2, CAN_FIFO0) != HAL_OK)
     {
@@ -129,6 +132,18 @@ int main(void)
     /* USER CODE END RTOS_QUEUES */
     /* Start scheduler */
     osKernelStart();
+
+    /* We should never get here as control is now taken by the scheduler */
+
+    /* Infinite loop */
+    /* USER CODE BEGIN WHILE */
+    while (1)
+    {
+        /* USER CODE END WHILE */
+        /* USER CODE BEGIN 3 */
+    }
+
+    /* USER CODE END 3 */
 }
 
 /** System Clock Configuration
@@ -174,14 +189,9 @@ void SystemClock_Config(void)
 /* CAN2 init function */
 static void MX_CAN2_Init(void)
 {
-    // CubeMX Generated | START
-    static CanTxMsgTypeDef txMessage;
-    static CanRxMsgTypeDef rxMessage;
     hcan2.Instance = CAN2;
-    hcan2.pTxMsg = &txMessage;
-    hcan2.pRxMsg = &rxMessage;
     hcan2.Init.Prescaler = 4;
-    hcan2.Init.Mode = CAN_MODE_NORMAL;
+    hcan2.Init.Mode = CAN_MODE_LOOPBACK;
     hcan2.Init.SJW = CAN_SJW_1TQ;
     hcan2.Init.BS1 = CAN_BS1_5TQ;
     hcan2.Init.BS2 = CAN_BS2_4TQ;
@@ -196,32 +206,6 @@ static void MX_CAN2_Init(void)
     {
         Error_Handler();
     }
-
-    // CubeMX Generated | END
-    CAN_FilterConfTypeDef sFilterConfig;
-    sFilterConfig.FilterNumber = 0; // Use first filter bank
-    sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
-    sFilterConfig.FilterScale = CAN_FILTERSCALE_16BIT;
-    sFilterConfig.FilterIdHigh = LIGHTS_INPUT_STDID << 5; // Filter registers need to be shifted left 5 bits
-    sFilterConfig.FilterIdLow = BATTERY_STAT_STDID << 5; // Filter registers need to be shifted left 5 bits
-    sFilterConfig.FilterMaskIdHigh = 0; // Unused
-    sFilterConfig.FilterMaskIdLow = 0; // Unused
-    sFilterConfig.FilterFIFOAssignment = 0;
-    sFilterConfig.FilterActivation = ENABLE;
-    sFilterConfig.BankNumber = 0; // Set all filter banks for CAN2
-
-    if (HAL_CAN_ConfigFilter(&hcan2, &sFilterConfig) != HAL_OK)
-    {
-        /* Filter configuration Error */
-        Error_Handler();
-    }
-
-    /*##-3- Configure Transmission process #####################################*/
-    // hcan2.pTxMsg->StdId = 0x0; // CAN message address, set in Lights.c
-    hcan2.pTxMsg->ExtId = 0x0; // Only used if (hcan2.pTxMsg->IDE == CAN_ID_EXT)
-    hcan2.pTxMsg->RTR = CAN_RTR_DATA; // Data request, not remote request
-    hcan2.pTxMsg->IDE = CAN_ID_STD; // Standard CAN, not Extended
-    hcan2.pTxMsg->DLC = 1; // Data size in bytes
 }
 
 /** Configure pins as
@@ -286,6 +270,37 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+static void MX_CAN2_UserInit(void)
+{
+    CAN_FilterConfTypeDef sFilterConfig;
+    sFilterConfig.FilterNumber = 0; // Use first filter bank
+    sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
+    sFilterConfig.FilterScale = CAN_FILTERSCALE_16BIT;
+    sFilterConfig.FilterIdHigh = LIGHTS_INPUT_STDID << 5; // Filter registers need to be shifted left 5 bits
+    sFilterConfig.FilterIdLow = BATTERY_STAT_STDID << 5; // Filter registers need to be shifted left 5 bits
+    sFilterConfig.FilterMaskIdHigh = 0; // Unused
+    sFilterConfig.FilterMaskIdLow = 0; // Unused
+    sFilterConfig.FilterFIFOAssignment = 0;
+    sFilterConfig.FilterActivation = ENABLE;
+    sFilterConfig.BankNumber = 0; // Set all filter banks for CAN2
+
+    if (HAL_CAN_ConfigFilter(&hcan2, &sFilterConfig) != HAL_OK)
+    {
+        /* Filter configuration Error */
+        Error_Handler();
+    }
+
+    /* Configure Transmission process */
+    static CanTxMsgTypeDef txMessage;
+    static CanRxMsgTypeDef rxMessage;
+    hcan2.pTxMsg = &txMessage;
+    hcan2.pRxMsg = &rxMessage;
+    // hcan2.pTxMsg->StdId = 0x0; // CAN message address, set in Lights.c
+    hcan2.pTxMsg->ExtId = 0x0; // Only used if (hcan2.pTxMsg->IDE == CAN_ID_EXT)
+    hcan2.pTxMsg->RTR = CAN_RTR_DATA; // Data request, not remote request
+    hcan2.pTxMsg->IDE = CAN_ID_STD; // Standard CAN, not Extended
+    hcan2.pTxMsg->DLC = 1; // Data size in bytes
+}
 /* USER CODE END 4 */
 
 /**
