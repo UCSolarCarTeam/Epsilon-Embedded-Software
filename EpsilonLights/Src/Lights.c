@@ -151,14 +151,14 @@ void reportLightsToCan(void const* arg)
     for (;;)
     {
         osDelayUntil(&prevWakeTime, LIGHTS_STATUS_FREQ);
-        // Toggle blue LED for every CAN message sent
-        HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
 
         if (osMutexWait(canHandleMutex, 0) != osOK)
         {
             continue;
         }
 
+        // Toggle blue LED for every CAN message sent
+        HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
         // Set CAN msg address
         hcan2.pTxMsg->StdId = LIGHTS_STATUS_STDID;
         // Initalize to avoid garbage values in [6] anad [7]
@@ -191,14 +191,20 @@ void sendHeartbeat(void const* arg)
     for (;;)
     {
         osDelayUntil(&prevWakeTime, LIGHTS_HEARTBEAT_FREQ);
-        // Toggle green LED for every heartbeat sent
-        HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
+        HAL_GPIO_TogglePin(HLOW_GPIO_Port, HLOW_Pin);
+        HAL_GPIO_TogglePin(HHIGH_GPIO_Port, HHIGH_Pin);
+        HAL_GPIO_TogglePin(BRAKE_GPIO_Port, BRAKE_Pin);
+        HAL_GPIO_TogglePin(LSIGNAL_GPIO_Port, LSIGNAL_Pin);
+        HAL_GPIO_TogglePin(RSIGNAL_GPIO_Port, RSIGNAL_Pin);
+        HAL_GPIO_TogglePin(ESTROBE_GPIO_Port, ESTROBE_Pin);
 
         if (osMutexWait(canHandleMutex, 0) != osOK)
         {
             continue;
         }
 
+        // Toggle green LED for every heartbeat sent
+        HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
         // Set CAN msg address
         hcan2.pTxMsg->StdId = LIGHTS_HEARTBEAT_STDID;
         // Always 1
@@ -217,13 +223,16 @@ void sendHeartbeat(void const* arg)
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 {
     CanRxMsgTypeDef* msg = hcan->pRxMsg;
+    HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, 1);
 
     if (msg->StdId == LIGHTS_INPUT_STDID)
     {
+        HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, 1);
         lightsInputs = msg->Data[0];
     }
     else if (msg->StdId == BATTERY_STAT_STDID && msg->DLC == 4)
     {
+        HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, 1);
         batteryStatus[0] = msg->Data[0];
         batteryStatus[1] = msg->Data[1];
         batteryStatus[2] = msg->Data[2];
