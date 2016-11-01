@@ -223,16 +223,14 @@ void sendHeartbeat(void const* arg)
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 {
     CanRxMsgTypeDef* msg = hcan->pRxMsg;
-    HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, 1);
+    HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
 
     if (msg->StdId == LIGHTS_INPUT_STDID)
     {
-        HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, 1);
         lightsInputs = msg->Data[0];
     }
     else if (msg->StdId == BATTERY_STAT_STDID && msg->DLC == 4)
     {
-        HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, 1);
         batteryStatus[0] = msg->Data[0];
         batteryStatus[1] = msg->Data[1];
         batteryStatus[2] = msg->Data[2];

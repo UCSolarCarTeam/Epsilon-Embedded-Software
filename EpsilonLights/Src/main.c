@@ -115,17 +115,17 @@ int main(void)
     /* definition and creation of defaultTask */
     /* USER CODE BEGIN RTOS_THREADS */
     // Setup task to update physical lights
-    // osThreadDef(lightsTask, updateLights, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
-    // lightsTaskHandle = osThreadCreate(osThread(lightsTask), NULL);
+    osThreadDef(lightsTask, updateLights, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    lightsTaskHandle = osThreadCreate(osThread(lightsTask), NULL);
     // Setup task to report lights status to CAN
-    // osThreadDef(lightsCanTask, reportLightsToCan, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
-    // lightsCanTaskHandle = osThreadCreate(osThread(lightsCanTask), canHandleMutex);
+    osThreadDef(lightsCanTask, reportLightsToCan, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    lightsCanTaskHandle = osThreadCreate(osThread(lightsCanTask), canHandleMutex);
     // Setup task to report heartbeat to CAN
     osThreadDef(heartbeatTask, sendHeartbeat, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
     heartbeatHandle = osThreadCreate(osThread(heartbeatTask), canHandleMutex);
     // Setup task to handle blinking left and right signal lights
-    // osThreadDef(blinkLightsTask, blinkSignalLights, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
-    // blinkLightsHandle = osThreadCreate(osThread(blinkLightsTask), NULL);
+    osThreadDef(blinkLightsTask, blinkSignalLights, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    blinkLightsHandle = osThreadCreate(osThread(blinkLightsTask), NULL);
     /* USER CODE END RTOS_THREADS */
     /* USER CODE BEGIN RTOS_QUEUES */
     /* add queues, ... */
@@ -191,7 +191,7 @@ static void MX_CAN2_Init(void)
 {
     hcan2.Instance = CAN2;
     hcan2.Init.Prescaler = 4;
-    hcan2.Init.Mode = CAN_MODE_LOOPBACK;
+    hcan2.Init.Mode = CAN_MODE_NORMAL;
     hcan2.Init.SJW = CAN_SJW_1TQ;
     hcan2.Init.BS1 = CAN_BS1_5TQ;
     hcan2.Init.BS2 = CAN_BS2_4TQ;
@@ -275,9 +275,12 @@ static void MX_CAN2_UserInit(void)
     CAN_FilterConfTypeDef sFilterConfig;
     sFilterConfig.FilterNumber = 0; // Use first filter bank
     sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
+    // sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
     sFilterConfig.FilterScale = CAN_FILTERSCALE_16BIT;
     sFilterConfig.FilterIdHigh = LIGHTS_INPUT_STDID << 5; // Filter registers need to be shifted left 5 bits
     sFilterConfig.FilterIdLow = BATTERY_STAT_STDID << 5; // Filter registers need to be shifted left 5 bits
+    // sFilterConfig.FilterIdHigh = 0; // Filter registers need to be shifted left 5 bits
+    // sFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
     sFilterConfig.FilterMaskIdHigh = 0; // Unused
     sFilterConfig.FilterMaskIdLow = 0; // Unused
     sFilterConfig.FilterFIFOAssignment = 0;
