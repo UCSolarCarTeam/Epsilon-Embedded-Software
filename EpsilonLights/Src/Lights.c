@@ -2,12 +2,6 @@
 
 #include "Lights.h"
 
-extern CAN_HandleTypeDef hcan2; // main.c
-extern uint8_t lightsInputs;
-extern uint8_t driversInputs[4];
-extern uint8_t batteryStatus[4];
-extern SigLightsHandle sigLightsHandle;
-
 void updateLightsTask(void const* arg)
 {
     // One time osDelayUntil intialization
@@ -19,7 +13,6 @@ void updateLightsTask(void const* arg)
     char rightSignal;
     char leftSignal;
     char hazards;
-
     char brakes;
 
     // NOTE: All Lights Out pins are active low
@@ -49,9 +42,10 @@ void updateLightsTask(void const* arg)
 
         /* UPDATE BRAKE LIGHTS */
         brakes = (driversInputs[BRAKES_INPUT_INDEX_P1] >> BRAKES_INPUT_INDEX_P2) & 1;
-        if(brakes)
+
+        if (brakes)
         {
-            HAL_GPIO_WritePin(BRAKE_GPIO_Port, BRAKE_Pin, LIGHT_ON);            
+            HAL_GPIO_WritePin(BRAKE_GPIO_Port, BRAKE_Pin, LIGHT_ON);
         }
         else
         {
@@ -193,7 +187,6 @@ void reportLightsToCanTask(void const* arg)
         hcan2.pTxMsg->Data[0] += !stat.bmsStrobeLight * 0x20;
         // Send CAN msg
         HAL_CAN_Transmit_IT(&hcan2);
-
         osMutexRelease(canHandleMutex);
     }
 }
@@ -222,7 +215,6 @@ void sendHeartbeatTask(void const* arg)
         hcan2.pTxMsg->Data[0] = 1;
         // Send CAN msg
         HAL_CAN_Transmit_IT(&hcan2);
-
         osMutexRelease(canHandleMutex);
     }
 }

@@ -52,6 +52,12 @@ typedef struct SigLightsHandle
     uint8_t right;
 } SigLightsHandle;
 
+extern CAN_HandleTypeDef hcan2; // main.c
+extern uint8_t lightsInputs;
+extern uint8_t driversInputs[4];
+extern uint8_t batteryStatus[4];
+extern SigLightsHandle sigLightsHandle;
+
 // Task for updating GPIOs
 // arg : NULL
 void updateLightsTask(void const* arg);
