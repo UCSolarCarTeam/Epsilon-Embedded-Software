@@ -44,6 +44,7 @@ CAN_HandleTypeDef hcan2;
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 uint8_t lightsInputs; // Initialized to 0
+uint8_t driversInputs[4]; // Initialized to 0
 uint8_t batteryStatus[4]; // Initialized to {0, 0, 0, 0}
 SigLightsHandle sigLightsHandle;
 
@@ -276,12 +277,12 @@ static void MX_CAN2_UserInit(void)
     sFilterConfig.FilterNumber = 0; // Use first filter bank
     sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
     // sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
-    sFilterConfig.FilterScale = CAN_FILTERSCALE_16BIT;
+    sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
     sFilterConfig.FilterIdHigh = LIGHTS_INPUT_STDID << 5; // Filter registers need to be shifted left 5 bits
     sFilterConfig.FilterIdLow = BATTERY_STAT_STDID << 5; // Filter registers need to be shifted left 5 bits
     // sFilterConfig.FilterIdHigh = 0; // Filter registers need to be shifted left 5 bits
     // sFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
-    sFilterConfig.FilterMaskIdHigh = 0; // Unused
+    sFilterConfig.FilterMaskIdHigh = DRIVERS_INPUTS_STDID << 5; // Unused
     sFilterConfig.FilterMaskIdLow = 0; // Unused
     sFilterConfig.FilterFIFOAssignment = 0;
     sFilterConfig.FilterActivation = ENABLE;

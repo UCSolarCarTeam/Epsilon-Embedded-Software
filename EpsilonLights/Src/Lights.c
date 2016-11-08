@@ -4,6 +4,7 @@
 
 extern CAN_HandleTypeDef hcan2; // main.c
 extern uint8_t lightsInputs;
+extern uint8_t driversInputs[4];
 extern uint8_t batteryStatus[4];
 extern SigLightsHandle sigLightsHandle;
 
@@ -19,6 +20,8 @@ void updateLightsTask(void const* arg)
     char leftSignal;
     char hazards;
 
+    char brakes;
+
     // NOTE: All Lights Out pins are active low
     for (;;)
     {
@@ -27,7 +30,7 @@ void updateLightsTask(void const* arg)
         headlightsLow = (lightsInputs >> HLOW_INPUT_INDEX) & 1;
         headlightsHigh = (lightsInputs >> HHIGH_INPUT_INDEX) & 1;
         rightSignal = (lightsInputs >> RSIGNAL_INPUT_INDEX) & 1;
-        leftSignal = (lightsInputs >> RSIGNAL_INPUT_INDEX) & 1;
+        leftSignal = (lightsInputs >> LSIGNAL_INPUT_INDEX) & 1;
         hazards = (lightsInputs >> HAZARDS_INPUT_INDEX) & 1;
 
         /* UPDATE HEADLIGHTS */
@@ -40,8 +43,19 @@ void updateLightsTask(void const* arg)
         }
         else
         {
-            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, !headlightsLow);
-            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, !headlightsHigh);
+            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, !headlightsHigh);
+            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, !headlightsLow);
+        }
+
+        /* UPDATE BRAKE LIGHTS */
+        brakes = (driversInputs[BRAKES_INPUT_INDEX_P1] >> BRAKES_INPUT_INDEX_P2) & 1;
+        if(brakes)
+        {
+            HAL_GPIO_WritePin(BRAKE_GPIO_Port, BRAKE_Pin, LIGHT_ON);            
+        }
+        else
+        {
+            HAL_GPIO_WritePin(BRAKE_GPIO_Port, BRAKE_Pin, LIGHT_OFF);
         }
 
         /* UPDATE SIGNAL LIGHTS */
@@ -170,12 +184,13 @@ void reportLightsToCanTask(void const* arg)
         stat.leftSignal = HAL_GPIO_ReadPin(LSIGNAL_GPIO_Port, LSIGNAL_Pin);
         stat.rightSignal = HAL_GPIO_ReadPin(RSIGNAL_GPIO_Port, RSIGNAL_Pin);
         stat.bmsStrobeLight = HAL_GPIO_ReadPin(ESTROBE_GPIO_Port, ESTROBE_Pin);
-        hcan2.pTxMsg->Data[0] += stat.lowBeams * 0x01;
-        hcan2.pTxMsg->Data[0] += stat.highBeams * 0x02;
-        hcan2.pTxMsg->Data[0] += stat.brakes * 0x04;
-        hcan2.pTxMsg->Data[0] += stat.leftSignal * 0x08;
-        hcan2.pTxMsg->Data[0] += stat.rightSignal * 0x10;
-        hcan2.pTxMsg->Data[0] += stat.bmsStrobeLight * 0x20;
+        hcan2.pTxMsg->Data[0] = 0;
+        hcan2.pTxMsg->Data[0] += !stat.lowBeams * 0x01;
+        hcan2.pTxMsg->Data[0] += !stat.highBeams * 0x02;
+        hcan2.pTxMsg->Data[0] += !stat.brakes * 0x04;
+        hcan2.pTxMsg->Data[0] += !stat.rightSignal * 0x08;
+        hcan2.pTxMsg->Data[0] += !stat.leftSignal * 0x10;
+        hcan2.pTxMsg->Data[0] += !stat.bmsStrobeLight * 0x20;
         // Send CAN msg
         HAL_CAN_Transmit_IT(&hcan2);
 
@@ -193,12 +208,6 @@ void sendHeartbeatTask(void const* arg)
     for (;;)
     {
         osDelayUntil(&prevWakeTime, LIGHTS_HEARTBEAT_FREQ);
-        HAL_GPIO_TogglePin(HLOW_GPIO_Port, HLOW_Pin);
-        HAL_GPIO_TogglePin(HHIGH_GPIO_Port, HHIGH_Pin);
-        HAL_GPIO_TogglePin(BRAKE_GPIO_Port, BRAKE_Pin);
-        HAL_GPIO_TogglePin(LSIGNAL_GPIO_Port, LSIGNAL_Pin);
-        HAL_GPIO_TogglePin(RSIGNAL_GPIO_Port, RSIGNAL_Pin);
-        HAL_GPIO_TogglePin(ESTROBE_GPIO_Port, ESTROBE_Pin);
 
         if (osMutexWait(canHandleMutex, 0) != osOK)
         {
@@ -227,6 +236,13 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     if (msg->StdId == LIGHTS_INPUT_STDID)
     {
         lightsInputs = msg->Data[0];
+    }
+    else if (msg->StdId == DRIVERS_INPUTS_STDID)
+    {
+        driversInputs[0] = msg->Data[0];
+        driversInputs[1] = msg->Data[1];
+        driversInputs[2] = msg->Data[2];
+        driversInputs[3] = msg->Data[3];
     }
     else if (msg->StdId == BATTERY_STAT_STDID && msg->DLC == 4)
     {
