@@ -7,7 +7,7 @@ extern uint8_t lightsInputs;
 extern uint8_t batteryStatus[4];
 extern SigLightsHandle sigLightsHandle;
 
-void updateLights(void const* arg)
+void updateLightsTask(void const* arg)
 {
     // One time osDelayUntil intialization
     uint32_t prevWakeTime = osKernelSysTick();
@@ -76,7 +76,7 @@ void updateLights(void const* arg)
 //      Example: Signal Left ENABLED
 //               ~200ms pass
 //               Hazards Enabled <- (Left blinker should not reset at this point)
-void blinkSignalLights(void const* arg)
+void blinkSignalLightsTask(void const* arg)
 {
     // One time osDelayUntil intialization
     uint32_t prevWakeTime = osKernelSysTick();
@@ -92,7 +92,7 @@ void blinkSignalLights(void const* arg)
     {
         osDelayUntil(&prevWakeTime, LIGHTS_UPDATE_FREQ);
 
-        // Check if both signa lights inputs are DISABLED
+        // Check if both signal lights inputs are DISABLED
         if (!sigLightsHandle.left && !sigLightsHandle.right) // Going to DISABLED
         {
             // Reset blinker state and turn blinkers off
@@ -141,7 +141,7 @@ void blinkSignalLights(void const* arg)
     }
 }
 
-void reportLightsToCan(void const* arg)
+void reportLightsToCanTask(void const* arg)
 {
     // For concurrency with sendHeartbeat()
     osMutexId* canHandleMutex = (osMutexId*) arg;
@@ -170,18 +170,20 @@ void reportLightsToCan(void const* arg)
         stat.leftSignal = HAL_GPIO_ReadPin(LSIGNAL_GPIO_Port, LSIGNAL_Pin);
         stat.rightSignal = HAL_GPIO_ReadPin(RSIGNAL_GPIO_Port, RSIGNAL_Pin);
         stat.bmsStrobeLight = HAL_GPIO_ReadPin(ESTROBE_GPIO_Port, ESTROBE_Pin);
-        hcan2.pTxMsg->Data[0] = stat.asUint8;
+        hcan2.pTxMsg->Data[0] += stat.lowBeams * 0x01;
+        hcan2.pTxMsg->Data[0] += stat.highBeams * 0x02;
+        hcan2.pTxMsg->Data[0] += stat.brakes * 0x04;
+        hcan2.pTxMsg->Data[0] += stat.leftSignal * 0x08;
+        hcan2.pTxMsg->Data[0] += stat.rightSignal * 0x10;
+        hcan2.pTxMsg->Data[0] += stat.bmsStrobeLight * 0x20;
         // Send CAN msg
         HAL_CAN_Transmit_IT(&hcan2);
 
-        if (osMutexRelease(canHandleMutex) != osOK)
-        {
-            continue;
-        }
+        osMutexRelease(canHandleMutex);
     }
 }
 
-void sendHeartbeat(void const* arg)
+void sendHeartbeatTask(void const* arg)
 {
     // For concurrency with reportLightsToCan()
     osMutexId* canHandleMutex = (osMutexId*) arg;
@@ -212,10 +214,7 @@ void sendHeartbeat(void const* arg)
         // Send CAN msg
         HAL_CAN_Transmit_IT(&hcan2);
 
-        if (osMutexRelease(canHandleMutex) != osOK)
-        {
-            continue;
-        }
+        osMutexRelease(canHandleMutex);
     }
 }
 
