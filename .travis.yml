@@ -1,0 +1,22 @@
+sudo: required
+
+before_install:
+    - git clone https://github.com/UCSolarCarTeam/Recruit-Resources.git
+install:
+    - sudo apt-get install libc6:i386 libncurses5:i386 libstdc++6:i386
+    - (cd Recruit-Resources/STM32F4Discovery-Resources && sudo ./install.sh)
+    - rm Recruit-Resources -rf
+    - wget 'https://sourceforge.net/projects/astyle/files/latest/download'
+    - tar -zxvf download
+    - (cd astyle/build/gcc && make release && sudo make install)
+    - rm astyle -rf
+
+before_script:
+    - source ~/.profile
+    - (cd EpsilonLights && CubeMX2Makefile .)
+
+script: 
+    - (cd EpsilonLights && make)
+    - "! (astyle *.h *.c -r --dry-run --options=astylerc | grep Formatted)"
+
+language: c
