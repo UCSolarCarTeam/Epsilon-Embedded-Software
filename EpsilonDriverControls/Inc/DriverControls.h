@@ -14,7 +14,7 @@
 #define MUSIC_CAN_FREQ 200
 #define MUSIC_STDID 0x702U
 
-#define DRIVER_CAN_FREQ 50 
+#define DRIVER_CAN_FREQ 50
 #define DRIVER_STDID 0x703U
 
 extern CAN_HandleTypeDef hcan2; // main.c

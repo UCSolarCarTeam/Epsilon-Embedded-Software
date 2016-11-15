@@ -59,7 +59,6 @@ void SystemClock_Config(void);
 void Error_Handler(void);
 static void MX_GPIO_Init(void);
 static void MX_CAN2_Init(void);
-void StartDefaultTask(void const* argument);
 
 /* USER CODE BEGIN PFP */
 static void MX_CAN2_UserInit(void);

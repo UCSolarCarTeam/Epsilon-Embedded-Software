@@ -41,6 +41,7 @@
 /* Private variables ---------------------------------------------------------*/
 CAN_HandleTypeDef hcan2;
 
+
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 static osThreadId heartbeatTaskHandle;
@@ -54,7 +55,6 @@ void SystemClock_Config(void);
 void Error_Handler(void);
 static void MX_GPIO_Init(void);
 static void MX_CAN2_Init(void);
-
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
 static void MX_CAN2_UserInit(void);
@@ -92,10 +92,12 @@ int main(void)
     osMutexId canHandleMutex;
     osMutexDef(canHandleMutex);
     canHandleMutex = osMutexCreate(osMutex(canHandleMutex));
+
     if (canHandleMutex == NULL)
     {
         Error_Handler();
     }
+
     /* USER CODE END RTOS_MUTEX */
     /* USER CODE BEGIN RTOS_SEMAPHORES */
     /* add semaphores, ... */
@@ -104,7 +106,8 @@ int main(void)
     /* start timers, add new ones, ... */
     /* USER CODE END RTOS_TIMERS */
     /* Create the thread(s) */
-    // Setup task to send heartbeat
+    /* definition and creation of defaultTask */
+    /* USER CODE BEGIN RTOS_THREADS */
     osThreadDef(heartbeatTask, sendHeartbeatTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
     heartbeatTaskHandle = osThreadCreate(osThread(heartbeatTask), canHandleMutex);
     // Setup task to send lights
@@ -116,8 +119,6 @@ int main(void)
     // Setup task to send driver
     osThreadDef(driverTask, sendDriverTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
     driverTaskHandle = osThreadCreate(osThread(driverTask), canHandleMutex);
-    /* USER CODE BEGIN RTOS_THREADS */
-    /* add threads, ... */
     /* USER CODE END RTOS_THREADS */
     /* USER CODE BEGIN RTOS_QUEUES */
     /* add queues, ... */
@@ -248,15 +249,15 @@ static void MX_GPIO_Init(void)
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-    /*Configure GPIO pins : SIGNAL_RIGHT_Pin SIGNAL_LEFT_Pin CONTEXT_Pin BRAKES_Pin */
-    GPIO_InitStruct.Pin = SIGNAL_RIGHT_Pin | SIGNAL_LEFT_Pin | CONTEXT_Pin | BRAKES_Pin;
+    /*Configure GPIO pins : RSIGNAL_Pin LSIGNAL_Pin CONTEXT_Pin BRAKES_Pin */
+    GPIO_InitStruct.Pin = RSIGNAL_Pin | LSIGNAL_Pin | CONTEXT_Pin | BRAKES_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
-    /*Configure GPIO pins : VOLUME_DOWN_Pin VOLUME_UP_Pin NEXT_SONG_Pin AUX_Pin
-                             HAZARDS_Pin */
-    GPIO_InitStruct.Pin = VOLUME_DOWN_Pin | VOLUME_UP_Pin | NEXT_SONG_Pin | AUX_Pin
-                          | HAZARDS_Pin;
+    /*Configure GPIO pins : VOLUME_DOWN_Pin VOLUME_UP_Pin NEXT_SONG_Pin HEADLIGHTS_OFF_Pin
+                             AUX_Pin HAZARDS_Pin */
+    GPIO_InitStruct.Pin = VOLUME_DOWN_Pin | VOLUME_UP_Pin | NEXT_SONG_Pin | HEADLIGHTS_OFF_Pin
+                          | AUX_Pin | HAZARDS_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
@@ -265,8 +266,8 @@ static void MX_GPIO_Init(void)
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-    /*Configure GPIO pins : FORWARD_Pin INTERIOR_LIGHTS_Pin REVERSE_Pin */
-    GPIO_InitStruct.Pin = FORWARD_Pin | INTERIOR_LIGHTS_Pin | REVERSE_Pin;
+    /*Configure GPIO pins : FORWARD_Pin INTERIOR_Pin REVERSE_Pin */
+    GPIO_InitStruct.Pin = FORWARD_Pin | INTERIOR_Pin | REVERSE_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
@@ -306,7 +307,6 @@ static void MX_CAN2_UserInit(void)
     hcan2.pTxMsg->DLC = 1; // Data size in bytes
 }
 /* USER CODE END 4 */
-
 
 /**
   * @brief  This function is executed in case of error occurrence.
