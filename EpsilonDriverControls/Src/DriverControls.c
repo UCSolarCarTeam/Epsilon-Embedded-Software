@@ -84,6 +84,8 @@ void sendDriverTask(void const* arg)
 {
     osMutexId* canHandleMutex = (osMutexId*) arg;
     uint32_t prevWakeTime = osKernelSysTick();
+    uint32_t regen_ADCValue = 0;
+    uint32_t accel_ADCValue = 0;
 
     for (;;)
     {
@@ -100,6 +102,21 @@ void sendDriverTask(void const* arg)
         hcan2.pTxMsg->Data[1] = 0;
         hcan2.pTxMsg->Data[2] = 0;
         hcan2.pTxMsg->Data[3] = 0;
+
+        if (HAL_ADC_PollForConversion(&hadc1, 1000000) == HAL_OK)
+        {
+            regen_ADCValue = HAL_ADC_GetValue(&hadc1);
+        }
+        hcan2.pTxMsg->Data[0] += (regen_ADCValue & 0x000000ffUL);
+        hcan2.pTxMsg->Data[1] += (regen_ADCValue & 0x00000f00UL) >> 8; // Use first 4 bits
+
+        if (HAL_ADC_PollForConversion(&hadc2, 1000000) == HAL_OK)
+        {
+            accel_ADCValue = HAL_ADC_GetValue(&hadc2);
+        }
+        hcan2.pTxMsg->Data[1] += (accel_ADCValue & 0x0000000fUL) << 4; // Use last 4 bits
+        hcan2.pTxMsg->Data[2] += (accel_ADCValue & 0x00000ff0UL) >> 4;
+
         hcan2.pTxMsg->Data[3] += 0x01 * !HAL_GPIO_ReadPin(BRAKES_GPIO_Port, BRAKES_Pin);
         hcan2.pTxMsg->Data[3] += 0x02 * !HAL_GPIO_ReadPin(FORWARD_GPIO_Port, FORWARD_Pin);
         hcan2.pTxMsg->Data[3] += 0x04 * !HAL_GPIO_ReadPin(REVERSE_GPIO_Port, REVERSE_Pin);

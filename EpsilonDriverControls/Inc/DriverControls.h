@@ -18,6 +18,8 @@
 #define DRIVER_STDID 0x703U
 
 extern CAN_HandleTypeDef hcan2; // main.c
+extern ADC_HandleTypeDef hadc1;
+extern ADC_HandleTypeDef hadc2;
 
 void sendHeartbeatTask(void const* arg);
 void sendLightsTask(void const* arg);

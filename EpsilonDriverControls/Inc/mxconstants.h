@@ -45,8 +45,8 @@
 #define OTG_FS_PowerSwitchOn_GPIO_Port GPIOC
 #define B1_Pin GPIO_PIN_0
 #define B1_GPIO_Port GPIOA
-#define REGEN_BRAKING_Pin GPIO_PIN_1
-#define REGEN_BRAKING_GPIO_Port GPIOA
+#define REGEN_Pin GPIO_PIN_1
+#define REGEN_GPIO_Port GPIOA
 #define ACCELERATION_Pin GPIO_PIN_2
 #define ACCELERATION_GPIO_Port GPIOA
 #define LED_RED_Pin GPIO_PIN_5
