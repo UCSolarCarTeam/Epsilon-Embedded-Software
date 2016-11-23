@@ -28,7 +28,7 @@
 #define MOTOR_POWER_DLC 8
 #define MOTOR_RESET_STDID 0x503U
 
-#define ADC_POLL_TIMEOUT 1000
+#define ADC_POLL_TIMEOUT 10
 
 #define MAX_FORWARD_RPM 1000 //Was 1298 on old system
 #define MAX_REVERSE_RPM -200
