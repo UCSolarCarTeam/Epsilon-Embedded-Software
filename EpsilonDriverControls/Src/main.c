@@ -50,6 +50,7 @@ static osThreadId heartbeatTaskHandle;
 static osThreadId lightsTaskHandle;
 static osThreadId musicTaskHandle;
 static osThreadId driverTaskHandle;
+static osThreadId driveCommandsTaskHandle;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -127,6 +128,9 @@ int main(void)
     // Setup task to send driver
     osThreadDef(driverTask, sendDriverTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
     driverTaskHandle = osThreadCreate(osThread(driverTask), canHandleMutex);
+    // Setup task to send drive commands to motor controllers
+    osThreadDef(driveCommandsTask, sendDriveCommandsTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE * 2);
+    driveCommandsTaskHandle = osThreadCreate(osThread(driveCommandsTask), canHandleMutex);
     /* USER CODE END RTOS_THREADS */
     /* USER CODE BEGIN RTOS_QUEUES */
     /* add queues, ... */
