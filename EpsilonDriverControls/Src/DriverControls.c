@@ -147,7 +147,6 @@ void sendDriveCommandsTask(void const* arg)
     uint32_t motorVelocityOut = 0; // RPM
     float motorCurrentOut = 0.0f; // Percentage 0 - 1
     uint8_t prevResetStatus = 0;
-
     float dataToSendFloat[2];
 
     for (;;)
@@ -205,14 +204,14 @@ void sendDriveCommandsTask(void const* arg)
         hcan2.pTxMsg->DLC = MOTOR_DRIVE_DLC;
         dataToSendFloat[0] = motorVelocityOut;
         dataToSendFloat[1] = motorCurrentOut;
-        memcpy(hcan2.pTxMsg->Data, dataToSendFloat, sizeof(float)*2);
+        memcpy(hcan2.pTxMsg->Data, dataToSendFloat, sizeof(float) * 2);
         HAL_CAN_Transmit_IT(&hcan2);
         //Transmit Motor Power command
         hcan2.pTxMsg->StdId = MOTOR_POWER_STDID;
         hcan2.pTxMsg->DLC = MOTOR_POWER_DLC;
         dataToSendFloat[0] = 0.0f; // Reserved (defined by WaveSculptor datasheet)
         dataToSendFloat[1] = busCurrentOut;
-        memcpy(hcan2.pTxMsg->Data, dataToSendFloat, sizeof(float)*2);
+        memcpy(hcan2.pTxMsg->Data, dataToSendFloat, sizeof(float) * 2);
         HAL_CAN_Transmit_IT(&hcan2);
 
         // Transmit Motor Reset command if button switch went from off to on
