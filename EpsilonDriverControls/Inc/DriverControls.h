@@ -30,7 +30,7 @@
 
 #define ADC_POLL_TIMEOUT 10
 
-#define MAX_FORWARD_RPM 1000 //Was 1298 on old system
+#define MAX_FORWARD_RPM 1000
 #define MAX_REVERSE_RPM -200
 #define NON_ZERO_THRESHOLD 0.05f
 #define MAX_ANALOG 4095 // 12bit ADC (2^12)
