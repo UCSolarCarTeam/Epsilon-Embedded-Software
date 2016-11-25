@@ -239,3 +239,20 @@ void sendDriveCommandsTask(void const* arg)
         prevResetStatus = !HAL_GPIO_ReadPin(RESET_GPIO_Port, RESET_Pin);
     }
 }
+
+void sendCanTask(void const* arg)
+{
+    for(;;)
+    {
+        osEvent evt = osMessageGet(canQueue, osWaitForever);
+        if(evt.status == osEventMessage)
+        {
+            CanMsg* msg = (CanMsg*)evt.value.p; 
+            hcan2.pTxMsg->StdId = msg->StdId;
+            hcan2.pTxMsg->DLC = msg->DLC;
+            memcpy(hcan2.pTxMsg->Data, msg->Data, sizeof(uint8_t) * msg->DLC);
+            osPoolFree(canPool, msg);
+            HAL_CAN_Transmit_IT(&hcan2);
+        }
+    }
+}

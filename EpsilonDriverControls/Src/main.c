@@ -44,6 +44,12 @@ ADC_HandleTypeDef hadc2;
 
 CAN_HandleTypeDef hcan2;
 
+osPoolDef(canPool, 16, CanMsg);
+osPoolId canPool;
+ 
+osMessageQDef(canQueue, 16, CanMsg);
+osMessageQId canQueue;
+ 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 static osThreadId heartbeatTaskHandle;
@@ -51,6 +57,7 @@ static osThreadId lightsTaskHandle;
 static osThreadId musicTaskHandle;
 static osThreadId driverTaskHandle;
 static osThreadId driveCommandsTaskHandle;
+static osThreadId canTaskHandle;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -131,9 +138,13 @@ int main(void)
     // Setup task to send drive commands to motor controllers
     osThreadDef(driveCommandsTask, sendDriveCommandsTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE * 2);
     driveCommandsTaskHandle = osThreadCreate(osThread(driveCommandsTask), canHandleMutex);
+    // Setup task to send CAN
+    osThreadDef(canTask, sendCanTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    canTaskHandle = osThreadCreate(osThread(canTask), NULL);
     /* USER CODE END RTOS_THREADS */
     /* USER CODE BEGIN RTOS_QUEUES */
-    /* add queues, ... */
+    canPool = osPoolCreate(osPool(canPool));
+    canQueue = osMessageCreate(osMessageQ(canQueue), NULL);
     /* USER CODE END RTOS_QUEUES */
     /* Start scheduler */
     osKernelStart();

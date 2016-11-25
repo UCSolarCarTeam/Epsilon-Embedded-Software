@@ -39,9 +39,18 @@
 extern CAN_HandleTypeDef hcan2; // main.c
 extern ADC_HandleTypeDef hadc1;
 extern ADC_HandleTypeDef hadc2;
+extern osMessageQId canQueue;
+extern osPoolId canPool;
+
+typedef struct {
+	uint32_t StdId;
+	uint32_t DLC;
+	uint8_t Data[8];
+} CanMsg;
 
 void sendHeartbeatTask(void const* arg);
 void sendLightsTask(void const* arg);
 void sendMusicTask(void const* arg);
 void sendDriverTask(void const* arg);
 void sendDriveCommandsTask(void const* arg);
+void sendCanTask(void const* arg);
