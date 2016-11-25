@@ -110,6 +110,10 @@ void sendDriverTask(void const* arg)
         {
             regen = HAL_ADC_GetValue(&hadc1);
         }
+        else
+        {
+            regen = 0;
+        }
 
         hcan2.pTxMsg->Data[0] += (regen & 0x000000ffUL);
         hcan2.pTxMsg->Data[1] += (regen & 0x00000f00UL) >> 8; // Use first 4 bits
@@ -118,6 +122,10 @@ void sendDriverTask(void const* arg)
         if (HAL_ADC_PollForConversion(&hadc2, ADC_POLL_TIMEOUT) == HAL_OK)
         {
             accel = HAL_ADC_GetValue(&hadc2);
+        }
+        else
+        {
+            accel = 0;
         }
 
         hcan2.pTxMsg->Data[1] += (accel & 0x0000000fUL) << 4; // Use last 4 bits
@@ -157,10 +165,18 @@ void sendDriveCommandsTask(void const* arg)
         {
             regenPercentage = ((float)HAL_ADC_GetValue(&hadc1)) / ((float)MAX_ANALOG);
         }
+        else
+        {
+            regenPercentage = 0;
+        }
 
         if (HAL_ADC_PollForConversion(&hadc2, ADC_POLL_TIMEOUT) == HAL_OK)
         {
             accelPercentage = ((float)HAL_ADC_GetValue(&hadc2)) / ((float)MAX_ANALOG);
+        }
+        else
+        {
+            accelPercentage = 0;
         }
 
         forward = !HAL_GPIO_ReadPin(FORWARD_GPIO_Port, FORWARD_Pin); // `!` for active low
