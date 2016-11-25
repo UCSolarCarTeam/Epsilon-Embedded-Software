@@ -44,10 +44,10 @@ ADC_HandleTypeDef hadc2;
 
 CAN_HandleTypeDef hcan2;
 
-osPoolDef(canPool, 16, CanMsg);
+osPoolDef(canPool, 64, CanMsg);
 osPoolId canPool;
 
-osMessageQDef(canQueue, 16, CanMsg);
+osMessageQDef(canQueue, 64, CanMsg);
 osMessageQId canQueue;
 
 /* USER CODE BEGIN PV */
