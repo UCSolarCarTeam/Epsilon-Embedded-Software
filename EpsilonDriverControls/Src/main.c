@@ -46,10 +46,10 @@ CAN_HandleTypeDef hcan2;
 
 osPoolDef(canPool, 16, CanMsg);
 osPoolId canPool;
- 
+
 osMessageQDef(canQueue, 16, CanMsg);
 osMessageQId canQueue;
- 
+
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 static osThreadId heartbeatTaskHandle;
@@ -106,15 +106,6 @@ int main(void)
 
     /* USER CODE END 2 */
     /* USER CODE BEGIN RTOS_MUTEX */
-    osMutexId canHandleMutex;
-    osMutexDef(canHandleMutex);
-    canHandleMutex = osMutexCreate(osMutex(canHandleMutex));
-
-    if (canHandleMutex == NULL)
-    {
-        Error_Handler();
-    }
-
     /* USER CODE END RTOS_MUTEX */
     /* USER CODE BEGIN RTOS_SEMAPHORES */
     /* add semaphores, ... */
@@ -125,21 +116,21 @@ int main(void)
     /* Create the thread(s) */
     /* USER CODE BEGIN RTOS_THREADS */
     osThreadDef(heartbeatTask, sendHeartbeatTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
-    heartbeatTaskHandle = osThreadCreate(osThread(heartbeatTask), canHandleMutex);
+    heartbeatTaskHandle = osThreadCreate(osThread(heartbeatTask), NULL);
     // Setup task to send lights
-    osThreadDef(lightsTask, sendLightsTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
-    lightsTaskHandle = osThreadCreate(osThread(lightsTask), canHandleMutex);
+    osThreadDef(lightsTask, sendLightsTask, osPriorityLow, 1, configMINIMAL_STACK_SIZE);
+    lightsTaskHandle = osThreadCreate(osThread(lightsTask), NULL);
     // Setup task to send music
-    osThreadDef(musicTask, sendMusicTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
-    musicTaskHandle = osThreadCreate(osThread(musicTask), canHandleMutex);
+    osThreadDef(musicTask, sendMusicTask, osPriorityLow, 1, configMINIMAL_STACK_SIZE);
+    musicTaskHandle = osThreadCreate(osThread(musicTask), NULL);
     // Setup task to send driver
-    osThreadDef(driverTask, sendDriverTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
-    driverTaskHandle = osThreadCreate(osThread(driverTask), canHandleMutex);
+    osThreadDef(driverTask, sendDriverTask, osPriorityLow, 1, configMINIMAL_STACK_SIZE);
+    driverTaskHandle = osThreadCreate(osThread(driverTask), NULL);
     // Setup task to send drive commands to motor controllers
-    osThreadDef(driveCommandsTask, sendDriveCommandsTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE * 2);
-    driveCommandsTaskHandle = osThreadCreate(osThread(driveCommandsTask), canHandleMutex);
+    osThreadDef(driveCommandsTask, sendDriveCommandsTask, osPriorityHigh, 1, configMINIMAL_STACK_SIZE * 2);
+    driveCommandsTaskHandle = osThreadCreate(osThread(driveCommandsTask), NULL);
     // Setup task to send CAN
-    osThreadDef(canTask, sendCanTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    osThreadDef(canTask, sendCanTask, osPriorityHigh, 1, configMINIMAL_STACK_SIZE);
     canTaskHandle = osThreadCreate(osThread(canTask), NULL);
     /* USER CODE END RTOS_THREADS */
     /* USER CODE BEGIN RTOS_QUEUES */
