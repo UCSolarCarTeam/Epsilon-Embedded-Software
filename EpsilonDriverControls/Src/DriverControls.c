@@ -42,7 +42,7 @@ void sendLightsTask(void const* arg)
 
         hcan2.pTxMsg->StdId = LIGHTS_STDID;
         hcan2.pTxMsg->DLC = LIGHTS_DLC;
-        hcan2.pTxMsg->Data[0] = 0;
+        memset(hcan2.pTxMsg->Data, 0, 1);
         hcan2.pTxMsg->Data[0] += 0x01 * !HAL_GPIO_ReadPin(HEADLIGHTS_OFF_GPIO_Port, HEADLIGHTS_OFF_Pin);
         hcan2.pTxMsg->Data[0] += 0x02 * !HAL_GPIO_ReadPin(HEADLIGHTS_LOW_GPIO_Port, HEADLIGHTS_LOW_Pin);
         hcan2.pTxMsg->Data[0] += 0x04 * !HAL_GPIO_ReadPin(HEADLIGHTS_HIGH_GPIO_Port, HEADLIGHTS_HIGH_Pin);
@@ -71,7 +71,7 @@ void sendMusicTask(void const* arg)
 
         hcan2.pTxMsg->StdId = MUSIC_STDID;
         hcan2.pTxMsg->DLC = MUSIC_DLC;
-        hcan2.pTxMsg->Data[0] = 0;
+        memset(hcan2.pTxMsg->Data, 0, 1);
         hcan2.pTxMsg->Data[0] += 0x01 * !HAL_GPIO_ReadPin(AUX_GPIO_Port, AUX_Pin);
         hcan2.pTxMsg->Data[0] += 0x02 * !HAL_GPIO_ReadPin(VOLUME_UP_GPIO_Port, VOLUME_UP_Pin);
         hcan2.pTxMsg->Data[0] += 0x03 * !HAL_GPIO_ReadPin(VOLUME_DOWN_GPIO_Port, VOLUME_DOWN_Pin);
@@ -100,10 +100,7 @@ void sendDriverTask(void const* arg)
 
         hcan2.pTxMsg->StdId = DRIVER_STDID;
         hcan2.pTxMsg->DLC = DRIVER_DLC;
-        hcan2.pTxMsg->Data[0] = 0;
-        hcan2.pTxMsg->Data[1] = 0;
-        hcan2.pTxMsg->Data[2] = 0;
-        hcan2.pTxMsg->Data[3] = 0;
+        memset(hcan2.pTxMsg->Data, 0, 4);
 
         // Regen 12bit analog input
         if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
