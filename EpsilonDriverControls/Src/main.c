@@ -35,23 +35,29 @@
 #include "cmsis_os.h"
 
 /* USER CODE BEGIN Includes */
-#include "Lights.h"
+#include "DriverControls.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
+ADC_HandleTypeDef hadc1;
+ADC_HandleTypeDef hadc2;
+
 CAN_HandleTypeDef hcan2;
+
+osPoolDef(canPool, 64, CanMsg);
+osPoolId canPool;
+
+osMessageQDef(canQueue, 64, CanMsg);
+osMessageQId canQueue;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-uint8_t lightsInputs; // Initialized to 0
-uint8_t driversInputs[4]; // Initialized to 0
-uint8_t batteryStatus[4]; // Initialized to {0, 0, 0, 0}
-SigLightsHandle sigLightsHandle;
-
+static osThreadId heartbeatTaskHandle;
 static osThreadId lightsTaskHandle;
-static osThreadId lightsCanTaskHandle;
-static osThreadId heartbeatHandle;
-static osThreadId blinkLightsHandle;
+static osThreadId musicTaskHandle;
+static osThreadId driverTaskHandle;
+static osThreadId driveCommandsTaskHandle;
+static osThreadId canTaskHandle;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -59,10 +65,12 @@ void SystemClock_Config(void);
 void Error_Handler(void);
 static void MX_GPIO_Init(void);
 static void MX_CAN2_Init(void);
+static void MX_ADC1_Init(void);
+static void MX_ADC2_Init(void);
 
 /* USER CODE BEGIN PFP */
-static void MX_CAN2_UserInit(void);
 /* Private function prototypes -----------------------------------------------*/
+static void MX_CAN2_UserInit(void);
 
 /* USER CODE END PFP */
 
@@ -82,8 +90,12 @@ int main(void)
     /* Initialize all configured peripherals */
     MX_GPIO_Init();
     MX_CAN2_Init();
+    MX_ADC1_Init();
+    MX_ADC2_Init();
     /* USER CODE BEGIN 2 */
     MX_CAN2_UserInit();
+    HAL_ADC_Start(&hadc1);
+    HAL_ADC_Start(&hadc2);
 
     // Setup for next CAN Receive Interrupt
     if (HAL_CAN_Receive_IT(&hcan2, CAN_FIFO0) != HAL_OK)
@@ -94,16 +106,6 @@ int main(void)
 
     /* USER CODE END 2 */
     /* USER CODE BEGIN RTOS_MUTEX */
-    // For concurrency between sendHeartbeat() and reportLightsToCan()
-    osMutexId canHandleMutex;
-    osMutexDef(canHandleMutex);
-    canHandleMutex = osMutexCreate(osMutex(canHandleMutex));
-
-    if (canHandleMutex == NULL)
-    {
-        Error_Handler();
-    }
-
     /* USER CODE END RTOS_MUTEX */
     /* USER CODE BEGIN RTOS_SEMAPHORES */
     /* add semaphores, ... */
@@ -112,23 +114,28 @@ int main(void)
     /* start timers, add new ones, ... */
     /* USER CODE END RTOS_TIMERS */
     /* Create the thread(s) */
-    /* definition and creation of defaultTask */
     /* USER CODE BEGIN RTOS_THREADS */
-    // Setup task to update physical lights
-    osThreadDef(lightsTask, updateLightsTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
-    lightsTaskHandle = osThreadCreate(osThread(lightsTask), NULL);
-    // Setup task to report lights status to CAN
-    osThreadDef(lightsCanTask, reportLightsToCanTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
-    lightsCanTaskHandle = osThreadCreate(osThread(lightsCanTask), canHandleMutex);
-    // Setup task to report heartbeat to CAN
     osThreadDef(heartbeatTask, sendHeartbeatTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
-    heartbeatHandle = osThreadCreate(osThread(heartbeatTask), canHandleMutex);
-    // Setup task to handle blinking left and right signal lights
-    osThreadDef(blinkLightsTask, blinkSignalLightsTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
-    blinkLightsHandle = osThreadCreate(osThread(blinkLightsTask), NULL);
+    heartbeatTaskHandle = osThreadCreate(osThread(heartbeatTask), NULL);
+    // Setup task to send lights
+    osThreadDef(lightsTask, sendLightsTask, osPriorityLow, 1, configMINIMAL_STACK_SIZE);
+    lightsTaskHandle = osThreadCreate(osThread(lightsTask), NULL);
+    // Setup task to send music
+    osThreadDef(musicTask, sendMusicTask, osPriorityLow, 1, configMINIMAL_STACK_SIZE);
+    musicTaskHandle = osThreadCreate(osThread(musicTask), NULL);
+    // Setup task to send driver
+    osThreadDef(driverTask, sendDriverTask, osPriorityLow, 1, configMINIMAL_STACK_SIZE);
+    driverTaskHandle = osThreadCreate(osThread(driverTask), NULL);
+    // Setup task to send drive commands to motor controllers
+    osThreadDef(driveCommandsTask, sendDriveCommandsTask, osPriorityHigh, 1, configMINIMAL_STACK_SIZE * 2);
+    driveCommandsTaskHandle = osThreadCreate(osThread(driveCommandsTask), NULL);
+    // Setup task to send CAN
+    osThreadDef(canTask, sendCanTask, osPriorityHigh, 1, configMINIMAL_STACK_SIZE);
+    canTaskHandle = osThreadCreate(osThread(canTask), NULL);
     /* USER CODE END RTOS_THREADS */
     /* USER CODE BEGIN RTOS_QUEUES */
-    /* add queues, ... */
+    canPool = osPoolCreate(osPool(canPool));
+    canQueue = osMessageCreate(osMessageQ(canQueue), NULL);
     /* USER CODE END RTOS_QUEUES */
     /* Start scheduler */
     osKernelStart();
@@ -186,6 +193,76 @@ void SystemClock_Config(void)
     HAL_NVIC_SetPriority(SysTick_IRQn, 15, 0);
 }
 
+/* ADC1 init function */
+static void MX_ADC1_Init(void)
+{
+    ADC_ChannelConfTypeDef sConfig;
+    /**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
+    */
+    hadc1.Instance = ADC1;
+    hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
+    hadc1.Init.Resolution = ADC_RESOLUTION_12B;
+    hadc1.Init.ScanConvMode = DISABLE;
+    hadc1.Init.ContinuousConvMode = ENABLE;
+    hadc1.Init.DiscontinuousConvMode = DISABLE;
+    hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+    hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+    hadc1.Init.NbrOfConversion = 1;
+    hadc1.Init.DMAContinuousRequests = DISABLE;
+    hadc1.Init.EOCSelection = ADC_EOC_SEQ_CONV;
+
+    if (HAL_ADC_Init(&hadc1) != HAL_OK)
+    {
+        Error_Handler();
+    }
+
+    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+    */
+    sConfig.Channel = ADC_CHANNEL_1;
+    sConfig.Rank = 1;
+    sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+
+    if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+    {
+        Error_Handler();
+    }
+}
+
+/* ADC2 init function */
+static void MX_ADC2_Init(void)
+{
+    ADC_ChannelConfTypeDef sConfig;
+    /**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
+    */
+    hadc2.Instance = ADC2;
+    hadc2.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
+    hadc2.Init.Resolution = ADC_RESOLUTION_12B;
+    hadc2.Init.ScanConvMode = DISABLE;
+    hadc2.Init.ContinuousConvMode = ENABLE;
+    hadc2.Init.DiscontinuousConvMode = DISABLE;
+    hadc2.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+    hadc2.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+    hadc2.Init.NbrOfConversion = 1;
+    hadc2.Init.DMAContinuousRequests = DISABLE;
+    hadc2.Init.EOCSelection = ADC_EOC_SEQ_CONV;
+
+    if (HAL_ADC_Init(&hadc2) != HAL_OK)
+    {
+        Error_Handler();
+    }
+
+    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+    */
+    sConfig.Channel = ADC_CHANNEL_2;
+    sConfig.Rank = 1;
+    sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+
+    if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK)
+    {
+        Error_Handler();
+    }
+}
+
 /* CAN2 init function */
 static void MX_CAN2_Init(void)
 {
@@ -223,15 +300,12 @@ static void MX_GPIO_Init(void)
     __HAL_RCC_GPIOC_CLK_ENABLE();
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
-    __HAL_RCC_GPIOD_CLK_ENABLE();
     __HAL_RCC_GPIOE_CLK_ENABLE();
+    __HAL_RCC_GPIOD_CLK_ENABLE();
     /*Configure GPIO pin Output Level */
     HAL_GPIO_WritePin(OTG_FS_PowerSwitchOn_GPIO_Port, OTG_FS_PowerSwitchOn_Pin, GPIO_PIN_RESET);
     /*Configure GPIO pin Output Level */
     HAL_GPIO_WritePin(GPIOA, LED_RED_Pin | LED_GREEN_Pin | LED_BLUE_Pin, GPIO_PIN_RESET);
-    /*Configure GPIO pin Output Level */
-    HAL_GPIO_WritePin(GPIOD, RSIGNAL_Pin | LSIGNAL_Pin | BRAKE_Pin | HHIGH_Pin
-                      | HLOW_Pin | ESTROBE_Pin, GPIO_PIN_RESET);
     /*Configure GPIO pin : OTG_FS_PowerSwitchOn_Pin */
     GPIO_InitStruct.Pin = OTG_FS_PowerSwitchOn_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -240,7 +314,7 @@ static void MX_GPIO_Init(void)
     HAL_GPIO_Init(OTG_FS_PowerSwitchOn_GPIO_Port, &GPIO_InitStruct);
     /*Configure GPIO pin : B1_Pin */
     GPIO_InitStruct.Pin = B1_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_EVT_RISING;
+    GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
     /*Configure GPIO pins : LED_RED_Pin LED_GREEN_Pin LED_BLUE_Pin */
@@ -249,24 +323,33 @@ static void MX_GPIO_Init(void)
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-    /*Configure GPIO pin : BOOT1_Pin */
-    GPIO_InitStruct.Pin = BOOT1_Pin;
+    /*Configure GPIO pins : BOOT1_Pin PUSH_TO_TALK_Pin HORN_Pin RESET_Pin */
+    GPIO_InitStruct.Pin = BOOT1_Pin | PUSH_TO_TALK_Pin | HORN_Pin | RESET_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(BOOT1_GPIO_Port, &GPIO_InitStruct);
-    /*Configure GPIO pins : RSIGNAL_Pin LSIGNAL_Pin BRAKE_Pin HHIGH_Pin
-                             HLOW_Pin ESTROBE_Pin */
-    GPIO_InitStruct.Pin = RSIGNAL_Pin | LSIGNAL_Pin | BRAKE_Pin | HHIGH_Pin
-                          | HLOW_Pin | ESTROBE_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    /*Configure GPIO pins : RSIGNAL_Pin LSIGNAL_Pin CONTEXT_Pin BRAKES_Pin */
+    GPIO_InitStruct.Pin = RSIGNAL_Pin | LSIGNAL_Pin | CONTEXT_Pin | BRAKES_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+    /*Configure GPIO pins : VOLUME_DOWN_Pin VOLUME_UP_Pin NEXT_SONG_Pin HEADLIGHTS_OFF_Pin
+                             AUX_Pin HAZARDS_Pin */
+    GPIO_InitStruct.Pin = VOLUME_DOWN_Pin | VOLUME_UP_Pin | NEXT_SONG_Pin | HEADLIGHTS_OFF_Pin
+                          | AUX_Pin | HAZARDS_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+    /*Configure GPIO pins : LAST_SONG_Pin HEADLIGHTS_HIGH_Pin HEADLIGHTS_LOW_Pin */
+    GPIO_InitStruct.Pin = LAST_SONG_Pin | HEADLIGHTS_HIGH_Pin | HEADLIGHTS_LOW_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    /*Configure GPIO pins : FORWARD_Pin INTERIOR_Pin REVERSE_Pin */
+    GPIO_InitStruct.Pin = FORWARD_Pin | INTERIOR_Pin | REVERSE_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
-    /*Configure GPIO pin : MEMS_INT2_Pin */
-    GPIO_InitStruct.Pin = MEMS_INT2_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_EVT_RISING;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(MEMS_INT2_GPIO_Port, &GPIO_InitStruct);
 }
 
 /* USER CODE BEGIN 4 */
@@ -277,11 +360,9 @@ static void MX_CAN2_UserInit(void)
     sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
     // sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
     sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
-    sFilterConfig.FilterIdHigh = LIGHTS_INPUT_STDID << 5; // Filter registers need to be shifted left 5 bits
-    sFilterConfig.FilterIdLow = BATTERY_STAT_STDID << 5; // Filter registers need to be shifted left 5 bits
-    // sFilterConfig.FilterIdHigh = 0; // Filter registers need to be shifted left 5 bits
-    // sFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
-    sFilterConfig.FilterMaskIdHigh = DRIVERS_INPUTS_STDID << 5; // Unused
+    sFilterConfig.FilterIdHigh = 0; // Filter registers need to be shifted left 5 bits
+    sFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
+    sFilterConfig.FilterMaskIdHigh = 0; // Unused
     sFilterConfig.FilterMaskIdLow = 0; // Unused
     sFilterConfig.FilterFIFOAssignment = 0;
     sFilterConfig.FilterActivation = ENABLE;
@@ -315,8 +396,6 @@ void Error_Handler(void)
 {
     /* USER CODE BEGIN Error_Handler */
     /* User can add his own implementation to report the HAL error return state */
-    // Turn on red LED when error
-    // HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, 1);
     while (1)
     {
     }
