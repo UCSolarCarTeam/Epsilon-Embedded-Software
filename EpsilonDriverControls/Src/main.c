@@ -46,7 +46,7 @@ CAN_HandleTypeDef hcan2;
 
 osPoolDef(canPool, 64, CanMsg);
 osPoolId canPool;
- 
+
 osMessageQDef(canQueue, 64, CanMsg);
 osMessageQId canQueue;
 
