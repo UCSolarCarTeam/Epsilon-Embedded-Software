@@ -6,7 +6,7 @@ install:
     - sudo apt-get install libc6:i386 libncurses5:i386 libstdc++6:i386
     - (cd Recruit-Resources/STM32F4Discovery-Resources && sudo ./install.sh)
     - rm Recruit-Resources -rf
-    - wget 'https://sourceforge.net/projects/astyle/files/astyle/astyle%202.06/astyle_2.06_linux.tar.gz/download'
+    - wget 'https://s3-us-west-2.amazonaws.com/ucsolarteam.hostedfiles/download'
     - tar -zxvf download
     - (cd astyle/build/gcc && make release && sudo make install)
     - rm astyle -rf
