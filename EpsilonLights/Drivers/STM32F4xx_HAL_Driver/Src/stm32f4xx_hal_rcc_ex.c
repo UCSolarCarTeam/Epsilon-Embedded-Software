@@ -441,7 +441,7 @@ HAL_StatusTypeDef HAL_RCCEx_PeriphCLKConfig(RCC_PeriphCLKInitTypeDef*  PeriphClk
             /* Configure the PLLI2S division factors */
             /* PLLI2S_VCO = f(VCO clock) = f(PLLI2S clock input) * (PLLI2SN/PLLI2SM) */
             /* I2SCLK = f(PLLI2S clock output) = f(VCO clock) / PLLI2SR */
-            __HAL_RCC_PLLI2S_CONFIG(PeriphClkInit->PLLI2S.PLLI2SM, PeriphClkInit->PLLI2S.PLLI2SN , plli2sp, plli2sq, PeriphClkInit->PLLI2S.PLLI2SR);
+            __HAL_RCC_PLLI2S_CONFIG(PeriphClkInit->PLLI2S.PLLI2SM, PeriphClkInit->PLLI2S.PLLI2SN, plli2sp, plli2sq, PeriphClkInit->PLLI2S.PLLI2SR);
         }
 
         /*------- In Case of PLLI2S is selected as source clock for SAI ----------*/
@@ -459,7 +459,7 @@ HAL_StatusTypeDef HAL_RCCEx_PeriphCLKConfig(RCC_PeriphCLKInitTypeDef*  PeriphClk
             /* PLLI2S_VCO Input  = PLL_SOURCE/PLLI2SM */
             /* PLLI2S_VCO Output = PLLI2S_VCO Input * PLLI2SN */
             /* SAI_CLK(first level) = PLLI2S_VCO Output/PLLI2SQ */
-            __HAL_RCC_PLLI2S_CONFIG(PeriphClkInit->PLLI2S.PLLI2SM, PeriphClkInit->PLLI2S.PLLI2SN , plli2sp, PeriphClkInit->PLLI2S.PLLI2SQ, plli2sr);
+            __HAL_RCC_PLLI2S_CONFIG(PeriphClkInit->PLLI2S.PLLI2SM, PeriphClkInit->PLLI2S.PLLI2SN, plli2sp, PeriphClkInit->PLLI2S.PLLI2SQ, plli2sr);
             /* SAI_CLK_x = SAI_CLK(first level)/PLLI2SDIVQ */
             __HAL_RCC_PLLI2S_PLLSAICLKDIVQ_CONFIG(PeriphClkInit->PLLI2SDivQ);
         }
@@ -475,7 +475,7 @@ HAL_StatusTypeDef HAL_RCCEx_PeriphCLKConfig(RCC_PeriphCLKInitTypeDef*  PeriphClk
             /* Configure the PLLI2S division factors */
             /* PLLI2S_VCO = f(VCO clock) = f(PLLI2S clock input) * (PLLI2SN/PLLI2SM) */
             /* SPDIFRXCLK = f(PLLI2S clock output) = f(VCO clock) / PLLI2SP */
-            __HAL_RCC_PLLI2S_CONFIG(PeriphClkInit->PLLI2S.PLLI2SM, PeriphClkInit->PLLI2S.PLLI2SN , PeriphClkInit->PLLI2S.PLLI2SP, plli2sq, plli2sr);
+            __HAL_RCC_PLLI2S_CONFIG(PeriphClkInit->PLLI2S.PLLI2SM, PeriphClkInit->PLLI2S.PLLI2SN, PeriphClkInit->PLLI2S.PLLI2SP, plli2sq, plli2sr);
         }
 
         /*----------------- In Case of PLLI2S is just selected  -----------------*/
@@ -487,7 +487,7 @@ HAL_StatusTypeDef HAL_RCCEx_PeriphCLKConfig(RCC_PeriphCLKInitTypeDef*  PeriphClk
             assert_param(IS_RCC_PLLI2SQ_VALUE(PeriphClkInit->PLLI2S.PLLI2SQ));
             /* Configure the PLLI2S division factors */
             /* PLLI2S_VCO = f(VCO clock) = f(PLLI2S clock input) * (PLLI2SN/PLLI2SM) */
-            __HAL_RCC_PLLI2S_CONFIG(PeriphClkInit->PLLI2S.PLLI2SM, PeriphClkInit->PLLI2S.PLLI2SN , PeriphClkInit->PLLI2S.PLLI2SP, PeriphClkInit->PLLI2S.PLLI2SQ, PeriphClkInit->PLLI2S.PLLI2SR);
+            __HAL_RCC_PLLI2S_CONFIG(PeriphClkInit->PLLI2S.PLLI2SM, PeriphClkInit->PLLI2S.PLLI2SN, PeriphClkInit->PLLI2S.PLLI2SP, PeriphClkInit->PLLI2S.PLLI2SQ, PeriphClkInit->PLLI2S.PLLI2SR);
         }
 
         /* Enable the PLLI2S */
@@ -544,7 +544,7 @@ HAL_StatusTypeDef HAL_RCCEx_PeriphCLKConfig(RCC_PeriphCLKInitTypeDef*  PeriphClk
             /* PLLSAI_VCO Input  = PLL_SOURCE/PLLM */
             /* PLLSAI_VCO Output = PLLSAI_VCO Input * PLLSAIN */
             /* SAI_CLK(first level) = PLLSAI_VCO Output/PLLSAIQ */
-            __HAL_RCC_PLLSAI_CONFIG(PeriphClkInit->PLLSAI.PLLSAIM, PeriphClkInit->PLLSAI.PLLSAIN , pllsaip, PeriphClkInit->PLLSAI.PLLSAIQ, 0U);
+            __HAL_RCC_PLLSAI_CONFIG(PeriphClkInit->PLLSAI.PLLSAIM, PeriphClkInit->PLLSAI.PLLSAIN, pllsaip, PeriphClkInit->PLLSAI.PLLSAIQ, 0U);
             /* SAI_CLK_x = SAI_CLK(first level)/PLLSAIDIVQ */
             __HAL_RCC_PLLSAI_PLLSAICLKDIVQ_CONFIG(PeriphClkInit->PLLSAIDivQ);
         }
@@ -560,7 +560,7 @@ HAL_StatusTypeDef HAL_RCCEx_PeriphCLKConfig(RCC_PeriphCLKInitTypeDef*  PeriphClk
             /* Configure the PLLSAI division factors */
             /* PLLSAI_VCO = f(VCO clock) = f(PLLSAI clock input) * (PLLI2SN/PLLSAIM) */
             /* 48CLK = f(PLLSAI clock output) = f(VCO clock) / PLLSAIP */
-            __HAL_RCC_PLLSAI_CONFIG(PeriphClkInit->PLLSAI.PLLSAIM, PeriphClkInit->PLLSAI.PLLSAIN , PeriphClkInit->PLLSAI.PLLSAIP, pllsaiq, 0U);
+            __HAL_RCC_PLLSAI_CONFIG(PeriphClkInit->PLLSAI.PLLSAIM, PeriphClkInit->PLLSAI.PLLSAIN, PeriphClkInit->PLLSAI.PLLSAIP, pllsaiq, 0U);
         }
 
         /* Enable PLLSAI Clock */
@@ -862,7 +862,7 @@ HAL_StatusTypeDef HAL_RCCEx_PeriphCLKConfig(RCC_PeriphCLKInitTypeDef*  PeriphClk
             /* Configure the PLLI2S division factors */
             /* PLLI2S_VCO = f(VCO clock) = f(PLLI2S clock input) x (PLLI2SN/PLLM) */
             /* I2SCLK = f(PLLI2S clock output) = f(VCO clock) / PLLI2SR */
-            __HAL_RCC_PLLI2S_CONFIG(PeriphClkInit->PLLI2S.PLLI2SN , PeriphClkInit->PLLI2S.PLLI2SR);
+            __HAL_RCC_PLLI2S_CONFIG(PeriphClkInit->PLLI2S.PLLI2SN, PeriphClkInit->PLLI2S.PLLI2SR);
         }
 
         /*---------------------------- SAI configuration -------------------------*/
@@ -879,7 +879,7 @@ HAL_StatusTypeDef HAL_RCCEx_PeriphCLKConfig(RCC_PeriphCLKInitTypeDef*  PeriphClk
             /* PLLI2S_VCO Input  = PLL_SOURCE/PLLM */
             /* PLLI2S_VCO Output = PLLI2S_VCO Input * PLLI2SN */
             /* SAI_CLK(first level) = PLLI2S_VCO Output/PLLI2SQ */
-            __HAL_RCC_PLLI2S_SAICLK_CONFIG(PeriphClkInit->PLLI2S.PLLI2SN , PeriphClkInit->PLLI2S.PLLI2SQ , tmpreg1);
+            __HAL_RCC_PLLI2S_SAICLK_CONFIG(PeriphClkInit->PLLI2S.PLLI2SN, PeriphClkInit->PLLI2S.PLLI2SQ, tmpreg1);
             /* SAI_CLK_x = SAI_CLK(first level)/PLLI2SDIVQ */
             __HAL_RCC_PLLI2S_PLLSAICLKDIVQ_CONFIG(PeriphClkInit->PLLI2SDivQ);
         }
@@ -1319,7 +1319,7 @@ HAL_StatusTypeDef HAL_RCCEx_PeriphCLKConfig(RCC_PeriphCLKInitTypeDef*  PeriphClk
             /* Configure the PLLI2S division factors */
             /* PLLI2S_VCO = f(VCO clock) = f(PLLI2S clock input) * (PLLI2SN/PLLI2SM)*/
             /* I2SCLK = f(PLLI2S clock output) = f(VCO clock) / PLLI2SR */
-            __HAL_RCC_PLLI2S_CONFIG(PeriphClkInit->PLLI2S.PLLI2SM, PeriphClkInit->PLLI2S.PLLI2SN , plli2sq, PeriphClkInit->PLLI2S.PLLI2SR);
+            __HAL_RCC_PLLI2S_CONFIG(PeriphClkInit->PLLI2S.PLLI2SM, PeriphClkInit->PLLI2S.PLLI2SN, plli2sq, PeriphClkInit->PLLI2S.PLLI2SR);
         }
 
         /*----------------- In Case of PLLI2S is just selected  ------------------*/
@@ -1331,7 +1331,7 @@ HAL_StatusTypeDef HAL_RCCEx_PeriphCLKConfig(RCC_PeriphCLKInitTypeDef*  PeriphClk
             /* Configure the PLLI2S division factors */
             /* PLLI2S_VCO = f(VCO clock) = f(PLLI2S clock input) * (PLLI2SN/PLLI2SM)*/
             /* SPDIFRXCLK = f(PLLI2S clock output) = f(VCO clock) / PLLI2SP */
-            __HAL_RCC_PLLI2S_CONFIG(PeriphClkInit->PLLI2S.PLLI2SM, PeriphClkInit->PLLI2S.PLLI2SN , PeriphClkInit->PLLI2S.PLLI2SQ, PeriphClkInit->PLLI2S.PLLI2SR);
+            __HAL_RCC_PLLI2S_CONFIG(PeriphClkInit->PLLI2S.PLLI2SM, PeriphClkInit->PLLI2S.PLLI2SN, PeriphClkInit->PLLI2S.PLLI2SQ, PeriphClkInit->PLLI2S.PLLI2SR);
         }
 
         /* Enable the PLLI2S */
@@ -1623,7 +1623,7 @@ HAL_StatusTypeDef HAL_RCCEx_PeriphCLKConfig(RCC_PeriphCLKInitTypeDef*  PeriphClk
             /* Configure the PLLI2S division factors */
             /* PLLI2S_VCO = f(VCO clock) = f(PLLI2S clock input) * (PLLI2SN/PLLM) */
             /* I2SCLK = f(PLLI2S clock output) = f(VCO clock) / PLLI2SR */
-            __HAL_RCC_PLLI2S_CONFIG(PeriphClkInit->PLLI2S.PLLI2SN , PeriphClkInit->PLLI2S.PLLI2SR);
+            __HAL_RCC_PLLI2S_CONFIG(PeriphClkInit->PLLI2S.PLLI2SN, PeriphClkInit->PLLI2S.PLLI2SR);
         }
 
         /*---------------------------- SAI configuration -------------------------------*/
@@ -1640,7 +1640,7 @@ HAL_StatusTypeDef HAL_RCCEx_PeriphCLKConfig(RCC_PeriphCLKInitTypeDef*  PeriphClk
             /* PLLI2S_VCO Input  = PLL_SOURCE/PLLM */
             /* PLLI2S_VCO Output = PLLI2S_VCO Input * PLLI2SN */
             /* SAI_CLK(first level) = PLLI2S_VCO Output/PLLI2SQ */
-            __HAL_RCC_PLLI2S_SAICLK_CONFIG(PeriphClkInit->PLLI2S.PLLI2SN , PeriphClkInit->PLLI2S.PLLI2SQ , tmpreg1);
+            __HAL_RCC_PLLI2S_SAICLK_CONFIG(PeriphClkInit->PLLI2S.PLLI2SN, PeriphClkInit->PLLI2S.PLLI2SQ, tmpreg1);
             /* SAI_CLK_x = SAI_CLK(first level)/PLLI2SDIVQ */
             __HAL_RCC_PLLI2S_PLLSAICLKDIVQ_CONFIG(PeriphClkInit->PLLI2SDivQ);
         }
@@ -1699,7 +1699,7 @@ HAL_StatusTypeDef HAL_RCCEx_PeriphCLKConfig(RCC_PeriphCLKInitTypeDef*  PeriphClk
             /* PLLSAI_VCO Input  = PLL_SOURCE/PLLM */
             /* PLLSAI_VCO Output = PLLSAI_VCO Input * PLLSAIN */
             /* SAI_CLK(first level) = PLLSAI_VCO Output/PLLSAIQ */
-            __HAL_RCC_PLLSAI_CONFIG(PeriphClkInit->PLLSAI.PLLSAIN , PeriphClkInit->PLLSAI.PLLSAIQ, tmpreg1);
+            __HAL_RCC_PLLSAI_CONFIG(PeriphClkInit->PLLSAI.PLLSAIN, PeriphClkInit->PLLSAI.PLLSAIQ, tmpreg1);
             /* SAI_CLK_x = SAI_CLK(first level)/PLLSAIDIVQ */
             __HAL_RCC_PLLSAI_PLLSAICLKDIVQ_CONFIG(PeriphClkInit->PLLSAIDivQ);
         }
@@ -1714,7 +1714,7 @@ HAL_StatusTypeDef HAL_RCCEx_PeriphCLKConfig(RCC_PeriphCLKInitTypeDef*  PeriphClk
             /* PLLSAI_VCO Input  = PLL_SOURCE/PLLM */
             /* PLLSAI_VCO Output = PLLSAI_VCO Input * PLLSAIN */
             /* LTDC_CLK(first level) = PLLSAI_VCO Output/PLLSAIR */
-            __HAL_RCC_PLLSAI_CONFIG(PeriphClkInit->PLLSAI.PLLSAIN , tmpreg1, PeriphClkInit->PLLSAI.PLLSAIR);
+            __HAL_RCC_PLLSAI_CONFIG(PeriphClkInit->PLLSAI.PLLSAIN, tmpreg1, PeriphClkInit->PLLSAI.PLLSAIR);
             /* LTDC_CLK = LTDC_CLK(first level)/PLLSAIDIVR */
             __HAL_RCC_PLLSAI_PLLSAICLKDIVR_CONFIG(PeriphClkInit->PLLSAIDivR);
         }
@@ -1895,7 +1895,7 @@ HAL_StatusTypeDef HAL_RCCEx_PeriphCLKConfig(RCC_PeriphCLKInitTypeDef*  PeriphClk
         /* Configure the PLLI2S division factors */
         /* PLLI2S_VCO = f(VCO clock) = f(PLLI2S clock input) * (PLLI2SN/PLLM) */
         /* I2SCLK = f(PLLI2S clock output) = f(VCO clock) / PLLI2SR */
-        __HAL_RCC_PLLI2S_CONFIG(PeriphClkInit->PLLI2S.PLLI2SN , PeriphClkInit->PLLI2S.PLLI2SR);
+        __HAL_RCC_PLLI2S_CONFIG(PeriphClkInit->PLLI2S.PLLI2SN, PeriphClkInit->PLLI2S.PLLI2SR);
 #endif /* STM32F411xE */
         /* Enable the PLLI2S */
         __HAL_RCC_PLLI2S_ENABLE();
