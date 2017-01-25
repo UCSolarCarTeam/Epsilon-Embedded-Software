@@ -19,6 +19,7 @@ before_script:
     - (cd EpsilonLights && CubeMX2Makefile .)
 
 script: 
+    - astyle -V
     - (cd EpsilonLights && make)
     - "! (astyle *.h *.c -r --dry-run --options=astylerc | grep Formatted)"
 
