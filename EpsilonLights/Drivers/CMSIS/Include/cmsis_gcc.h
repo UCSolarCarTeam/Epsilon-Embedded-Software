@@ -1153,9 +1153,9 @@ __attribute__( ( always_inline ) ) __STATIC_INLINE uint64_t __SMLALD (uint32_t o
     } llr;
     llr.w64 = acc;
 #ifndef __ARMEB__   /* Little endian */
-    __ASM volatile ("smlald %0, %1, %2, %3" : "=r" (llr.w32[0]), "=r" (llr.w32[1]): "r" (op1), "r" (op2) , "0" (llr.w32[0]), "1" (llr.w32[1]) );
+    __ASM volatile ("smlald %0, %1, %2, %3" : "=r" (llr.w32[0]), "=r" (llr.w32[1]): "r" (op1), "r" (op2), "0" (llr.w32[0]), "1" (llr.w32[1]) );
 #else               /* Big endian */
-    __ASM volatile ("smlald %0, %1, %2, %3" : "=r" (llr.w32[1]), "=r" (llr.w32[0]): "r" (op1), "r" (op2) , "0" (llr.w32[1]), "1" (llr.w32[0]) );
+    __ASM volatile ("smlald %0, %1, %2, %3" : "=r" (llr.w32[1]), "=r" (llr.w32[0]): "r" (op1), "r" (op2), "0" (llr.w32[1]), "1" (llr.w32[0]) );
 #endif
     return (llr.w64);
 }
@@ -1169,9 +1169,9 @@ __attribute__( ( always_inline ) ) __STATIC_INLINE uint64_t __SMLALDX (uint32_t 
     } llr;
     llr.w64 = acc;
 #ifndef __ARMEB__   /* Little endian */
-    __ASM volatile ("smlaldx %0, %1, %2, %3" : "=r" (llr.w32[0]), "=r" (llr.w32[1]): "r" (op1), "r" (op2) , "0" (llr.w32[0]), "1" (llr.w32[1]) );
+    __ASM volatile ("smlaldx %0, %1, %2, %3" : "=r" (llr.w32[0]), "=r" (llr.w32[1]): "r" (op1), "r" (op2), "0" (llr.w32[0]), "1" (llr.w32[1]) );
 #else               /* Big endian */
-    __ASM volatile ("smlaldx %0, %1, %2, %3" : "=r" (llr.w32[1]), "=r" (llr.w32[0]): "r" (op1), "r" (op2) , "0" (llr.w32[1]), "1" (llr.w32[0]) );
+    __ASM volatile ("smlaldx %0, %1, %2, %3" : "=r" (llr.w32[1]), "=r" (llr.w32[0]): "r" (op1), "r" (op2), "0" (llr.w32[1]), "1" (llr.w32[0]) );
 #endif
     return (llr.w64);
 }
@@ -1213,9 +1213,9 @@ __attribute__( ( always_inline ) ) __STATIC_INLINE uint64_t __SMLSLD (uint32_t o
     } llr;
     llr.w64 = acc;
 #ifndef __ARMEB__   /* Little endian */
-    __ASM volatile ("smlsld %0, %1, %2, %3" : "=r" (llr.w32[0]), "=r" (llr.w32[1]): "r" (op1), "r" (op2) , "0" (llr.w32[0]), "1" (llr.w32[1]) );
+    __ASM volatile ("smlsld %0, %1, %2, %3" : "=r" (llr.w32[0]), "=r" (llr.w32[1]): "r" (op1), "r" (op2), "0" (llr.w32[0]), "1" (llr.w32[1]) );
 #else               /* Big endian */
-    __ASM volatile ("smlsld %0, %1, %2, %3" : "=r" (llr.w32[1]), "=r" (llr.w32[0]): "r" (op1), "r" (op2) , "0" (llr.w32[1]), "1" (llr.w32[0]) );
+    __ASM volatile ("smlsld %0, %1, %2, %3" : "=r" (llr.w32[1]), "=r" (llr.w32[0]): "r" (op1), "r" (op2), "0" (llr.w32[1]), "1" (llr.w32[0]) );
 #endif
     return (llr.w64);
 }
@@ -1229,9 +1229,9 @@ __attribute__( ( always_inline ) ) __STATIC_INLINE uint64_t __SMLSLDX (uint32_t 
     } llr;
     llr.w64 = acc;
 #ifndef __ARMEB__   /* Little endian */
-    __ASM volatile ("smlsldx %0, %1, %2, %3" : "=r" (llr.w32[0]), "=r" (llr.w32[1]): "r" (op1), "r" (op2) , "0" (llr.w32[0]), "1" (llr.w32[1]) );
+    __ASM volatile ("smlsldx %0, %1, %2, %3" : "=r" (llr.w32[0]), "=r" (llr.w32[1]): "r" (op1), "r" (op2), "0" (llr.w32[0]), "1" (llr.w32[1]) );
 #else               /* Big endian */
-    __ASM volatile ("smlsldx %0, %1, %2, %3" : "=r" (llr.w32[1]), "=r" (llr.w32[0]): "r" (op1), "r" (op2) , "0" (llr.w32[1]), "1" (llr.w32[0]) );
+    __ASM volatile ("smlsldx %0, %1, %2, %3" : "=r" (llr.w32[1]), "=r" (llr.w32[0]): "r" (op1), "r" (op2), "0" (llr.w32[1]), "1" (llr.w32[0]) );
 #endif
     return (llr.w64);
 }
