@@ -68,7 +68,7 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
     uint32_t              pFLatency;
 
     /*Configure the TIM2 IRQ priority */
-    HAL_NVIC_SetPriority(TIM2_IRQn, TickPriority , 0);
+    HAL_NVIC_SetPriority(TIM2_IRQn, TickPriority, 0);
 
     /* Enable the TIM2 global Interrupt */
     HAL_NVIC_EnableIRQ(TIM2_IRQn);

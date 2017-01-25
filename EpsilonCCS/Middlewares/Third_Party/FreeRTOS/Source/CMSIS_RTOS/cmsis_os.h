@@ -274,7 +274,7 @@ typedef enum
 typedef enum
 {
     osThreadRunning   = 0x0,	      /* A thread is querying the state of itself, so must be running. */
-    osThreadReady     = 0x1 ,			        /* The thread being queried is in a read or pending ready list. */
+    osThreadReady     = 0x1,			         /* The thread being queried is in a read or pending ready list. */
     osThreadBlocked   = 0x2,		        /* The thread being queried is in the Blocked state. */
     osThreadSuspended = 0x3,	      /* The thread being queried is in the Suspended state, or is in the Blocked state with an infinite time out. */
     osThreadDeleted   = 0x4,		          /* The thread being queried has been deleted, but its TCB has not yet been freed. */
