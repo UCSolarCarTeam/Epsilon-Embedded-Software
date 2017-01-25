@@ -1,7 +1,12 @@
+addons:
+    apt:
+        packages:
+            - libc6:i386
+            - libncurses5:i386
+            - libstdc++6:i386
 before_install:
     - git clone https://github.com/UCSolarCarTeam/Recruit-Resources.git
 install:
-    - apt-get install libc6:i386 libncurses5:i386 libstdc++6:i386
     - (cd Recruit-Resources/STM32F4Discovery-Resources && sudo ./install.sh)
     - rm Recruit-Resources -rf
     - wget 'https://s3-us-west-2.amazonaws.com/ucsolarteam.hostedfiles/download'
