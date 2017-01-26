@@ -125,6 +125,7 @@ int main(void)
     {
         Error_Handler();
     }
+
     /* USER CODE END RTOS_MUTEX */
 
     /* USER CODE BEGIN RTOS_SEMAPHORES */
