@@ -333,18 +333,15 @@ static void MX_CAN1_UserInit(void)
 {
     CAN_FilterConfTypeDef sFilterConfig;
     sFilterConfig.FilterNumber = 0; // Use first filter bank
-    sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
-    // sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
+    sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
     sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
-    sFilterConfig.FilterIdHigh = LIGHTS_INPUT_STDID << 5; // Filter registers need to be shifted left 5 bits
-    sFilterConfig.FilterIdLow = BATTERY_STAT_STDID << 5; // Filter registers need to be shifted left 5 bits
-    // sFilterConfig.FilterIdHigh = 0; // Filter registers need to be shifted left 5 bits
-    // sFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
-    sFilterConfig.FilterMaskIdHigh = DRIVERS_INPUTS_STDID << 5; // Unused
-    sFilterConfig.FilterMaskIdLow = 0; // Unused
+    sFilterConfig.FilterIdHigh = 0; // Accept All
+    sFilterConfig.FilterIdLow = 0; // Accept
+    sFilterConfig.FilterMaskIdHigh = 0; // Accept All
+    sFilterConfig.FilterMaskIdLow = 0; // Accept All
     sFilterConfig.FilterFIFOAssignment = 0;
     sFilterConfig.FilterActivation = ENABLE;
-    sFilterConfig.BankNumber = 0; // Set all filter banks for CAN2
+    sFilterConfig.BankNumber = 0; // Set all filter banks for CAN1
 
     if (HAL_CAN_ConfigFilter(&hcan1, &sFilterConfig) != HAL_OK)
     {
@@ -357,29 +354,26 @@ static void MX_CAN1_UserInit(void)
     static CanRxMsgTypeDef rxMessage;
     hcan1.pTxMsg = &txMessage;
     hcan1.pRxMsg = &rxMessage;
-    // hcan1.pTxMsg->StdId = 0x0; // CAN message address, set in Lights.c
+    // hcan1.pTxMsg->StdId = 0x0; // CAN message address
     hcan1.pTxMsg->ExtId = 0x0; // Only used if (hcan1.pTxMsg->IDE == CAN_ID_EXT)
     hcan1.pTxMsg->RTR = CAN_RTR_DATA; // Data request, not remote request
     hcan1.pTxMsg->IDE = CAN_ID_STD; // Standard CAN, not Extended
-    hcan1.pTxMsg->DLC = 1; // Data size in bytes
+    // hcan2.pTxMsg->DLC = ; // Value is variable
 }
 
 static void MX_CAN2_UserInit(void)
 {
     CAN_FilterConfTypeDef sFilterConfig;
     sFilterConfig.FilterNumber = 0; // Use first filter bank
-    sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
-    // sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
+    sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
     sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
-    sFilterConfig.FilterIdHigh = LIGHTS_INPUT_STDID << 5; // Filter registers need to be shifted left 5 bits
-    sFilterConfig.FilterIdLow = BATTERY_STAT_STDID << 5; // Filter registers need to be shifted left 5 bits
-    // sFilterConfig.FilterIdHigh = 0; // Filter registers need to be shifted left 5 bits
-    // sFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
-    sFilterConfig.FilterMaskIdHigh = DRIVERS_INPUTS_STDID << 5; // Unused
-    sFilterConfig.FilterMaskIdLow = 0; // Unused
+    sFilterConfig.FilterIdHigh = 0; // Accept All
+    sFilterConfig.FilterIdLow = 0; // Accept
+    sFilterConfig.FilterMaskIdHigh = 0; // Accept All
+    sFilterConfig.FilterMaskIdLow = 0; // Accept All
     sFilterConfig.FilterFIFOAssignment = 0;
     sFilterConfig.FilterActivation = ENABLE;
-    sFilterConfig.BankNumber = 0; // Set all filter banks for CAN2
+    sFilterConfig.BankNumber = 0; // Value is variable
 
     if (HAL_CAN_ConfigFilter(&hcan2, &sFilterConfig) != HAL_OK)
     {
@@ -392,11 +386,11 @@ static void MX_CAN2_UserInit(void)
     static CanRxMsgTypeDef rxMessage;
     hcan2.pTxMsg = &txMessage;
     hcan2.pRxMsg = &rxMessage;
-    // hcan2.pTxMsg->StdId = 0x0; // CAN message address, set in Lights.c
+    // hcan2.pTxMsg->StdId = 0x0; // CAN message address
     hcan2.pTxMsg->ExtId = 0x0; // Only used if (hcan2.pTxMsg->IDE == CAN_ID_EXT)
     hcan2.pTxMsg->RTR = CAN_RTR_DATA; // Data request, not remote request
     hcan2.pTxMsg->IDE = CAN_ID_STD; // Standard CAN, not Extended
-    hcan2.pTxMsg->DLC = 1; // Data size in bytes
+    // hcan2.pTxMsg->DLC = ; // Value is variable
 }
 
 /* USER CODE END 4 */
