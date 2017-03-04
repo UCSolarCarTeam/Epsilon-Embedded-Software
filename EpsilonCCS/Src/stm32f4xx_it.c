@@ -72,6 +72,20 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
+* @brief This function handles EXTI line0 interrupt.
+*/
+void EXTI0_IRQHandler(void)
+{
+    /* USER CODE BEGIN EXTI0_IRQn 0 */
+
+    /* USER CODE END EXTI0_IRQn 0 */
+    HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
+    /* USER CODE BEGIN EXTI0_IRQn 1 */
+
+    /* USER CODE END EXTI0_IRQn 1 */
+}
+
+/**
 * @brief This function handles CAN1 TX interrupts.
 */
 void CAN1_TX_IRQHandler(void)
@@ -97,20 +111,6 @@ void CAN1_RX0_IRQHandler(void)
     /* USER CODE BEGIN CAN1_RX0_IRQn 1 */
 
     /* USER CODE END CAN1_RX0_IRQn 1 */
-}
-
-/**
-* @brief This function handles TIM2 global interrupt.
-*/
-void TIM2_IRQHandler(void)
-{
-    /* USER CODE BEGIN TIM2_IRQn 0 */
-
-    /* USER CODE END TIM2_IRQn 0 */
-    HAL_TIM_IRQHandler(&htim2);
-    /* USER CODE BEGIN TIM2_IRQn 1 */
-
-    /* USER CODE END TIM2_IRQn 1 */
 }
 
 /**

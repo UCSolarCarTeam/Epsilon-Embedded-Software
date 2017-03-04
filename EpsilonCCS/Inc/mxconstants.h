@@ -47,8 +47,6 @@
 #define PH1_OSC_OUT_GPIO_Port GPIOH
 #define OTG_FS_PowerSwitchOn_Pin GPIO_PIN_0
 #define OTG_FS_PowerSwitchOn_GPIO_Port GPIOC
-#define B1_Pin GPIO_PIN_0
-#define B1_GPIO_Port GPIOA
 #define LED_RED_Pin GPIO_PIN_5
 #define LED_RED_GPIO_Port GPIOA
 #define LED_GREEN_Pin GPIO_PIN_6

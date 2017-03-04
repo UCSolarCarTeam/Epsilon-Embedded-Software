@@ -58,6 +58,8 @@ static void MX_CAN1_Init(void);
 void StartDefaultTask(void const* argument);
 
 /* USER CODE BEGIN PFP */
+static void MX_CAN1_UserInit(void);
+static void MX_CAN2_UserInit(void);
 /* Private function prototypes -----------------------------------------------*/
 
 /* USER CODE END PFP */
@@ -87,11 +89,43 @@ int main(void)
     MX_CAN1_Init();
 
     /* USER CODE BEGIN 2 */
+    MX_CAN1_UserInit();
+    MX_CAN2_UserInit();
+
+    // Setup for next CAN Receive Interrupt
+    if (HAL_CAN_Receive_IT(&hcan1, CAN_FIFO0) != HAL_OK)
+    {
+        /* Reception Error */
+        Error_Handler();
+    }
+
+    if (HAL_CAN_Receive_IT(&hcan2, CAN_FIFO0) != HAL_OK)
+    {
+        /* Reception Error */
+        Error_Handler();
+    }
 
     /* USER CODE END 2 */
 
     /* USER CODE BEGIN RTOS_MUTEX */
-    /* add mutexes, ... */
+    osMutexId hcan1Mutex;
+    osMutexDef(hcan1Mutex);
+    hcan1Mutex = osMutexCreate(osMutex(hcan1Mutex));
+
+    if (hcan1Mutex == NULL)
+    {
+        Error_Handler();
+    }
+
+    osMutexId hcan2Mutex;
+    osMutexDef(hcan2Mutex);
+    hcan2Mutex = osMutexCreate(osMutex(hcan2Mutex));
+
+    if (hcan2Mutex == NULL)
+    {
+        Error_Handler();
+    }
+
     /* USER CODE END RTOS_MUTEX */
 
     /* USER CODE BEGIN RTOS_SEMAPHORES */
@@ -262,12 +296,6 @@ static void MX_GPIO_Init(void)
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(OTG_FS_PowerSwitchOn_GPIO_Port, &GPIO_InitStruct);
 
-    /*Configure GPIO pin : B1_Pin */
-    GPIO_InitStruct.Pin = B1_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_EVT_RISING;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
-
     /*Configure GPIO pins : LED_RED_Pin LED_GREEN_Pin LED_BLUE_Pin */
     GPIO_InitStruct.Pin = LED_RED_Pin | LED_GREEN_Pin | LED_BLUE_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -283,7 +311,7 @@ static void MX_GPIO_Init(void)
 
     /*Configure GPIO pin : HORN_Pin */
     GPIO_InitStruct.Pin = HORN_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(HORN_GPIO_Port, &GPIO_InitStruct);
 
@@ -293,9 +321,76 @@ static void MX_GPIO_Init(void)
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(MEMS_INT2_GPIO_Port, &GPIO_InitStruct);
 
+    /* EXTI interrupt init*/
+    HAL_NVIC_SetPriority(EXTI0_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+
 }
 
 /* USER CODE BEGIN 4 */
+static void MX_CAN1_UserInit(void)
+{
+    CAN_FilterConfTypeDef sFilterConfig;
+    sFilterConfig.FilterNumber = 0; // Use first filter bank
+    sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
+    sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+    sFilterConfig.FilterIdHigh = 0; // Accept All
+    sFilterConfig.FilterIdLow = 0; // Accept
+    sFilterConfig.FilterMaskIdHigh = 0; // Accept All
+    sFilterConfig.FilterMaskIdLow = 0; // Accept All
+    sFilterConfig.FilterFIFOAssignment = 0;
+    sFilterConfig.FilterActivation = ENABLE;
+    sFilterConfig.BankNumber = 0; // Set all filter banks for CAN1
+
+    if (HAL_CAN_ConfigFilter(&hcan1, &sFilterConfig) != HAL_OK)
+    {
+        /* Filter configuration Error */
+        Error_Handler();
+    }
+
+    /* Configure Transmission process */
+    static CanTxMsgTypeDef txMessage;
+    static CanRxMsgTypeDef rxMessage;
+    hcan1.pTxMsg = &txMessage;
+    hcan1.pRxMsg = &rxMessage;
+    // hcan1.pTxMsg->StdId = 0x0; // CAN message address
+    hcan1.pTxMsg->ExtId = 0x0; // Only used if (hcan1.pTxMsg->IDE == CAN_ID_EXT)
+    hcan1.pTxMsg->RTR = CAN_RTR_DATA; // Data request, not remote request
+    hcan1.pTxMsg->IDE = CAN_ID_STD; // Standard CAN, not Extended
+    hcan2.pTxMsg->DLC = 8;
+}
+
+static void MX_CAN2_UserInit(void)
+{
+    CAN_FilterConfTypeDef sFilterConfig;
+    sFilterConfig.FilterNumber = 0; // Use first filter bank
+    sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
+    sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+    sFilterConfig.FilterIdHigh = 0;
+    sFilterConfig.FilterIdLow = 0;
+    sFilterConfig.FilterMaskIdHigh = 0;
+    sFilterConfig.FilterMaskIdLow = 0;
+    sFilterConfig.FilterFIFOAssignment = 0;
+    sFilterConfig.FilterActivation = DISABLE; // Accept all
+    sFilterConfig.BankNumber = 0;
+
+    if (HAL_CAN_ConfigFilter(&hcan2, &sFilterConfig) != HAL_OK)
+    {
+        /* Filter configuration Error */
+        Error_Handler();
+    }
+
+    /* Configure Transmission process */
+    static CanTxMsgTypeDef txMessage;
+    static CanRxMsgTypeDef rxMessage;
+    hcan2.pTxMsg = &txMessage;
+    hcan2.pRxMsg = &rxMessage;
+    // hcan2.pTxMsg->StdId = 0x0; // CAN message address
+    hcan2.pTxMsg->ExtId = 0x0; // Only used if (hcan2.pTxMsg->IDE == CAN_ID_EXT)
+    hcan2.pTxMsg->RTR = CAN_RTR_DATA; // Data request, not remote request
+    hcan2.pTxMsg->IDE = CAN_ID_STD; // Standard CAN, not Extended
+    // hcan2.pTxMsg->DLC = ; // Value is variable
+}
 
 /* USER CODE END 4 */
 
@@ -311,6 +406,29 @@ void StartDefaultTask(void const* argument)
     }
 
     /* USER CODE END 5 */
+}
+
+/**
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM2 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
+{
+    /* USER CODE BEGIN Callback 0 */
+
+    /* USER CODE END Callback 0 */
+    if (htim->Instance == TIM2)
+    {
+        HAL_IncTick();
+    }
+
+    /* USER CODE BEGIN Callback 1 */
+
+    /* USER CODE END Callback 1 */
 }
 
 /**
