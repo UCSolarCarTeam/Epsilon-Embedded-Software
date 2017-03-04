@@ -55,12 +55,14 @@
 #define LED_BLUE_GPIO_Port GPIOA
 #define BOOT1_Pin GPIO_PIN_2
 #define BOOT1_GPIO_Port GPIOB
+#define HORN_OUT_Pin GPIO_PIN_9
+#define HORN_OUT_GPIO_Port GPIOE
 #define SWDIO_Pin GPIO_PIN_13
 #define SWDIO_GPIO_Port GPIOA
 #define SWCLK_Pin GPIO_PIN_14
 #define SWCLK_GPIO_Port GPIOA
-#define HORN_Pin GPIO_PIN_0
-#define HORN_GPIO_Port GPIOD
+#define HORN_IN_Pin GPIO_PIN_0
+#define HORN_IN_GPIO_Port GPIOD
 #define SWO_Pin GPIO_PIN_3
 #define SWO_GPIO_Port GPIOB
 #define MEMS_INT2_Pin GPIO_PIN_1
