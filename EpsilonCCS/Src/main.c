@@ -42,7 +42,7 @@
 CAN_HandleTypeDef hcan1;
 CAN_HandleTypeDef hcan2;
 
-osThreadId defaultTaskHandle;
+static osThreadId hornTaskHandle;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
@@ -55,7 +55,6 @@ void Error_Handler(void);
 static void MX_GPIO_Init(void);
 static void MX_CAN2_Init(void);
 static void MX_CAN1_Init(void);
-void StartDefaultTask(void const* argument);
 
 /* USER CODE BEGIN PFP */
 static void MX_CAN1_UserInit(void);
@@ -138,8 +137,8 @@ int main(void)
 
     /* Create the thread(s) */
     /* definition and creation of defaultTask */
-    osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
-    defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+    osThreadDef(hornTask, updateHornTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    defaultTaskHandle = osThreadCreate(osThread(hornTask), NULL);
 
     /* USER CODE BEGIN RTOS_THREADS */
     /* add threads, ... */
@@ -359,7 +358,7 @@ static void MX_CAN1_UserInit(void)
     hcan1.pTxMsg->ExtId = 0x0; // Only used if (hcan1.pTxMsg->IDE == CAN_ID_EXT)
     hcan1.pTxMsg->RTR = CAN_RTR_DATA; // Data request, not remote request
     hcan1.pTxMsg->IDE = CAN_ID_STD; // Standard CAN, not Extended
-    // hcan2.pTxMsg->DLC = ; // Value is variable
+    hcan2.pTxMsg->DLC = 8;
 }
 
 static void MX_CAN2_UserInit(void)
@@ -368,13 +367,13 @@ static void MX_CAN2_UserInit(void)
     sFilterConfig.FilterNumber = 0; // Use first filter bank
     sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
     sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
-    sFilterConfig.FilterIdHigh = 0; // Accept All
-    sFilterConfig.FilterIdLow = 0; // Accept
-    sFilterConfig.FilterMaskIdHigh = 0; // Accept All
-    sFilterConfig.FilterMaskIdLow = 0; // Accept All
+    sFilterConfig.FilterIdHigh = 0; 
+    sFilterConfig.FilterIdLow = 0; 
+    sFilterConfig.FilterMaskIdHigh = 0; 
+    sFilterConfig.FilterMaskIdLow = 0; 
     sFilterConfig.FilterFIFOAssignment = 0;
-    sFilterConfig.FilterActivation = ENABLE;
-    sFilterConfig.BankNumber = 0; // Value is variable
+    sFilterConfig.FilterActivation = DISABLE; // Accept all
+    sFilterConfig.BankNumber = 0;
 
     if (HAL_CAN_ConfigFilter(&hcan2, &sFilterConfig) != HAL_OK)
     {
