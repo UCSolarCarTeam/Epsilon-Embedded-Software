@@ -42,7 +42,7 @@
 CAN_HandleTypeDef hcan1;
 CAN_HandleTypeDef hcan2;
 
-static osThreadId hornTaskHandle;
+static osThreadId defaultTaskHandle;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
@@ -59,6 +59,7 @@ static void MX_CAN1_Init(void);
 /* USER CODE BEGIN PFP */
 static void MX_CAN1_UserInit(void);
 static void MX_CAN2_UserInit(void);
+void StartDefaultTask(void const* argument);
 /* Private function prototypes -----------------------------------------------*/
 
 /* USER CODE END PFP */
@@ -137,12 +138,10 @@ int main(void)
 
     /* Create the thread(s) */
     /* definition and creation of defaultTask */
-    osThreadDef(hornTask, updateHornTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
-    defaultTaskHandle = osThreadCreate(osThread(hornTask), NULL);
-
+    osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
+    defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
     /* USER CODE BEGIN RTOS_THREADS */
     /* add threads, ... */
-    /* USER CODE END RTOS_THREADS */
 
     /* USER CODE BEGIN RTOS_QUEUES */
     /* add queues, ... */
@@ -195,7 +194,7 @@ void SystemClock_Config(void)
     }
 
     RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
-                                  | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+    | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
     RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
     RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
     RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV8;
