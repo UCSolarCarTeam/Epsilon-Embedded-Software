@@ -39,7 +39,6 @@
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
-CAN_HandleTypeDef hcan1;
 CAN_HandleTypeDef hcan2;
 
 osThreadId defaultTaskHandle;
@@ -54,7 +53,6 @@ void SystemClock_Config(void);
 void Error_Handler(void);
 static void MX_GPIO_Init(void);
 static void MX_CAN2_Init(void);
-static void MX_CAN1_Init(void);
 void StartDefaultTask(void const* argument);
 
 /* USER CODE BEGIN PFP */
@@ -86,7 +84,6 @@ int main(void)
     /* Initialize all configured peripherals */
     MX_GPIO_Init();
     MX_CAN2_Init();
-    MX_CAN1_Init();
 
     /* USER CODE BEGIN 2 */
     MX_CAN1_UserInit();
@@ -215,30 +212,6 @@ void SystemClock_Config(void)
     HAL_NVIC_SetPriority(SysTick_IRQn, 15, 0);
 }
 
-/* CAN1 init function */
-static void MX_CAN1_Init(void)
-{
-
-    hcan1.Instance = CAN1;
-    hcan1.Init.Prescaler = 4;
-    hcan1.Init.Mode = CAN_MODE_LOOPBACK;
-    hcan1.Init.SJW = CAN_SJW_1TQ;
-    hcan1.Init.BS1 = CAN_BS1_5TQ;
-    hcan1.Init.BS2 = CAN_BS2_4TQ;
-    hcan1.Init.TTCM = DISABLE;
-    hcan1.Init.ABOM = DISABLE;
-    hcan1.Init.AWUM = DISABLE;
-    hcan1.Init.NART = DISABLE;
-    hcan1.Init.RFLM = DISABLE;
-    hcan1.Init.TXFP = DISABLE;
-
-    if (HAL_CAN_Init(&hcan1) != HAL_OK)
-    {
-        Error_Handler();
-    }
-
-}
-
 /* CAN2 init function */
 static void MX_CAN2_Init(void)
 {
@@ -281,7 +254,6 @@ static void MX_GPIO_Init(void)
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
     __HAL_RCC_GPIOE_CLK_ENABLE();
-    __HAL_RCC_GPIOD_CLK_ENABLE();
 
     /*Configure GPIO pin Output Level */
     HAL_GPIO_WritePin(OTG_FS_PowerSwitchOn_GPIO_Port, OTG_FS_PowerSwitchOn_Pin, GPIO_PIN_RESET);
@@ -290,7 +262,7 @@ static void MX_GPIO_Init(void)
     HAL_GPIO_WritePin(GPIOA, LED_RED_Pin | LED_GREEN_Pin | LED_BLUE_Pin, GPIO_PIN_RESET);
 
     /*Configure GPIO pin Output Level */
-    HAL_GPIO_WritePin(HORN_OUT_GPIO_Port, HORN_OUT_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(HORN_GPIO_Port, HORN_Pin, GPIO_PIN_RESET);
 
     /*Configure GPIO pin : OTG_FS_PowerSwitchOn_Pin */
     GPIO_InitStruct.Pin = OTG_FS_PowerSwitchOn_Pin;
@@ -312,28 +284,18 @@ static void MX_GPIO_Init(void)
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(BOOT1_GPIO_Port, &GPIO_InitStruct);
 
-    /*Configure GPIO pin : HORN_OUT_Pin */
-    GPIO_InitStruct.Pin = HORN_OUT_Pin;
+    /*Configure GPIO pin : HORN_Pin */
+    GPIO_InitStruct.Pin = HORN_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(HORN_OUT_GPIO_Port, &GPIO_InitStruct);
-
-    /*Configure GPIO pin : HORN_IN_Pin */
-    GPIO_InitStruct.Pin = HORN_IN_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(HORN_IN_GPIO_Port, &GPIO_InitStruct);
+    HAL_GPIO_Init(HORN_GPIO_Port, &GPIO_InitStruct);
 
     /*Configure GPIO pin : MEMS_INT2_Pin */
     GPIO_InitStruct.Pin = MEMS_INT2_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_EVT_RISING;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(MEMS_INT2_GPIO_Port, &GPIO_InitStruct);
-
-    /* EXTI interrupt init*/
-    HAL_NVIC_SetPriority(EXTI0_IRQn, 5, 0);
-    HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
 }
 
