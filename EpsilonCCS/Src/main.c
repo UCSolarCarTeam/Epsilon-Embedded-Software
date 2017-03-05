@@ -39,6 +39,7 @@
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
+CAN_HandleTypeDef hcan1;
 CAN_HandleTypeDef hcan2;
 
 osThreadId defaultTaskHandle;
