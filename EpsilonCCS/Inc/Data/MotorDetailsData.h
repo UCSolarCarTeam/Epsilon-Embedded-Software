@@ -7,7 +7,6 @@
 
 struct MotorDetailsData
 {
-    unsigned char packageId;
     float phaseCCurrent;
     float phaseBCurrent;
     float motorVoltageReal;
@@ -26,3 +25,5 @@ struct MotorDetailsData
     float odometer;
     float slipSpeed;
 }
+
+extern struct MotorDetailsData motorDetailsData;

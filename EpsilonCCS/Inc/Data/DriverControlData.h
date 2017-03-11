@@ -28,17 +28,6 @@
 #define HORN_MASK 0x10
 #define RESET_MASK 0x20
 
-struct DriverControlsData
-{
-    unsigned char packageId;
-    unsigned char driverControlsBoardAlive;
-    struct LightsInputs lightsInputs;
-    struct MusicInputs musicInputs;
-    float acceleration;
-    float regenBraking;
-    struct DriverInputs driverInputs;
-}
-
 struct LightsInputs
 {
     unsigned char headlightsOff;
@@ -68,3 +57,15 @@ struct DriverInputs
     unsigned char horn
     unsigned char reset
 }
+
+struct DriverControlsData
+{
+    unsigned char driverControlsBoardAlive;
+    struct LightsInputs lightsInputs;
+    struct MusicInputs musicInputs;
+    float acceleration;
+    float regenBraking;
+    struct DriverInputs driverInputs;
+}
+
+extern struct DriverControlData driverControlData;

@@ -23,19 +23,6 @@
 #define BUS_VOLTAGE_LOWER_LIMIT_MASK 0x20
 #define IPM_OR_MOTOR_TEMPERATURE_LIMIT_MASK 0x40
 
-struct MotorFaultsData
-{
-    unsigned char packageId;
-    struct MotorErrorFlags m0ErrorFlags;
-    struct MotorErrorFlags m1ErrorFlags;
-    struct MotorLimitFlags m0LimitFlags;
-    struct MotorLimitFlags m1LimitFlags;
-    unsigned char m0CanRxErrorCount;
-    unsigned char m0CanTxErrorCount;
-    unsigned char m1CanRxErrorCount;
-    unsigned char m1CanTxErrorCount;
-}
-
 struct MotorErrorFlags
 {
     unsigned char motorOverSpeed;
@@ -58,3 +45,17 @@ struct MotorLimitFlags
     unsigned char busVoltageLower;
     unsigned char ipmOrMotorTemperature;
 }
+
+struct MotorFaultsData
+{
+    struct MotorErrorFlags m0ErrorFlags;
+    struct MotorErrorFlags m1ErrorFlags;
+    struct MotorLimitFlags m0LimitFlags;
+    struct MotorLimitFlags m1LimitFlags;
+    unsigned char m0CanRxErrorCount;
+    unsigned char m0CanTxErrorCount;
+    unsigned char m1CanRxErrorCount;
+    unsigned char m1CanTxErrorCount;
+}
+
+extern struct MotorFaultsData motorFaultsData;

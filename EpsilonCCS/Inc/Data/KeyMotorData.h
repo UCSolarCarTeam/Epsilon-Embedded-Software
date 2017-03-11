@@ -6,7 +6,6 @@
 
 struct KeyMotorData
 {
-    unsigned char packageId;
     unsigned char m0Alive;
     float m0SetCurrent;
     float m0SetVelocity;
@@ -20,3 +19,5 @@ struct KeyMotorData
     float m1BusVoltage;
     float m1VehicleVelocity;
 }
+
+extern struct KeyMotorData keyMotorData;

@@ -1,7 +1,6 @@
 #pragma once
 
 // Defined at https://docs.google.com/spreadsheets/d/1soVLjeD9Sl7z7Z6cYMyn1fmn-cG7tx_pfFDsvgkCqMU/edit?usp=sharing
-
 #define BATTERY_PKG_ID 7
 
 #define DISCHARGE_RELAY_ENABLED_MASK 0x01
@@ -15,20 +14,19 @@
 
 enum BatteryPrechargeState
 {
-    IDLE,
-    PRECHARGE,
-    MEASURE,
-    ENABLE_PACK,
-    RUN
+    IDLE = 0,
+    PRECHARGE = 1,
+    MEASURE = 2,
+    ENABLE_PACK = 3,
+    RUN = 4
 };
 
 struct BatteryData
 {
-    unsigned char packageId;
     unsigned char bmuAlive;
     unsigned char bmsRelayStatus;
     unsigned char populatedCells;
-    float 12vInputVoltage;
+    float input12volt;
     float fanVoltage;
     float packCurrent;
     float packVoltage;
@@ -50,4 +48,6 @@ struct BatteryData
     unsigned short int averageCellVoltage;
     unsigned short int prechargeState;
     unsigned short int auxVoltage;
-}
+};
+
+extern struct BatteryData batteryData;
