@@ -43,49 +43,52 @@
 #define CCL_REDUCED_DUE_TO_CHARGER_LATCH_MASK 0x4000
 #define CCL_REDUCED_DUE_TO_ALTERNATE_CURRENT_LIMIT_MASK 0x8000
 
-struct BatteryFaultsData {
-	unsigned char packageId;
-	struct BatteryErrorFlags batteryErrorFlags;
-	struct BatteryLimitFlags batteryLimitFlags;
+struct BatteryFaultsData
+{
+    unsigned char packageId;
+    struct BatteryErrorFlags batteryErrorFlags;
+    struct BatteryLimitFlags batteryLimitFlags;
 }
 
-struct BatteryErrorFlags {
-	unsigned char internalCommununicationFault;
-	unsigned char internalConversionFault;
-	unsigned char weakCellFault;
-	unsigned char lowCellVoltageFault;
-	unsigned char openWiringFault;
-	unsigned char currentSensorFault;
-	unsigned char packVoltageSensorFault;
-	unsigned char weakPackFault;
-	unsigned char voltageRedundancyFault;
-	unsigned char fanMonitorFault;
-	unsigned char thermistorFault;
-	unsigned char canBusCommunicationsFault;
-	unsigned char alwaysOnSupplyFault;
-	unsigned char highVoltageIsolationFault;
-	unsigned char power12vSupplyFault;
-	unsigned char chargeLimitEnforcementFault;
-	unsigned char dischargeLimitEnforcementFault;
-	unsigned char chargerSafetyRelayFault;
-	unsigned char internalMemoryFault;
-	unsigned char internalThermistorFault;
-	unsigned char internalLogicFault;
+struct BatteryErrorFlags
+{
+    unsigned char internalCommununicationFault;
+    unsigned char internalConversionFault;
+    unsigned char weakCellFault;
+    unsigned char lowCellVoltageFault;
+    unsigned char openWiringFault;
+    unsigned char currentSensorFault;
+    unsigned char packVoltageSensorFault;
+    unsigned char weakPackFault;
+    unsigned char voltageRedundancyFault;
+    unsigned char fanMonitorFault;
+    unsigned char thermistorFault;
+    unsigned char canBusCommunicationsFault;
+    unsigned char alwaysOnSupplyFault;
+    unsigned char highVoltageIsolationFault;
+    unsigned char power12vSupplyFault;
+    unsigned char chargeLimitEnforcementFault;
+    unsigned char dischargeLimitEnforcementFault;
+    unsigned char chargerSafetyRelayFault;
+    unsigned char internalMemoryFault;
+    unsigned char internalThermistorFault;
+    unsigned char internalLogicFault;
 }
 
-struct BatteryLimitFlags {
-	unsigned char dclReducedDueToLowSoc;
-	unsigned char dclReducedDueToHighCellResistance;
-	unsigned char dclReducedDueToTemperature;
-	unsigned char dclReducedDueToLowCellVoltage;
-	unsigned char dclReducedDueToLowPackVoltage;
-	unsigned char dclAndCclReducedDueToVoltageFailsafe;
-	unsigned char dclAndCclReducedDueToCommunicationFailsafe;
-	unsigned char cclReducedDueToHighSoc;
-	unsigned char cclReducedDueToHighCellResistance;
-	unsigned char cclReducedDueToTemperature;
-	unsigned char cclReducedDueToHighCellVoltage;
-	unsigned char cclReducedDueToHighPackVoltage;
-	unsigned char cclReducedDueToChargerLatch;
-	unsigned char cclReducedDueToAlternateCurrentLimit;
+struct BatteryLimitFlags
+{
+    unsigned char dclReducedDueToLowSoc;
+    unsigned char dclReducedDueToHighCellResistance;
+    unsigned char dclReducedDueToTemperature;
+    unsigned char dclReducedDueToLowCellVoltage;
+    unsigned char dclReducedDueToLowPackVoltage;
+    unsigned char dclAndCclReducedDueToVoltageFailsafe;
+    unsigned char dclAndCclReducedDueToCommunicationFailsafe;
+    unsigned char cclReducedDueToHighSoc;
+    unsigned char cclReducedDueToHighCellResistance;
+    unsigned char cclReducedDueToTemperature;
+    unsigned char cclReducedDueToHighCellVoltage;
+    unsigned char cclReducedDueToHighPackVoltage;
+    unsigned char cclReducedDueToChargerLatch;
+    unsigned char cclReducedDueToAlternateCurrentLimit;
 }

@@ -28,39 +28,43 @@
 #define HORN_MASK 0x10
 #define RESET_MASK 0x20
 
-struct DriverControlsData {
-	unsigned char packageId;
-	unsigned char driverControlsBoardAlive;
-	struct LightsInputs lightsInputs;
-	struct MusicInputs musicInputs;
-	float acceleration;
-	float regenBraking;
-	struct DriverInputs driverInputs;
+struct DriverControlsData
+{
+    unsigned char packageId;
+    unsigned char driverControlsBoardAlive;
+    struct LightsInputs lightsInputs;
+    struct MusicInputs musicInputs;
+    float acceleration;
+    float regenBraking;
+    struct DriverInputs driverInputs;
 }
 
-struct LightsInputs {
-	unsigned char headlightsOff;
-	unsigned char headlightsLow;
-	unsigned char headlightsHigh;
-	unsigned char signalRight;
-	unsigned char signalLeft;
-	unsigned char hazard;
-	unsigned char interior;
+struct LightsInputs
+{
+    unsigned char headlightsOff;
+    unsigned char headlightsLow;
+    unsigned char headlightsHigh;
+    unsigned char signalRight;
+    unsigned char signalLeft;
+    unsigned char hazard;
+    unsigned char interior;
 }
 
-struct MusicInputs {
-	unsigned char aux;
-	unsigned char volumeUp;
-	unsigned char volumeDown;
-	unsigned char nextSong;
-	unsigned char prevSong;
+struct MusicInputs
+{
+    unsigned char aux;
+    unsigned char volumeUp;
+    unsigned char volumeDown;
+    unsigned char nextSong;
+    unsigned char prevSong;
 }
 
-struct DriverInputs {
-	unsigned char brakes
-	unsigned char forward
-	unsigned char reverse
-	unsigned char pushToTalk
-	unsigned char horn
-	unsigned char reset
+struct DriverInputs
+{
+    unsigned char brakes
+    unsigned char forward
+    unsigned char reverse
+    unsigned char pushToTalk
+    unsigned char horn
+    unsigned char reset
 }

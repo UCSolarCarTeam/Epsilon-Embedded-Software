@@ -13,7 +13,8 @@
 #define IS_READY_SIGNAL_STATUS_MASK 0x40
 #define IS_CHARGING_SIGNAL_STATUS_MASK 0x80
 
-enum BatteryPrechargeState {
+enum BatteryPrechargeState
+{
     IDLE,
     PRECHARGE,
     MEASURE,
@@ -21,7 +22,8 @@ enum BatteryPrechargeState {
     RUN
 };
 
-struct BatteryData {
+struct BatteryData
+{
     unsigned char packageId;
     unsigned char bmuAlive;
     unsigned char bmsRelayStatus;

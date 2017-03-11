@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 // Defined at https://docs.google.com/spreadsheets/d/1soVLjeD9Sl7z7Z6cYMyn1fmn-cG7tx_pfFDsvgkCqMU/edit?usp=sharing
 
@@ -15,43 +15,46 @@
 #define DESATURATION_FAULT_MASK 0x80
 
 // Limits
-#define OUTPUT_VOLTAGE_PWM_LIMIT_MASK 0x01 
-#define MOTOR_CURRENT_LIMIT_MASK 0x02 
-#define VELOCITY_LIMIT_MASK 0x04 
-#define BUS_CURRENT_LIMIT_MASK 0x08 
-#define BUS_VOLTAGE_UPPER_LIMIT_MASK 0x10 
-#define BUS_VOLTAGE_LOWER_LIMIT_MASK 0x20 
-#define IPM_OR_MOTOR_TEMPERATURE_LIMIT_MASK 0x40 
+#define OUTPUT_VOLTAGE_PWM_LIMIT_MASK 0x01
+#define MOTOR_CURRENT_LIMIT_MASK 0x02
+#define VELOCITY_LIMIT_MASK 0x04
+#define BUS_CURRENT_LIMIT_MASK 0x08
+#define BUS_VOLTAGE_UPPER_LIMIT_MASK 0x10
+#define BUS_VOLTAGE_LOWER_LIMIT_MASK 0x20
+#define IPM_OR_MOTOR_TEMPERATURE_LIMIT_MASK 0x40
 
-struct MotorFaultsData {
-	unsigned char packageId;
-	struct MotorErrorFlags m0ErrorFlags;
-	struct MotorErrorFlags m1ErrorFlags;
-	struct MotorLimitFlags m0LimitFlags;
-	struct MotorLimitFlags m1LimitFlags;
-	unsigned char m0CanRxErrorCount;
-	unsigned char m0CanTxErrorCount;
-	unsigned char m1CanRxErrorCount;
-	unsigned char m1CanTxErrorCount;
+struct MotorFaultsData
+{
+    unsigned char packageId;
+    struct MotorErrorFlags m0ErrorFlags;
+    struct MotorErrorFlags m1ErrorFlags;
+    struct MotorLimitFlags m0LimitFlags;
+    struct MotorLimitFlags m1LimitFlags;
+    unsigned char m0CanRxErrorCount;
+    unsigned char m0CanTxErrorCount;
+    unsigned char m1CanRxErrorCount;
+    unsigned char m1CanTxErrorCount;
 }
 
-struct MotorErrorFlags {
-	unsigned char motorOverSpeed;
-	unsigned char softwareOverCurrent;
-	unsigned char dcBusOverVoltage;
-	unsigned char badMotorPositionHallSequence;
-	unsigned char watchdogCausedLastReset;
-	unsigned char configReadError;
-	unsigned char rail15vUnderVoltageLockOut;
-	unsigned char desaturationFault;
+struct MotorErrorFlags
+{
+    unsigned char motorOverSpeed;
+    unsigned char softwareOverCurrent;
+    unsigned char dcBusOverVoltage;
+    unsigned char badMotorPositionHallSequence;
+    unsigned char watchdogCausedLastReset;
+    unsigned char configReadError;
+    unsigned char rail15vUnderVoltageLockOut;
+    unsigned char desaturationFault;
 }
 
-struct MotorLimitFlags {
-	unsigned char outputVoltagePwm;
-	unsigned char motorCurrent;
-	unsigned char velocity;
-	unsigned char busCurrent;
-	unsigned char busVoltageUpper;
-	unsigned char busVoltageLower;
-	unsigned char ipmOrMotorTemperature;
+struct MotorLimitFlags
+{
+    unsigned char outputVoltagePwm;
+    unsigned char motorCurrent;
+    unsigned char velocity;
+    unsigned char busCurrent;
+    unsigned char busVoltageUpper;
+    unsigned char busVoltageLower;
+    unsigned char ipmOrMotorTemperature;
 }

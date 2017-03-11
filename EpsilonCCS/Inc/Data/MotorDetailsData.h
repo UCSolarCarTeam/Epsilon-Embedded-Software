@@ -5,23 +5,24 @@
 #define M0_DETAILS_DATA_PKG_ID 2
 #define M1_DETAILS_DATA_PKG_ID 3
 
-struct MotorDetailsData {
-	unsigned char packageId;
-	float phaseCCurrent;
-	float phaseBCurrent;
-	float motorVoltageReal;
-	float motorVoltageImaginary;
-	float motorCurrentReal;
-	float motorCurrentImaginary;
-	float backEmfReal;
-	float backEmfImaginary;
-	float railSupply15v;
-	float railSupply3_3v;
-	float railSupply1_9v;
-	float heatSinkTemperature;
-	float motorTemperature;
-	float dspBoardTemp;
-	float dcBusAmpHours;
-	float odometer;
-	float slipSpeed;
+struct MotorDetailsData
+{
+    unsigned char packageId;
+    float phaseCCurrent;
+    float phaseBCurrent;
+    float motorVoltageReal;
+    float motorVoltageImaginary;
+    float motorCurrentReal;
+    float motorCurrentImaginary;
+    float backEmfReal;
+    float backEmfImaginary;
+    float railSupply15v;
+    float railSupply3_3v;
+    float railSupply1_9v;
+    float heatSinkTemperature;
+    float motorTemperature;
+    float dspBoardTemp;
+    float dcBusAmpHours;
+    float odometer;
+    float slipSpeed;
 }

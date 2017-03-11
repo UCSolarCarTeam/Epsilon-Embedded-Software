@@ -11,12 +11,13 @@
 #define RIGHT_SIGNAL_MASK 0x10
 #define BMS_STROBE_LIGHT_MASK 0x20
 
-struct LightsData {
-	unsigned char packageId;
-	unsigned char lowBeams;
-	unsigned char highBeams;
-	unsigned char brakes;
-	unsigned char leftSignal;
-	unsigned char rightSignal;
-	unsigned char bmsStrobeLight;
+struct LightsData
+{
+    unsigned char packageId;
+    unsigned char lowBeams;
+    unsigned char highBeams;
+    unsigned char brakes;
+    unsigned char leftSignal;
+    unsigned char rightSignal;
+    unsigned char bmsStrobeLight;
 }
