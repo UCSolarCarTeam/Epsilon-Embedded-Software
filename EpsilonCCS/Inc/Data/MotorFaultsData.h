@@ -33,7 +33,7 @@ struct MotorErrorFlags
     unsigned char configReadError;
     unsigned char rail15vUnderVoltageLockOut;
     unsigned char desaturationFault;
-}
+};
 
 struct MotorLimitFlags
 {
@@ -44,7 +44,7 @@ struct MotorLimitFlags
     unsigned char busVoltageUpper;
     unsigned char busVoltageLower;
     unsigned char ipmOrMotorTemperature;
-}
+};
 
 struct MotorFaultsData
 {
@@ -56,6 +56,6 @@ struct MotorFaultsData
     unsigned char m0CanTxErrorCount;
     unsigned char m1CanRxErrorCount;
     unsigned char m1CanTxErrorCount;
-}
+};
 
 extern struct MotorFaultsData motorFaultsData;

@@ -24,6 +24,6 @@ struct MotorDetailsData
     float dcBusAmpHours;
     float odometer;
     float slipSpeed;
-}
+};
 
 extern struct MotorDetailsData motorDetailsData;

@@ -14,6 +14,6 @@ struct MpptData
     unsigned short int arrayCurrent;
     unsigned short int batteryVoltage;
     unsigned short int temperature;
-}
+};
 
 extern struct MpptData mpptData;
