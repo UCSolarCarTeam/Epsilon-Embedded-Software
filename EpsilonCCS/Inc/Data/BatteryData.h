@@ -46,8 +46,8 @@ struct BatteryData
     unsigned short int highCellVoltage;
     unsigned char highCellVoltageId;
     unsigned short int averageCellVoltage;
-    unsigned short int prechargeState;
-    unsigned short int auxVoltage;
+    unsigned char prechargeState;
+    unsigned char auxVoltage;
 };
 
 extern struct BatteryData batteryData;

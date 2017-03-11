@@ -63,8 +63,8 @@ struct DriverControlData
     unsigned char driverControlsBoardAlive;
     struct LightsInputs lightsInputs;
     struct MusicInputs musicInputs;
-    float acceleration;
-    float regenBraking;
+    unsigned short int acceleration;
+    unsigned short int regenBraking;
     struct DriverInputs driverInputs;
 };
 

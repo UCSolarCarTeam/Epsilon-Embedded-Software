@@ -2,7 +2,7 @@
 
 // Defined at https://docs.google.com/spreadsheets/d/1soVLjeD9Sl7z7Z6cYMyn1fmn-cG7tx_pfFDsvgkCqMU/edit?usp=sharing
 
-#define MOTOR_FAULTS_PKG_ID 7
+#define MOTOR_FAULTS_PKG_ID 5
 
 // Errors
 #define MOTOR_OVER_SPEED_MASK 0x01
