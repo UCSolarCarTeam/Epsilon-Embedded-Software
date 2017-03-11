@@ -42,9 +42,9 @@ struct BatteryData
     unsigned char fanSpeed;
     unsigned char requestedFanSpeed;
     unsigned short int lowCellVoltage;
-    unsigned short int lowCellVoltageId;
+    unsigned char lowCellVoltageId;
     unsigned short int highCellVoltage;
-    unsigned short int highCellVoltageId;
+    unsigned char highCellVoltageId;
     unsigned short int averageCellVoltage;
     unsigned short int prechargeState;
     unsigned short int auxVoltage;
