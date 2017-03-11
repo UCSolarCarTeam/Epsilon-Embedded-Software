@@ -22,6 +22,7 @@ enum BatteryPrechargeState {
 };
 
 struct BatteryData {
+    unsigned char packageId;
     unsigned char bmuAlive;
     unsigned char bmsRelayStatus;
     unsigned char populatedCells;
