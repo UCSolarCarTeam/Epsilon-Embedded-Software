@@ -2,7 +2,7 @@
 
 // Defined at https://docs.google.com/spreadsheets/d/1soVLjeD9Sl7z7Z6cYMyn1fmn-cG7tx_pfFDsvgkCqMU/edit?usp=sharing
 
-#define MOTOR_FAULTS_PKG_ID 7
+#define MOTOR_FAULTS_PKG_ID 5
 
 // Errors
 #define MOTOR_OVER_SPEED_MASK 0x01
@@ -23,19 +23,6 @@
 #define BUS_VOLTAGE_LOWER_LIMIT_MASK 0x20
 #define IPM_OR_MOTOR_TEMPERATURE_LIMIT_MASK 0x40
 
-struct MotorFaultsData
-{
-    unsigned char packageId;
-    struct MotorErrorFlags m0ErrorFlags;
-    struct MotorErrorFlags m1ErrorFlags;
-    struct MotorLimitFlags m0LimitFlags;
-    struct MotorLimitFlags m1LimitFlags;
-    unsigned char m0CanRxErrorCount;
-    unsigned char m0CanTxErrorCount;
-    unsigned char m1CanRxErrorCount;
-    unsigned char m1CanTxErrorCount;
-}
-
 struct MotorErrorFlags
 {
     unsigned char motorOverSpeed;
@@ -46,7 +33,7 @@ struct MotorErrorFlags
     unsigned char configReadError;
     unsigned char rail15vUnderVoltageLockOut;
     unsigned char desaturationFault;
-}
+};
 
 struct MotorLimitFlags
 {
@@ -57,4 +44,18 @@ struct MotorLimitFlags
     unsigned char busVoltageUpper;
     unsigned char busVoltageLower;
     unsigned char ipmOrMotorTemperature;
-}
+};
+
+struct MotorFaultsData
+{
+    struct MotorErrorFlags m0ErrorFlags;
+    struct MotorErrorFlags m1ErrorFlags;
+    struct MotorLimitFlags m0LimitFlags;
+    struct MotorLimitFlags m1LimitFlags;
+    unsigned char m0CanRxErrorCount;
+    unsigned char m0CanTxErrorCount;
+    unsigned char m1CanRxErrorCount;
+    unsigned char m1CanTxErrorCount;
+};
+
+extern struct MotorFaultsData motorFaultsData;

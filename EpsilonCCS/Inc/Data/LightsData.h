@@ -13,11 +13,12 @@
 
 struct LightsData
 {
-    unsigned char packageId;
     unsigned char lowBeams;
     unsigned char highBeams;
     unsigned char brakes;
     unsigned char leftSignal;
     unsigned char rightSignal;
     unsigned char bmsStrobeLight;
-}
+};
+
+extern struct LightsData lightsData;

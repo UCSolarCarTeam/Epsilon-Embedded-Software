@@ -43,13 +43,6 @@
 #define CCL_REDUCED_DUE_TO_CHARGER_LATCH_MASK 0x4000
 #define CCL_REDUCED_DUE_TO_ALTERNATE_CURRENT_LIMIT_MASK 0x8000
 
-struct BatteryFaultsData
-{
-    unsigned char packageId;
-    struct BatteryErrorFlags batteryErrorFlags;
-    struct BatteryLimitFlags batteryLimitFlags;
-}
-
 struct BatteryErrorFlags
 {
     unsigned char internalCommununicationFault;
@@ -73,7 +66,7 @@ struct BatteryErrorFlags
     unsigned char internalMemoryFault;
     unsigned char internalThermistorFault;
     unsigned char internalLogicFault;
-}
+};
 
 struct BatteryLimitFlags
 {
@@ -91,4 +84,12 @@ struct BatteryLimitFlags
     unsigned char cclReducedDueToHighPackVoltage;
     unsigned char cclReducedDueToChargerLatch;
     unsigned char cclReducedDueToAlternateCurrentLimit;
-}
+};
+
+struct BatteryFaultsData
+{
+    struct BatteryErrorFlags batteryErrorFlags;
+    struct BatteryLimitFlags batteryLimitFlags;
+};
+
+extern struct BatteryFaultsData batteryFaultsData;

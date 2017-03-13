@@ -8,12 +8,12 @@
 
 struct MpptData
 {
-    unsigned char packageId;
     unsigned char alive;
     unsigned char mpptNumber;
     unsigned short int arrayVoltage;
     unsigned short int arrayCurrent;
     unsigned short int batteryVoltage;
     unsigned short int temperature;
-}
+};
 
+extern struct MpptData mpptData;
