@@ -9,11 +9,10 @@
 struct MpptData
 {
     unsigned char alive;
-    unsigned char mpptNumber;
     unsigned short int arrayVoltage;
     unsigned short int arrayCurrent;
     unsigned short int batteryVoltage;
     unsigned short int temperature;
 };
 
-extern struct MpptData mpptData;
+extern struct MpptData mpptData[];
