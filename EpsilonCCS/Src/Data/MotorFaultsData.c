@@ -1,3 +1,3 @@
 #include "MotorFaultsData.h"
 
-struct MotorFaultsData motorFaultsData = {};
+struct MotorFaultsData motorFaultsData = {0};

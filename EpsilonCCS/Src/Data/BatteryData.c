@@ -1,3 +1,3 @@
 #include "BatteryData.h"
 
-struct BatteryData batteryData = {};
+struct BatteryData batteryData = {0};

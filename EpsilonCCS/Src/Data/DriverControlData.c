@@ -1,3 +1,3 @@
 #include "DriverControlData.h"
 
-struct DriverControlData driverControlData = {};
+struct DriverControlData driverControlData = {0};

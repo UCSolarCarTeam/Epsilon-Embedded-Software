@@ -18,6 +18,6 @@ struct KeyMotorData
     float m1BusCurrent;
     float m1BusVoltage;
     float m1VehicleVelocity;
-}
+};
 
 extern struct KeyMotorData keyMotorData;

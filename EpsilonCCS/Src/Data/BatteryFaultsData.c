@@ -1,3 +1,3 @@
 #include "BatteryFaultsData.h"
 
-struct BatteryFaultsData batteryFaultsData = {};
+struct BatteryFaultsData batteryFaultsData = {0};

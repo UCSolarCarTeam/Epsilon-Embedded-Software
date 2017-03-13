@@ -1,3 +1,3 @@
 #include "MpptData.h"
 
-struct MpptData mpptData = {};
+struct MpptData mpptData = {0};
