@@ -13,39 +13,34 @@ extern struct BatteryFaultsData batteryFaultsData;
 #define TEMPINFO_ID (0x304)
 #define CELL_VOLTAGES_ID (0x305)
 
-void parseBmuCanMessage(uint32_t stdId, uint8_t data[8])
+void parseBmsCanMessage(uint32_t stdId, uint8_t data[8])
 {
     switch (stdId)
     {
         case BMS_HEARTBEAT_ID:
-            parseBmuHeartbeat(data);
+            parseBmsHeartbeat(data);
             break;
-
         case STARTUP_INFO_ID:
             parseStartupInfo(data);
             break;
-
         case PACK_INFO_ID:
             parsePackInfo(data);
             break;
-
         case ERRORS_ID:
             parseErrors(data);
             break;
-
         case TEMPINFO_ID:
             parseTempInfo(data);
             break;
-
         case CELL_VOLTAGES_ID:
             parseCellVoltages(data);
             break;
     }
 }
 
-void parseBmuHeartbeat(uint8_t data[8])
+void parseBmsHeartbeat(uint8_t data[8])
 {
-    batteryData.bmuAlive = data[0];
+    batteryData.bmsAlive = data[0];
 }
 
 void parseStartupInfo(uint8_t data[8])
@@ -90,7 +85,7 @@ void parsePackInfo(uint8_t data[8])
 
 void parseErrors(uint8_t data[8])
 {
-    uint16_t limitFlag =
+    uint32_t limitFlag =
         (data[0] << 0) +
         (data[1] << 8);
     batteryFaultsData.batteryLimitFlags.dclReducedDueToLowSoc =

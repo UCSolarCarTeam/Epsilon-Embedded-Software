@@ -28,7 +28,11 @@
 
 void parseCanMessage(uint32_t stdId, uint8_t data[8])
 {
-    if (stdId & BMS_CAN_MASK == BMS_CAN_ID)
+    if (stdId & AUX_BMS_CAN_MASK == AUX_BMS_CAN_ID)
+    {
+        parseAuxBmsCanMessage(stdId, data);
+    }
+    else if (stdId & BMS_CAN_MASK == BMS_CAN_ID)
     {
         parseBmuCanMessage(stdId, data);
     }
