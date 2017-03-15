@@ -6,18 +6,18 @@
 extern struct BatteryData batteryData;
 extern struct BatteryFaultsData batteryFaultsData;
 
-#define BMU_HEARTBEAT_ID 0x300
-#define STARTUP_INFO_ID 0x301
-#define PACK_INFO_ID 0x302
-#define ERRORS_ID 0x303
-#define TEMPINFO_ID 0x304
-#define CELL_VOLTAGES_ID 0x305
+#define BMS_HEARTBEAT_ID (0x300)
+#define STARTUP_INFO_ID (0x301)
+#define PACK_INFO_ID (0x302)
+#define ERRORS_ID (0x303)
+#define TEMPINFO_ID (0x304)
+#define CELL_VOLTAGES_ID (0x305)
 
 void parseBmuCanMessage(uint32_t stdId, uint8_t data[8])
 {
     switch (stdId)
     {
-        case BMU_HEARTBEAT_ID:
+        case BMS_HEARTBEAT_ID:
             parseBmuHeartbeat(data);
             break;
 
