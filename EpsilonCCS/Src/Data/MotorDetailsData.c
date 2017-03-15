@@ -1,3 +1,4 @@
 #include "MotorDetailsData.h"
 
-struct MotorDetailsData motorDetailsData = {0};
+struct MotorDetailsData motor0DetailsData = {0};
+struct MotorDetailsData motor1DetailsData = {0};
