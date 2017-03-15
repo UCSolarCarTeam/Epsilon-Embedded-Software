@@ -23,7 +23,7 @@ enum BatteryPrechargeState
 
 struct BatteryData
 {
-    unsigned char bmuAlive;
+    unsigned char bmsAlive;
     unsigned char bmsRelayStatus;
     unsigned char populatedCells;
     float input12volt;
