@@ -4,6 +4,7 @@
 
 #define MPPT_PKG_ID 9
 
+#define NUM_OF_MPPTS 3
 #define MPPT_ALIVE_BIT_MASK 0x80
 
 struct MpptData
@@ -15,4 +16,4 @@ struct MpptData
     unsigned short int temperature;
 };
 
-extern struct MpptData mpptData[];
+extern struct MpptData mpptData[NUM_OF_MPPTS];
