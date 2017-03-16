@@ -26,7 +26,7 @@
 #define MPPT_CAN_ID (0x600)
 #define MPPT_CAN_MASK (0xFFF)
 
-void parseCanMessage(uint32_t stdId, uint8_t data[8])
+void parseCanMessage(uint32_t stdId, uint8_t *data)
 {
     if (stdId & AUX_BMS_CAN_MASK == AUX_BMS_CAN_ID)
     {

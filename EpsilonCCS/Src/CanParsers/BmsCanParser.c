@@ -13,7 +13,7 @@ extern struct BatteryFaultsData batteryFaultsData;
 #define TEMPINFO_ID (0x304)
 #define CELL_VOLTAGES_ID (0x305)
 
-void parseBmsCanMessage(uint32_t stdId, uint8_t data[8])
+void parseBmsCanMessage(uint32_t stdId, uint8_t *data)
 {
     switch (stdId)
     {
@@ -38,12 +38,12 @@ void parseBmsCanMessage(uint32_t stdId, uint8_t data[8])
     }
 }
 
-void parseBmsHeartbeat(uint8_t data[8])
+void parseBmsHeartbeat(uint8_t *data)
 {
     batteryData.bmsAlive = data[0];
 }
 
-void parseStartupInfo(uint8_t data[8])
+void parseStartupInfo(uint8_t *data)
 {
 
     batteryData.bmsRelayStatus = data[0];
@@ -61,7 +61,7 @@ void parseStartupInfo(uint8_t data[8])
     batteryData.fanVoltage = (float)fanVoltageInt / 100.0f;
 }
 
-void parsePackInfo(uint8_t data[8])
+void parsePackInfo(uint8_t *data)
 {
     uint16_t packCurrentInt =  // Units 0.1 A
         (data[0] << 0) +
@@ -83,7 +83,7 @@ void parsePackInfo(uint8_t data[8])
     batteryData.packDepthofDischarge = data[7] / 2.0f; // Units 0.5%
 }
 
-void parseErrors(uint8_t data[8])
+void parseErrors(uint8_t *data)
 {
     uint32_t limitFlag =
         (data[0] << 0) +
@@ -165,7 +165,7 @@ void parseErrors(uint8_t data[8])
         errorFlag & INTERNAL_LOGIC_FAULT_MASK;
 }
 
-void parseTempInfo(uint8_t data[8])
+void parseTempInfo(uint8_t *data)
 {
     batteryData.highTemperature = data[0];
     batteryData.highThermistorId = data[1];
@@ -177,7 +177,7 @@ void parseTempInfo(uint8_t data[8])
     batteryData.requestedFanSpeed = data[7];
 }
 
-void parseCellVoltages(uint8_t data[8])
+void parseCellVoltages(uint8_t *data)
 {
     batteryData.lowCellVoltage =
         (data[0] << 0) +
