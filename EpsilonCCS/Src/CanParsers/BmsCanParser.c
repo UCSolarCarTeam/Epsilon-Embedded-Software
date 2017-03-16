@@ -56,12 +56,12 @@ void parseStartupInfo(uint8_t* data)
     batteryData.populatedCells = data[1];
 
     uint16_t input12voltInt = // Units 0.1 V
-        (data[2] << 0) +
+        (data[2] << 0) |
         (data[3] << 8);
     batteryData.input12volt = (float)input12voltInt / 10.0f;
 
     uint16_t fanVoltageInt = // Units 0.01 V
-        (data[4] << 0) +
+        (data[4] << 0) |
         (data[5] << 8);
     batteryData.fanVoltage = (float)fanVoltageInt / 100.0f;
 }
@@ -69,19 +69,19 @@ void parseStartupInfo(uint8_t* data)
 void parsePackInfo(uint8_t* data)
 {
     uint16_t packCurrentInt =  // Units 0.1 A
-        (data[0] << 0) +
+        (data[0] << 0) |
         (data[1] << 8);
     batteryData.packCurrent = (float)packCurrentInt / 10.0f;
 
     uint16_t packVoltageInt =  // Units 0.1 V
-        (data[2] << 0) +
+        (data[2] << 0) |
         (data[3] << 8);
     batteryData.packVoltage = (float)packVoltageInt / 10.0f;
 
     batteryData.packStateofCharge = (float)data[4] / 2.0f; // Units 0.5%
 
     uint16_t packAmphoursCan =  // Units 0.1 Ah
-        (data[5] << 0) +
+        (data[5] << 0) |
         (data[6] << 8);
     batteryData.packAmphours = (float)packAmphoursCan / 10.0f;
 
@@ -91,7 +91,7 @@ void parsePackInfo(uint8_t* data)
 void parseErrors(uint8_t* data)
 {
     uint32_t limitFlag =
-        (data[0] << 0) +
+        (data[0] << 0) |
         (data[1] << 8);
     batteryFaultsData.batteryLimitFlags.dclReducedDueToLowSoc =
         limitFlag & DCL_REDUCED_DUE_TO_LOW_SOC_MASK;
@@ -123,8 +123,8 @@ void parseErrors(uint8_t* data)
         limitFlag & CCL_REDUCED_DUE_TO_ALTERNATE_CURRENT_LIMIT_MASK;
 
     uint32_t errorFlag =
-        (data[2] << 0) +
-        (data[3] << 8) +
+        (data[2] << 0) |
+        (data[3] << 8) |
         (data[4] << 16);
     batteryFaultsData.batteryErrorFlags.internalCommununicationFault =
         errorFlag & INTERNAL_COMMUNUNICATION_FAULT_MASK;
@@ -185,16 +185,16 @@ void parseTempInfo(uint8_t* data)
 void parseCellVoltages(uint8_t* data)
 {
     batteryData.lowCellVoltage =
-        (data[0] << 0) +
+        (data[0] << 0) |
         (data[1] << 8);
     batteryData.lowCellVoltageId =
         data[2];
     batteryData.highCellVoltage =
-        (data[3] << 0) +
+        (data[3] << 0) |
         (data[4] << 8);
     batteryData.highCellVoltageId =
         data[5];
     batteryData.averageCellVoltage =
-        (data[6] << 0) +
+        (data[6] << 0) |
         (data[7] << 8);
 }
