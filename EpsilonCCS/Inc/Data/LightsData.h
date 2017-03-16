@@ -1,7 +1,8 @@
 #pragma once
 
-// Defined at https://docs.google.com/spreadsheets/d/1soVLjeD9Sl7z7Z6cYMyn1fmn-cG7tx_pfFDsvgkCqMU/edit?usp=sharing
+#include "stm32f4xx.h"
 
+// Defined at https://docs.google.com/spreadsheets/d/1soVLjeD9Sl7z7Z6cYMyn1fmn-cG7tx_pfFDsvgkCqMU/edit?usp=sharing
 #define LIGHT_PKG_ID 10
 
 #define LOW_BEAMS_MASK 0x01
@@ -13,6 +14,7 @@
 
 struct LightsData
 {
+    uint32_t lastReceived;
     unsigned char lowBeams;
     unsigned char highBeams;
     unsigned char brakeLights;

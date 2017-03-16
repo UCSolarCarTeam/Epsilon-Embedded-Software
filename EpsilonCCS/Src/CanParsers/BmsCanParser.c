@@ -1,3 +1,5 @@
+#include "cmsis_os.h"
+
 #include "BmsCanParser.h"
 
 #include "BatteryData.h"
@@ -18,7 +20,7 @@ void parseBmsCanMessage(uint32_t stdId, uint8_t* data)
     switch (stdId)
     {
         case BMS_HEARTBEAT_ID:
-            parseBmsHeartbeat(data);
+            parseBmsHeartbeat();
             break;
 
         case STARTUP_INFO_ID:
@@ -43,9 +45,9 @@ void parseBmsCanMessage(uint32_t stdId, uint8_t* data)
     }
 }
 
-void parseBmsHeartbeat(uint8_t* data)
+void parseBmsHeartbeat()
 {
-    batteryData.bmsAlive = data[0];
+    batteryData.bmsLastReceived = osKernelSysTick();
 }
 
 void parseStartupInfo(uint8_t* data)
