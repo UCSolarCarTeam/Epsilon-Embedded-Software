@@ -10,27 +10,27 @@ extern struct BatteryData batteryData;
 #define PRECHARGE_STATE_MASK (0x00) // First 3 bits
 #define AUX_VOLTAGE_MASK (0xF8) // Last 5 bits
 
-void parseAuxBmsCanMessage(uint32_t stdId, uint8_t data[8])
+void parseAuxBmsCanMessage(uint32_t stdId, uint8_t* data)
 {
-	switch (stdId)
-	{
-		case AUX_BMS_HEARTBEAT_ID:
-			parseAuxBmsHeartbeat(data);
-			break;
-		case AUX_BMS_INFO_ID:
-			parseAuxBmsInfo(data);
-			break;
-	}
+    switch (stdId)
+    {
+        case AUX_BMS_HEARTBEAT_ID:
+            parseAuxBmsHeartbeat(data);
+            break;
+
+        case AUX_BMS_INFO_ID:
+            parseAuxBmsInfo(data);
+            break;
+    }
 }
 
-void parseAuxBmsHeartbeat(uint8_t data[8])
+void parseAuxBmsHeartbeat(uint8_t* data)
 {
     batteryData.auxBmsAlive = data[0];
 }
 
-void parseAuxBmsInfo(uint8_t data[8])
+void parseAuxBmsInfo(uint8_t* data)
 {
-	batteryData.prechargeState = data[0] & PRECHARGE_STATE_MASK;
-	batteryData.auxVoltage = data[0] & AUX_VOLTAGE_MASK;
+    batteryData.prechargeState = data[0] & PRECHARGE_STATE_MASK;
+    batteryData.auxVoltage = data[0] & AUX_VOLTAGE_MASK;
 }
-

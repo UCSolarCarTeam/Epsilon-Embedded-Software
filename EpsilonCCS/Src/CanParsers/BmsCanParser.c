@@ -13,37 +13,42 @@ extern struct BatteryFaultsData batteryFaultsData;
 #define TEMPINFO_ID (0x304)
 #define CELL_VOLTAGES_ID (0x305)
 
-void parseBmsCanMessage(uint32_t stdId, uint8_t *data)
+void parseBmsCanMessage(uint32_t stdId, uint8_t* data)
 {
     switch (stdId)
     {
         case BMS_HEARTBEAT_ID:
             parseBmsHeartbeat(data);
             break;
+
         case STARTUP_INFO_ID:
             parseStartupInfo(data);
             break;
+
         case PACK_INFO_ID:
             parsePackInfo(data);
             break;
+
         case ERRORS_ID:
             parseErrors(data);
             break;
+
         case TEMPINFO_ID:
             parseTempInfo(data);
             break;
+
         case CELL_VOLTAGES_ID:
             parseCellVoltages(data);
             break;
     }
 }
 
-void parseBmsHeartbeat(uint8_t *data)
+void parseBmsHeartbeat(uint8_t* data)
 {
     batteryData.bmsAlive = data[0];
 }
 
-void parseStartupInfo(uint8_t *data)
+void parseStartupInfo(uint8_t* data)
 {
 
     batteryData.bmsRelayStatus = data[0];
@@ -61,7 +66,7 @@ void parseStartupInfo(uint8_t *data)
     batteryData.fanVoltage = (float)fanVoltageInt / 100.0f;
 }
 
-void parsePackInfo(uint8_t *data)
+void parsePackInfo(uint8_t* data)
 {
     uint16_t packCurrentInt =  // Units 0.1 A
         (data[0] << 0) +
@@ -83,7 +88,7 @@ void parsePackInfo(uint8_t *data)
     batteryData.packDepthofDischarge = data[7] / 2.0f; // Units 0.5%
 }
 
-void parseErrors(uint8_t *data)
+void parseErrors(uint8_t* data)
 {
     uint32_t limitFlag =
         (data[0] << 0) +
@@ -165,7 +170,7 @@ void parseErrors(uint8_t *data)
         errorFlag & INTERNAL_LOGIC_FAULT_MASK;
 }
 
-void parseTempInfo(uint8_t *data)
+void parseTempInfo(uint8_t* data)
 {
     batteryData.highTemperature = data[0];
     batteryData.highThermistorId = data[1];
@@ -177,7 +182,7 @@ void parseTempInfo(uint8_t *data)
     batteryData.requestedFanSpeed = data[7];
 }
 
-void parseCellVoltages(uint8_t *data)
+void parseCellVoltages(uint8_t* data)
 {
     batteryData.lowCellVoltage =
         (data[0] << 0) +
