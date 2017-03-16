@@ -6,7 +6,7 @@
 
 #define LOW_BEAMS_MASK 0x01
 #define HIGH_BEAMS_MASK 0x02
-#define BRAKES_MASK 0x04
+#define BRAKE_LIGHTS_MASK 0x04
 #define LEFT_SIGNAL_MASK 0x08
 #define RIGHT_SIGNAL_MASK 0x10
 #define BMS_STROBE_LIGHT_MASK 0x20
@@ -15,7 +15,7 @@ struct LightsData
 {
     unsigned char lowBeams;
     unsigned char highBeams;
-    unsigned char brakes;
+    unsigned char brakeLights;
     unsigned char leftSignal;
     unsigned char rightSignal;
     unsigned char bmsStrobeLight;

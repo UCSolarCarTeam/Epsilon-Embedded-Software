@@ -26,4 +26,5 @@ struct MotorDetailsData
     float slipSpeed;
 };
 
-extern struct MotorDetailsData motorDetailsData;
+extern struct MotorDetailsData motor0DetailsData;
+extern struct MotorDetailsData motor1DetailsData;
