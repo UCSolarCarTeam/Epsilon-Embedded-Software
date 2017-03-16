@@ -3,7 +3,7 @@
 #include "AuxBmsCanParser.h"
 #include "BmsCanParser.h"
 // #include "DriverControlsCanParser.h"
-// #include "LightsCanParser.h"
+#include "LightsCanParser.h"
 // #include "MotorCanParser.h"
 // #include "MpptCanParser.h"
 
@@ -35,5 +35,9 @@ void parseCanMessage(uint32_t stdId, uint8_t* data)
     else if ((stdId & BMS_CAN_MASK) == BMS_CAN_ID)
     {
         parseBmsCanMessage(stdId, data);
+    }
+    else if ((stdId & LIGHTS_CAN_MASK) == LIGHTS_CAN_ID)
+    {
+        parseLightsCanMessage(stdId, data);
     }
 }

@@ -19,6 +19,7 @@ struct LightsData
     unsigned char leftSignal;
     unsigned char rightSignal;
     unsigned char bmsStrobeLight;
+    unsigned char lightsAlive;
 };
 
 extern struct LightsData lightsData;
