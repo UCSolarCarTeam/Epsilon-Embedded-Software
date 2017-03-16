@@ -1,7 +1,8 @@
 #pragma once
 
-// Defined at https://docs.google.com/spreadsheets/d/1soVLjeD9Sl7z7Z6cYMyn1fmn-cG7tx_pfFDsvgkCqMU/edit?usp=sharing
+#include "stm32f4xx.h"
 
+// Defined at https://docs.google.com/spreadsheets/d/1soVLjeD9Sl7z7Z6cYMyn1fmn-cG7tx_pfFDsvgkCqMU/edit?usp=sharing
 #define DRIVER_CONTROL_PKG_ID 4
 
 // Lights Inputs
@@ -60,7 +61,7 @@ struct DriverInputs
 
 struct DriverControlData
 {
-    unsigned char driverControlsBoardAlive;
+    uint32_t lastReceived;
     struct LightsInputs lightsInputs;
     struct MusicInputs musicInputs;
     unsigned short int acceleration;

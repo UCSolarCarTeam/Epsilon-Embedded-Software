@@ -1,5 +1,7 @@
 #pragma once
 
+#include "stm32f4xx.h"
+
 // Defined at https://docs.google.com/spreadsheets/d/1soVLjeD9Sl7z7Z6cYMyn1fmn-cG7tx_pfFDsvgkCqMU/edit?usp=sharing
 #define BATTERY_PKG_ID 7
 
@@ -23,7 +25,7 @@ enum BatteryPrechargeState
 
 struct BatteryData
 {
-    unsigned char bmsAlive;
+    uint32_t bmsLastReceived;
     unsigned char bmsRelayStatus;
     unsigned char populatedCells;
     float input12volt;
@@ -48,7 +50,7 @@ struct BatteryData
     unsigned short int averageCellVoltage;
     unsigned char prechargeState;
     unsigned char auxVoltage;
-    unsigned char auxBmsAlive;
+    uint32_t auxBmsLastReceived;
 };
 
 extern struct BatteryData batteryData;
