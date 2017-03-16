@@ -48,6 +48,7 @@ struct BatteryData
     unsigned short int averageCellVoltage;
     unsigned char prechargeState;
     unsigned char auxVoltage;
+    unsigned char auxBmsAlive;
 };
 
 extern struct BatteryData batteryData;
