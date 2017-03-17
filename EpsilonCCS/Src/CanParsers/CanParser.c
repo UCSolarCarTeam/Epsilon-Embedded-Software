@@ -4,7 +4,7 @@
 #include "BmsCanParser.h"
 #include "DriverControlsCanParser.h"
 #include "LightsCanParser.h"
-// #include "MotorCanParser.h"
+#include "MotorCanParser.h"
 // #include "MpptCanParser.h"
 
 // 0x720 >= AUX_BMS >= 0x723
