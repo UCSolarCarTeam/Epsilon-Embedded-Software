@@ -1,0 +1,35 @@
+#include "cmsis_os.h"
+
+#include "MpptCanParser.h"
+
+#include "MpptData.h"
+
+extern struct MpptData mpptData[NUM_OF_MPPTS];
+
+#define MPPT_NUM_MASK 0x00F
+
+void parseMpptCanMessage(uint32_t stdId, uint8_t* data)
+{
+    uint8_t mpptId = stdId & MPPT_NUM_MASK;
+
+    if (mpptId >= NUM_OF_MPPTS)
+    {
+        return;
+    }
+    else
+    {
+        mpptData[mpptId].lastReceived = osKernelSysTick();
+        mpptData[mpptId].arrayVoltage =
+            (data[0] >> 0) |
+            (data[1] >> 4);
+        mpptData[mpptId].arrayCurrent =
+            (data[2] >> 0) |
+            (data[3] >> 4);
+        mpptData[mpptId].batteryVoltage =
+            (data[4] >> 0) |
+            (data[5] >> 4);
+        mpptData[mpptId].temperature =
+            (data[6] >> 0) |
+            (data[7] >> 4);
+    }
+}

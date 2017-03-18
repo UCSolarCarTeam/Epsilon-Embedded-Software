@@ -5,7 +5,7 @@
 #include "DriverControlsCanParser.h"
 #include "LightsCanParser.h"
 #include "MotorCanParser.h"
-// #include "MpptCanParser.h"
+#include "MpptCanParser.h"
 
 // 0x720 >= AUX_BMS >= 0x723
 #define AUX_BMS_CAN_ID (0x720)
@@ -43,5 +43,9 @@ void parseCanMessage(uint32_t stdId, uint8_t* data)
     else if ((stdId & LIGHTS_CAN_MASK) == LIGHTS_CAN_ID)
     {
         parseLightsCanMessage(stdId, data);
+    }
+    else if ((stdId & MPPT_CAN_MASK) == MPPT_CAN_ID)
+    {
+        parseMpptCanMessage(stdId, data);
     }
 }
