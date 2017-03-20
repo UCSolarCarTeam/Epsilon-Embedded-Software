@@ -56,60 +56,60 @@ void parseMotorCanMessage(uint32_t stdId, uint8_t* data)
             break;
 
         case M0_BUS_CAN_ID:
-            keyMotorData.m0BusVoltage = arrayToFloat(data[0]);
-            keyMotorData.m0BusCurrent = arrayToFloat(data[4]);
+            keyMotorData.m0BusVoltage = arrayToFloat(&data[0]);
+            keyMotorData.m0BusCurrent = arrayToFloat(&data[4]);
             break;
 
         case M0_VELOCITY_CAN_ID:
-            // motorVelocity = arrayToFloat(data[0]);
-            keyMotorData.m0VehicleVelocity = arrayToFloat(data[4]);
+            // motorVelocity = arrayToFloat(&data[0]);
+            keyMotorData.m0VehicleVelocity = arrayToFloat(&data[4]);
             break;
 
         case M0_PHASE_CURRENT_CAN_ID:
-            motor0DetailsData.phaseBCurrent = arrayToFloat(data[0]);
-            motor0DetailsData.phaseCCurrent = arrayToFloat(data[4]);
+            motor0DetailsData.phaseBCurrent = arrayToFloat(&data[0]);
+            motor0DetailsData.phaseCCurrent = arrayToFloat(&data[4]);
             break;
 
         case M0_VOLTAGE_VECTOR_CAN_ID:
-            motor0DetailsData.motorVoltageImaginary = arrayToFloat(data[0]);
-            motor0DetailsData.motorVoltageReal = arrayToFloat(data[4]);
+            motor0DetailsData.motorVoltageImaginary = arrayToFloat(&data[0]);
+            motor0DetailsData.motorVoltageReal = arrayToFloat(&data[4]);
             break;
 
         case M0_CURRENT_VECTOR_CAN_ID:
-            motor0DetailsData.motorCurrentImaginary = arrayToFloat(data[0]);
-            motor0DetailsData.motorCurrentReal = arrayToFloat(data[4]);
+            motor0DetailsData.motorCurrentImaginary = arrayToFloat(&data[0]);
+            motor0DetailsData.motorCurrentReal = arrayToFloat(&data[4]);
             break;
 
         case M0_BACKEMF_CAN_ID:
-            motor0DetailsData.backEmfImaginary = arrayToFloat(data[0]);
-            motor0DetailsData.backEmfReal = arrayToFloat(data[4]);
+            motor0DetailsData.backEmfImaginary = arrayToFloat(&data[0]);
+            motor0DetailsData.backEmfReal = arrayToFloat(&data[4]);
             break;
 
         case M0_15V_VOLTAGE_RAIL_CAN_ID:
-            motor0DetailsData.railSupply15v = arrayToFloat(data[4]);
+            motor0DetailsData.railSupply15v = arrayToFloat(&data[4]);
             break;
 
         case M0_3_3V_1_9V_VOLTAGE_RAIL_CAN_ID:
-            motor0DetailsData.railSupply1_9v = arrayToFloat(data[0]);
-            motor0DetailsData.railSupply3_3v = arrayToFloat(data[4]);
+            motor0DetailsData.railSupply1_9v = arrayToFloat(&data[0]);
+            motor0DetailsData.railSupply3_3v = arrayToFloat(&data[4]);
             break;
 
         case M0_HEATSINK_TEMPERATURE_CAN_ID:
-            motor0DetailsData.motorTemperature = arrayToFloat(data[0]);
-            motor0DetailsData.heatSinkTemperature = arrayToFloat(data[4]);
+            motor0DetailsData.motorTemperature = arrayToFloat(&data[0]);
+            motor0DetailsData.heatSinkTemperature = arrayToFloat(&data[4]);
             break;
 
         case M0_DSP_BOARD_TEMPERATURE_CAN_ID:
-            motor0DetailsData.dspBoardTemp = arrayToFloat(data[0]);
+            motor0DetailsData.dspBoardTemp = arrayToFloat(&data[0]);
             break;
 
         case M0_ODOMETER_BUS_AMPHOURS_CAN_ID:
-            motor0DetailsData.odometer = arrayToFloat(data[0]);
-            motor0DetailsData.dcBusAmpHours = arrayToFloat(data[4]);
+            motor0DetailsData.odometer = arrayToFloat(&data[0]);
+            motor0DetailsData.dcBusAmpHours = arrayToFloat(&data[4]);
             break;
 
         case M0_SLIP_SPEED_CAN_ID:
-            motor0DetailsData.slipSpeed = arrayToFloat(data[4]);
+            motor0DetailsData.slipSpeed = arrayToFloat(&data[4]);
             break;
 
         case M1_BASE_CAN_ID:
@@ -121,60 +121,60 @@ void parseMotorCanMessage(uint32_t stdId, uint8_t* data)
             break;
 
         case M1_BUS_CAN_ID:
-            keyMotorData.m1BusCurrent = arrayToFloat(data[0]);
-            keyMotorData.m1BusVoltage = arrayToFloat(data[4]);
+            keyMotorData.m1BusCurrent = arrayToFloat(&data[0]);
+            keyMotorData.m1BusVoltage = arrayToFloat(&data[4]);
             break;
 
         case M1_VELOCITY_CAN_ID:
-            // motorVelocity = arrayToFloat(data[0]);
-            keyMotorData.m1VehicleVelocity = arrayToFloat(data[4]);
+            // motorVelocity = arrayToFloat(&data[0]);
+            keyMotorData.m1VehicleVelocity = arrayToFloat(&data[4]);
             break;
 
         case M1_PHASE_CURRENT_CAN_ID:
-            motor1DetailsData.phaseBCurrent = arrayToFloat(data[0]);
-            motor1DetailsData.phaseCCurrent = arrayToFloat(data[4]);
+            motor1DetailsData.phaseBCurrent = arrayToFloat(&data[0]);
+            motor1DetailsData.phaseCCurrent = arrayToFloat(&data[4]);
             break;
 
         case M1_VOLTAGE_VECTOR_CAN_ID:
-            motor1DetailsData.motorVoltageImaginary = arrayToFloat(data[0]);
-            motor1DetailsData.motorVoltageReal = arrayToFloat(data[4]);
+            motor1DetailsData.motorVoltageImaginary = arrayToFloat(&data[0]);
+            motor1DetailsData.motorVoltageReal = arrayToFloat(&data[4]);
             break;
 
         case M1_CURRENT_VECTOR_CAN_ID:
-            motor1DetailsData.motorCurrentImaginary = arrayToFloat(data[0]);
-            motor1DetailsData.motorCurrentReal = arrayToFloat(data[4]);
+            motor1DetailsData.motorCurrentImaginary = arrayToFloat(&data[0]);
+            motor1DetailsData.motorCurrentReal = arrayToFloat(&data[4]);
             break;
 
         case M1_BACKEMF_CAN_ID:
-            motor1DetailsData.backEmfImaginary = arrayToFloat(data[0]);
-            motor1DetailsData.backEmfReal = arrayToFloat(data[4]);
+            motor1DetailsData.backEmfImaginary = arrayToFloat(&data[0]);
+            motor1DetailsData.backEmfReal = arrayToFloat(&data[4]);
             break;
 
         case M1_15V_VOLTAGE_RAIL_CAN_ID:
-            motor1DetailsData.railSupply15v = arrayToFloat(data[4]);
+            motor1DetailsData.railSupply15v = arrayToFloat(&data[4]);
             break;
 
         case M1_3_3V_1_9V_VOLTAGE_RAIL_CAN_ID:
-            motor1DetailsData.railSupply1_9v = arrayToFloat(data[0]);
-            motor1DetailsData.railSupply3_3v = arrayToFloat(data[4]);
+            motor1DetailsData.railSupply1_9v = arrayToFloat(&data[0]);
+            motor1DetailsData.railSupply3_3v = arrayToFloat(&data[4]);
             break;
 
         case M1_HEATSINK_TEMPERATURE_CAN_ID:
-            motor1DetailsData.motorTemperature = arrayToFloat(data[0]);
-            motor1DetailsData.heatSinkTemperature = arrayToFloat(data[4]);
+            motor1DetailsData.motorTemperature = arrayToFloat(&data[0]);
+            motor1DetailsData.heatSinkTemperature = arrayToFloat(&data[4]);
             break;
 
         case M1_DSP_BOARD_TEMPERATURE_CAN_ID:
-            motor1DetailsData.dspBoardTemp = arrayToFloat(data[0]);
+            motor1DetailsData.dspBoardTemp = arrayToFloat(&data[0]);
             break;
 
         case M1_ODOMETER_BUS_AMPHOURS_CAN_ID:
-            motor1DetailsData.odometer = arrayToFloat(data[0]);
-            motor1DetailsData.dcBusAmpHours = arrayToFloat(data[4]);
+            motor1DetailsData.odometer = arrayToFloat(&data[0]);
+            motor1DetailsData.dcBusAmpHours = arrayToFloat(&data[4]);
             break;
 
         case M1_SLIP_SPEED_CAN_ID:
-            motor1DetailsData.slipSpeed = arrayToFloat(data[4]);
+            motor1DetailsData.slipSpeed = arrayToFloat(&data[4]);
             break;
     }
 }
@@ -243,10 +243,11 @@ void parseMotorFaultMessage(uint8_t motorId, uint8_t* data)
 
 float arrayToFloat(uint8_t* data)
 {
-    float result =
-        (data[0] << 0) |
-        (data[1] << 8) |
-        (data[2] << 16) |
-        (data[3] << 24);
+    float result = 0;
+   ((unsigned char*)&result)[0] = data[3];
+   ((unsigned char*)&result)[1] = data[2];
+   ((unsigned char*)&result)[2] = data[1];
+   ((unsigned char*)&result)[3] = data[0];
+
     return result;
 }
