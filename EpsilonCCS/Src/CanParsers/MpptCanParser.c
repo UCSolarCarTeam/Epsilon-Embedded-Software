@@ -4,8 +4,6 @@
 
 #include "MpptData.h"
 
-extern struct MpptData mpptData[NUM_OF_MPPTS];
-
 #define MPPT_NUM_MASK 0x00F
 
 void parseMpptCanMessage(uint32_t stdId, uint8_t* data)

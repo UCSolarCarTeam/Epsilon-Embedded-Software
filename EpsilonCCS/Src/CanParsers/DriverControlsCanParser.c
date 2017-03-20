@@ -4,8 +4,6 @@
 
 #include "DriverControlData.h"
 
-extern struct DriverControlData driverControlData;
-
 #define DRIVER_CONTROLS_HEARTBEAT_ID (0x700)
 #define DRIVER_CONTROLS_LIGHTS_ID (0x701)
 #define DRIVER_CONTROLS_MUSIC_ID (0x702)

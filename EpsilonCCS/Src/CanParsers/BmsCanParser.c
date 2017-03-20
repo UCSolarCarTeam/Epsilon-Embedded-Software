@@ -5,9 +5,6 @@
 #include "BatteryData.h"
 #include "BatteryFaultsData.h"
 
-extern struct BatteryData batteryData;
-extern struct BatteryFaultsData batteryFaultsData;
-
 #define BMS_HEARTBEAT_ID (0x300)
 #define STARTUP_INFO_ID (0x301)
 #define PACK_INFO_ID (0x302)

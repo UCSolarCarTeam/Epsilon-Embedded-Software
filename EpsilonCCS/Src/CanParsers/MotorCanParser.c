@@ -6,11 +6,6 @@
 #include "MotorDetailsData.h"
 #include "MotorFaultsData.h"
 
-extern struct KeyMotorData keyMotorData;
-extern struct MotorDetailsData motor0DetailsData;
-extern struct MotorDetailsData motor1DetailsData;
-extern struct MotorFaultsData motorFaultsData;
-
 #define M0_ID (0)
 #define M1_ID (1)
 
@@ -244,10 +239,10 @@ void parseMotorFaultMessage(uint8_t motorId, uint8_t* data)
 float arrayToFloat(uint8_t* data)
 {
     float result = 0;
-   ((unsigned char*)&result)[0] = data[3];
-   ((unsigned char*)&result)[1] = data[2];
-   ((unsigned char*)&result)[2] = data[1];
-   ((unsigned char*)&result)[3] = data[0];
+    ((unsigned char*)&result)[0] = data[3];
+    ((unsigned char*)&result)[1] = data[2];
+    ((unsigned char*)&result)[2] = data[1];
+    ((unsigned char*)&result)[3] = data[0];
 
     return result;
 }

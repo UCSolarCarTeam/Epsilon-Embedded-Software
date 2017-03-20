@@ -4,8 +4,6 @@
 
 #include "LightsData.h"
 
-extern struct LightsData lightsData;
-
 #define LIGHTS_HEARTBEAT_ID (0x710)
 #define LIGHTS_STATUS_ID (0x711)
 

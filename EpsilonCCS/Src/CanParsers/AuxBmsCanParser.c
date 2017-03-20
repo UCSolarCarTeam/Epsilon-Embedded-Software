@@ -4,8 +4,6 @@
 
 #include "BatteryData.h"
 
-extern struct BatteryData batteryData;
-
 #define AUX_BMS_HEARTBEAT_ID (0x720)
 #define AUX_BMS_INFO_ID (0x721)
 
