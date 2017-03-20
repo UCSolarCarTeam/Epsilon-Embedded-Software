@@ -8,43 +8,43 @@
 #include "MpptCanParser.h"
 
 // 0x720 >= AUX_BMS >= 0x723
-#define AUX_BMS_CAN_ID (0x720)
-#define AUX_BMS_CAN_MASK (0xFFC)
+#define AUX_BMS_CAN_MIN (0x720)
+#define AUX_BMS_CAN_MAX (0x72F)
 // 0x300 >= BMS >= 0x307
-#define BMS_CAN_ID (0x300)
-#define BMS_CAN_MASK (0xFF8)
+#define BMS_CAN_MIN (0x300)
+#define BMS_CAN_MAX (0x30F)
 // 0x700 >= DRIVER_CONTROL >= 0x703
-#define DRIVER_CONTROL_CAN_ID (0x700)
-#define DRIVER_CONTROL_CAN_MASK (0xFFC)
+#define DRIVER_CONTROL_CAN_MIN (0x700)
+#define DRIVER_CONTROL_CAN_MAX (0x70F)
 // 0x710 >= LIGHTS 0x713
-#define LIGHTS_CAN_ID (0x710)
-#define LIGHTS_CAN_MASK (0xFFC)
+#define LIGHTS_CAN_MIN (0x710)
+#define LIGHTS_CAN_MAX (0x71F)
 // 0x400 >= MOTOR >= 0x43F
-#define MOTOR_CAN_ID (0x400)
-#define MOTOR_CAN_MASK (0xFC0)
+#define MOTOR_CAN_MIN (0x400)
+#define MOTOR_CAN_MAX (0x4FF)
 // 0x600 >= MPPT >= 0x600
-#define MPPT_CAN_ID (0x600)
-#define MPPT_CAN_MASK (0xFFF)
+#define MPPT_CAN_MIN (0x600)
+#define MPPT_CAN_MAX (0x600)
 
 void parseCanMessage(uint32_t stdId, uint8_t* data)
 {
-    if ((stdId & AUX_BMS_CAN_MASK) == AUX_BMS_CAN_ID)
+    if (stdId >= AUX_BMS_CAN_MIN && stdId <= AUX_BMS_CAN_MAX)
     {
         parseAuxBmsCanMessage(stdId, data);
     }
-    else if ((stdId & BMS_CAN_MASK) == BMS_CAN_ID)
+    else if (stdId >= BMS_CAN_MIN && stdId <= BMS_CAN_MAX)
     {
         parseBmsCanMessage(stdId, data);
     }
-    else if ((stdId & DRIVER_CONTROL_CAN_MASK) == DRIVER_CONTROL_CAN_ID)
+    else if (stdId >= DRIVER_CONTROL_CAN_MIN && stdId <= DRIVER_CONTROL_CAN_MAX)
     {
         parseDriverControlsCanMessage(stdId, data);
     }
-    else if ((stdId & LIGHTS_CAN_MASK) == LIGHTS_CAN_ID)
+    else if (stdId >= LIGHTS_CAN_MIN && stdId <= LIGHTS_CAN_MAX)
     {
         parseLightsCanMessage(stdId, data);
     }
-    else if ((stdId & MPPT_CAN_MASK) == MPPT_CAN_ID)
+    else if (stdId >= MPPT_CAN_MIN && stdId <= MPPT_CAN_MAX)
     {
         parseMpptCanMessage(stdId, data);
     }
