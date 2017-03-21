@@ -1,3 +1,7 @@
+#include <string.h> // for memcpy
+
+#include "cmsis_os.h"
+
 #include "CanParser.h"
 
 #include "AuxBmsCanParser.h"
@@ -26,6 +30,21 @@
 #define MPPT_CAN_MIN (0x600)
 #define MPPT_CAN_MAX (0x600)
 
+void parseCanTask(void const* arg)
+{
+    for (;;)
+    {
+        osEvent evt = osMessageGet(canRxQueue, osWaitForever); // Blocks
+
+        if (evt.status == osEventMessage)
+        {
+            CanMsg* msg = (CanMsg*)evt.value.p;
+            parseCanMessage(msg->StdId, msg->Data);
+            osPoolFree(canRxPool, msg);
+        }
+    }
+}
+
 void parseCanMessage(uint32_t stdId, uint8_t* data)
 {
     if (stdId >= AUX_BMS_CAN_MIN && stdId <= AUX_BMS_CAN_MAX)
@@ -48,4 +67,18 @@ void parseCanMessage(uint32_t stdId, uint8_t* data)
     {
         parseMpptCanMessage(stdId, data);
     }
+}
+
+// Reimplement weak definition in stm32f4xx_hal_can.c
+void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
+{
+    CanMsg* msg = (CanMsg*)osPoolAlloc(canRxPool);
+
+    msg->StdId = hcan->pRxMsg->StdId;
+    memcpy(msg->Data, hcan->pRxMsg->Data, 8);
+
+    osMessagePut(canRxQueue, (uint32_t)msg, osWaitForever);
+
+    __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
+    HAL_CAN_Receive_IT(hcan, CAN_FIFO0);
 }

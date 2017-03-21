@@ -409,9 +409,11 @@ typedef struct
 #define CAN_FLAG_TME2              ((uint32_t)0x0000051CU)  /*!< Transmit mailbox 0 empty flag */
 
 /* Receive Flags */
+#define CAN_FLAG_FMP0              ((uint32_t)0x12000003)   /*!< FIFO 0 Message Pending Flag */
 #define CAN_FLAG_FF0               ((uint32_t)0x00000203U)  /*!< FIFO 0 Full flag    */
 #define CAN_FLAG_FOV0              ((uint32_t)0x00000204U)  /*!< FIFO 0 Overrun flag */
 
+#define CAN_FLAG_FMP1              ((uint32_t)0x14000003)   /*!< FIFO 1 Message Pending Flag */
 #define CAN_FLAG_FF1               ((uint32_t)0x00000403U)  /*!< FIFO 1 Full flag    */
 #define CAN_FLAG_FOV1              ((uint32_t)0x00000404U)  /*!< FIFO 1 Overrun flag */
 
