@@ -7,22 +7,22 @@
 #include "MotorCanParser.h"
 #include "MpptCanParser.h"
 
-// 0x720 >= AUX_BMS >= 0x723
+
 #define AUX_BMS_CAN_MIN (0x720)
 #define AUX_BMS_CAN_MAX (0x72F)
-// 0x300 >= BMS >= 0x307
+
 #define BMS_CAN_MIN (0x300)
 #define BMS_CAN_MAX (0x30F)
-// 0x700 >= DRIVER_CONTROL >= 0x703
+
 #define DRIVER_CONTROL_CAN_MIN (0x700)
 #define DRIVER_CONTROL_CAN_MAX (0x70F)
-// 0x710 >= LIGHTS 0x713
+
 #define LIGHTS_CAN_MIN (0x710)
 #define LIGHTS_CAN_MAX (0x71F)
-// 0x400 >= MOTOR >= 0x43F
+
 #define MOTOR_CAN_MIN (0x400)
 #define MOTOR_CAN_MAX (0x4FF)
-// 0x600 >= MPPT >= 0x600
+
 #define MPPT_CAN_MIN (0x600)
 #define MPPT_CAN_MAX (0x600)
 
