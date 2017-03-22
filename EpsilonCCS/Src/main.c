@@ -36,6 +36,7 @@
 
 /* USER CODE BEGIN Includes */
 #include "CanParser.h"
+#include "ActivateHorn.h"
 
 /* USER CODE END Includes */
 
@@ -46,6 +47,7 @@ CAN_HandleTypeDef hcan2;
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 static osThreadId parseCanHandle;
+static osThreadId activateHornHandle;
 
 osPoolDef(canRxPool, 64, CanMsg);
 osPoolId canRxPool;
@@ -141,8 +143,13 @@ int main(void)
 
     /* Create the thread(s) */
     /* definition and creation of defaultTask */
+    // parseCanTask() -> CanParser.h
     osThreadDef(canRxTask, parseCanTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
     parseCanHandle = osThreadCreate(osThread(canRxTask), NULL);
+
+    // activateHornTask() -> ActivateHorn.h
+    osThreadDef(hornTask, activateHornTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    activateHornHandle = osThreadCreate(osThread(hornTask), NULL);
 
     /* USER CODE BEGIN RTOS_THREADS */
     /* add threads, ... */
