@@ -10,13 +10,13 @@ void activateHornTask(void const* arg)
 {
     for (;;)
     {
-    	if(driverControlData.driverInputs.horn)
-    	{
+        if (driverControlData.driverInputs.horn)
+        {
             HAL_GPIO_WritePin(HORN_GPIO_Port, HORN_Pin, 1);
-    	} 
-    	else
-    	{
-            HAL_GPIO_WritePin(HORN_GPIO_Port, HORN_Pin, 0);    		
-    	}
+        }
+        else
+        {
+            HAL_GPIO_WritePin(HORN_GPIO_Port, HORN_Pin, 0);
+        }
     }
 }
