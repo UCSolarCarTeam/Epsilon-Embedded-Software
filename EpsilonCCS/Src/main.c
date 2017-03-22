@@ -35,6 +35,7 @@
 #include "cmsis_os.h"
 
 /* USER CODE BEGIN Includes */
+#include "CanParser.h"
 
 /* USER CODE END Includes */
 
@@ -42,10 +43,15 @@
 CAN_HandleTypeDef hcan1;
 CAN_HandleTypeDef hcan2;
 
-osThreadId defaultTaskHandle;
-
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
+static osThreadId parseCanHandle;
+
+osPoolDef(canRxPool, 64, CanMsg);
+osPoolId canRxPool;
+
+osMessageQDef(canRxQueue, 64, CanMsg); // CanMsg defined in CanParser.h
+osMessageQId canRxQueue;
 
 /* USER CODE END PV */
 
@@ -54,7 +60,6 @@ void SystemClock_Config(void);
 void Error_Handler(void);
 static void MX_GPIO_Init(void);
 static void MX_CAN2_Init(void);
-void StartDefaultTask(void const* argument);
 
 /* USER CODE BEGIN PFP */
 static void MX_CAN1_UserInit(void);
@@ -136,15 +141,16 @@ int main(void)
 
     /* Create the thread(s) */
     /* definition and creation of defaultTask */
-    osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
-    defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+    osThreadDef(canRxTask, parseCanTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    parseCanHandle = osThreadCreate(osThread(canRxTask), NULL);
 
     /* USER CODE BEGIN RTOS_THREADS */
     /* add threads, ... */
     /* USER CODE END RTOS_THREADS */
 
     /* USER CODE BEGIN RTOS_QUEUES */
-    /* add queues, ... */
+    canRxPool = osPoolCreate(osPool(canRxPool));
+    canRxQueue = osMessageCreate(osMessageQ(canRxQueue), NULL);
     /* USER CODE END RTOS_QUEUES */
 
 
@@ -366,20 +372,6 @@ static void MX_CAN2_UserInit(void)
 }
 
 /* USER CODE END 4 */
-
-/* StartDefaultTask function */
-void StartDefaultTask(void const* argument)
-{
-
-    /* USER CODE BEGIN 5 */
-    /* Infinite loop */
-    for (;;)
-    {
-        osDelay(1);
-    }
-
-    /* USER CODE END 5 */
-}
 
 /**
   * @brief  Period elapsed callback in non blocking mode
