@@ -3,6 +3,15 @@
 #define START (0xFFFF);
 #define XOR_OUT (0xFFFF);
 
+union DataUnion
+{
+    float floatData;
+    short shortData[2];
+    unsigned short uShortData[2];
+    char charData[4];
+    unsigned int uIntData;
+};
+
 static unsigned short crc16table[256] =
 {
     0x0000, 0x1189, 0x2312, 0x329B, 0x4624, 0x57AD, 0x6536, 0x74BF,
