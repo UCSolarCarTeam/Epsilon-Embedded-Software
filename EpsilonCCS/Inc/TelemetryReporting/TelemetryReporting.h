@@ -2,11 +2,10 @@
 
 void sendTelemetryTask();
 void sendKeyMotor();
-void sendMotorDetails();
+void sendMotorDetails(int n);
 void sendDriverControls();
 void sendMotorFaults();
 void sendBatteryFaults();
 void sendBattery();
-void sendCmu();
-void sendMppt();
+void sendMppt(int n);
 void sendLights();
