@@ -36,6 +36,7 @@
 
 /* USER CODE BEGIN Includes */
 #include "CanParser.h"
+#include "TelemetryReporting.h"
 #include "ActivateHorn.h"
 
 /* USER CODE END Includes */
@@ -47,6 +48,7 @@ CAN_HandleTypeDef hcan2;
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 static osThreadId parseCanHandle;
+static osThreadId sendTelemetryHandle;
 static osThreadId activateHornHandle;
 
 osPoolDef(canRxPool, 64, CanMsg);
@@ -142,14 +144,15 @@ int main(void)
     /* USER CODE END RTOS_TIMERS */
 
     /* Create the thread(s) */
-    /* definition and creation of defaultTask */
     // parseCanTask() -> CanParser.h
     osThreadDef(canRxTask, parseCanTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
     parseCanHandle = osThreadCreate(osThread(canRxTask), NULL);
-
     // activateHornTask() -> ActivateHorn.h
     osThreadDef(hornTask, activateHornTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
     activateHornHandle = osThreadCreate(osThread(hornTask), NULL);
+    // sendTelemetryTask() -> TelemetryReporting.h
+    osThreadDef(telemetryOutTask, sendTelemetryTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    sendTelemetryHandle = osThreadCreate(osThread(telemetryOutTask), NULL);
 
     /* USER CODE BEGIN RTOS_THREADS */
     /* add threads, ... */
