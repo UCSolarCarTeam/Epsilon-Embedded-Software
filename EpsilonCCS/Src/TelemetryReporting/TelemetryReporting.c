@@ -4,13 +4,6 @@
 #include "KeyMotorData.h"
 
 #define KEY_MOTOR_LENGTH (43)
-#define MOTOR_DETAILS_LENGTH (69)
-#define DRIVER_CONTROLS_LENGTH (9)
-#define MOTOR_FAULTS_LENGTH (9)
-#define BATTERY_FAULTS_LENGTH (3)
-#define BATTERY_LENGTH (60)
-#define MPPT_LENGTH (10)
-#define LIGHTS_LENGTH (2)
 
 void sendTelemetryTask()
 {
