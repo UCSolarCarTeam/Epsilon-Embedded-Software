@@ -1,7 +1,11 @@
+#include "cmsis_os.h"
+
 #include "TelemetryUtils.h"
 
-#define START (0xFFFF);
-#define XOR_OUT (0xFFFF);
+#define START (0xFFFF)
+#define XOR_OUT (0xFFFF)
+
+#define BOARD_TIMEOUT_MS (3000)
 
 union DataUnion
 {
@@ -116,6 +120,18 @@ void addChecksum(unsigned char* data, unsigned int length)
     data[length + 1] = (unsigned char)(0xFF & (crc16 >> 8));
 }
 
+unsigned char messageIsRecent(uint32_t lastReceived)
+{
+    uint32_t elapsedTicks = osKernelSysTick() - lastReceived;
+    // osKernelSysTickMicroSec() from cmsis_os.h
+    /// Convert a microseconds value to a RTOS kernel system timer value.
+    uint64_t timeoutTicks = osKernelSysTickMicroSec(BOARD_TIMEOUT_MS);
+    if (elapsedTicks > timeoutTicks)
+    {
+        return 0; // false
+    }
+    return 1; // true
+}
 
 void writeFloatIntoArray(unsigned char* data, int index, float value)
 {
