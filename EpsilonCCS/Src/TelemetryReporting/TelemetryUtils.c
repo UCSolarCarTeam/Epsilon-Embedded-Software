@@ -126,10 +126,12 @@ unsigned char messageIsRecent(uint32_t lastReceived)
     // osKernelSysTickMicroSec() from cmsis_os.h
     /// Convert a microseconds value to a RTOS kernel system timer value.
     uint64_t timeoutTicks = osKernelSysTickMicroSec(BOARD_TIMEOUT_MS);
+
     if (elapsedTicks > timeoutTicks)
     {
         return 0; // false
     }
+
     return 1; // true
 }
 

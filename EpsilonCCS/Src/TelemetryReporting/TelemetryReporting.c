@@ -24,7 +24,7 @@ void sendKeyMotor()
 {
     unsigned int unframedPacketLength = KEY_MOTOR_LENGTH + CHECKSUM_LENGTH;
     unsigned char packetPayload[unframedPacketLength];
-    
+
     packetPayload[0] = KEY_MOTOR_PKG_ID;
 
     unsigned char motor0AliveArray[] = {messageIsRecent(keyMotorData.m0lastReceived)};
@@ -41,11 +41,11 @@ void sendKeyMotor()
     writeFloatIntoArray(packetPayload, 31, keyMotorData.m1BusCurrent);
     writeFloatIntoArray(packetPayload, 35, keyMotorData.m1BusVoltage);
     writeFloatIntoArray(packetPayload, 39, keyMotorData.m1VehicleVelocity);
-    
+
     addChecksum(packetPayload, KEY_MOTOR_LENGTH);
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
-    
+
     // TODO: Send over USB UART
 }
 
