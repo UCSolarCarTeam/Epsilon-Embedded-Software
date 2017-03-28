@@ -3,17 +3,17 @@
 
 #include "TelemetryReporting.h"
 
-#define CCS_TELEM_FREQ 200 // 5Hz == 200ms
+#define CCS_TELEM_PERIOD_MS (200) // 5Hz == 200ms
 
 void sendTelemetryTask()
 {
     uint32_t prevWakeTime = osKernelSysTick();
-    // Savlos defined in https://tinyurl.com/n23nzes
+    // Salvos defined in https://docs.google.com/spreadsheets/d/1soVLjeD9Sl7z7Z6cYMyn1fmn-cG7tx_pfFDsvgkCqMU/edit#gid=782574835
     static unsigned char salvo = 1;
 
     for (;;)
     {
-        osDelayUntil(&prevWakeTime, CCS_TELEM_FREQ);
+        osDelayUntil(&prevWakeTime, CCS_TELEM_PERIOD_MS);
 
         sendKeyMotor();
         sendLights();
@@ -32,7 +32,6 @@ void sendTelemetryTask()
                 break;
 
             case 2:
-                sendBattery(0);
                 sendMotorDetails(1);
                 sendMppt(2);
                 salvo = 1;
