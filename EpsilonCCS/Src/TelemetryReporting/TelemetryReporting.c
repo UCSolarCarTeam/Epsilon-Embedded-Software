@@ -87,7 +87,7 @@ void sendMotorDetails(int n)
     unsigned int unframedPacketLength = MOTOR_DETAILS_LENGTH + CHECKSUM_LENGTH;
     unsigned char packetPayload[unframedPacketLength];
 
-    switch(n)
+    switch (n)
     {
         case 0:
             packetPayload[0] = M0_DETAILS_DATA_PKG_ID;
