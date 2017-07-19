@@ -5,9 +5,10 @@
 #include "TelemetryUtils.h"
 
 #include "KeyMotorData.h"
+#include "MotorDetailsData.h"
 
 #define KEY_MOTOR_LENGTH (43)
-#define MOTOR_DETAILS_LENGTH(69)
+#define MOTOR_DETAILS_LENGTH (69)
 
 #define CCS_TELEM_PERIOD_MS (200) // 5Hz == 200ms
 
