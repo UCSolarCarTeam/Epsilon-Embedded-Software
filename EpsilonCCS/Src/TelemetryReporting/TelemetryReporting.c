@@ -5,8 +5,10 @@
 #include "TelemetryUtils.h"
 
 #include "KeyMotorData.h"
+#include "MotorDetailsData.h"
 
 #define KEY_MOTOR_LENGTH (43)
+#define MOTOR_DETAILS_LENGTH (69)
 
 #define CCS_TELEM_PERIOD_MS (200) // 5Hz == 200ms
 
@@ -82,7 +84,57 @@ void sendKeyMotor()
 
 void sendMotorDetails(int n)
 {
+    unsigned int unframedPacketLength = MOTOR_DETAILS_LENGTH + CHECKSUM_LENGTH;
+    unsigned char packetPayload[unframedPacketLength];
 
+    switch (n)
+    {
+        case 0:
+            packetPayload[0] = M0_DETAILS_DATA_PKG_ID;
+            writeFloatIntoArray(packetPayload, 1, motor0DetailsData.phaseCCurrent);
+            writeFloatIntoArray(packetPayload, 5, motor0DetailsData.phaseBCurrent);
+            writeFloatIntoArray(packetPayload, 9, motor0DetailsData.motorVoltageReal);
+            writeFloatIntoArray(packetPayload, 13, motor0DetailsData.motorVoltageImaginary);
+            writeFloatIntoArray(packetPayload, 17, motor0DetailsData.motorCurrentReal);
+            writeFloatIntoArray(packetPayload, 21, motor0DetailsData.motorCurrentImaginary);
+            writeFloatIntoArray(packetPayload, 25, motor0DetailsData.backEmfReal);
+            writeFloatIntoArray(packetPayload, 29, motor0DetailsData.backEmfImaginary);
+            writeFloatIntoArray(packetPayload, 33, motor0DetailsData.railSupply15v);
+            writeFloatIntoArray(packetPayload, 37, motor0DetailsData.railSupply3_3v);
+            writeFloatIntoArray(packetPayload, 41, motor0DetailsData.railSupply1_9v);
+            writeFloatIntoArray(packetPayload, 45, motor0DetailsData.heatSinkTemperature);
+            writeFloatIntoArray(packetPayload, 49, motor0DetailsData.motorTemperature);
+            writeFloatIntoArray(packetPayload, 53, motor0DetailsData.dspBoardTemp);
+            writeFloatIntoArray(packetPayload, 57, motor0DetailsData.dcBusAmpHours);
+            writeFloatIntoArray(packetPayload, 61, motor0DetailsData.odometer);
+            writeFloatIntoArray(packetPayload, 65, motor0DetailsData.slipSpeed);
+            break;
+
+        case 1:
+            packetPayload[0] = M1_DETAILS_DATA_PKG_ID;
+            writeFloatIntoArray(packetPayload, 1, motor1DetailsData.phaseCCurrent);
+            writeFloatIntoArray(packetPayload, 5, motor1DetailsData.phaseBCurrent);
+            writeFloatIntoArray(packetPayload, 9, motor1DetailsData.motorVoltageReal);
+            writeFloatIntoArray(packetPayload, 13, motor1DetailsData.motorVoltageImaginary);
+            writeFloatIntoArray(packetPayload, 17, motor1DetailsData.motorCurrentReal);
+            writeFloatIntoArray(packetPayload, 21, motor1DetailsData.motorCurrentImaginary);
+            writeFloatIntoArray(packetPayload, 25, motor1DetailsData.backEmfReal);
+            writeFloatIntoArray(packetPayload, 29, motor1DetailsData.backEmfImaginary);
+            writeFloatIntoArray(packetPayload, 33, motor1DetailsData.railSupply15v);
+            writeFloatIntoArray(packetPayload, 37, motor1DetailsData.railSupply3_3v);
+            writeFloatIntoArray(packetPayload, 41, motor1DetailsData.railSupply1_9v);
+            writeFloatIntoArray(packetPayload, 45, motor1DetailsData.heatSinkTemperature);
+            writeFloatIntoArray(packetPayload, 49, motor1DetailsData.motorTemperature);
+            writeFloatIntoArray(packetPayload, 53, motor1DetailsData.dspBoardTemp);
+            writeFloatIntoArray(packetPayload, 57, motor1DetailsData.dcBusAmpHours);
+            writeFloatIntoArray(packetPayload, 61, motor1DetailsData.odometer);
+            writeFloatIntoArray(packetPayload, 65, motor1DetailsData.slipSpeed);
+            break;
+    }
+
+    addChecksum(packetPayload, MOTOR_DETAILS_LENGTH);
+    unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
+    unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
 }
 
 void sendDriverControls()
