@@ -189,7 +189,7 @@ void sendMotorFaults()
 
 void sendBatteryFaults()
 {
-    unsigned int unframedPacketLength = MOTOR_FAULTS_LENGTH + CHECKSUM_LENGTH;
+    unsigned int unframedPacketLength = BATTERY_FAULTS_LENGTH + CHECKSUM_LENGTH;
     unsigned char packetPayload[unframedPacketLength];
 
     packetPayload[0] = BATTERY_FAULTS_PKG_ID;
