@@ -6,9 +6,11 @@
 
 #include "KeyMotorData.h"
 #include "MotorDetailsData.h"
+#include "DriverControlData.h"
 
 #define KEY_MOTOR_LENGTH (43)
 #define MOTOR_DETAILS_LENGTH (69)
+#define DRIVER_CONTROLS_LENGTH (9)
 
 #define CCS_TELEM_PERIOD_MS (200) // 5Hz == 200ms
 
@@ -135,11 +137,29 @@ void sendMotorDetails(int n)
     addChecksum(packetPayload, MOTOR_DETAILS_LENGTH);
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
+
+    //TODO: Send over USB
 }
 
 void sendDriverControls()
 {
+    unsigned int unframedPacketLength = DRIVER_CONTROLS_LENGTH + CHECKSUM_LENGTH;
+    unsigned char packetPayload[unframedPacketLength];
 
+    packetPayload[0] = DRIVER_CONTROL_PKG_ID;
+    unsigned char driverControlsBoardAliveArray[] = {messageIsRecent(driverControlData.lastReceived)};
+    writeBoolsIntoArray(packetPayload, 1, driverControlsBoardAliveArray, 1);
+    writeBoolsIntoArray(packetPayload, 2, &driverControlData.lightsInputs, 7);
+    writeBoolsIntoArray(packetPayload, 3, &driverControlData.musicInputs, 5);
+    writeUShortIntoArray(packetPayload, 4, driverControlData.acceleration);
+    writeUShortIntoArray(packetPayload, 6, driverControlData.regenBraking);
+    writeBoolsIntoArray(packetPayload, 8, &driverControlData.driverInputs, 6);
+
+    addChecksum(packetPayload, DRIVER_CONTROLS_LENGTH);
+    unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
+    unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
+
+    //TODO: Send over USB
 }
 
 void sendMotorFaults()
