@@ -15,7 +15,7 @@
 #define DRIVER_CONTROLS_LENGTH (9)
 #define MOTOR_FAULTS_LENGTH (9)
 #define BATTERY_FAULTS_LENGTH (3)
-
+#define BATTERY_DETAILS_LENGTH (52)
 
 #define CCS_TELEM_PERIOD_MS (200) // 5Hz == 200ms
 
@@ -202,7 +202,38 @@ void sendBatteryFaults()
 
 void sendBattery()
 {
+    unsigned int unframedPacketLength = BATTERY_DETAILS_LENGTH + CHECKSUM_LENGTH;
+    unsigned char packetPayload[unframedPacketLength]
 
+    packetPayload[0] = BATTERY_PKG_ID;
+    unsigned char BmuAliveArray[] = {messageIsRecent(batteryData.bmsLastReceived)};
+    writeBoolsIntoArray(packetPayload, 1, BmuAliveArray, 1);
+    writeBoolsIntoArray(packetPayload, 2, &batteryData.bmsRelayStatus, 8);
+    packetPayload[3] = batteryData.populatedCells;
+    writeFloatIntoArray(packetPayload, 4, batteryData.input12volt);
+    writeFloatIntoArray(packetPayload, 8, batteryData.fanVoltage);
+    writeFloatIntoArray(packetPayload, 12, batteryData.packCurrent);
+    writeFloatIntoArray(packetPayload, 16, batteryData.packVoltage);
+    writeFloatIntoArray(packetPayload, 20, batteryData.packStateofCharge);
+    writeFloatIntoArray(packetPayload, 24, batteryData.packAmphours);
+    writeFloatIntoArray(packetPayload, 28, batteryData.packDepthofDischarge);
+    packetPayload[32] = batteryData.highTemperature;
+    packetPayload[33] = batteryData.highThermistorId;
+    packetPayload[34] = batteryData.lowTemperature;
+    packetPayload[35] = batteryData.lowThermistorId:
+    packetPayload[36] = batteryData.averageTemperature;
+    packetPayload[37] = batteryData.internalTemperature;
+    packetPayload[38] = batteryData.fanSpeed;
+    packetPayload[39] = batteryData.requestedFanSpeed;
+    writeUShortIntoArray(packetPayload, 40, batteryData.lowCellVoltage);
+    packetPayload[42] = batteryData.lowCellVoltageId;
+    writeUShortIntoArray(packetPayload, 43, batteryData.highCellVoltage);
+    packetPayload[46] = batteryData.highCellVoltageId;
+    writeUShortIntoArray(packetPayload, 47, batteryData.averageCellVoltage);
+    packetPayload[49] = batteryData.prechargeState;
+    packetPayload[50] = batteryData.auxVoltage;
+    unsigned char auxBmsAliveArray[] = {messageIsRecent(batteryData.auxBmsLastReceived)};
+    writeBoolsIntoArray(packetPayload, 51, auxBmsAliveArray, 1);
 }
 
 void sendMppt(int n)
