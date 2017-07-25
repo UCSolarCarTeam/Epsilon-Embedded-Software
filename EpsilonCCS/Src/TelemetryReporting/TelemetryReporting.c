@@ -11,6 +11,7 @@
 #include "BatteryFaultsData.h"
 #include "BatteryData.h"
 #include "MpptData.h"
+#include "LightsData.h"
 
 #define KEY_MOTOR_LENGTH (43)
 #define MOTOR_DETAILS_LENGTH (69)
@@ -19,6 +20,7 @@
 #define BATTERY_FAULTS_LENGTH (3)
 #define BATTERY_DETAILS_LENGTH (51)
 #define MPPT_DETAILS_LENGTH (13)
+#define LIGHTS_DETAILS_LENGTH (7)
 
 #define CCS_TELEM_PERIOD_MS (200) // 5Hz == 200ms
 
@@ -256,7 +258,7 @@ void sendMppt(int n)
     writeUShortIntoArray(packetPayload, 4, mpptData[n].arrayCurrent);
     writeUShortIntoArray(packetPayload, 6, mpptData[n].batteryVoltage);
     writeUShortIntoArray(packetPayload, 8, mpptData[n].temperature);
-    
+
     addChecksum(packetPayload, MPPT_DETAILS_LENGTH);
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
@@ -264,5 +266,15 @@ void sendMppt(int n)
 
 void sendLights()
 {
+    unsigned int unframedPacketLength = LIGHTS_DETAILS_LENGTH + CHECKSUM_LENGTH;
+    unsigned char packetPayload[unframedPacketLength];
 
+    packetPayload[0] = LIGHT_PKG_ID;
+    unsigned char lightsAliveArray[] = {messageIsRecent(lightsData.lastReceived)};
+    writeBoolsIntoArray(packetPayload, 1, lightsAliveArray, 1);
+    writeBoolsIntoArray(packetPayload, 2, &lightsData.lowBeams, 6);
+
+    addChecksum(packetPayload, LIGHTS_DETAILS_LENGTH);
+    unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
+    unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
 }
