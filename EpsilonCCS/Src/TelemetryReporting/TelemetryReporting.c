@@ -9,13 +9,14 @@
 #include "DriverControlData.h"
 #include "MotorFaultsData.h"
 #include "BatteryFaultsData.h"
+#include "BatteryData.h"
 
 #define KEY_MOTOR_LENGTH (43)
 #define MOTOR_DETAILS_LENGTH (69)
 #define DRIVER_CONTROLS_LENGTH (9)
 #define MOTOR_FAULTS_LENGTH (9)
 #define BATTERY_FAULTS_LENGTH (3)
-#define BATTERY_DETAILS_LENGTH (52)
+#define BATTERY_DETAILS_LENGTH (51)
 
 #define CCS_TELEM_PERIOD_MS (200) // 5Hz == 200ms
 
@@ -203,7 +204,7 @@ void sendBatteryFaults()
 void sendBattery()
 {
     unsigned int unframedPacketLength = BATTERY_DETAILS_LENGTH + CHECKSUM_LENGTH;
-    unsigned char packetPayload[unframedPacketLength]
+    unsigned char packetPayload[unframedPacketLength];
 
     packetPayload[0] = BATTERY_PKG_ID;
     unsigned char BmuAliveArray[] = {messageIsRecent(batteryData.bmsLastReceived)};
@@ -220,7 +221,7 @@ void sendBattery()
     packetPayload[32] = batteryData.highTemperature;
     packetPayload[33] = batteryData.highThermistorId;
     packetPayload[34] = batteryData.lowTemperature;
-    packetPayload[35] = batteryData.lowThermistorId:
+    packetPayload[35] = batteryData.lowThermistorId;
     packetPayload[36] = batteryData.averageTemperature;
     packetPayload[37] = batteryData.internalTemperature;
     packetPayload[38] = batteryData.fanSpeed;
@@ -228,12 +229,16 @@ void sendBattery()
     writeUShortIntoArray(packetPayload, 40, batteryData.lowCellVoltage);
     packetPayload[42] = batteryData.lowCellVoltageId;
     writeUShortIntoArray(packetPayload, 43, batteryData.highCellVoltage);
-    packetPayload[46] = batteryData.highCellVoltageId;
-    writeUShortIntoArray(packetPayload, 47, batteryData.averageCellVoltage);
-    packetPayload[49] = batteryData.prechargeState;
-    packetPayload[50] = batteryData.auxVoltage;
+    packetPayload[45] = batteryData.highCellVoltageId;
+    writeUShortIntoArray(packetPayload, 46, batteryData.averageCellVoltage);
+    packetPayload[48] = batteryData.prechargeState;
+    packetPayload[49] = batteryData.auxVoltage;
     unsigned char auxBmsAliveArray[] = {messageIsRecent(batteryData.auxBmsLastReceived)};
-    writeBoolsIntoArray(packetPayload, 51, auxBmsAliveArray, 1);
+    writeBoolsIntoArray(packetPayload, 50, auxBmsAliveArray, 1);
+
+    addChecksum(packetPayload, BATTERY_DETAILS_LENGTH);
+    unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
+    unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
 }
 
 void sendMppt(int n)
