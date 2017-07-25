@@ -249,8 +249,9 @@ void sendMppt(int n)
     unsigned char packetPayload[unframedPacketLength];
 
     packetPayload[0] = MPPT_PKG_ID;
-    unsigned char MpptAliveArray[] = {messageIsRecent(mpptData->lastReceived)};
-
+    unsigned char mpptAliveArray[] = {messageIsRecent(mpptData->lastReceived)};
+    writeBoolsIntoArray(packetPayload, 1, mpptAliveArray, 1);
+    
     packetPayload[1] = (unsigned char)n;
     writeUShortIntoArray(packetPayload, 2, mpptData[n].arrayVoltage);
     writeUShortIntoArray(packetPayload, 4, mpptData[n].arrayCurrent);
