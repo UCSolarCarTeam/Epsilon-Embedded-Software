@@ -7,10 +7,15 @@
 #include "KeyMotorData.h"
 #include "MotorDetailsData.h"
 #include "DriverControlData.h"
+#include "MotorFaultsData.h"
+#include "BatteryFaultsData.h"
 
 #define KEY_MOTOR_LENGTH (43)
 #define MOTOR_DETAILS_LENGTH (69)
 #define DRIVER_CONTROLS_LENGTH (9)
+#define MOTOR_FAULTS_LENGTH (9)
+#define BATTERY_FAULTS_LENGTH (7)
+
 
 #define CCS_TELEM_PERIOD_MS (200) // 5Hz == 200ms
 
@@ -164,12 +169,35 @@ void sendDriverControls()
 
 void sendMotorFaults()
 {
+    unsigned int unframedPacketLength = MOTOR_FAULTS_LENGTH + CHECKSUM_LENGTH;
+    unsigned char packetPayload[unframedPacketLength];
 
+    packetPayload[0] = MOTOR_FAULTS_PKG_ID;
+    writeBoolsIntoArray(packetPayload, 1, &motorFaultsData.m0ErrorFlags, 8);
+    writeBoolsIntoArray(packetPayload, 2, &motorFaultsData.m1ErrorFlags, 8);
+    writeBoolsIntoArray(packetPayload, 3, &motorFaultsData.m0LimitFlags, 7);
+    writeBoolsIntoArray(packetPayload, 4, &motorFaultsData.m1LimitFlags, 7);
+    packetPayload[5] = motorFaultsData.m0CanRxErrorCount;
+    packetPayload[6] = motorFaultsData.m0CanTxErrorCount;
+    packetPayload[7] = motorFaultsData.m1CanRxErrorCount;
+    packetPayload[8] = motorFaultsData.m1CanTxErrorCount;
+
+    addChecksum(packetPayload, MOTOR_FAULTS_LENGTH);
+    unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
+    unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
 }
 
 void sendBatteryFaults()
 {
+    unsigned int unframedPacketLength = BATTERY_FAULTS_LENGTH + CHECKSUM_LENGTH;
+    unsigned char packetPayload[unframedPacketLength];
 
+    packetPayload[0] = BATTERY_FAULTS_PKG_ID;
+    writeBoolsIntoArray(packetPayload, 1, &batteryFaultsData.batteryErrorFlags, 21);
+    writeBoolsIntoArray(packetPayload, 5, &batteryFaultsData.batteryLimitFlags, 14);
+    addChecksum(packetPayload, BATTERY_FAULTS_LENGTH);
+    unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
+    unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
 }
 
 void sendBattery()
