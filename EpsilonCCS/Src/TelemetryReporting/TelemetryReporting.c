@@ -15,7 +15,7 @@
 #define MOTOR_DETAILS_LENGTH (69)
 #define DRIVER_CONTROLS_LENGTH (9)
 #define MOTOR_FAULTS_LENGTH (9)
-#define BATTERY_FAULTS_LENGTH (3)
+#define BATTERY_FAULTS_LENGTH (7)
 #define BATTERY_DETAILS_LENGTH (51)
 
 #define CCS_TELEM_PERIOD_MS (200) // 5Hz == 200ms
@@ -195,7 +195,7 @@ void sendBatteryFaults()
 
     packetPayload[0] = BATTERY_FAULTS_PKG_ID;
     writeBoolsIntoArray(packetPayload, 1, &batteryFaultsData.batteryErrorFlags, 21);
-    writeBoolsIntoArray(packetPayload, 2, &batteryFaultsData.batteryLimitFlags, 14);
+    writeBoolsIntoArray(packetPayload, 5, &batteryFaultsData.batteryLimitFlags, 14);
     addChecksum(packetPayload, BATTERY_FAULTS_LENGTH);
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
