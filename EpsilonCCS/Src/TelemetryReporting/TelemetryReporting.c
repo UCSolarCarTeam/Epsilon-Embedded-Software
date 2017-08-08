@@ -251,13 +251,13 @@ void sendMppt(int n)
     packetPayload[0] = MPPT_PKG_ID;
     unsigned char mpptAliveArray[] = {messageIsRecent(mpptData->lastReceived)};
     writeBoolsIntoArray(packetPayload, 1, mpptAliveArray, 1);
-    
+
     packetPayload[1] = (unsigned char)n;
     writeUShortIntoArray(packetPayload, 2, mpptData[n].arrayVoltage);
     writeUShortIntoArray(packetPayload, 4, mpptData[n].arrayCurrent);
     writeUShortIntoArray(packetPayload, 6, mpptData[n].batteryVoltage);
     writeUShortIntoArray(packetPayload, 8, mpptData[n].temperature);
-    
+
     addChecksum(packetPayload, MPPT_DETAILS_LENGTH);
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
