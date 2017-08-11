@@ -249,10 +249,14 @@ void sendMppt(int n)
     unsigned char packetPayload[unframedPacketLength];
 
     packetPayload[0] = MPPT_PKG_ID;
-    unsigned char mpptAliveArray[] = {messageIsRecent(mpptData->lastReceived)};
-    writeBoolsIntoArray(packetPayload, 1, mpptAliveArray, 1);
+    unsigned char numberAndAlive = (unsigned char)n & 0x03;
 
-    packetPayload[1] = (unsigned char)n;
+    if(messageIsRecent(mpptData[n].lastReceived))
+    {
+        numberAndAlive |= 0x80;
+    }
+    packetPayload[1] = numberAndAlive;
+    
     writeUShortIntoArray(packetPayload, 2, mpptData[n].arrayVoltage);
     writeUShortIntoArray(packetPayload, 4, mpptData[n].arrayCurrent);
     writeUShortIntoArray(packetPayload, 6, mpptData[n].batteryVoltage);
