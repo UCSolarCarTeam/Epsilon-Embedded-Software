@@ -10,6 +10,7 @@
 #include "MotorFaultsData.h"
 #include "BatteryFaultsData.h"
 #include "BatteryData.h"
+#include "MpptData.h"
 
 #define KEY_MOTOR_LENGTH (43)
 #define MOTOR_DETAILS_LENGTH (69)
@@ -17,6 +18,7 @@
 #define MOTOR_FAULTS_LENGTH (9)
 #define BATTERY_FAULTS_LENGTH (7)
 #define BATTERY_DETAILS_LENGTH (51)
+#define MPPT_DETAILS_LENGTH (10)
 
 #define CCS_TELEM_PERIOD_MS (200) // 5Hz == 200ms
 
@@ -243,7 +245,27 @@ void sendBattery()
 
 void sendMppt(int n)
 {
+    unsigned int unframedPacketLength = MPPT_DETAILS_LENGTH + CHECKSUM_LENGTH;
+    unsigned char packetPayload[unframedPacketLength];
 
+    packetPayload[0] = MPPT_PKG_ID;
+    unsigned char numberAndAlive = (unsigned char)n & 0x03;
+
+    if (messageIsRecent(mpptData[n].lastReceived))
+    {
+        numberAndAlive |= 0x80;
+    }
+
+    packetPayload[1] = numberAndAlive;
+
+    writeUShortIntoArray(packetPayload, 2, mpptData[n].arrayVoltage);
+    writeUShortIntoArray(packetPayload, 4, mpptData[n].arrayCurrent);
+    writeUShortIntoArray(packetPayload, 6, mpptData[n].batteryVoltage);
+    writeUShortIntoArray(packetPayload, 8, mpptData[n].temperature);
+
+    addChecksum(packetPayload, MPPT_DETAILS_LENGTH);
+    unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
+    unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
 }
 
 void sendLights()
