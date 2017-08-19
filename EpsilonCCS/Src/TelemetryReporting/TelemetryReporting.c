@@ -17,9 +17,9 @@
 #define MOTOR_DETAILS_LENGTH (69)
 #define DRIVER_CONTROLS_LENGTH (9)
 #define MOTOR_FAULTS_LENGTH (9)
-#define BATTERY_DETAILS_LENGTH (51)
 #define BATTERY_FAULTS_LENGTH (7)
-#define MPPT_DETAILS_LENGTH (13)
+#define BATTERY_DETAILS_LENGTH (51)
+#define MPPT_DETAILS_LENGTH (10)
 #define LIGHTS_DETAILS_LENGTH (7)
 
 #define CCS_TELEM_PERIOD_MS (200) // 5Hz == 200ms
@@ -251,9 +251,15 @@ void sendMppt(int n)
     unsigned char packetPayload[unframedPacketLength];
 
     packetPayload[0] = MPPT_PKG_ID;
-    unsigned char MpptAliveArray[] = {messageIsRecent(mpptData->lastReceived)};
+    unsigned char numberAndAlive = (unsigned char)n & 0x03;
 
-    packetPayload[1] = (unsigned char)n;
+    if (messageIsRecent(mpptData[n].lastReceived))
+    {
+        numberAndAlive |= 0x80;
+    }
+
+    packetPayload[1] = numberAndAlive;
+
     writeUShortIntoArray(packetPayload, 2, mpptData[n].arrayVoltage);
     writeUShortIntoArray(packetPayload, 4, mpptData[n].arrayCurrent);
     writeUShortIntoArray(packetPayload, 6, mpptData[n].batteryVoltage);
