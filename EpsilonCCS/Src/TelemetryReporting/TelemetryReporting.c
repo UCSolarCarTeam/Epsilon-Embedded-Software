@@ -3,6 +3,7 @@
 
 #include "TelemetryReporting.h"
 #include "TelemetryUtils.h"
+#include "TransmitSerial.h"
 
 #include "KeyMotorData.h"
 #include "MotorDetailsData.h"
@@ -91,7 +92,7 @@ void sendKeyMotor()
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
 
-    // TODO: Send over USB UART
+    transmitMessage(packetPayload, packetLength);
 }
 
 void sendMotorDetails(int n)
@@ -148,7 +149,7 @@ void sendMotorDetails(int n)
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
 
-    //TODO: Send over USB
+    transmitMessage(packetPayload, packetLength);
 }
 
 void sendDriverControls()
@@ -169,7 +170,7 @@ void sendDriverControls()
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
 
-    //TODO: Send over USB
+    transmitMessage(packetPayload, packetLength);
 }
 
 void sendMotorFaults()
@@ -190,6 +191,8 @@ void sendMotorFaults()
     addChecksum(packetPayload, MOTOR_FAULTS_LENGTH);
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
+
+    transmitMessage(packetPayload, packetLength);
 }
 
 void sendBatteryFaults()
@@ -203,6 +206,8 @@ void sendBatteryFaults()
     addChecksum(packetPayload, BATTERY_FAULTS_LENGTH);
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
+
+    transmitMessage(packetPayload, packetLength);
 }
 
 void sendBattery()
@@ -243,6 +248,8 @@ void sendBattery()
     addChecksum(packetPayload, BATTERY_DETAILS_LENGTH);
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
+
+    transmitMessage(packetPayload, packetLength);
 }
 
 void sendMppt(int n)
@@ -268,6 +275,8 @@ void sendMppt(int n)
     addChecksum(packetPayload, MPPT_DETAILS_LENGTH);
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
+
+    transmitMessage(packetPayload, packetLength);
 }
 
 void sendLights()
@@ -283,4 +292,6 @@ void sendLights()
     addChecksum(packetPayload, LIGHTS_DETAILS_LENGTH);
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
+
+    transmitMessage(packetPayload, packetLength);
 }
