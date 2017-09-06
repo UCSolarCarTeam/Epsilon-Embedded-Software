@@ -5,18 +5,18 @@
 void mpptRtrTask(void const* arg)
 {
     uint32_t prevWakeTime = osKernelSysTick();
-    uint32_t channel = -1;
+    uint32_t channel = 0;
 
     for (;;)
     {
         osDelayUntil(&prevWakeTime, MPPT_HEARTBEAT_CAN_FREQ);
         // Allocate CAN Message, deallocated by sender "sendCanTask()"
         MpptCanMsg* msg = (MpptCanMsg*)osPoolAlloc(canTxPool);
-        // Set Channel
-        channel = (channel++) % 3;
         // Populate CAN Message
         msg->StdId = MPPT_STDID;
         msg->Channel = channel;
+        // Update Channel
+        channel = (channel++) % 3;
         // Send CAN Message
         osMessagePut(canTxQueue, (uint32_t)msg, osWaitForever);
     }
