@@ -63,7 +63,7 @@ osPoolId canTxPool;
 osMessageQDef(canRxQueue, 64, CanMsg); // CanMsg defined in CanParser.h
 osMessageQId canRxQueue;
 
-osMessageQDef(canTxQueue, 64, MpptCanMsg); // CanMsg defined in CanParser.h
+osMessageQDef(canTxQueue, 64, MpptCanMsg); // CanMsg defined in MpptRtr.h
 osMessageQId canTxQueue;
 
 /* USER CODE END PV */
@@ -164,7 +164,7 @@ int main(void)
     // sendTelemetryTask() -> TelemetryReporting.h
     osThreadDef(telemetryOutTask, sendTelemetryTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
     sendTelemetryHandle = osThreadCreate(osThread(telemetryOutTask), NULL);
-    // MpptResponse.h
+    // MpptRtr.h
     osThreadDef(sendMpptRtrTask, mpptRtrTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
     sendMpptResponseHandle = osThreadCreate(osThread(sendMpptRtrTask), NULL);
 
