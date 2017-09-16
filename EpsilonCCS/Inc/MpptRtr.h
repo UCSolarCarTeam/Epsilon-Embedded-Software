@@ -12,8 +12,8 @@ extern osMessageQId canTxQueue;
 
 typedef struct // Datasheet is here: http://calgarysolarcarteamhub.com/attachments/download/112/Photon%20Datasheet%20rev1_2.pdf
 {
-    uint32_t StdId;
-    uint32_t Channel; //not sure of the data type, but it is a binary encoded number from 0-3.
+    uint32_t stdId;
+    uint32_t channel; //not sure of the data type, but it is a binary encoded number from 0-3.
 } MpptCanMsg;
 
 void mpptRtrTask(void const* arg);
