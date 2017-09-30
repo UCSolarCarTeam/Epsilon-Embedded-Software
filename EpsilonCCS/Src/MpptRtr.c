@@ -18,15 +18,18 @@ void mpptRtrTask(void const* arg)
         msg->dlc = MPPT_DLC;
 
         // Update Channel
-        switch(channel)
+        switch (channel)
         {
             case CHANNEL_ZERO:
                 channel = CHANNEL_ONE;
+
             case CHANNEL_ONE:
                 channel = CHANNEL_TWO;
+
             case CHANNEL_TWO:
                 channel = CHANNEL_ZERO;
         }
+
         // Send CAN Message
         osMessagePut(canTxQueue, (uint32_t)msg, osWaitForever);
     }
