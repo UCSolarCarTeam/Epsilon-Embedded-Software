@@ -53,7 +53,7 @@ static osThreadId parseCanHandle;
 static osThreadId sendTelemetryHandle;
 static osThreadId activateHornHandle;
 static osThreadId sendMpptResponseHandle;
-static osThreadId canTaskHandle;
+static osThreadId mpptRtrCanTaskHandle;
 
 osPoolDef(canRxPool, 64, CanMsg);
 osPoolId canRxPool;
@@ -169,8 +169,8 @@ int main(void)
     osThreadDef(sendMpptRtrTask, mpptRtrTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
     sendMpptResponseHandle = osThreadCreate(osThread(sendMpptRtrTask), NULL);
 
-    osThreadDef(canTask, sendCanTask, osPriorityHigh, 1, configMINIMAL_STACK_SIZE);
-    canTaskHandle = osThreadCreate(osThread(canTask), NULL);
+    osThreadDef(mpptRtrCanTask, sendMpptRtrCanTask, osPriorityHigh, 1, configMINIMAL_STACK_SIZE);
+    mpptRtrCanTaskHandle = osThreadCreate(osThread(mpptRtrCanTask), NULL);
     /* USER CODE BEGIN RTOS_THREADS */
     /* add threads, ... */
     /* USER CODE END RTOS_THREADS */

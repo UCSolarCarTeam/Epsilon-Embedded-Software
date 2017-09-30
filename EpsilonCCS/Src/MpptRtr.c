@@ -5,7 +5,7 @@
 void mpptRtrTask(void const* arg)
 {
     uint32_t prevWakeTime = osKernelSysTick();
-    uint32_t channel = 0;
+    uint32_t channel = CHANNEL_ZERO;
 
     for (;;)
     {
@@ -15,23 +15,24 @@ void mpptRtrTask(void const* arg)
         // Populate CAN Message
         msg->stdId = MPPT_STDID;
         msg->channel = channel;
+        msg->dlc = MPPT_DLC;
 
         // Update Channel
-        if (channel = 3)
+        switch(channel)
         {
-            channel = 0;
+            case CHANNEL_ZERO:
+                channel = CHANNEL_ONE;
+            case CHANNEL_ONE:
+                channel = CHANNEL_TWO;
+            case CHANNEL_TWO:
+                channel = CHANNEL_ZERO;
         }
-        else
-        {
-            channel++;
-        }
-
         // Send CAN Message
         osMessagePut(canTxQueue, (uint32_t)msg, osWaitForever);
     }
 }
 
-void sendCanTask(void const* arg)
+void sendMpptRtrCanTask(void const* arg)
 {
     for (;;)
     {
@@ -42,7 +43,7 @@ void sendCanTask(void const* arg)
             MpptCanMsg* msg = (MpptCanMsg*)evt.value.p;
             // Populate CAN Message
             hcan1.pTxMsg->StdId = msg->stdId;
-            hcan1.pTxMsg->DLC = MPPT_DLC;
+            hcan1.pTxMsg->DLC = msg->dlc;
             // Send CAN Message
             HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
             HAL_CAN_Transmit_IT(&hcan1);
