@@ -11,7 +11,7 @@ void mpptRtrTask(void const* arg)
     {
         osDelayUntil(&prevWakeTime, MPPT_HEARTBEAT_CAN_FREQ);
         // Allocate CAN Message, deallocated by sender "sendCanTask()"
-        MpptCanMsg* msg = (MpptCanMsg*)osPoolAlloc(canTxPool);
+        MpptCanMsg* msg = (MpptCanMsg*)osPoolAlloc(mpptCanTxPool);
         // Populate CAN Message
         msg->stdId = MPPT_STDID;
         msg->channel = channel;
@@ -31,7 +31,7 @@ void mpptRtrTask(void const* arg)
         }
 
         // Send CAN Message
-        osMessagePut(canTxQueue, (uint32_t)msg, osWaitForever);
+        osMessagePut(mpptCanTxQueue, (uint32_t)msg, osWaitForever);
     }
 }
 
@@ -39,7 +39,7 @@ void sendMpptRtrCanTask(void const* arg)
 {
     for (;;)
     {
-        osEvent evt = osMessageGet(canTxQueue, osWaitForever); // Blocks
+        osEvent evt = osMessageGet(mpptCanTxQueue, osWaitForever); // Blocks
 
         if (evt.status == osEventMessage)
         {
@@ -51,7 +51,7 @@ void sendMpptRtrCanTask(void const* arg)
             HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
             HAL_CAN_Transmit_IT(&hcan1);
             // Deallocate CAN message
-            osPoolFree(canTxPool, msg);
+            osPoolFree(mpptCanTxPool, msg);
         }
     }
 }

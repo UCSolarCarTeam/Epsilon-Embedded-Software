@@ -58,14 +58,14 @@ static osThreadId mpptRtrCanTaskHandle;
 osPoolDef(canRxPool, 64, CanMsg);
 osPoolId canRxPool;
 
-osPoolDef(canTxPool, 64, CanMsg);
-osPoolId canTxPool;
+osPoolDef(mpptCanTxPool, 64, MpptCanMsg);
+osPoolId mpptCanTxPool;
 
 osMessageQDef(canRxQueue, 64, CanMsg); // CanMsg defined in CanParser.h
 osMessageQId canRxQueue;
 
-osMessageQDef(canTxQueue, 64, MpptCanMsg); // CanMsg defined in MpptRtr.h
-osMessageQId canTxQueue;
+osMessageQDef(mpptCanTxQueue, 64, MpptCanMsg); // CanMsg defined in MpptRtr.h
+osMessageQId mpptCanTxQueue;
 
 /* USER CODE END PV */
 

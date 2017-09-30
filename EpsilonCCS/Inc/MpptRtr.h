@@ -10,8 +10,8 @@
 #define CHANNEL_TWO 0x2
 
 extern CAN_HandleTypeDef hcan1;
-extern osPoolId canTxPool;
-extern osMessageQId canTxQueue;
+extern osPoolId mpptCanTxPool;
+extern osMessageQId mpptCanTxQueue;
 
 typedef struct // Datasheet is here: https://drive.google.com/open?id=0B4Qf5FVsKl-SVDRFY3RoWUt0RVU
 {
