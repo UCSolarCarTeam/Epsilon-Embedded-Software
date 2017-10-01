@@ -16,6 +16,7 @@ void mpptRtrTask(void const* arg)
         msg->stdId = MPPT_STDID;
         msg->channel = channel;
         msg->dlc = MPPT_DLC;
+        msg->rtr = MPPT_RTR;
 
         // Update Channel
         switch (channel)
@@ -47,6 +48,7 @@ void sendMpptRtrCanTask(void const* arg)
             // Populate CAN Message
             hcan1.pTxMsg->StdId = msg->stdId;
             hcan1.pTxMsg->DLC = msg->dlc;
+            hcan1.pTxMsg->RTR = msg->rtr;
             // Send CAN Message
             HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
             HAL_CAN_Transmit_IT(&hcan1);
