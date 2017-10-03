@@ -35,6 +35,7 @@ void mpptRtrTask(void const* arg)
                 channel = 0;
                 break;
         }
+
         channel = (channel + 1) % 3;
         // Send CAN Message
         osMessagePut(mpptCanTxQueue, (uint32_t)msg, osWaitForever);
