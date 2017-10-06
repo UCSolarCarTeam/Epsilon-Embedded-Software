@@ -28,7 +28,7 @@
 #define MOTOR_CAN_MAX (0x4FF)
 
 #define MPPT_CAN_MIN (0x600)
-#define MPPT_CAN_MAX (0x600)
+#define MPPT_CAN_MAX (0x602)
 
 void parseCanTask(void const* arg)
 {

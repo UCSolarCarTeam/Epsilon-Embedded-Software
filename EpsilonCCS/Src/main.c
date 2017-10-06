@@ -38,6 +38,7 @@
 #include "CanParser.h"
 #include "TelemetryReporting.h"
 #include "ActivateHorn.h"
+#include "MpptRtr.h"
 
 /* USER CODE END Includes */
 
@@ -51,12 +52,20 @@ UART_HandleTypeDef huart3;
 static osThreadId parseCanHandle;
 static osThreadId sendTelemetryHandle;
 static osThreadId activateHornHandle;
+static osThreadId sendMpptResponseHandle;
+static osThreadId mpptRtrCanTaskHandle;
 
 osPoolDef(canRxPool, 64, CanMsg);
 osPoolId canRxPool;
 
+osPoolDef(mpptCanTxPool, 64, MpptCanMsg);
+osPoolId mpptCanTxPool;
+
 osMessageQDef(canRxQueue, 64, CanMsg); // CanMsg defined in CanParser.h
 osMessageQId canRxQueue;
+
+osMessageQDef(mpptCanTxQueue, 64, MpptCanMsg); // CanMsg defined in MpptRtr.h
+osMessageQId mpptCanTxQueue;
 
 /* USER CODE END PV */
 
@@ -156,7 +165,12 @@ int main(void)
     // sendTelemetryTask() -> TelemetryReporting.h
     osThreadDef(telemetryOutTask, sendTelemetryTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
     sendTelemetryHandle = osThreadCreate(osThread(telemetryOutTask), NULL);
+    // MpptRtr.h
+    osThreadDef(sendMpptRtrTask, mpptRtrTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    sendMpptResponseHandle = osThreadCreate(osThread(sendMpptRtrTask), NULL);
 
+    osThreadDef(mpptRtrCanTask, sendMpptRtrCanTask, osPriorityHigh, 1, configMINIMAL_STACK_SIZE);
+    mpptRtrCanTaskHandle = osThreadCreate(osThread(mpptRtrCanTask), NULL);
     /* USER CODE BEGIN RTOS_THREADS */
     /* add threads, ... */
     /* USER CODE END RTOS_THREADS */
