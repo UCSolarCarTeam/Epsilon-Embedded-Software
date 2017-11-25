@@ -20,15 +20,15 @@ void updateLightsTask(void const* arg)
     {
         osDelayUntil(&prevWakeTime, LIGHTS_UPDATE_FREQ);
         headlightsOff = (lightsInputs >> HOFF_INPUT_INDEX) & 1;
-        headlightsLow = (lightsInputs >> HLOW_INPUT_INDEX) & 1;
-        headlightsHigh = (lightsInputs >> HHIGH_INPUT_INDEX) & 1;
+        headlightsLow = (lightsInputs >> HLOW_INPUT_INDEX) & 1; //0b0000x0010
+        headlightsHigh = (lightsInputs >> HHIGH_INPUT_INDEX) & 1; //0b0000x0100
         rightSignal = (lightsInputs >> RSIGNAL_INPUT_INDEX) & 1;
         leftSignal = (lightsInputs >> LSIGNAL_INPUT_INDEX) & 1;
         hazards = (lightsInputs >> HAZARDS_INPUT_INDEX) & 1;
 
         /* UPDATE HEADLIGHTS */
 
-        if (headlightsOff && headlightsLow + headlightsHigh)
+        if ((headlightsOff) && (headlightsLow + headlightsHigh))
         {
             // Error state, turn headlights off
             HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_OFF);
@@ -39,6 +39,38 @@ void updateLightsTask(void const* arg)
             HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, !headlightsHigh);
             HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, !headlightsLow);
         }
+
+        if (headlightsLow && headlightsHigh)
+        {
+            // Error state, turn headlights off
+            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_OFF);
+            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, LIGHT_OFF);
+        }
+        else
+        {
+            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, !headlightsHigh);
+            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, !headlightsLow);
+        }
+
+        if(headlightsLow)
+        {
+            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, LIGHT_ON);
+        }
+        else
+        {
+            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, LIGHT_OFF);
+        }
+
+        if(headlightsHigh)
+        {
+            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_ON);
+        }
+        else
+        {
+            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_OFF);
+        }
+
+
 
         /* UPDATE BRAKE LIGHTS */
         brakes = (driversInputs[BRAKES_INPUT_INDEX_P1] >> BRAKES_INPUT_INDEX_P2) & 1;
