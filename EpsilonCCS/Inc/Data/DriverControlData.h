@@ -42,7 +42,6 @@ struct LightsInputs
 
 struct MusicInputs
 {
-    unsigned char aux;
     unsigned char volumeUp;
     unsigned char volumeDown;
     unsigned char nextSong;
@@ -67,6 +66,7 @@ struct DriverControlData
     unsigned short int acceleration;
     unsigned short int regenBraking;
     struct DriverInputs driverInputs;
+    unsigned char aux;
 };
 
 extern struct DriverControlData driverControlData;
