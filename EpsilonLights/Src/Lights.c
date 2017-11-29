@@ -27,8 +27,25 @@ void updateLightsTask(void const* arg)
         hazards = (lightsInputs >> HAZARDS_INPUT_INDEX) & 1;
 
         /* UPDATE HEADLIGHTS */
+        if (headlightsLow)
+        {
+            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, LIGHT_ON);
+        }
+        else
+        {
+            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, LIGHT_OFF);
+        }
 
-        if ((headlightsOff) && (headlightsLow + headlightsHigh))
+        if (headlightsHigh)
+        {
+            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_ON);
+        }
+        else
+        {
+            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_OFF);
+        }
+
+        if ((headlightsOff) && (headlightsLow || headlightsHigh))
         {
             // Error state, turn headlights off
             HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_OFF);
@@ -52,23 +69,7 @@ void updateLightsTask(void const* arg)
             HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, !headlightsLow);
         }
 
-        if(headlightsLow)
-        {
-            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, LIGHT_ON);
-        }
-        else
-        {
-            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, LIGHT_OFF);
-        }
 
-        if(headlightsHigh)
-        {
-            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_ON);
-        }
-        else
-        {
-            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_OFF);
-        }
 
 
 
