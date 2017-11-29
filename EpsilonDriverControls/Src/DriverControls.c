@@ -62,11 +62,10 @@ void sendMusicTask(void const* arg)
         // Populate CAN Message
         msg->StdId = MUSIC_STDID;
         msg->DLC = MUSIC_DLC;
-        msg->Data[0] |= 0x01 * !HAL_GPIO_ReadPin(AUX_GPIO_Port, AUX_Pin);
-        msg->Data[0] |= 0x02 * !HAL_GPIO_ReadPin(VOLUME_UP_GPIO_Port, VOLUME_UP_Pin);
-        msg->Data[0] |= 0x03 * !HAL_GPIO_ReadPin(VOLUME_DOWN_GPIO_Port, VOLUME_DOWN_Pin);
+        msg->Data[0] |= 0x01 * !HAL_GPIO_ReadPin(VOLUME_UP_GPIO_Port, VOLUME_UP_Pin);
+        msg->Data[0] |= 0x02 * !HAL_GPIO_ReadPin(VOLUME_DOWN_GPIO_Port, VOLUME_DOWN_Pin);
         msg->Data[0] |= 0x04 * !HAL_GPIO_ReadPin(NEXT_SONG_GPIO_Port, NEXT_SONG_Pin);
-        msg->Data[0] |= 0x10 * !HAL_GPIO_ReadPin(LAST_SONG_GPIO_Port, LAST_SONG_Pin);
+        msg->Data[0] |= 0x08 * !HAL_GPIO_ReadPin(LAST_SONG_GPIO_Port, LAST_SONG_Pin);
         // Send CAN Message
         osMessagePut(canQueue, (uint32_t)msg, osWaitForever);
     }
@@ -121,7 +120,7 @@ void sendDriverTask(void const* arg)
         msg->Data[3] |= 0x08 * !HAL_GPIO_ReadPin(PUSH_TO_TALK_GPIO_Port, PUSH_TO_TALK_Pin);
         msg->Data[3] |= 0x10 * !HAL_GPIO_ReadPin(HORN_GPIO_Port, HORN_Pin);
         msg->Data[3] |= 0x20 * !HAL_GPIO_ReadPin(RESET_GPIO_Port, RESET_Pin);
-        // Send CAN Message
+        msg->Data[3] |= 0x40 * !HAL_GPIO_ReadPin(AUX_GPIO_Port, AUX_Pin);
         osMessagePut(canQueue, (uint32_t)msg, osWaitForever);
     }
 }
