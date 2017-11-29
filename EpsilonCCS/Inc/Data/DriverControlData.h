@@ -56,6 +56,7 @@ struct DriverInputs
     unsigned char pushToTalk;
     unsigned char horn;
     unsigned char reset;
+    unsigned char aux;
 };
 
 struct DriverControlData
@@ -66,7 +67,6 @@ struct DriverControlData
     unsigned short int acceleration;
     unsigned short int regenBraking;
     struct DriverInputs driverInputs;
-    unsigned char aux;
 };
 
 extern struct DriverControlData driverControlData;
