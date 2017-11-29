@@ -161,10 +161,9 @@ void sendDriverControls()
     unsigned char driverControlsBoardAliveArray[] = {messageIsRecent(driverControlData.lastReceived)};
     writeBoolsIntoArray(packetPayload, 1, driverControlsBoardAliveArray, 1);
     writeBoolsIntoArray(packetPayload, 2, &driverControlData.lightsInputs, 7);
-    writeBoolsIntoArray(packetPayload, 3, &driverControlData.musicInputs, 5);
-    writeUShortIntoArray(packetPayload, 4, driverControlData.acceleration);
+    writeBoolsIntoArray(packetPayload, 3, &driverControlData.musicInputs, 4);
     writeUShortIntoArray(packetPayload, 6, driverControlData.regenBraking);
-    writeBoolsIntoArray(packetPayload, 8, &driverControlData.driverInputs, 6);
+    writeBoolsIntoArray(packetPayload, 8, &driverControlData.driverInputs, 7);
 
     addChecksum(packetPayload, DRIVER_CONTROLS_LENGTH);
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
