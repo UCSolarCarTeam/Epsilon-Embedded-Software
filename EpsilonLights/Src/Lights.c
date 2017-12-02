@@ -102,16 +102,6 @@ void updateLightsTask(void const* arg)
             sigLightsHandle.left = leftSignal;
             sigLightsHandle.right = rightSignal;
         }
-
-        /* UPDATE EMERGENCY STROBE */
-        if (batteryStatus[0] & BATTERY_CRIT_FAULT_MASK)
-        {
-            HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_ON);
-        }
-        else
-        {
-            HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_OFF);
-        }
     }
 }
 
@@ -263,14 +253,14 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     CanRxMsgTypeDef* msg = hcan->pRxMsg;
     HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
 
-    if (msg->StdId == LIGHTS_INPUT_STDID)
+    if (msg->StdId == 0x702U) //LIGHTS_INPUT_STDID
     {
         lightsInputs = msg->Data[0];
     }
-
-    if(msg->StdId == BATTERY_STAT_STDID)
+    
+    if(msg->StdId == 0x701U)  //BATTERY_STAT_STDID
     {
-        batteryErrors = msg->Data[0];
+       batteryErrors = msg->Data[0]; 
     }
 
     else if (msg->StdId == DRIVERS_INPUTS_STDID)
@@ -280,14 +270,7 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
         driversInputs[2] = msg->Data[2];
         driversInputs[3] = msg->Data[3];
     }
-    else if (msg->StdId == BATTERY_STAT_STDID && msg->DLC == 4)
-    {
-        batteryStatus[0] = msg->Data[0];
-        batteryStatus[1] = msg->Data[1];
-        batteryStatus[2] = msg->Data[2];
-        batteryStatus[3] = msg->Data[3];
-    }
-
+    
     __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
     HAL_CAN_Receive_IT(hcan, CAN_FIFO0);
 }
