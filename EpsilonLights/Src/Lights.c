@@ -25,10 +25,36 @@ void updateLightsTask(void const* arg)
         rightSignal = (lightsInputs >> RSIGNAL_INPUT_INDEX) & 1;
         leftSignal = (lightsInputs >> LSIGNAL_INPUT_INDEX) & 1;
         hazards = (lightsInputs >> HAZARDS_INPUT_INDEX) & 1;
-
         /* UPDATE HEADLIGHTS */
 
-        if ((headlightsOff) && (headlightsLow + headlightsHigh))
+        if (batteryErrors)
+        {
+            HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_ON);
+        }
+        else
+        {
+            HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_OFF);
+        }
+
+        if (headlightsLow)
+        {
+            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, LIGHT_ON);
+        }
+        else
+        {
+            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, LIGHT_OFF);
+        }
+
+        if (headlightsHigh)
+        {
+            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_ON);
+        }
+        else
+        {
+            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_OFF);
+        }
+
+        if ((headlightsOff) && (headlightsLow || headlightsHigh))
         {
             // Error state, turn headlights off
             HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_OFF);
@@ -51,26 +77,6 @@ void updateLightsTask(void const* arg)
             HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, !headlightsHigh);
             HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, !headlightsLow);
         }
-
-        if(headlightsLow)
-        {
-            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, LIGHT_ON);
-        }
-        else
-        {
-            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, LIGHT_OFF);
-        }
-
-        if(headlightsHigh)
-        {
-            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_ON);
-        }
-        else
-        {
-            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_OFF);
-        }
-
-
 
         /* UPDATE BRAKE LIGHTS */
         brakes = (driversInputs[BRAKES_INPUT_INDEX_P1] >> BRAKES_INPUT_INDEX_P2) & 1;
@@ -261,6 +267,12 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     {
         lightsInputs = msg->Data[0];
     }
+
+    if(msg->StdId == BATTERY_STAT_STDID)
+    {
+        batteryErrors = msg->Data[0];
+    }
+
     else if (msg->StdId == DRIVERS_INPUTS_STDID)
     {
         driversInputs[0] = msg->Data[0];
