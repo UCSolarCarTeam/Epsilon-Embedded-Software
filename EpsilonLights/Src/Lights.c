@@ -20,8 +20,8 @@ void updateLightsTask(void const* arg)
     {
         osDelayUntil(&prevWakeTime, LIGHTS_UPDATE_FREQ);
         headlightsOff = (lightsInputs >> HOFF_INPUT_INDEX) & 1;
-        headlightsLow = (lightsInputs >> HLOW_INPUT_INDEX) & 1; //0b0000x0010
-        headlightsHigh = (lightsInputs >> HHIGH_INPUT_INDEX) & 1; //0b0000x0100
+        headlightsLow = (lightsInputs >> HLOW_INPUT_INDEX) & 1;
+        headlightsHigh = (lightsInputs >> HHIGH_INPUT_INDEX) & 1;
         rightSignal = (lightsInputs >> RSIGNAL_INPUT_INDEX) & 1;
         leftSignal = (lightsInputs >> LSIGNAL_INPUT_INDEX) & 1;
         hazards = (lightsInputs >> HAZARDS_INPUT_INDEX) & 1;
