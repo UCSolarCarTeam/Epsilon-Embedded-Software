@@ -121,6 +121,7 @@ void sendDriverTask(void const* arg)
         msg->Data[3] |= 0x10 * !HAL_GPIO_ReadPin(HORN_GPIO_Port, HORN_Pin);
         msg->Data[3] |= 0x20 * !HAL_GPIO_ReadPin(RESET_GPIO_Port, RESET_Pin);
         msg->Data[3] |= 0x40 * !HAL_GPIO_ReadPin(AUX_GPIO_Port, AUX_Pin);
+        //Send CAN Message
         osMessagePut(canQueue, (uint32_t)msg, osWaitForever);
     }
 }

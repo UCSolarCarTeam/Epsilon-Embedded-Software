@@ -18,7 +18,7 @@
 #define VOLUME_UP_MASK 0x01
 #define VOLUME_DOWN_MASK 0x02
 #define NEXT_SONG_MASK 0x04
-#define PREV_SONG_MASK 0x8
+#define PREV_SONG_MASK 0x08
 
 // Driver Inputs
 #define BRAKES_MASK 0x01
