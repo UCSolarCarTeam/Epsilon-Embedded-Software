@@ -278,7 +278,7 @@ static void MX_CAN2_UserInit(void)
     // sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
     sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
     sFilterConfig.FilterIdHigh = LIGHTS_INPUT_STDID << 5; // Filter registers need to be shifted left 5 bits
-    sFilterConfig.FilterIdLow = BATTERY_STAT_STDID << 5; // Filter registers need to be shifted left 5 bits
+    sFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
     // sFilterConfig.FilterIdHigh = 0; // Filter registers need to be shifted left 5 bits
     // sFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
     sFilterConfig.FilterMaskIdHigh = DRIVERS_INPUTS_STDID << 5; // Unused
@@ -287,7 +287,24 @@ static void MX_CAN2_UserInit(void)
     sFilterConfig.FilterActivation = ENABLE;
     sFilterConfig.BankNumber = 0; // Set all filter banks for CAN2
 
+    CAN_FilterConfTypeDef batteryFilterConfig;
+    batteryFilterConfig.FilterNumber = 1; // Use secondary filter bank
+    batteryFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
+    batteryFilterConfig.FilterIdHigh = BATTERY_STAT_STDID << 5; // Filter registers need to be shifted left 5 bits
+    batteryFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
+    batteryFilterConfig.FilterMaskIdHigh = DRIVERS_INPUTS_STDID << 5; // Unused
+    batteryFilterConfig.FilterMaskIdLow = 0; // Unused
+    batteryFilterConfig.FilterFIFOAssignment = 0;
+    batteryFilterConfig.FilterActivation = ENABLE;
+    batteryFilterConfig.BankNumber = 0; // Set all filter banks for CAN2
+
     if (HAL_CAN_ConfigFilter(&hcan2, &sFilterConfig) != HAL_OK)
+    {
+        /* Filter configuration Error */
+        Error_Handler();
+    }
+
+        if (HAL_CAN_ConfigFilter(&hcan2, &batteryFilterConfig) != HAL_OK)
     {
         /* Filter configuration Error */
         Error_Handler();
