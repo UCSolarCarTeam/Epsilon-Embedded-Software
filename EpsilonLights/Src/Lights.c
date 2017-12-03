@@ -25,6 +25,7 @@ void updateLightsTask(void const* arg)
         rightSignal = (lightsInputs >> RSIGNAL_INPUT_INDEX) & 1;
         leftSignal = (lightsInputs >> LSIGNAL_INPUT_INDEX) & 1;
         hazards = (lightsInputs >> HAZARDS_INPUT_INDEX) & 1;
+
         /* UPDATE HEADLIGHTS */
         if (headlightsLow)
         {
@@ -274,10 +275,10 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     {
         lightsInputs = msg->Data[0];
     }
-    
-    if(msg->StdId == 0x701U)  //BATTERY_STAT_STDID
+
+    if (msg->StdId == 0x701U) //BATTERY_STAT_STDID
     {
-       batteryErrors = msg->Data[0]; 
+        batteryErrors = msg->Data[0];
     }
 
     else if (msg->StdId == DRIVERS_INPUTS_STDID)
@@ -287,7 +288,7 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
         driversInputs[2] = msg->Data[2];
         driversInputs[3] = msg->Data[3];
     }
-    
+
     __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
     HAL_CAN_Receive_IT(hcan, CAN_FIFO0);
 }
