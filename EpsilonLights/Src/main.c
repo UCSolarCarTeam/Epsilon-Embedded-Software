@@ -304,7 +304,7 @@ static void MX_CAN2_UserInit(void)
         Error_Handler();
     }
 
-        if (HAL_CAN_ConfigFilter(&hcan2, &batteryFilterConfig) != HAL_OK)
+    if (HAL_CAN_ConfigFilter(&hcan2, &batteryFilterConfig) != HAL_OK)
     {
         /* Filter configuration Error */
         Error_Handler();
