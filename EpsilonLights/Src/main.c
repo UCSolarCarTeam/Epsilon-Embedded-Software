@@ -44,6 +44,7 @@ CAN_HandleTypeDef hcan2;
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 uint8_t lightsInputs; // Initialized to 0
+uint8_t batteryErrors;
 uint8_t driversInputs[4]; // Initialized to 0
 uint8_t batteryStatus[4]; // Initialized to {0, 0, 0, 0}
 SigLightsHandle sigLightsHandle;
