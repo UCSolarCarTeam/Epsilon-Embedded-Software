@@ -49,7 +49,6 @@ void parseDriverControlsLightsInput(uint8_t* data)
 
 void parseDriverControlsMusicInput(uint8_t* data)
 {
-    driverControlData.musicInputs.aux = data[0] & AUX_MASK;
     driverControlData.musicInputs.volumeUp = data[0] & VOLUME_UP_MASK;
     driverControlData.musicInputs.volumeDown = data[0] & VOLUME_DOWN_MASK;
     driverControlData.musicInputs.nextSong = data[0] & NEXT_SONG_MASK;
@@ -71,4 +70,5 @@ void parseDriverControlsDriverInput(uint8_t* data)
     driverControlData.driverInputs.pushToTalk = data[3] & PUSH_TO_TALK_MASK;
     driverControlData.driverInputs.horn = data[3] & HORN_MASK;
     driverControlData.driverInputs.reset = data[3] & RESET_MASK;
+    driverControlData.driverInputs.aux = data[3] & AUX_MASK;
 }

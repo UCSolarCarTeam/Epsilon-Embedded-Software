@@ -15,11 +15,10 @@
 #define INTERIOR_MASK 0x40
 
 // Music Inputs
-#define AUX_MASK 0x01
-#define VOLUME_UP_MASK 0x02
-#define VOLUME_DOWN_MASK 0x04
-#define NEXT_SONG_MASK 0x08
-#define PREV_SONG_MASK 0x10
+#define VOLUME_UP_MASK 0x01
+#define VOLUME_DOWN_MASK 0x02
+#define NEXT_SONG_MASK 0x04
+#define PREV_SONG_MASK 0x08
 
 // Driver Inputs
 #define BRAKES_MASK 0x01
@@ -28,6 +27,7 @@
 #define PUSH_TO_TALK_MASK 0x08
 #define HORN_MASK 0x10
 #define RESET_MASK 0x20
+#define AUX_MASK 0x40
 
 struct LightsInputs
 {
@@ -42,7 +42,6 @@ struct LightsInputs
 
 struct MusicInputs
 {
-    unsigned char aux;
     unsigned char volumeUp;
     unsigned char volumeDown;
     unsigned char nextSong;
@@ -57,6 +56,7 @@ struct DriverInputs
     unsigned char pushToTalk;
     unsigned char horn;
     unsigned char reset;
+    unsigned char aux;
 };
 
 struct DriverControlData
