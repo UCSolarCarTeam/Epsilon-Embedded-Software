@@ -27,64 +27,13 @@ void updateLightsTask(void const* arg)
         hazards = (lightsInputs >> HAZARDS_INPUT_INDEX) & 1;
 
         /* UPDATE HEADLIGHTS */
-        if (headlightsLow)
-        {
-            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, LIGHT_ON);
-        }
-        else
-        {
-            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, LIGHT_OFF);
-        }
-
-        if (headlightsHigh)
-        {
-            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_ON);
-        }
-        else
-        {
-            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_OFF);
-        }
-
-        if (batteryErrors)
-        {
-            HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_ON);
-        }
-        else
-        {
-            HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_OFF);
-        }
-
-        if (headlightsLow)
-        {
-            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, LIGHT_ON);
-        }
-        else
-        {
-            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, LIGHT_OFF);
-        }
-
-        if (headlightsHigh)
-        {
-            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_ON);
-        }
-        else
-        {
-            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_OFF);
-        }
-
         if ((headlightsOff) && (headlightsLow || headlightsHigh))
         {
             // Error state, turn headlights off
             HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_OFF);
             HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, LIGHT_OFF);
         }
-        else
-        {
-            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, !headlightsHigh);
-            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, !headlightsLow);
-        }
-
-        if (headlightsLow && headlightsHigh)
+        else if (headlightsLow && headlightsHigh)
         {
             // Error state, turn headlights off
             HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_OFF);
@@ -110,7 +59,13 @@ void updateLightsTask(void const* arg)
 
         /* UPDATE SIGNAL LIGHTS */
         // Set to enable or disable for use in blinkSignalLights
-        if (hazards)
+        if (leftSignal && rightSignal)
+        {
+            //Error State, lights should turn off
+            sigLightsHandle.left = 0;
+            sigLightsHandle.right = 0;
+        }
+        else if (hazards)
         {
             sigLightsHandle.left = 1;
             sigLightsHandle.right = 1;
@@ -120,6 +75,19 @@ void updateLightsTask(void const* arg)
             sigLightsHandle.left = leftSignal;
             sigLightsHandle.right = rightSignal;
         }
+
+        /*Update BMS Strobe*/
+        HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_OFF);
+        // TODO Parse the Error Messages and turn on the BMS on certain messages
+        // Strobe the BMS
+        // if (batteryErrors)
+        // {
+        //     HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_ON);
+        // }
+        // else
+        // {
+        //     HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_OFF);
+        // }
     }
 }
 
@@ -271,14 +239,18 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     CanRxMsgTypeDef* msg = hcan->pRxMsg;
     HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
 
-    if (msg->StdId == 0x702U) //LIGHTS_INPUT_STDID
+    if (msg->StdId == LIGHTS_INPUT_STDID)
     {
         lightsInputs = msg->Data[0];
     }
 
-    if (msg->StdId == 0x701U) //BATTERY_STAT_STDID
+    if (msg->StdId == BATTERY_STAT_ERRORS_STDID)
     {
-        batteryErrors = msg->Data[0];
+        batteryErrors[0] = msg->Data[0];
+        batteryErrors[1] = msg->Data[1];
+        batteryErrors[2] = msg->Data[2];
+        batteryErrors[3] = msg->Data[3];
+        batteryErrors[4] = msg->Data[4];
     }
 
     else if (msg->StdId == DRIVERS_INPUTS_STDID)
