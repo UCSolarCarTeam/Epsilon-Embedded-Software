@@ -239,26 +239,28 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     CanRxMsgTypeDef* msg = hcan->pRxMsg;
     HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
 
-    if (msg->StdId == LIGHTS_INPUT_STDID)
+    if (msg->StdId == LIGHTS_INPUT_STDID && msg->DLC == 1)
     {
         lightsInputs = msg->Data[0];
     }
 
-    if (msg->StdId == BATTERY_STAT_ERRORS_STDID)
+    else if (msg->StdId == BATTERY_STAT_ERRORS_STDID && msg->DLC == 5)
     {
-        batteryErrors[0] = msg->Data[0];
-        batteryErrors[1] = msg->Data[1];
+        // Memory is stored in Little Endian format
+        batteryErrors[0] = msg->Data[4];
+        batteryErrors[1] = msg->Data[3];
         batteryErrors[2] = msg->Data[2];
-        batteryErrors[3] = msg->Data[3];
-        batteryErrors[4] = msg->Data[4];
+        batteryErrors[3] = msg->Data[1];
+        batteryErrors[4] = msg->Data[0];
     }
 
-    else if (msg->StdId == DRIVERS_INPUTS_STDID)
+    else if (msg->StdId == DRIVERS_INPUTS_STDID && msg->DLC == 4)
     {
-        driversInputs[0] = msg->Data[0];
-        driversInputs[1] = msg->Data[1];
-        driversInputs[2] = msg->Data[2];
-        driversInputs[3] = msg->Data[3];
+        // Memory is stored in Little Endian format
+        driversInputs[0] = msg->Data[3];
+        driversInputs[1] = msg->Data[2];
+        driversInputs[2] = msg->Data[1];
+        driversInputs[3] = msg->Data[0];
     }
 
     __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
