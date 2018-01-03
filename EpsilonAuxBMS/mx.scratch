@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Project>
-<ProjectName>/home/badeniran/Desktop/Solar Car/EpsilonAuxBMS/\EpsilonAuxBMS</ProjectName>
+<ProjectName>/home/badeniran/Desktop/SolarCar/Epsilon-Embedded-Software/EpsilonAuxBMS/\EpsilonAuxBMS</ProjectName>
 <CMSIS>../Drivers/CMSIS</CMSIS>
 <HAL_Driver>/home/badeniran/STM32Cube/Repository//STM32Cube_FW_F4_V1.18.0/Drivers/CMSIS</HAL_Driver>
 
@@ -32,7 +32,7 @@
     <usedDebug>true</usedDebug>
     	<debugprobe></debugprobe>
     <optimization>6</optimization>
-    <icfloc>1</icfloc>
+    <icfloc>0</icfloc>
     <Adefines>
         <define></define>
     </Adefines>   
