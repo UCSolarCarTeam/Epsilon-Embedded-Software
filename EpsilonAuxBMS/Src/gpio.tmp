@@ -30,28 +30,23 @@ static void MX_GPIO_Init(void)
 #tGPIO_InitStruct.Pull = GPIO_NOPULL;
 #tGPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 #tHAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
-#n#t/*Configure GPIO pins : SOFT_RESET_Pin SENSE2_Pin SENSE1_Pin */
-#tGPIO_InitStruct.Pin = SOFT_RESET_Pin|SENSE2_Pin|SENSE1_Pin;
-#tGPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-#tGPIO_InitStruct.Pull = GPIO_NOPULL;
-#tHAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 #n#t/*Configure GPIO pin : HV_ENABLE_Pin */
 #tGPIO_InitStruct.Pin = HV_ENABLE_Pin;
 #tGPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 #tGPIO_InitStruct.Pull = GPIO_NOPULL;
 #tGPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 #tHAL_GPIO_Init(HV_ENABLE_GPIO_Port, &GPIO_InitStruct);
-#n#t/*Configure GPIO pins : PWR_CURRENT_SENSE_Pin CHARGE_ENABLE_SENSE_Pin DISCHARGE_ENABLE_SENSE_Pin CHARGE_SAFETY_SENSE_Pin */
-#tGPIO_InitStruct.Pin = PWR_CURRENT_SENSE_Pin|CHARGE_ENABLE_SENSE_Pin|DISCHARGE_ENABLE_SENSE_Pin|CHARGE_SAFETY_SENSE_Pin;
-#tGPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-#tGPIO_InitStruct.Pull = GPIO_NOPULL;
-#tHAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 #n#t/*Configure GPIO pins : RED_LED_Pin GRN_LED_Pin BLU_LED_Pin CAN1_STBY_Pin */
 #tGPIO_InitStruct.Pin = RED_LED_Pin|GRN_LED_Pin|BLU_LED_Pin|CAN1_STBY_Pin;
 #tGPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 #tGPIO_InitStruct.Pull = GPIO_NOPULL;
 #tGPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 #tHAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+#n#t/*Configure GPIO pins : CHARGE_ENABLE_SENSE_Pin DISCHARGE_ENABLE_SENSE_Pin CHARGE_SAFETY_SENSE_Pin */
+#tGPIO_InitStruct.Pin = CHARGE_ENABLE_SENSE_Pin|DISCHARGE_ENABLE_SENSE_Pin|CHARGE_SAFETY_SENSE_Pin;
+#tGPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+#tGPIO_InitStruct.Pull = GPIO_NOPULL;
+#tHAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 #n#t/*Configure GPIO pin : ADC_SPI_SCK_Pin */
 #tGPIO_InitStruct.Pin = ADC_SPI_SCK_Pin;
 #tGPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -83,6 +78,11 @@ static void MX_GPIO_Init(void)
 #tGPIO_InitStruct.Mode = GPIO_MODE_INPUT;
 #tGPIO_InitStruct.Pull = GPIO_NOPULL;
 #tHAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+#n#t/*Configure GPIO pins : SENSE2_Pin SENSE1_Pin */
+#tGPIO_InitStruct.Pin = SENSE2_Pin|SENSE1_Pin;
+#tGPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+#tGPIO_InitStruct.Pull = GPIO_NOPULL;
+#tHAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 #n
 }
 #n
