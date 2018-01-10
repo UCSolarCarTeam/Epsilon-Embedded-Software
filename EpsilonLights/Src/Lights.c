@@ -27,7 +27,12 @@ void updateLightsTask(void const* arg)
         hazards = (lightsInputs >> HAZARDS_INPUT_INDEX) & 1;
 
         /* UPDATE HEADLIGHTS */
-        if ((headlightsOff) || (headlightsLow && headlightsHigh))
+        if ((headlightsOff))
+        {
+            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_OFF);
+            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, LIGHT_OFF);
+        }
+        else if ((headlightsLow && headlightsHigh))
         {
             // Error state, turn only the low headlights on.
             HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_OFF);
