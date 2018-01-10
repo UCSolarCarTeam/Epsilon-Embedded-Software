@@ -44,7 +44,7 @@ CAN_HandleTypeDef hcan2;
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 uint8_t lightsInputs; // Initialized to 0
-uint8_t batteryErrors[5]; //Initialized to {0,0,0,0}
+uint8_t batteryErrors[5]; //Initialized to {0,0,0,0,0}
 uint8_t driversInputs[4]; // Initialized to 0
 SigLightsHandle sigLightsHandle;
 
@@ -281,7 +281,7 @@ static void MX_CAN2_UserInit(void)
     sFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
     // sFilterConfig.FilterIdHigh = 0; // Filter registers need to be shifted left 5 bits
     // sFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
-    sFilterConfig.FilterMaskIdHigh = DRIVERS_INPUTS_STDID << 5; // Unused
+    sFilterConfig.FilterMaskIdHigh = DRIVERS_INPUTS_STDID << 5;
     sFilterConfig.FilterMaskIdLow = 0; // Unused
     sFilterConfig.FilterFIFOAssignment = 0;
     sFilterConfig.FilterActivation = ENABLE;
@@ -292,7 +292,7 @@ static void MX_CAN2_UserInit(void)
     batteryFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
     batteryFilterConfig.FilterIdHigh = BATTERY_STAT_ERRORS_STDID << 5; // Filter registers need to be shifted left 5 bits
     batteryFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
-    batteryFilterConfig.FilterMaskIdHigh = DRIVERS_INPUTS_STDID << 5; // Unused
+    batteryFilterConfig.FilterMaskIdHigh = DRIVERS_INPUTS_STDID << 5;
     batteryFilterConfig.FilterMaskIdLow = 0; // Unused
     batteryFilterConfig.FilterFIFOAssignment = 0;
     batteryFilterConfig.FilterActivation = ENABLE;

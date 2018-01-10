@@ -27,17 +27,11 @@ void updateLightsTask(void const* arg)
         hazards = (lightsInputs >> HAZARDS_INPUT_INDEX) & 1;
 
         /* UPDATE HEADLIGHTS */
-        if ((headlightsOff) && (headlightsLow || headlightsHigh))
+        if ((headlightsOff) || (headlightsLow && headlightsHigh))
         {
-            // Error state, turn headlights off
+            // Error state, turn only the low headlights on.
             HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_OFF);
-            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, LIGHT_OFF);
-        }
-        else if (headlightsLow && headlightsHigh)
-        {
-            // Error state, turn headlights off
-            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_OFF);
-            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, LIGHT_OFF);
+            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, LIGHT_ON);
         }
         else
         {
@@ -78,16 +72,8 @@ void updateLightsTask(void const* arg)
 
         /*Update BMS Strobe*/
         HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_OFF);
+
         // TODO Parse the Error Messages and turn on the BMS on certain messages
-        // Strobe the BMS
-        // if (batteryErrors)
-        // {
-        //     HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_ON);
-        // }
-        // else
-        // {
-        //     HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_OFF);
-        // }
     }
 }
 
@@ -243,7 +229,6 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     {
         lightsInputs = msg->Data[0];
     }
-
     else if (msg->StdId == BATTERY_STAT_ERRORS_STDID && msg->DLC == 5)
     {
         // Memory is stored in Little Endian format
@@ -253,7 +238,6 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
         batteryErrors[3] = msg->Data[1];
         batteryErrors[4] = msg->Data[0];
     }
-
     else if (msg->StdId == DRIVERS_INPUTS_STDID && msg->DLC == 4)
     {
         // Memory is stored in Little Endian format
