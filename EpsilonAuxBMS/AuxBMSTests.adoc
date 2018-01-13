@@ -14,34 +14,70 @@ Elapsed 1000ms{
 }
 ----
 
-
-
-=== Values to Test
+== CAN Values to Test
 [options="header"]
 |===
 | Input Type | CAN_ADDRESS | DATA_INDEX | TIME_FRAME
-| PrechargeState |  0x721  | 0-2 |  100ms 
-| AuxVoltage |  0x721 |  3-7 |  100ms |
+| PrechargeState |  0x721  | 0 |  100ms 
+| AuxVoltage |  0x721 |  0 |  100ms |
 |===
 
-
-
-=== Precharge Test
+== Precharge Test
 ----
 Send (PRECHARGE_CAN_MESSAGE(0x721)[DATA_INDEX])
 Within 100ms {
     Expect (PRECHARGE_STATUS_CAN_MESSAGE(0x721)[DATA_INDEX])
 }
-
 ----
 
-=== AuxVoltage Test
+== AuxVoltage Test
 ----
-
 Within 100ms{
     Expect (CURRENT_VOLTAGE_AUX_BATTERY_CAN_MESSAGE(0x721)[DATA_INDEX])
 }
-
 ----
 
+== Contactor Charge Test
+----
+Within 100ms{
+	Expect (CONTACTOR_CURRENT_CAN_MESSAGE(0x721)[DATA_INDEX])
+}
+----
 
+== Contactor State Test
+----
+Within 100ms{
+	Expect (CONTACTOR_STATE_CAN_MESSAGE(0x721)[DATA_INDEX])
+}
+----
+
+== Charge Test
+----
+Reading (Gpio Pin PC6)
+Within 100ms{
+    Expect (CHARGE_CAN_MESSAGE(0x721)[DATA_INDEX])
+    LED Common Contactor ON
+    LED Safety Contactor ON
+    LED Charge Contactor ON
+}
+----
+
+== Discharge Test
+----
+Reading (Gpio Pin PC7)
+Within 100ms{
+    Expect (DISCHARGE_CAN_MESSAGE(0x721)[DATA_INDEX])
+    LED Common Contactor ON
+    LED Safety Contactor ON
+    LED Discharge Contactor ON
+}
+----
+
+== Safety Test
+----
+Reading (Gpio Pin PC8)
+Within 100ms{
+    Expect (SAFETY_CAN_MESSAGE(0x721)[DATA_INDEX])
+    LED Safety Contactor ON
+}
+----
