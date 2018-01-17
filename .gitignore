@@ -39,4 +39,5 @@ STM32L152-Discovery.elf.launch
 
 # Other
 Makefile
+.tags
 .fuse*
