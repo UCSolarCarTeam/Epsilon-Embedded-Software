@@ -37,11 +37,9 @@
         <define></define>
     </Adefines>   
 
-    <UsedFreeRTOS></UsedFreeRTOS>
+    <UsedFreeRTOS>true</UsedFreeRTOS>
     <Aincludes>
-
-
-	    	<include></include>
+		   		<include></include>
     </Aincludes>
     <Cdefines>
         <define>__weak=&quot;__attribute__((weak))&quot;</define>
@@ -63,7 +61,10 @@
 	   <include>../Inc</include>
 	   <include>../Drivers/STM32F4xx_HAL_Driver/Inc</include>
 	   <include>../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy</include>
+	   <include>../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F</include>
 	   <include>../Drivers/CMSIS/Device/ST/STM32F4xx/Include</include>
+	   <include>../Middlewares/Third_Party/FreeRTOS/Source/include</include>
+	   <include>../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS</include>
 	   <include>../Drivers/CMSIS/Include</include>
 
     </Cincludes>
@@ -82,6 +83,9 @@
 		    	<sourceEntry>
 		    		<name>Drivers</name>
 		    	</sourceEntry>
+		    		<sourceEntry>
+		    			<name>Middlewares</name>
+		    		</sourceEntry>
 		    </sourceEntries>
 
 </Project>
