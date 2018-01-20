@@ -187,8 +187,8 @@ void reportLightsToCanTask(void const* arg)
         hcan2.pTxMsg->Data[0] += !stat.lowBeams * 0x01;
         hcan2.pTxMsg->Data[0] += !stat.highBeams * 0x02;
         hcan2.pTxMsg->Data[0] += !stat.brakes * 0x04;
-        hcan2.pTxMsg->Data[0] += !stat.rightSignal * 0x08;
-        hcan2.pTxMsg->Data[0] += !stat.leftSignal * 0x10;
+        hcan2.pTxMsg->Data[0] += !stat.leftSignal * 0x08;
+        hcan2.pTxMsg->Data[0] += !stat.rightSignal * 0x10;
         hcan2.pTxMsg->Data[0] += !stat.bmsStrobeLight * 0x20;
         // Send CAN msg
         HAL_CAN_Transmit_IT(&hcan2);
