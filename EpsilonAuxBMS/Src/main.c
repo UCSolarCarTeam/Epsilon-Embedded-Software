@@ -75,9 +75,10 @@ static void MX_GPIO_Init(void);
 static void MX_CAN1_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_ADC1_Init(void);
-void StartDefaultTask(void const* argument);
 
 /* USER CODE BEGIN PFP */
+static void MX_CAN1_UserInit(void);
+static void MX_GPIO_UserInit(void);
 /* Private function prototypes -----------------------------------------------*/
 
 /* USER CODE END PFP */
@@ -116,11 +117,27 @@ int main(void)
     MX_ADC1_Init();
 
     /* USER CODE BEGIN 2 */
-
+    MX_CAN1_UserInit();
+    HAL_ADC_Start(&hadc1);
+    
+    // Setup for next CAN Receive Interrupt
+    if (HAL_CAN_Receive_IT(&hcan1, CAN_FIFO0) != HAL_OK)
+    {
+      /* Reception Error */
+      _Error_Handler(__FILE__, __LINE__);
+    }
     /* USER CODE END 2 */
 
     /* USER CODE BEGIN RTOS_MUTEX */
-    /* add mutexes, ... */
+    // For concurrency between sendHeartbeat() and reportAuxToCan()
+    osMutexId canHandleMutex;
+    osMutexDef(canHandleMutex);
+    canHandleMutex = osMutexCreate(osMutex(canHandleMutex));
+
+    if (canHandleMutex == NULL)
+    {
+      _Error_Handler(__FILE__, __LINE__);
+    }
     /* USER CODE END RTOS_MUTEX */
 
     /* USER CODE BEGIN RTOS_SEMAPHORES */
@@ -133,8 +150,6 @@ int main(void)
 
     /* Create the thread(s) */
     /* definition and creation of defaultTask */
-    osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
-    defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
     /* USER CODE BEGIN RTOS_THREADS */
     /* add threads, ... */
@@ -329,10 +344,13 @@ static void MX_GPIO_Init(void)
     HAL_GPIO_WritePin(GPIOE, CONTACTOR_ENABLE2_Pin | CONTACTOR_ENABLE4_Pin | CONTACTOR_ENABLE3_Pin | CONTACTOR_ENABLE1_Pin, GPIO_PIN_RESET);
 
     /*Configure GPIO pin Output Level */
-    HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
 
-    /*Configure GPIO pin Output Level */
-    HAL_GPIO_WritePin(GPIOA, RED_LED_Pin | GRN_LED_Pin | BLU_LED_Pin | CAN1_STBY_Pin, GPIO_PIN_RESET);
+    /*Configure LED pins to be high as we want them all off initially */
+    HAL_GPIO_WritePin(GPIOA, RED_LED_Pin | GRN_LED_Pin | BLU_LED_Pin, GPIO_PIN_SET);
+
+    /*Configure CAN1_STBY  pin to be low as we always want the transeiver working */
+    HAL_GPIO_WritePin(GPIOA, CAN1_STBY_Pin, GPIO_PIN_RESET);
 
     /*Configure GPIO pin Output Level */
     HAL_GPIO_WritePin(CURRENT_SENSE_ENABLE_GPIO_Port, CURRENT_SENSE_ENABLE_Pin, GPIO_PIN_RESET);
@@ -412,22 +430,13 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+static void MX_CAN1_UserInit(void)
+{
+  // TODO
+  // Finish this
+}
 
 /* USER CODE END 4 */
-
-/* StartDefaultTask function */
-void StartDefaultTask(void const* argument)
-{
-
-    /* USER CODE BEGIN 5 */
-    /* Infinite loop */
-    for (;;)
-    {
-        osDelay(1);
-    }
-
-    /* USER CODE END 5 */
-}
 
 /**
   * @brief  Period elapsed callback in non blocking mode
@@ -461,6 +470,8 @@ void _Error_Handler(char* file, int line)
 {
     /* USER CODE BEGIN Error_Handler_Debug */
     /* User can add his own implementation to report the HAL error return state */
+    // Turn on RED LED
+    HAL_GPIO_WritePin(GPIOA, RED_LED_Pin, GPIO_PIN_RESET);
     while (1)
     {
     }
