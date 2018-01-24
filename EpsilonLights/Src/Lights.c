@@ -27,12 +27,16 @@ void updateLightsTask(void const* arg)
         hazards = (lightsInputs >> HAZARDS_INPUT_INDEX) & 1;
 
         /* UPDATE HEADLIGHTS */
-
-        if (headlightsOff && headlightsLow + headlightsHigh)
+        if ((headlightsOff))
         {
-            // Error state, turn headlights off
             HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_OFF);
             HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, LIGHT_OFF);
+        }
+        else if ((headlightsLow && headlightsHigh))
+        {
+            // Error state, turn only the low headlights on.
+            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_OFF);
+            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, LIGHT_ON);
         }
         else
         {
@@ -54,7 +58,13 @@ void updateLightsTask(void const* arg)
 
         /* UPDATE SIGNAL LIGHTS */
         // Set to enable or disable for use in blinkSignalLights
-        if (hazards)
+        if (leftSignal && rightSignal)
+        {
+            //Error State, lights should turn off
+            sigLightsHandle.left = 0;
+            sigLightsHandle.right = 0;
+        }
+        else if (hazards)
         {
             sigLightsHandle.left = 1;
             sigLightsHandle.right = 1;
@@ -65,15 +75,10 @@ void updateLightsTask(void const* arg)
             sigLightsHandle.right = rightSignal;
         }
 
-        /* UPDATE EMERGENCY STROBE */
-        if (batteryStatus[0] & BATTERY_CRIT_FAULT_MASK)
-        {
-            HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_ON);
-        }
-        else
-        {
-            HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_OFF);
-        }
+        /*Update BMS Strobe*/
+        HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_OFF);
+
+        // TODO Parse the Error Messages and turn on the BMS on certain messages
     }
 }
 
@@ -225,23 +230,26 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     CanRxMsgTypeDef* msg = hcan->pRxMsg;
     HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
 
-    if (msg->StdId == LIGHTS_INPUT_STDID)
+    if (msg->StdId == LIGHTS_INPUT_STDID && msg->DLC == 1)
     {
         lightsInputs = msg->Data[0];
     }
-    else if (msg->StdId == DRIVERS_INPUTS_STDID)
+    else if (msg->StdId == BATTERY_STAT_ERRORS_STDID && msg->DLC == 5)
     {
-        driversInputs[0] = msg->Data[0];
-        driversInputs[1] = msg->Data[1];
-        driversInputs[2] = msg->Data[2];
-        driversInputs[3] = msg->Data[3];
+        // Memory is stored in Little Endian format
+        batteryErrors[0] = msg->Data[4];
+        batteryErrors[1] = msg->Data[3];
+        batteryErrors[2] = msg->Data[2];
+        batteryErrors[3] = msg->Data[1];
+        batteryErrors[4] = msg->Data[0];
     }
-    else if (msg->StdId == BATTERY_STAT_STDID && msg->DLC == 4)
+    else if (msg->StdId == DRIVERS_INPUTS_STDID && msg->DLC == 4)
     {
-        batteryStatus[0] = msg->Data[0];
-        batteryStatus[1] = msg->Data[1];
-        batteryStatus[2] = msg->Data[2];
-        batteryStatus[3] = msg->Data[3];
+        // Memory is stored in Little Endian format
+        driversInputs[0] = msg->Data[3];
+        driversInputs[1] = msg->Data[2];
+        driversInputs[2] = msg->Data[1];
+        driversInputs[3] = msg->Data[0];
     }
 
     __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
