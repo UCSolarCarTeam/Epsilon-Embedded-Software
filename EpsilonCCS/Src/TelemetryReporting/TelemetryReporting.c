@@ -132,16 +132,15 @@ void sendMotorDetails(int n)
             writeFloatIntoArray(packetPayload, 17, motor1DetailsData.motorCurrentReal);
             writeFloatIntoArray(packetPayload, 21, motor1DetailsData.motorCurrentImaginary);
             writeFloatIntoArray(packetPayload, 25, motor1DetailsData.backEmfReal);
-            writeFloatIntoArray(packetPayload, 29, motor1DetailsData.backEmfImaginary);
-            writeFloatIntoArray(packetPayload, 33, motor1DetailsData.railSupply15v);
-            writeFloatIntoArray(packetPayload, 37, motor1DetailsData.railSupply3_3v);
-            writeFloatIntoArray(packetPayload, 41, motor1DetailsData.railSupply1_9v);
-            writeFloatIntoArray(packetPayload, 45, motor1DetailsData.heatSinkTemperature);
-            writeFloatIntoArray(packetPayload, 49, motor1DetailsData.motorTemperature);
-            writeFloatIntoArray(packetPayload, 53, motor1DetailsData.dspBoardTemp);
-            writeFloatIntoArray(packetPayload, 57, motor1DetailsData.dcBusAmpHours);
-            writeFloatIntoArray(packetPayload, 61, motor1DetailsData.odometer);
-            writeFloatIntoArray(packetPayload, 65, motor1DetailsData.slipSpeed);
+            writeFloatIntoArray(packetPayload, 29, motor1DetailsData.railSupply15v);
+            writeFloatIntoArray(packetPayload, 33, motor1DetailsData.railSupply3_3v);
+            writeFloatIntoArray(packetPayload, 37, motor1DetailsData.railSupply1_9v);
+            writeFloatIntoArray(packetPayload, 41, motor1DetailsData.heatSinkTemperature);
+            writeFloatIntoArray(packetPayload, 45, motor1DetailsData.motorTemperature);
+            writeFloatIntoArray(packetPayload, 49, motor1DetailsData.dspBoardTemp);
+            writeFloatIntoArray(packetPayload, 53, motor1DetailsData.dcBusAmpHours);
+            writeFloatIntoArray(packetPayload, 57, motor1DetailsData.odometer);
+            writeFloatIntoArray(packetPayload, 61, motor1DetailsData.slipSpeed);
             break;
     }
 
@@ -162,6 +161,7 @@ void sendDriverControls()
     writeBoolsIntoArray(packetPayload, 1, driverControlsBoardAliveArray, 1);
     writeBoolsIntoArray(packetPayload, 2, &driverControlData.lightsInputs, 7);
     writeBoolsIntoArray(packetPayload, 3, &driverControlData.musicInputs, 4);
+    writeUShortIntoArray(packetPayload, 4, driverControlData.acceleration);
     writeUShortIntoArray(packetPayload, 6, driverControlData.regenBraking);
     writeBoolsIntoArray(packetPayload, 8, &driverControlData.driverInputs, 7);
 
