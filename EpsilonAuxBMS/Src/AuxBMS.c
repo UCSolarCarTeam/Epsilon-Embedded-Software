@@ -50,6 +50,7 @@ void setAuxContactorTask(void const* arg)
   char discharge = 0;
 
   uint32_t current = 0;
+  float pwr_current = 0.0;
 
   unsigned int cycleCount = 0; // Keep track of how many attempts there were to turn on a contactor
                                // If it's greater than 1, report to CAN that something is wrong
@@ -64,32 +65,118 @@ void setAuxContactorTask(void const* arg)
     done = common && charge && discharge;
     if (setContactorEnable && !done)
     {
+      if (cycleCount > 1)
+      {
+        auxStatus.contactorError = 1;
+      }
       // Check current is low before enabling (ADC conversion and normalization)
 
+      // Get 12bit current analog input
+      if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
+      {
+          current = HAL_ADC_GetValue(&hadc1);
+      }
+      else
+      {
+          current = 0;
+      }
+
+      // Some conversion
+
+      // If current is high for some reason, skip the rest
+      if (pwr_current > CURRENT_LOWER_THRESHOLD)
+      {
+        cycleCount++;
+        continue;
+      }
+
+      cycleCount = 0; // Reset cycle count
       // Turn on Common Contactor
       HAL_GPIO_WritePin(CONTACTOR_ENABLE1_GPIO_Port, CONTACTOR_ENABLE1_Pin, GPIO_PIN_SET);
       // Wait 1 sec
 
+
       /* Check that the current is below the threshold and that the sense pin is low*/
-      common = !HAL_GPIO_ReadPin(CONTACTOR_ENABLE1_GPIO_Port, CONTACTOR_ENABLE1_Pin);
       // Do ADC conversion, normalize, and check
 
+      if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
+      {
+          current = HAL_ADC_GetValue(&hadc1);
+      }
+      else
+      {
+          current = 0;
+      }
+
+      // Some conversion
+
+      common = !HAL_GPIO_ReadPin(CONTACTOR_ENABLE1_GPIO_Port, CONTACTOR_ENABLE1_Pin);
+      // If current is high for some reason or sense pin is high, skip the rest
+      if (pwr_current > CURRENT_LOWER_THRESHOLD || !common)
+      {
+        cycleCount++;
+        continue;
+      }
+
+      cycleCount = 0;
 
       // Turn on Charge Contactor
       HAL_GPIO_WritePin(CONTACTOR_ENABLE2_GPIO_Port, CONTACTOR_ENABLE2_Pin, GPIO_PIN_SET)
       // Wait 1 sec
 
       /* Check that the current is below the threshold and that the sense pin is low*/
-      charge = !HAL_GPIO_ReadPin(CONTACTOR_ENABLE2_GPIO_Port, CONTACTOR_ENABLE2_Pin);
+
       // Do ADC conversion, normalize, and check
+
+      if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
+      {
+          current = HAL_ADC_GetValue(&hadc1);
+      }
+      else
+      {
+          current = 0;
+      }
+
+      // Some conversion
+
+      charge = !HAL_GPIO_ReadPin(CONTACTOR_ENABLE2_GPIO_Port, CONTACTOR_ENABLE2_Pin);
+      // If current is high for some reason or sense pin is high, skip the rest
+      if (pwr_current > CURRENT_LOWER_THRESHOLD || !common)
+      {
+        cycleCount++;
+        continue;
+      }
+
+      cycleCount = 0;
 
       // Turn on Discharge Contactor
       HAL_GPIO_WritePin(CONTACTOR_ENABLE3_GPIO_Port, CONTACTOR_ENABLE3_Pin, GPIO_PIN_SET)
       // Wait 1 sec
 
       /* Check that the current is below the threshold and that the sense pin is low*/
-      discharge = !HAL_GPIO_ReadPin(CONTACTOR_ENABLE3_GPIO_Port, CONTACTOR_ENABLE3_Pin);
+
       // Do ADC conversion, normalize, and check
+
+      if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
+      {
+          current = HAL_ADC_GetValue(&hadc1);
+      }
+      else
+      {
+          current = 0;
+      }
+
+      // Some conversion
+
+      discharge = !HAL_GPIO_ReadPin(CONTACTOR_ENABLE3_GPIO_Port, CONTACTOR_ENABLE3_Pin);
+      // If current is high for some reason or sense pin is high, skip the rest
+      if (pwr_current > CURRENT_LOWER_THRESHOLD || !common)
+      {
+        cycleCount++;
+        continue;
+      }
+
+      cycleCount = 0;
 
       // Enable high voltage
       HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_SET);

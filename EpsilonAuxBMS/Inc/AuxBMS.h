@@ -21,6 +21,7 @@
 
 #define CONTACTOR_WAIT_TIME 1000 // 1s
 #define CURRENT_LOWER_THRESHOLD 0.3 // Lower current threshold
+#define ADC_POLL_TIMEOUT 10
 // When ORION is coded, indices can be filled in
 
 
