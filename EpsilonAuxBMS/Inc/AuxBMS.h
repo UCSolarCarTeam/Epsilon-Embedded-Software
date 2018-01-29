@@ -24,14 +24,15 @@
 // When ORION is coded, indices can be filled in
 
 
-typedef struct AuxStatus {
-  unsigned int commonContactorState : 0;
-  unsigned int chargeContactorState : 0;
-  unsigned int dischargeContactorState : 0;
-  unsigned int auxVoltage : 0x0;
-  unsigned int strobeBmsLight : 0;
-  unsigned int allowCharge : 0;
-  unsigned int contactorError : 0;
+typedef struct AuxStatus
+{
+    unsigned int commonContactorState : 0;
+    unsigned int chargeContactorState : 0;
+    unsigned int dischargeContactorState : 0;
+    unsigned int auxVoltage : 0x0;
+    unsigned int strobeBmsLight : 0;
+    unsigned int allowCharge : 0;
+    unsigned int contactorError : 0;
 } AuxStatus;
 
 // Will include orion inputs once CAN details known

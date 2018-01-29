@@ -128,9 +128,10 @@ int main(void)
     // Setup for next CAN Receive Interrupt
     if (HAL_CAN_Receive_IT(&hcan1, CAN_FIFO0) != HAL_OK)
     {
-      /* Reception Error */
-      _Error_Handler(__FILE__, __LINE__);
+        /* Reception Error */
+        _Error_Handler(__FILE__, __LINE__);
     }
+
     /* USER CODE END 2 */
 
     /* USER CODE BEGIN RTOS_MUTEX */
@@ -141,8 +142,9 @@ int main(void)
 
     if (canHandleMutex == NULL)
     {
-      _Error_Handler(__FILE__, __LINE__);
+        _Error_Handler(__FILE__, __LINE__);
     }
+
     /* USER CODE END RTOS_MUTEX */
 
     /* USER CODE BEGIN RTOS_SEMAPHORES */
@@ -451,8 +453,8 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 static void MX_CAN1_UserInit(void)
 {
-  // TODO
-  // Finish this
+    // TODO
+    // Finish this
 }
 
 /* USER CODE END 4 */
@@ -491,6 +493,7 @@ void _Error_Handler(char* file, int line)
     /* User can add his own implementation to report the HAL error return state */
     // Turn on RED LED
     HAL_GPIO_WritePin(GPIOA, RED_LED_Pin, GPIO_PIN_RESET);
+
     while (1)
     {
     }
