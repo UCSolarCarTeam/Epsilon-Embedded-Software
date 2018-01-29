@@ -47,12 +47,11 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include "main.h"
 #include "stm32f4xx_hal.h"
 #include "cmsis_os.h"
 
 /* USER CODE BEGIN Includes */
-
+#include "AuxBMS.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -62,11 +61,17 @@ CAN_HandleTypeDef hcan1;
 
 UART_HandleTypeDef huart3;
 
-osThreadId defaultTaskHandle;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
+uint8_t setContactorEnable; // Initialized to 0
+AuxStatus auxStatus;
 
+static osThreadId readOrionTaskHandle;
+static osThreadId setContactorTaskHandle;
+static osThreadId auxVoltageTaskHandle;
+static osThreadId auxCanHandle;
+static osThreadId heartbeatHandle;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -119,7 +124,7 @@ int main(void)
     /* USER CODE BEGIN 2 */
     MX_CAN1_UserInit();
     HAL_ADC_Start(&hadc1);
-    
+
     // Setup for next CAN Receive Interrupt
     if (HAL_CAN_Receive_IT(&hcan1, CAN_FIFO0) != HAL_OK)
     {
@@ -150,8 +155,22 @@ int main(void)
 
     /* Create the thread(s) */
     /* definition and creation of defaultTask */
-
     /* USER CODE BEGIN RTOS_THREADS */
+    // Setup task to read Orion GPIO outputs
+    osThreadDef(readOrionTask, readOrionEnableTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    readOrionTaskHandle = osThreadCreate(osThread(readOrionTask), NULL);
+    // Setup task to turn on contactors
+    osThreadDef(setContactorTask, setAuxContactorTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    setContactorTaskHandle = osThreadCreate(osThread(setContactorTask), NULL);
+    // Setup task to read aux voltage
+    osThreadDef(auxVoltageTask, updateAuxVoltageTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    auxVoltageTaskHandle = osThreadCreate(osThread(auxVoltageTask), NULL);
+    // Setup task to report aux status to CAN
+    osThreadDef(auxCANTask, reportAuxToCanTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    auxCanHandle = osThreadCreate(osThread(auxCANTask), canHandleMutex);
+    // Setup task to report hearbeat to CAN
+    osThreadDef(heartbeatTask, sendHeartbeatTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    heartbeatHandle = osThreadCreate(osThread(heartbeatTask), canHandleMutex);
     /* add threads, ... */
     /* USER CODE END RTOS_THREADS */
 
