@@ -59,6 +59,8 @@ ADC_HandleTypeDef hadc1;
 
 CAN_HandleTypeDef hcan1;
 
+SPI_HandleTypeDef hspi3;
+
 UART_HandleTypeDef huart3;
 
 
@@ -80,6 +82,7 @@ static void MX_GPIO_Init(void);
 static void MX_CAN1_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_ADC1_Init(void);
+static void MX_SPI3_Init(void);
 
 /* USER CODE BEGIN PFP */
 static void MX_CAN1_UserInit(void);
@@ -120,6 +123,7 @@ int main(void)
     MX_CAN1_Init();
     MX_USART3_UART_Init();
     MX_ADC1_Init();
+    MX_SPI3_Init();
 
     /* USER CODE BEGIN 2 */
     MX_CAN1_UserInit();
@@ -319,6 +323,31 @@ static void MX_CAN1_Init(void)
 
 }
 
+/* SPI3 init function */
+static void MX_SPI3_Init(void)
+{
+
+    /* SPI3 parameter configuration*/
+    hspi3.Instance = SPI3;
+    hspi3.Init.Mode = SPI_MODE_MASTER;
+    hspi3.Init.Direction = SPI_DIRECTION_2LINES_RXONLY;
+    hspi3.Init.DataSize = SPI_DATASIZE_8BIT;
+    hspi3.Init.CLKPolarity = SPI_POLARITY_LOW;
+    hspi3.Init.CLKPhase = SPI_PHASE_1EDGE;
+    hspi3.Init.NSS = SPI_NSS_SOFT;
+    hspi3.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+    hspi3.Init.FirstBit = SPI_FIRSTBIT_MSB;
+    hspi3.Init.TIMode = SPI_TIMODE_DISABLE;
+    hspi3.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+    hspi3.Init.CRCPolynomial = 10;
+
+    if (HAL_SPI_Init(&hspi3) != HAL_OK)
+    {
+        _Error_Handler(__FILE__, __LINE__);
+    }
+
+}
+
 /* USART3 init function */
 static void MX_USART3_UART_Init(void)
 {
@@ -345,8 +374,6 @@ static void MX_USART3_UART_Init(void)
         * Output
         * EVENT_OUT
         * EXTI
-     PC10   ------> SPI3_SCK
-     PB4   ------> SPI3_MISO
 */
 static void MX_GPIO_Init(void)
 {
@@ -406,28 +433,12 @@ static void MX_GPIO_Init(void)
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-    /*Configure GPIO pin : ADC_SPI_SCK_Pin */
-    GPIO_InitStruct.Pin = ADC_SPI_SCK_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF6_SPI3;
-    HAL_GPIO_Init(ADC_SPI_SCK_GPIO_Port, &GPIO_InitStruct);
-
     /*Configure GPIO pin : CURRENT_SENSE_ENABLE_Pin */
     GPIO_InitStruct.Pin = CURRENT_SENSE_ENABLE_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(CURRENT_SENSE_ENABLE_GPIO_Port, &GPIO_InitStruct);
-
-    /*Configure GPIO pin : ADC_SPI_MISO_Pin */
-    GPIO_InitStruct.Pin = ADC_SPI_MISO_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF6_SPI3;
-    HAL_GPIO_Init(ADC_SPI_MISO_GPIO_Port, &GPIO_InitStruct);
 
     /*Configure GPIO pin : ADC_nCS_Pin */
     GPIO_InitStruct.Pin = ADC_nCS_Pin;
