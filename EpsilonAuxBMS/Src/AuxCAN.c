@@ -70,17 +70,17 @@ void reportAuxToCanTask(void const* arg)
 // Reimplement weak definition in stm32f4xx_hal_can.c
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 {
-  CanRxMsgTypeDef* msg = hcan->pRxMsg;
+    CanRxMsgTypeDef* msg = hcan->pRxMsg;
 
-  // Toggle Green LED for every message received
-  HAL_GPIO_TogglePin(GRN_LED_GPIO_Port, GRN_LED_Pin);
+    // Toggle Green LED for every message received
+    HAL_GPIO_TogglePin(GRN_LED_GPIO_Port, GRN_LED_Pin);
 
-  if (msg->StdId == MAX_MIN_VOLTAGES_STDID)
-  {
-      orionBmsInputs[0] = (uint16_t)msg->Data[6]; // Max Cell voltage
-      orionBmsInputs[1] = (uint16_t)msg->Data[4]; // Min Cell Voltage
-  }
+    if (msg->StdId == MAX_MIN_VOLTAGES_STDID)
+    {
+        orionBmsInputs[0] = (uint16_t)msg->Data[6]; // Max Cell voltage
+        orionBmsInputs[1] = (uint16_t)msg->Data[4]; // Min Cell Voltage
+    }
 
-  __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
-  HAL_CAN_Receive_IT(hcan, CAN_FIFO0);
+    __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
+    HAL_CAN_Receive_IT(hcan, CAN_FIFO0);
 }
