@@ -47,10 +47,7 @@ void reportAuxToCanTask(void const* arg)
 
         // Toggle blue LED for every CAN message sent
         HAL_GPIO_TogglePin(BLU_LED_GPIO_Port, BLU_LED_Pin);
-        // Read GPIO for contactor states
-        auxStatus.commonContactorState = HAL_GPIO_ReadPin(SENSE1_GPIO_Port, SENSE1_Pin);
-        auxStatus.chargeContactorState = HAL_GPIO_ReadPin(SENSE2_GPIO_Port, SENSE2_Pin);
-        auxStatus.dischargeContactorState = HAL_GPIO_ReadPin(SENSE3_GPIO_Port, SENSE3_Pin);
+
         // Set CAN message address
         hcan1.pTxMsg->StdId = AUX_STATUS_STDID;
         // Set Data
@@ -73,5 +70,17 @@ void reportAuxToCanTask(void const* arg)
 // Reimplement weak definition in stm32f4xx_hal_can.c
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 {
-    // Will fill out when more info on Orion CAN
+  CanRxMsgTypeDef* msg = hcan->pRxMsg;
+
+  // Toggle Green LED for every message received
+  HAL_GPIO_TogglePin(GRN_LED_GPIO_Port, GRN_LED_Pin);
+
+  if (msg->StdId == MAX_MIN_VOLTAGES_STDID)
+  {
+      orionBmsInputs[0] = (uint16_t)msg->Data[6]; // Max Cell voltage
+      orionBmsInputs[1] = (uint16_t)msg->Data[4]; // Min Cell Voltage
+  }
+
+  __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
+  HAL_CAN_Receive_IT(hcan, CAN_FIFO0);
 }

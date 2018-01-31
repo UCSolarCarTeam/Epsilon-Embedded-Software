@@ -67,6 +67,7 @@ UART_HandleTypeDef huart3;
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 uint8_t setContactorEnable; // Initialized to 0
+uint16_t orionBmsInputs[2]; // Initialized to {0, 0}
 AuxStatus auxStatus;
 
 static osThreadId readOrionTaskHandle;
@@ -163,7 +164,7 @@ int main(void)
     /* definition and creation of defaultTask */
     /* USER CODE BEGIN RTOS_THREADS */
     // Setup task to read Orion GPIO outputs
-    osThreadDef(readOrionTask, readOrionEnableTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    osThreadDef(readOrionTask, readOrionInputTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
     readOrionTaskHandle = osThreadCreate(osThread(readOrionTask), NULL);
     // Setup task to turn on contactors
     osThreadDef(setContactorTask, setAuxContactorTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);

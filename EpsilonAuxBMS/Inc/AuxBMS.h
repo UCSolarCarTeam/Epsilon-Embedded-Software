@@ -5,6 +5,7 @@
 #include "stm32f4xx_hal_conf.h"
 #include "stm32f4xx_hal_can.h"
 #include "stm32f4xx_hal_adc.h"
+#include "stm32f4xx_hal_spi.h"
 
 // Refer to https://docs.google.com/spreadsheets/d/1soVLjeD9Sl7z7Z6cYMyn1fmn-cG7tx_pfFDsvgkCqMU/edit?usp=sharing
 #define AUX_READ_ORION_ENABLE_FREQ 1 // Every 1ms
@@ -17,9 +18,14 @@
 #define AUX_STATUS_FREQ 100 // 10Hz
 #define AUX_STATUS_STDID 0x721U
 
-#define MAX_MIN_VOLTAGES 0x30A
+#define MAX_MIN_VOLTAGES_STDID 0x30A
+// TODO
+// Will implement when bill knows
+#define MAX_VOLTAGE
+#define MIN_VOLTAGE
 
 #define CONTACTOR_WAIT_TIME 1000 // 1s
+#define CURRENT_SENSE_RESISTOR 0.001 //1 mOhm
 #define CURRENT_LOWER_THRESHOLD 0.3 // Lower current threshold
 #define ADC_POLL_TIMEOUT 10
 // When ORION is coded, indices can be filled in
@@ -41,16 +47,19 @@ typedef struct AuxStatus
 extern ADC_HandleTypeDef hadc1; // main.c
 extern CAN_HandleTypeDef hcan1; // main.c
 extern UART_HandleTypeDef huart3; // main.c
+extern SPI_HandleTypeDef hspi3; // main.c
 
 extern uint8_t setContactorEnable; // Allows contactos to be turned on. Will replace with a message queue
+extern uint16_t orionBmsInputs[2];
 extern AuxStatus auxStatus;
 
 
-// Task for reading enables for charge, discharge, and safety from orion
-// It will set an enable for setAuxContactorTask and can turn off all contactors
+// Task for reading enables for charge, discharge, and safety, and max and min cell voltages from orion
+// It will set an enable for setAuxContactorTask and can turn off all contactors,
+// charge contactor if max cell voltage is too high, and discharge contactor is min cell voltage is too low
 // whilst setAuxContactorTask is waiting
 // arg: NULL
-void readOrionEnableTask(void const* arg)
+void readOrionInputTask(void const* arg)
 // Task for turning on contactors
 // arg: NULL
 void setAuxContactorTask(void const* arg);
