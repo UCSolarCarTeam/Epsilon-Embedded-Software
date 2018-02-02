@@ -192,7 +192,7 @@ void setAuxContactorTask(void const* arg)
             auxStatus.chargeContactorState = charge;
 
             // If current is high for some reason or sense pin is high, skip the rest
-            if (pwr_current > CURRENT_LOWER_THRESHOLD || !common)
+            if (pwr_current > CURRENT_LOWER_THRESHOLD * 2 || !common)
             {
                 cycleCount++;
                 auxStatus.chargeContactorState = 0;
@@ -231,7 +231,7 @@ void setAuxContactorTask(void const* arg)
             auxStatus.dischargeContactorState = discharge;
 
             // If current is high for some reason or sense pin is high, skip the rest
-            if (pwr_current > CURRENT_LOWER_THRESHOLD || !common)
+            if (pwr_current > CURRENT_LOWER_THRESHOLD * 3 || !common)
             {
                 cycleCount++;
                 auxStatus.dischargeContactorState = 0;
@@ -251,13 +251,39 @@ void updateAuxVoltageTask(void const* arg)
     // One time osDelayUntil initialization
     uint32_t prevWakeTime = osKernelSysTick();
     // Store voltage value
-    uint32_t voltage = 0;
+    uint16_t voltage = 0;
+    // Size of data to be received
+    uint32_t size = 1;
 
     for (;;)
     {
         osDelayUntil(&prevWakeTime, AUX_UPDATE_AUX_VOLTAGE_FREQ);
 
-        // Figure out SPI stuff
-    }
+        // Data buffer
+        uint8_t rxBuff[2] = {0,0};
+        // Set Chip Select to be low
+        HAL_GPIO_WritePin(ADC_nCS_GPIO_Port, ADC_nCS_Pin, GPIO_PIN_RESET);
+        HAL_SPI_Receive(hspi3, rxBuff, size, SPI_TIMEOUT);
+        // Set Chip Select to be high
+        HAL_GPIO_WritePin(ADC_nCS_GPIO_Port, ADC_nCS_Pin, GPIO_PIN_SET);
 
+        // ADC sends 4 (could be 3, will get second opinion) zeros before sending data,
+        //so can ignore top 4 bits of rxBuff[0] and bottom 2 bits of rxBuff[1]
+        uint16_t upperBits = rxBuff[1];
+        uint16_t lowerBits = rxBuff[0] & 0xF6; // Don't care about bottom 2 bits
+        voltage =  0x03FF & ((upperBits >> 2) | (lowerBits >> 2)); // The top 6 bits should be zeros, but just in case
+
+        float relative_voltage = AUX_NOMINAL_VOLTAGE * voltage/AUX_ADC_NOMINAL_OUTPUT;
+
+        // Rounding
+        float diff = relative_voltage - (int)relative_voltage;
+        // Make difference positive if negative
+        if (diff < 0.0)
+          diff *= -1;
+        // If the decimal place is less than 0.5, truncate and round down, else round up
+        if (diff < 0.5)
+          auxStatus.auxVoltage = (int)relative_voltage;
+        else
+          auxStatus.auxVoltage = (int)relative_voltage + 1;
+    }
 }

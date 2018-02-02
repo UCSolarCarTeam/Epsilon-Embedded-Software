@@ -9,8 +9,8 @@
 
 // Refer to https://docs.google.com/spreadsheets/d/1soVLjeD9Sl7z7Z6cYMyn1fmn-cG7tx_pfFDsvgkCqMU/edit?usp=sharing
 #define AUX_READ_ORION_ENABLE_FREQ 1 // Every 1ms
-#define AUX_SET_CONTACTOR_FREQ 10 // Every 10ms
-#define AUX_UPDATE_AUX_VOLTAGE_FREQ 50 // Every 20ms
+#define AUX_SET_CONTACTOR_FREQ 20 // Every 20ms
+#define AUX_UPDATE_AUX_VOLTAGE_FREQ 50 // Every 50ms
 
 #define AUX_HEARBEAT_FREQ 1000 // 1Hz
 #define AUX_HEARTBEAT_STDID 0x720U
@@ -28,6 +28,10 @@
 #define CURRENT_SENSE_RESISTOR 0.001 //1 mOhm
 #define CURRENT_LOWER_THRESHOLD 0.3 // Lower current threshold
 #define ADC_POLL_TIMEOUT 10
+
+#define SPI_TIMEOUT 50
+#define AUX_NOMINAL_VOLTAGE 12.0
+#define AUX_ADC_NOMINAL_OUTPUT 0x2EB
 // When ORION is coded, indices can be filled in
 
 
@@ -36,7 +40,7 @@ typedef struct AuxStatus
     unsigned int commonContactorState : 0;
     unsigned int chargeContactorState : 0;
     unsigned int dischargeContactorState : 0;
-    unsigned int auxVoltage : 0x0;
+    uint16_t auxVoltage : 0x00;
     unsigned int strobeBmsLight : 0;
     unsigned int allowCharge : 0;
     unsigned int contactorError : 0;

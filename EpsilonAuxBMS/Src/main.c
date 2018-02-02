@@ -87,7 +87,7 @@ static void MX_SPI3_Init(void);
 
 /* USER CODE BEGIN PFP */
 static void MX_CAN1_UserInit(void);
-static void MX_GPIO_UserInit(void);
+static void MX_SPI3_UserInit(void);
 /* Private function prototypes -----------------------------------------------*/
 
 /* USER CODE END PFP */
@@ -332,8 +332,8 @@ static void MX_SPI3_Init(void)
     hspi3.Instance = SPI3;
     hspi3.Init.Mode = SPI_MODE_MASTER;
     hspi3.Init.Direction = SPI_DIRECTION_2LINES_RXONLY;
-    hspi3.Init.DataSize = SPI_DATASIZE_8BIT;
-    hspi3.Init.CLKPolarity = SPI_POLARITY_LOW;
+    hspi3.Init.DataSize = SPI_DATASIZE_16BIT;
+    hspi3.Init.CLKPolarity = SPI_POLARITY_HIGH;
     hspi3.Init.CLKPhase = SPI_PHASE_1EDGE;
     hspi3.Init.NSS = SPI_NSS_SOFT;
     hspi3.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
@@ -404,8 +404,8 @@ static void MX_GPIO_Init(void)
     /*Configure GPIO pin Output Level */
     HAL_GPIO_WritePin(CURRENT_SENSE_ENABLE_GPIO_Port, CURRENT_SENSE_ENABLE_Pin, GPIO_PIN_RESET);
 
-    /*Configure GPIO pin Output Level */
-    HAL_GPIO_WritePin(ADC_nCS_GPIO_Port, ADC_nCS_Pin, GPIO_PIN_RESET);
+    /*Configure ADC_nCS to be high */
+    HAL_GPIO_WritePin(ADC_nCS_GPIO_Port, ADC_nCS_Pin, GPIO_PIN_SET);
 
     /*Configure GPIO pins : CONTACTOR_ENABLE2_Pin CONTACTOR_ENABLE4_Pin CONTACTOR_ENABLE3_Pin CONTACTOR_ENABLE1_Pin */
     GPIO_InitStruct.Pin = CONTACTOR_ENABLE2_Pin | CONTACTOR_ENABLE4_Pin | CONTACTOR_ENABLE3_Pin | CONTACTOR_ENABLE1_Pin;
