@@ -260,7 +260,7 @@ void updateAuxVoltageTask(void const* arg)
         osDelayUntil(&prevWakeTime, AUX_UPDATE_AUX_VOLTAGE_FREQ);
 
         // Data buffer
-        uint8_t rxBuff[2] = {0,0};
+        uint8_t rxBuff[2] = {0, 0};
         // Set Chip Select to be low
         HAL_GPIO_WritePin(ADC_nCS_GPIO_Port, ADC_nCS_Pin, GPIO_PIN_RESET);
         HAL_SPI_Receive(hspi3, rxBuff, size, SPI_TIMEOUT);
@@ -273,17 +273,25 @@ void updateAuxVoltageTask(void const* arg)
         uint16_t lowerBits = rxBuff[0] & 0xF6; // Don't care about bottom 2 bits
         voltage =  0x03FF & ((upperBits >> 2) | (lowerBits >> 2)); // The top 6 bits should be zeros, but just in case
 
-        float relative_voltage = AUX_NOMINAL_VOLTAGE * voltage/AUX_ADC_NOMINAL_OUTPUT;
+        float relative_voltage = AUX_NOMINAL_VOLTAGE * voltage / AUX_ADC_NOMINAL_OUTPUT;
 
         // Rounding
         float diff = relative_voltage - (int)relative_voltage;
+
         // Make difference positive if negative
         if (diff < 0.0)
-          diff *= -1;
+        {
+            diff *= -1;
+        }
+
         // If the decimal place is less than 0.5, truncate and round down, else round up
         if (diff < 0.5)
-          auxStatus.auxVoltage = (int)relative_voltage;
+        {
+            auxStatus.auxVoltage = (int)relative_voltage;
+        }
         else
-          auxStatus.auxVoltage = (int)relative_voltage + 1;
+        {
+            auxStatus.auxVoltage = (int)relative_voltage + 1;
+        }
     }
 }
