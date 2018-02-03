@@ -71,7 +71,7 @@ void updateLightsTask(void const* arg)
             
             HAL_GPIO_TogglePin(ESTROBE_GPIO_Port, ESTROBE_Pin);
         } 
-        else if( auxBMSInputs[0] & STROBE_FAULT_MASK) //value for error??
+        else if( auxBMSInputs[0] & STROBE_FAULT_MASK|| auxBMSInputs[1] & STROBE_FAULT_MASK) //value for error??
         {
             HAL_GPIO_TogglePin(ESTROBE_GPIO_Port, ESTROBE_Pin);
         }
@@ -249,7 +249,9 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
         batteryStatus[3] = msg->Data[3];
     }
     else if (msg->StdId == AUXBMS_INPUT_STDID){
-    	auxBMSInputs[0] = msg->Data[1];
+    	auxBMSInputs[0] = msg->Data[0];
+        auxBMSInputs[1] = msg->Data[1];
+
     }
 
     __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
