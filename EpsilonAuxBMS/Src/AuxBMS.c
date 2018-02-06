@@ -263,6 +263,7 @@ void updateAuxVoltageTask(void const* arg)
         uint8_t rxBuff[2] = {0, 0};
         // Set Chip Select to be low
         HAL_GPIO_WritePin(ADC_nCS_GPIO_Port, ADC_nCS_Pin, GPIO_PIN_RESET);
+        // Start SCLK and receive input
         HAL_SPI_Receive(hspi3, rxBuff, size, SPI_TIMEOUT);
         // Set Chip Select to be high
         HAL_GPIO_WritePin(ADC_nCS_GPIO_Port, ADC_nCS_Pin, GPIO_PIN_SET);
