@@ -137,11 +137,11 @@ int main(void)
 
     /* Create the thread(s) */
     /* definition and creation of defaultTask */
-    osThreadDef(testTask, TestingTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
-    testTaskHandle = osThreadCreate(osThread(testTask), NULL);
 
     /* USER CODE BEGIN RTOS_THREADS */
     /* add threads, ... */
+    osThreadDef(testTask, TestingTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    testTaskHandle = osThreadCreate(osThread(testTask), NULL);
     /* USER CODE END RTOS_THREADS */
 
     /* USER CODE BEGIN RTOS_QUEUES */
