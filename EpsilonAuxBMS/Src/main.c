@@ -78,7 +78,7 @@ static void MX_CAN1_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_SPI3_Init(void);
-void TestingTask(void);
+void TestingTask(void const* arg);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -426,30 +426,14 @@ static void MX_GPIO_Init(void)
 /* USER CODE END 4 */
 
 /* TestingTask function */
-void TestingTask(void)
+void TestingTask(void const* arg)
 {
-    int state = 0;
     /* USER CODE BEGIN 5 */
     /* Infinite loop */
     for (;;)
     {
         osDelay(500);
-        switch (state){
-          case 0:
-            HAL_GPIO_TogglePin(GPIOA, RED_LED_Pin);
-            state = 1;
-          break;
-          case 1:
-            HAL_GPIO_TogglePin(GPIOA, BLU_LED_Pin);
-            state = 2;
-          break;
-          case 2:
-            HAL_GPIO_TogglePin(GPIOA, GRN_LED_Pin);
-            state = 0;
-          break;
-          default:
-            state = 0;
-        }
+        HAL_GPIO_TogglePin(GPIOE, CONTACTOR_ENABLE2_Pin);
     }
 
     /* USER CODE END 5 */
