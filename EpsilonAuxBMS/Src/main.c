@@ -66,7 +66,7 @@ UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-uint8_t setContactorEnable; // Initialized to 0
+uint8_t orionOK; // Initialized to 0
 uint16_t orionBmsInputs[2]; // Initialized to {0, 0}
 AuxStatus auxStatus;
 
@@ -465,8 +465,32 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 static void MX_CAN1_UserInit(void)
 {
-    // TODO
-    // Finish this
+  CAN_FilterConfTypeDef sFilterConfig;
+  sFilterConfig.FilterNumber = 0; // Use first filter bank
+  sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
+  sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+  sFilterConfig.FilterIdHigh = MAX_MIN_VOLTAGES_STDID << 5; // Filter registers need to be shifted left 5 bits
+  sFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
+  sFilterConfig.FilterFIFOAssignment = 0;
+  sFilterConfig.FilterActivation = ENABLE;
+  sFilterConfig.BankNumber = 0; // Set all filter banks for CAN1
+
+  if (HAL_CAN_ConfigFilter(&hcan1, &sFilterConfig) != HAL_OK)
+  {
+      /* Filter configuration Error */
+      _Error_Handler(__FILE__, __LINE__);
+  }
+
+  /* Configure Transmission process */
+    static CanTxMsgTypeDef txMessage;
+    static CanRxMsgTypeDef rxMessage;
+    hcan1.pTxMsg = &txMessage;
+    hcan1.pRxMsg = &rxMessage;
+    // hcan2.pTxMsg->StdId = 0x0; // CAN message address, set in Lights.c
+    hcan1.pTxMsg->ExtId = 0x0; // Only used if (hcan2.pTxMsg->IDE == CAN_ID_EXT)
+    hcan1.pTxMsg->RTR = CAN_RTR_DATA; // Data request, not remote request
+    hcan1.pTxMsg->IDE = CAN_ID_STD; // Standard CAN, not Extended
+    hcan1.pTxMsg->DLC = 2; // Data size in bytes
 }
 
 /* USER CODE END 4 */

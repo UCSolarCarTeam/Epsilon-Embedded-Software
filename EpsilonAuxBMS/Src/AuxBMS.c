@@ -22,12 +22,12 @@ void readOrionInputTask(void const* arg)
         // Make sure all orion inputs are high. If they aren't, turn off all contactors and strobe light
         if (safety && charge && discharge)
         {
-            setContactorEnable = 1;
+            orionOK = 1;
             auxStatus.strobeBmsLight = 0;
         }
         else
         {
-            setContactorEnable = 0;
+            orionOK = 0;
             HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
             HAL_GPIO_WritePin(CONTACTOR_ENABLE1_GPIO_Port, CONTACTOR_ENABLE1_Pin, GPIO_PIN_RESET);
             HAL_GPIO_WritePin(CONTACTOR_ENABLE2_GPIO_Port, CONTACTOR_ENABLE2_Pin, GPIO_PIN_RESET);
@@ -40,7 +40,7 @@ void readOrionInputTask(void const* arg)
 
         if (orionBmsInputs[0] > MAX_VOLTAGE)
         {
-            setContactorEnable = 0;
+            batteryVoltagesOK = 0;
             // Turn off charge contactor
             HAL_GPIO_WritePin(CONTACTOR_ENABLE2_GPIO_Port, CONTACTOR_ENABLE2_Pin, GPIO_PIN_RESET);
             auxStatus.chargeContactorState = 0;
@@ -48,16 +48,21 @@ void readOrionInputTask(void const* arg)
         }
         else
         {
+            batteryVoltagesOK = 1;
             auxStatus.allowCharge = 1;
         }
 
         if (orionBmsInputs[1] < MIN_VOLTAGE)
         {
-            setContactorEnable = 0;
+            batteryVoltagesOK = 0;
             // Turn off High voltage enable and discharge contactor
             HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
             HAL_GPIO_WritePin(CONTACTOR_ENABLE3_GPIO_Port, CONTACTOR_ENABLE3_Pin, GPIO_PIN_RESET);
             auxStatus.dischargeContactorState = 0;
+        }
+        else
+        {
+          batteryVoltagesOK = 1;
         }
     }
 }
@@ -75,21 +80,20 @@ void setAuxContactorTask(void const* arg)
     char charge = 0;
     char discharge = 0;
 
-
-    unsigned int cycleCount = 0; // Keep track of how many attempts there were to turn on a contactor
+    int cycleCount = 0; // Keep track of how many attempts there were to turn on a contactor
 
     // If it's greater than 1, report to CAN that something is wrong
     for (;;)
     {
         osDelayUntil(&prevWakeTime, AUX_SET_CONTACTOR_FREQ);
 
-        common = !HAL_GPIO_ReadPin(CONTACTOR_ENABLE1_GPIO_Port, CONTACTOR_ENABLE1_Pin);
-        charge = !HAL_GPIO_ReadPin(CONTACTOR_ENABLE2_GPIO_Port, CONTACTOR_ENABLE2_Pin);
-        discharge = !HAL_GPIO_ReadPin(CONTACTOR_ENABLE3_GPIO_Port, CONTACTOR_ENABLE3_Pin);
+        common = !HAL_GPIO_ReadPin(SENSE1_GPIO_Port, SENSE1_Pin);
+        charge = !HAL_GPIO_ReadPin(SENSE2_GPIO_Port, SENSE2_Pin);
+        discharge = !HAL_GPIO_ReadPin(SENSE3_GPIO_Port, SENSE3_Pin);
 
         done = common && charge && discharge;
 
-        if (setContactorEnable && !done)
+        if (orionOK && batteryVoltagesOK && !done)
         {
             // Check current is low before enabling (ADC conversion and normalization)
             if (cycleCount > 1)
@@ -129,7 +133,7 @@ void setAuxContactorTask(void const* arg)
             // Wait to allow for current peak
             osDelay(CONTACTOR_WAIT_TIME);
 
-            if (!setContactorEnable)
+            if (!orionOK || !batteryVoltagesOK)
             {
                 continue;
             }
@@ -149,7 +153,7 @@ void setAuxContactorTask(void const* arg)
             current_sense = 3.3 * current_sense / 0xFFF; // change it into the voltage read
             pwr_current = current_sense / CURRENT_SENSE_RESISTOR; // convert voltage to current
 
-            common = !HAL_GPIO_ReadPin(CONTACTOR_ENABLE1_GPIO_Port, CONTACTOR_ENABLE1_Pin);
+            common = !HAL_GPIO_ReadPin(SENSE1_GPIO_Port, SENSE1_Pin);
             auxStatus.commonContactorState = common;
 
             // If current is high for some reason or sense pin is high, skip the rest
@@ -162,12 +166,12 @@ void setAuxContactorTask(void const* arg)
 
             cycleCount = 0;
 
-            // Turn on Common Contactor
-            HAL_GPIO_WritePin(CONTACTOR_ENABLE1_GPIO_Port, CONTACTOR_ENABLE1_Pin, GPIO_PIN_SET);
+            // Turn on charge Contactor
+            HAL_GPIO_WritePin(CONTACTOR_ENABLE2_GPIO_Port, CONTACTOR_ENABLE2_Pin, GPIO_PIN_SET);
             // Wait to allow for current peak
             osDelay(CONTACTOR_WAIT_TIME);
 
-            if (!setContactorEnable)
+            if (!orionOK || !batteryVoltagesOK)
             {
                 continue;
             }
@@ -188,7 +192,7 @@ void setAuxContactorTask(void const* arg)
             current_sense = 3.3 * current_sense / 0xFFF; // change it into the voltage read
             pwr_current = current_sense / CURRENT_SENSE_RESISTOR; // convert voltage to current
 
-            charge = !HAL_GPIO_ReadPin(CONTACTOR_ENABLE2_GPIO_Port, CONTACTOR_ENABLE2_Pin);
+            charge = !HAL_GPIO_ReadPin(SENSE2_GPIO_Port, SENSE2_Pin);
             auxStatus.chargeContactorState = charge;
 
             // If current is high for some reason or sense pin is high, skip the rest
@@ -206,7 +210,7 @@ void setAuxContactorTask(void const* arg)
             // Wait to allow for current peak
             osDelay(CONTACTOR_WAIT_TIME);
 
-            if (!setContactorEnable)
+            if (!orionOK || !batteryVoltagesOK)
             {
                 continue;
             }
@@ -227,7 +231,7 @@ void setAuxContactorTask(void const* arg)
             current_sense = 3.3 * current_sense / 0xFFF; // change it into the voltage read
             pwr_current = current_sense / CURRENT_SENSE_RESISTOR; // convert voltage to current
 
-            discharge = !HAL_GPIO_ReadPin(CONTACTOR_ENABLE3_GPIO_Port, CONTACTOR_ENABLE3_Pin);
+            discharge = !HAL_GPIO_ReadPin(SENSE3_GPIO_Port, SENSE2_Pin);
             auxStatus.dischargeContactorState = discharge;
 
             // If current is high for some reason or sense pin is high, skip the rest
@@ -270,20 +274,14 @@ void updateAuxVoltageTask(void const* arg)
 
         // ADC sends 4 (could be 3, will get second opinion) zeros before sending data,
         //so can ignore top 4 bits of rxBuff[0] and bottom 2 bits of rxBuff[1]
-        uint16_t upperBits = rxBuff[1];
-        uint16_t lowerBits = rxBuff[0] & 0xF6; // Don't care about bottom 2 bits
-        voltage =  0x03FF & ((upperBits >> 2) | (lowerBits >> 2)); // The top 6 bits should be zeros, but just in case
+        uint16_t upperBits = (unint16_t)(rxBuff[1] << 6);
+        uint16_t lowerBits = (unint16_t)(rxBuff[0] & 0xF6); // Don't care about bottom 2 bits
+        voltage =  0x03FF & ((upperBits) | (lowerBits >> 2)); // The top 6 bits should be zeros, but just in case
 
         float relative_voltage = AUX_NOMINAL_VOLTAGE * voltage / AUX_ADC_NOMINAL_OUTPUT;
 
         // Rounding
         float diff = relative_voltage - (int)relative_voltage;
-
-        // Make difference positive if negative
-        if (diff < 0.0)
-        {
-            diff *= -1;
-        }
 
         // If the decimal place is less than 0.5, truncate and round down, else round up
         if (diff < 0.5)

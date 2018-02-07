@@ -31,7 +31,7 @@
 
 #define SPI_TIMEOUT 50
 #define AUX_NOMINAL_VOLTAGE 12.0
-#define AUX_ADC_NOMINAL_OUTPUT 0x2EB
+#define AUX_ADC_NOMINAL_OUTPUT 0x2EB // Pattern = 2.63/3.6 * 0x3FF
 // When ORION is coded, indices can be filled in
 
 
@@ -53,7 +53,8 @@ extern CAN_HandleTypeDef hcan1; // main.c
 extern UART_HandleTypeDef huart3; // main.c
 extern SPI_HandleTypeDef hspi3; // main.c
 
-extern uint8_t setContactorEnable; // Allows contactos to be turned on. Will replace with a message queue
+extern uint8_t orionOK; // Allows contactors to be turned on as long as the orion inputs are all good
+extern uint8_t batteryVoltagesOK; // Allows contactors to be turned on as long as max/min voltages are all good
 extern uint16_t orionBmsInputs[2];
 extern AuxStatus auxStatus;
 
