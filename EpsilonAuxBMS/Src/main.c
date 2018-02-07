@@ -84,6 +84,7 @@ static void MX_CAN1_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_SPI3_Init(void);
+static void MX_NVIC_Init(void);
 
 /* USER CODE BEGIN PFP */
 static void MX_CAN1_UserInit(void);
@@ -126,10 +127,14 @@ int main(void)
     MX_ADC1_Init();
     MX_SPI3_Init();
 
+    /* Initialize interrupts */
+    MX_NVIC_Init();
+
     /* USER CODE BEGIN 2 */
     MX_CAN1_UserInit();
     HAL_ADC_Start(&hadc1);
 
+    orionOK = 1; // Initially allow 
     // Setup for next CAN Receive Interrupt
     if (HAL_CAN_Receive_IT(&hcan1, CAN_FIFO0) != HAL_OK)
     {
@@ -259,6 +264,15 @@ void SystemClock_Config(void)
 
     /* SysTick_IRQn interrupt configuration */
     HAL_NVIC_SetPriority(SysTick_IRQn, 15, 0);
+}
+
+/** NVIC Configuration
+*/
+static void MX_NVIC_Init(void)
+{
+  /* EXTI9_5_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 }
 
 /* ADC1 init function */

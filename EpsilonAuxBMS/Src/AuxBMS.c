@@ -6,37 +6,9 @@ void readOrionInputTask(void const* arg)
     // One time osDelayUntil initialization
     uint32_t prevWakeTime = osKernelSysTick();
 
-    // Store input values
-    char safety = 0;
-    char charge = 0;
-    char discharge = 0;
-
     for (;;)
     {
         osDelayUntil(&prevWakeTime, AUX_READ_ORION_ENABLE_FREQ);
-
-        safety = HAL_GPIO_ReadPin(CHARGE_SAFETY_SENSE_GPIO_Port, CHARGE_SAFETY_SENSE_Pin);
-        charge = HAL_GPIO_ReadPin(CHARGE_ENABLE_SENSE_GPIO_Port, CHARGE_ENABLE_SENSE_Pin);
-        discharge = HAL_GPIO_ReadPin(DISCHARGE_ENABLE_SENSE_GPIO_Port, DISCHARGE_ENABLE_SENSE_Pin);
-
-        // Make sure all orion inputs are high. If they aren't, turn off all contactors and strobe light
-        if (safety && charge && discharge)
-        {
-            orionOK = 1;
-            auxStatus.strobeBmsLight = 0;
-        }
-        else
-        {
-            orionOK = 0;
-            HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
-            HAL_GPIO_WritePin(CONTACTOR_ENABLE1_GPIO_Port, CONTACTOR_ENABLE1_Pin, GPIO_PIN_RESET);
-            HAL_GPIO_WritePin(CONTACTOR_ENABLE2_GPIO_Port, CONTACTOR_ENABLE2_Pin, GPIO_PIN_RESET);
-            HAL_GPIO_WritePin(CONTACTOR_ENABLE3_GPIO_Port, CONTACTOR_ENABLE3_Pin, GPIO_PIN_RESET);
-            auxStatus.commonContactorState = 0;
-            auxStatus.chargeContactorState = 0;
-            auxStatus.dischargeContactorState = 0;
-            auxStatus.strobeBmsLight = 1;
-        }
 
         if (orionBmsInputs[0] > MAX_VOLTAGE)
         {
