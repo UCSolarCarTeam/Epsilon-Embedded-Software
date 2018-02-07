@@ -64,7 +64,7 @@ SPI_HandleTypeDef hspi3;
 
 UART_HandleTypeDef huart3;
 
-osThreadId defaultTaskHandle;
+static osThreadId testTaskHandle;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
