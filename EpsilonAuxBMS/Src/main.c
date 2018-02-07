@@ -134,7 +134,8 @@ int main(void)
     MX_CAN1_UserInit();
     HAL_ADC_Start(&hadc1);
 
-    orionOK = 1; // Initially allow 
+    orionOK = 1; // Initially allow
+
     // Setup for next CAN Receive Interrupt
     if (HAL_CAN_Receive_IT(&hcan1, CAN_FIFO0) != HAL_OK)
     {
@@ -270,9 +271,9 @@ void SystemClock_Config(void)
 */
 static void MX_NVIC_Init(void)
 {
-  /* EXTI9_5_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+    /* EXTI9_5_IRQn interrupt configuration */
+    HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 }
 
 /* ADC1 init function */
@@ -479,23 +480,23 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 static void MX_CAN1_UserInit(void)
 {
-  CAN_FilterConfTypeDef sFilterConfig;
-  sFilterConfig.FilterNumber = 0; // Use first filter bank
-  sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
-  sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
-  sFilterConfig.FilterIdHigh = MAX_MIN_VOLTAGES_STDID << 5; // Filter registers need to be shifted left 5 bits
-  sFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
-  sFilterConfig.FilterFIFOAssignment = 0;
-  sFilterConfig.FilterActivation = ENABLE;
-  sFilterConfig.BankNumber = 0; // Set all filter banks for CAN1
+    CAN_FilterConfTypeDef sFilterConfig;
+    sFilterConfig.FilterNumber = 0; // Use first filter bank
+    sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
+    sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+    sFilterConfig.FilterIdHigh = MAX_MIN_VOLTAGES_STDID << 5; // Filter registers need to be shifted left 5 bits
+    sFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
+    sFilterConfig.FilterFIFOAssignment = 0;
+    sFilterConfig.FilterActivation = ENABLE;
+    sFilterConfig.BankNumber = 0; // Set all filter banks for CAN1
 
-  if (HAL_CAN_ConfigFilter(&hcan1, &sFilterConfig) != HAL_OK)
-  {
-      /* Filter configuration Error */
-      _Error_Handler(__FILE__, __LINE__);
-  }
+    if (HAL_CAN_ConfigFilter(&hcan1, &sFilterConfig) != HAL_OK)
+    {
+        /* Filter configuration Error */
+        _Error_Handler(__FILE__, __LINE__);
+    }
 
-  /* Configure Transmission process */
+    /* Configure Transmission process */
     static CanTxMsgTypeDef txMessage;
     static CanRxMsgTypeDef rxMessage;
     hcan1.pTxMsg = &txMessage;

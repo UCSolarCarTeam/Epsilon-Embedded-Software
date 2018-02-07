@@ -34,7 +34,7 @@ void readOrionInputTask(void const* arg)
         }
         else
         {
-          batteryVoltagesOK = 1;
+            batteryVoltagesOK = 1;
         }
     }
 }
