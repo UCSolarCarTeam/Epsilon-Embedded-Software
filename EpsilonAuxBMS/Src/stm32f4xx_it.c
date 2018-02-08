@@ -45,7 +45,7 @@
 extern TIM_HandleTypeDef htim2;
 
 /******************************************************************************/
-/*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
+/*            Cortex-M4 Processor Interruption and Exception Handlers         */
 /******************************************************************************/
 
 /**
@@ -53,13 +53,13 @@ extern TIM_HandleTypeDef htim2;
 */
 void SysTick_Handler(void)
 {
-  /* USER CODE BEGIN SysTick_IRQn 0 */
+    /* USER CODE BEGIN SysTick_IRQn 0 */
 
-  /* USER CODE END SysTick_IRQn 0 */
-  osSystickHandler();
-  /* USER CODE BEGIN SysTick_IRQn 1 */
+    /* USER CODE END SysTick_IRQn 0 */
+    osSystickHandler();
+    /* USER CODE BEGIN SysTick_IRQn 1 */
 
-  /* USER CODE END SysTick_IRQn 1 */
+    /* USER CODE END SysTick_IRQn 1 */
 }
 
 /******************************************************************************/
@@ -74,15 +74,15 @@ void SysTick_Handler(void)
 */
 void EXTI9_5_IRQHandler(void)
 {
-  /* USER CODE BEGIN EXTI9_5_IRQn 0 */
+    /* USER CODE BEGIN EXTI9_5_IRQn 0 */
 
-  /* USER CODE END EXTI9_5_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_6);
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_7);
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_8);
-  /* USER CODE BEGIN EXTI9_5_IRQn 1 */
+    /* USER CODE END EXTI9_5_IRQn 0 */
+    HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_6);
+    HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_7);
+    HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_8);
+    /* USER CODE BEGIN EXTI9_5_IRQn 1 */
 
-  /* USER CODE END EXTI9_5_IRQn 1 */
+    /* USER CODE END EXTI9_5_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
