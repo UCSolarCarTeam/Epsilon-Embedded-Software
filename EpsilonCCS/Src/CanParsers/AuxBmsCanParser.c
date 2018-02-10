@@ -7,12 +7,6 @@
 #define AUX_BMS_HEARTBEAT_ID (0x720)
 #define AUX_BMS_INFO_ID (0x721)
 
-#define PRECHARGE_STATE_MASK (0x07) // First 3 bits
-#define AUX_VOLTAGE_MASK (0xF8) // Last 5 bits
-#define STROBE_MASK (0x01) // First bit
-#define ALLOW_CHARGE_MASK (0X02) // Second bit
-#define CONTACTOR_ERROR_MASK (0X04) // Third bit
-
 void parseAuxBmsCanMessage(uint32_t stdId, uint8_t* data)
 {
     switch (stdId)

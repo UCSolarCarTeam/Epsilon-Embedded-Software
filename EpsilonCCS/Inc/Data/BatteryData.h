@@ -13,6 +13,11 @@
 #define ALWAYS_ON_SIGNAL_STATUS_MASK 0x20
 #define IS_READY_SIGNAL_STATUS_MASK 0x40
 #define IS_CHARGING_SIGNAL_STATUS_MASK 0x80
+#define PRECHARGE_STATE_MASK (0x07) // First 3 bits
+#define AUX_VOLTAGE_MASK (0xF8) // Last 5 bits
+#define STROBE_MASK (0x01) // First bit
+#define ALLOW_CHARGE_MASK (0X02) // Second bit
+#define CONTACTOR_ERROR_MASK (0X04) // Third bit
 
 enum BatteryPrechargeState
 {
