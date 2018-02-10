@@ -161,9 +161,11 @@ void updateStrobeLight(void const* arg)
     // If blinkerTimer is within (BLINKER_FREQ - BLINKER_FREQ*2), keep blinkers off
     // If blinkerTimer is greater than (BLINKER_FREQ*2) reset blinkerTimer to 0
     uint32_t blinkerTimer = 0;
+
     for (;;)
     {
         osDelayUntil(&prevWakeTime, LIGHTS_UPDATE_FREQ);
+
         /*Update BMS Strobe*/
         if (auxBmsInputs[1] & STROBE_FAULT_MASK && blinkerTimer >= BLINKER_FREQ)
         {
@@ -173,6 +175,7 @@ void updateStrobeLight(void const* arg)
         {
             HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_OFF);
         }
+
         // Update blinker timer
         if (blinkerTimer > BLINKER_FREQ * 2)
         {
