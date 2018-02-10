@@ -50,6 +50,9 @@ struct BatteryData
     unsigned short int averageCellVoltage;
     unsigned char prechargeState;
     unsigned char auxVoltage;
+    unsigned char strobeBMSLight;
+    unsigned char allowCharge;
+    unsigned char contactorError;
     uint32_t auxBmsLastReceived;
 };
 
