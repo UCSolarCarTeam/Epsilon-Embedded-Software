@@ -36,6 +36,9 @@
 // Check for "cell over voltage" 0x01, "cell under voltage" 0x02, and "cell over temperature" 0x04
 #define BATTERY_CRIT_FAULT_MASK 0x07
 
+#define AUXBMS_INPUT_STDID 0x721U
+#define STROBE_FAULT_MASK 0x01
+
 typedef struct LightsStatus
 {
     unsigned int lowBeams : 1;
@@ -54,6 +57,7 @@ typedef struct SigLightsHandle
 
 extern CAN_HandleTypeDef hcan2; // main.c
 extern uint8_t lightsInputs;
+extern uint8_t auxBmsInputs[2];
 extern uint8_t batteryErrors[5];
 extern uint8_t driversInputs[4];
 extern SigLightsHandle sigLightsHandle;
@@ -71,3 +75,5 @@ void reportLightsToCanTask(void const* arg);
 // Task for sending heartbeat via CAN
 // arg : osMutexId* canHandleMutex
 void sendHeartbeatTask(void const* arg);
+
+void updateStrobeLight(void const* arg);

@@ -75,9 +75,6 @@ void updateLightsTask(void const* arg)
             sigLightsHandle.right = rightSignal;
         }
 
-        /*Update BMS Strobe*/
-        HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_OFF);
-
         // TODO Parse the Error Messages and turn on the BMS on certain messages
     }
 }
@@ -154,6 +151,41 @@ void blinkSignalLightsTask(void const* arg)
     }
 }
 
+void updateStrobeLight(void const* arg)
+{
+     uint32_t prevWakeTime = osKernelSysTick();
+    // Store inputs values
+    // NOTE: All Lights Out pins are active low
+
+    // If blinkerTimer is within (0 - BLINKER_FREQ), turn blinkers on
+    // If blinkerTimer is within (BLINKER_FREQ - BLINKER_FREQ*2), keep blinkers off
+    // If blinkerTimer is greater than (BLINKER_FREQ*2) reset blinkerTimer to 0
+    uint32_t blinkerTimer = 0;
+    for (;;)
+    {
+        osDelayUntil(&prevWakeTime, LIGHTS_UPDATE_FREQ);
+        /*Update BMS Strobe*/
+        if (auxBmsInputs[1] & STROBE_FAULT_MASK && blinkerTimer >= BLINKER_FREQ)
+        { 
+            HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_ON);
+        }
+        else
+        {
+            HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_OFF);
+        }
+         // Update blinker timer
+        if (blinkerTimer > BLINKER_FREQ * 2)
+        {
+        // If blinkerTimer is greater than (BLINKER_FREQ*2) reset blinkerTimer to 0
+            blinkerTimer = 0;
+        }
+        else
+        {
+            blinkerTimer += LIGHTS_UPDATE_FREQ;
+        }
+    }
+}
+
 void reportLightsToCanTask(void const* arg)
 {
     // For concurrency with sendHeartbeat()
@@ -171,7 +203,7 @@ void reportLightsToCanTask(void const* arg)
         }
 
         // Toggle blue LED for every CAN message sent
-        HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
+        HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin); 
         // Set CAN msg address
         hcan2.pTxMsg->StdId = LIGHTS_STATUS_STDID;
         // Initalize to avoid garbage values in [6] anad [7]
@@ -213,7 +245,7 @@ void sendHeartbeatTask(void const* arg)
         }
 
         // Toggle green LED for every heartbeat sent
-        HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
+        HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin); 
         // Set CAN msg address
         hcan2.pTxMsg->StdId = LIGHTS_HEARTBEAT_STDID;
         // Always 1
@@ -228,7 +260,7 @@ void sendHeartbeatTask(void const* arg)
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 {
     CanRxMsgTypeDef* msg = hcan->pRxMsg;
-    HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
+    HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin); 
 
     if (msg->StdId == LIGHTS_INPUT_STDID && msg->DLC == 1)
     {
@@ -250,6 +282,11 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
         driversInputs[1] = msg->Data[2];
         driversInputs[2] = msg->Data[1];
         driversInputs[3] = msg->Data[0];
+    }
+    else if (msg->StdId == AUXBMS_INPUT_STDID)// not sure if dlc should equal somthing
+    {   
+        auxBmsInputs[0] = msg->Data[1];
+        auxBmsInputs[1] = msg->Data[0];
     }
 
     __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
