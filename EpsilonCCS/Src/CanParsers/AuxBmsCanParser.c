@@ -30,7 +30,7 @@ void parseAuxBmsInfo(uint8_t* data)
 {
     batteryData.prechargeState = data[0] & PRECHARGE_STATE_MASK;
     batteryData.auxVoltage = data[0] & AUX_VOLTAGE_MASK;
-    batteryData.strobeBMSLight = data[1] & STROBE_MASK;
+    batteryData.strobeBmsLight = data[1] & STROBE_MASK;
     batteryData.allowCharge = data[1] & ALLOW_CHARGE_MASK;
     batteryData.contactorError = data[1] & CONTACTOR_ERROR_MASK;
 }
