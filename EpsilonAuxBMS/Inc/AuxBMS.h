@@ -20,9 +20,9 @@
 
 #define MAX_MIN_VOLTAGES_STDID 0x30A
 // TODO
-// Will implement when bill knows
-#define MAX_VOLTAGE
-#define MIN_VOLTAGE
+// Will put legit when Bill knows
+#define MAX_VOLTAGE 3.3
+#define MIN_VOLTAGE 1.0
 
 #define CONTACTOR_WAIT_TIME 1000 // 1s
 #define CURRENT_SENSE_RESISTOR 0.001 //1 mOhm
@@ -37,13 +37,13 @@
 
 typedef struct AuxStatus
 {
-    unsigned int commonContactorState : 0;
-    unsigned int chargeContactorState : 0;
-    unsigned int dischargeContactorState : 0;
-    uint16_t auxVoltage : 0x00;
-    unsigned int strobeBmsLight : 0;
-    unsigned int allowCharge : 0;
-    unsigned int contactorError : 0;
+    unsigned commonContactorState : 1;
+    unsigned chargeContactorState : 1;
+    unsigned dischargeContactorState : 1;
+    unsigned auxVoltage : 5;
+    unsigned strobeBmsLight : 1;
+    unsigned allowCharge : 1;
+    unsigned contactorError : 1;
 } AuxStatus;
 
 // Will include orion inputs once CAN details known
@@ -64,7 +64,7 @@ extern AuxStatus auxStatus;
 // charge contactor if max cell voltage is too high, and discharge contactor is min cell voltage is too low
 // whilst setAuxContactorTask is waiting
 // arg: NULL
-void readOrionInputTask(void const* arg)
+void readOrionInputTask(void const* arg);
 // Task for turning on contactors
 // arg: NULL
 void setAuxContactorTask(void const* arg);

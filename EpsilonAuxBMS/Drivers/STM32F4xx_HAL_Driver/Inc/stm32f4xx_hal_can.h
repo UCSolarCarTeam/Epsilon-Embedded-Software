@@ -417,9 +417,11 @@ typedef struct
 #define CAN_FLAG_TME2              0x0000051CU  /*!< Transmit mailbox 0 empty flag */
 
 /* Receive Flags */
+#define CAN_FLAG_FMP0              0x12000003U  /*!< FIFO 0 Message Pending Flag */
 #define CAN_FLAG_FF0               0x00000203U  /*!< FIFO 0 Full flag    */
 #define CAN_FLAG_FOV0              0x00000204U  /*!< FIFO 0 Overrun flag */
 
+#define CAN_FLAG_FMP1              0x14000003U  /*!< FIFO 1 Message Pending Flag */
 #define CAN_FLAG_FF1               0x00000403U  /*!< FIFO 1 Full flag    */
 #define CAN_FLAG_FOV1              0x00000404U  /*!< FIFO 1 Overrun flag */
 
@@ -706,7 +708,7 @@ HAL_CAN_StateTypeDef HAL_CAN_GetState(CAN_HandleTypeDef* hcan);
 
 /**
   * @}
-  */ 
+  */
 
 /* Private constants ---------------------------------------------------------*/
 /** @defgroup CAN_Private_Constants CAN Private Constants

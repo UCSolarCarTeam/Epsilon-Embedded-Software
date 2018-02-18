@@ -182,7 +182,7 @@ void setAuxContactorTask(void const* arg)
             cycleCount = 0;
 
             // Turn on Discharge Contactor
-            HAL_GPIO_WritePin(CONTACTOR_ENABLE3_GPIO_Port, CONTACTOR_ENABLE3_Pin, GPIO_PIN_SET)
+            HAL_GPIO_WritePin(CONTACTOR_ENABLE3_GPIO_Port, CONTACTOR_ENABLE3_Pin, GPIO_PIN_SET);
             // Wait to allow for current peak
             osDelay(CONTACTOR_WAIT_TIME);
 
@@ -244,14 +244,14 @@ void updateAuxVoltageTask(void const* arg)
         // Set Chip Select to be low
         HAL_GPIO_WritePin(ADC_nCS_GPIO_Port, ADC_nCS_Pin, GPIO_PIN_RESET);
         // Start SCLK and receive input
-        HAL_SPI_Receive(hspi3, rxBuff, size, SPI_TIMEOUT);
+        HAL_SPI_Receive(&hspi3, rxBuff, size, SPI_TIMEOUT);
         // Set Chip Select to be high
         HAL_GPIO_WritePin(ADC_nCS_GPIO_Port, ADC_nCS_Pin, GPIO_PIN_SET);
 
         // ADC sends 4 (could be 3, will get second opinion) zeros before sending data,
         //so can ignore top 4 bits of rxBuff[0] and bottom 2 bits of rxBuff[1]
-        uint16_t upperBits = (unint16_t)(rxBuff[1] << 6);
-        uint16_t lowerBits = (unint16_t)(rxBuff[0] & 0xF6); // Don't care about bottom 2 bits
+        uint16_t upperBits = (uint16_t)(rxBuff[1] << 6);
+        uint16_t lowerBits = (uint16_t)(rxBuff[0] & 0xF6); // Don't care about bottom 2 bits
         voltage =  0x03FF & ((upperBits) | (lowerBits >> 2)); // The top 6 bits should be zeros, but just in case
 
         float relative_voltage = AUX_NOMINAL_VOLTAGE * voltage / AUX_ADC_NOMINAL_OUTPUT;
@@ -260,13 +260,14 @@ void updateAuxVoltageTask(void const* arg)
         float diff = relative_voltage - (int)relative_voltage;
 
         // If the decimal place is less than 0.5, truncate and round down, else round up
+        // and keep bottom 5 bits
         if (diff < 0.5)
         {
-            auxStatus.auxVoltage = (int)relative_voltage;
+            auxStatus.auxVoltage = ((int)relative_voltage) & 0x1F;
         }
         else
         {
-            auxStatus.auxVoltage = (int)relative_voltage + 1;
+            auxStatus.auxVoltage = ((int)relative_voltage + 1)& 0x1F;
         }
     }
 }

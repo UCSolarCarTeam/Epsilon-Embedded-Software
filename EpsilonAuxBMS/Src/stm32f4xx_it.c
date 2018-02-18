@@ -35,6 +35,7 @@
 #include "stm32f4xx.h"
 #include "stm32f4xx_it.h"
 #include "cmsis_os.h"
+#include "AuxBMS.h"
 
 /* USER CODE BEGIN 0 */
 
@@ -46,7 +47,7 @@ extern CAN_HandleTypeDef hcan1;
 extern TIM_HandleTypeDef htim2;
 
 /******************************************************************************/
-/*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
+/*            Cortex-M4 Processor Interruption and Exception Handlers         */
 /******************************************************************************/
 
 /**
