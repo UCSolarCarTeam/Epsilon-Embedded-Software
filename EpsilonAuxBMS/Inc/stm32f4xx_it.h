@@ -49,6 +49,10 @@
 
 void SysTick_Handler(void);
 void EXTI9_5_IRQHandler(void);
+<<<<<<< HEAD
+=======
+void TIM2_IRQHandler(void);
+>>>>>>> baba/AuxBMSTest
 
 #ifdef __cplusplus
 }
