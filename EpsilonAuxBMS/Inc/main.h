@@ -48,7 +48,7 @@
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __MAIN_H
 #define __MAIN_H
-  /* Includes ------------------------------------------------------------------*/
+/* Includes ------------------------------------------------------------------*/
 
 /* Includes ------------------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -127,9 +127,9 @@
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
-void _Error_Handler(char *, int);
+void _Error_Handler(char*, int);
 
 #define Error_Handler() _Error_Handler(__FILE__, __LINE__)
 #ifdef __cplusplus

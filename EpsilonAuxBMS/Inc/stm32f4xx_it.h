@@ -36,8 +36,8 @@
 #define __STM32F4xx_IT_H
 
 #ifdef __cplusplus
- extern "C" {
-#endif 
+extern "C" {
+#endif
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
@@ -49,10 +49,10 @@
 
 void SysTick_Handler(void);
 void EXTI9_5_IRQHandler(void);
-<<<<<<< HEAD
-=======
-void TIM2_IRQHandler(void);
->>>>>>> baba/AuxBMSTest
+<<< <<< < HEAD
+== == == =
+    void TIM2_IRQHandler(void);
+>>> >>> > baba / AuxBMSTest
 
 #ifdef __cplusplus
 }
