@@ -55,7 +55,7 @@ void reportAuxToCanTask(void const* arg)
         hcan1.pTxMsg->Data[0] += auxStatus.commonContactorState * 0x1;
         hcan1.pTxMsg->Data[0] += auxStatus.chargeContactorState * 0x2;
         hcan1.pTxMsg->Data[0] += auxStatus.dischargeContactorState * 0x4;
-        hcan1.pTxMsg->Data[0] |= auxStatus.auxVoltage * 0x8; 
+        hcan1.pTxMsg->Data[0] |= auxStatus.auxVoltage * 0x8;
         // Initialize to 0 so there's no garbage in [2] to [7]
         hcan1.pTxMsg->Data[1] = 0;
         hcan1.pTxMsg->Data[1] += auxStatus.strobeBmsLight * 0x1;

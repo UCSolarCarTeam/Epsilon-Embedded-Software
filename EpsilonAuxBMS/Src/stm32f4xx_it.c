@@ -55,13 +55,13 @@ extern TIM_HandleTypeDef htim2;
 */
 void SysTick_Handler(void)
 {
-  /* USER CODE BEGIN SysTick_IRQn 0 */
+    /* USER CODE BEGIN SysTick_IRQn 0 */
 
-  /* USER CODE END SysTick_IRQn 0 */
-  osSystickHandler();
-  /* USER CODE BEGIN SysTick_IRQn 1 */
+    /* USER CODE END SysTick_IRQn 0 */
+    osSystickHandler();
+    /* USER CODE BEGIN SysTick_IRQn 1 */
 
-  /* USER CODE END SysTick_IRQn 1 */
+    /* USER CODE END SysTick_IRQn 1 */
 }
 
 /******************************************************************************/
@@ -76,13 +76,13 @@ void SysTick_Handler(void)
 */
 void CAN1_TX_IRQHandler(void)
 {
-  /* USER CODE BEGIN CAN1_TX_IRQn 0 */
+    /* USER CODE BEGIN CAN1_TX_IRQn 0 */
 
-  /* USER CODE END CAN1_TX_IRQn 0 */
-  HAL_CAN_IRQHandler(&hcan1);
-  /* USER CODE BEGIN CAN1_TX_IRQn 1 */
+    /* USER CODE END CAN1_TX_IRQn 0 */
+    HAL_CAN_IRQHandler(&hcan1);
+    /* USER CODE BEGIN CAN1_TX_IRQn 1 */
 
-  /* USER CODE END CAN1_TX_IRQn 1 */
+    /* USER CODE END CAN1_TX_IRQn 1 */
 }
 
 /**
@@ -90,13 +90,13 @@ void CAN1_TX_IRQHandler(void)
 */
 void CAN1_RX0_IRQHandler(void)
 {
-  /* USER CODE BEGIN CAN1_RX0_IRQn 0 */
+    /* USER CODE BEGIN CAN1_RX0_IRQn 0 */
 
-  /* USER CODE END CAN1_RX0_IRQn 0 */
-  HAL_CAN_IRQHandler(&hcan1);
-  /* USER CODE BEGIN CAN1_RX0_IRQn 1 */
+    /* USER CODE END CAN1_RX0_IRQn 0 */
+    HAL_CAN_IRQHandler(&hcan1);
+    /* USER CODE BEGIN CAN1_RX0_IRQn 1 */
 
-  /* USER CODE END CAN1_RX0_IRQn 1 */
+    /* USER CODE END CAN1_RX0_IRQn 1 */
 }
 
 /**
@@ -104,13 +104,13 @@ void CAN1_RX0_IRQHandler(void)
 */
 void EXTI9_5_IRQHandler(void)
 {
-  /* USER CODE BEGIN EXTI9_5_IRQn 0 */
+    /* USER CODE BEGIN EXTI9_5_IRQn 0 */
 
-  /* USER CODE END EXTI9_5_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_6);
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_7);
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_8);
-  /* USER CODE BEGIN EXTI9_5_IRQn 1 */
+    /* USER CODE END EXTI9_5_IRQn 0 */
+    HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_6);
+    HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_7);
+    HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_8);
+    /* USER CODE BEGIN EXTI9_5_IRQn 1 */
     orionOK = 0;
     HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(CONTACTOR_ENABLE1_GPIO_Port, CONTACTOR_ENABLE1_Pin, GPIO_PIN_RESET);
@@ -120,7 +120,7 @@ void EXTI9_5_IRQHandler(void)
     auxStatus.chargeContactorState = 0;
     auxStatus.dischargeContactorState = 0;
     auxStatus.strobeBmsLight = 1;
-  /* USER CODE END EXTI9_5_IRQn 1 */
+    /* USER CODE END EXTI9_5_IRQn 1 */
 }
 
 /**
@@ -128,13 +128,13 @@ void EXTI9_5_IRQHandler(void)
 */
 void TIM2_IRQHandler(void)
 {
-  /* USER CODE BEGIN TIM2_IRQn 0 */
+    /* USER CODE BEGIN TIM2_IRQn 0 */
 
-  /* USER CODE END TIM2_IRQn 0 */
-  HAL_TIM_IRQHandler(&htim2);
-  /* USER CODE BEGIN TIM2_IRQn 1 */
+    /* USER CODE END TIM2_IRQn 0 */
+    HAL_TIM_IRQHandler(&htim2);
+    /* USER CODE BEGIN TIM2_IRQn 1 */
 
-  /* USER CODE END TIM2_IRQn 1 */
+    /* USER CODE END TIM2_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
