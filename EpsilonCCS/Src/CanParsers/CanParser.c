@@ -32,12 +32,14 @@
 
 void parseCanTask(void const* arg)
 {
+    uint32_t prevWakeTime = osKernelSysTick();
     for (;;)
     {
         osEvent evt = osMessageGet(canRxQueue, osWaitForever); // Blocks
 
         if (evt.status == osEventMessage)
         {
+            HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
             CanMsg* msg = (CanMsg*)evt.value.p;
             parseCanMessage(msg->StdId, msg->Data);
             osPoolFree(canRxPool, msg);
@@ -47,6 +49,7 @@ void parseCanTask(void const* arg)
 
 void parseCanMessage(uint32_t stdId, uint8_t* data)
 {
+
     if (stdId >= AUX_BMS_CAN_MIN && stdId <= AUX_BMS_CAN_MAX)
     {
         parseAuxBmsCanMessage(stdId, data);
@@ -79,6 +82,6 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 
     osMessagePut(canRxQueue, (uint32_t)msg, osWaitForever);
 
-    __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
+    //__HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
     HAL_CAN_Receive_IT(hcan, CAN_FIFO0);
 }

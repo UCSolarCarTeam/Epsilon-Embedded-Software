@@ -2,6 +2,7 @@
 
 #include "MpptRtr.h"
 
+/*Send the RTR request for the MPPTs*/
 void mpptRtrTask(void const* arg)
 {
     uint32_t prevWakeTime = osKernelSysTick();
@@ -9,26 +10,21 @@ void mpptRtrTask(void const* arg)
 
     for (;;)
     {
-        osDelayUntil(&prevWakeTime, MPPT_HEARTBEAT_CAN_FREQ);
-        // Allocate CAN Message, deallocated by sender "sendCanTask()"
-        MpptCanMsg* msg = (MpptCanMsg*)osPoolAlloc(mpptCanTxPool);
-        // Populate CAN Message
-        msg->dlc = MPPT_DLC;
-        msg->rtr = MPPT_RTR;
+        osDelayUntil(&prevWakeTime, MPPT_HEARTBEAT_CAN_FREQ * 10);
 
-        // Update Channel
+        // Populate CAN Message
         switch (channel)
         {
             case 0:
-                msg->stdId = MPPT_CHANNEL_ZERO_STDID;
+                hcan2.pTxMsg->StdId = MPPT_CHANNEL_ZERO_STDID;
                 break;
 
             case 1:
-                msg->stdId = MPPT_CHANNEL_ONE_STDID;
+                hcan2.pTxMsg->StdId = MPPT_CHANNEL_ONE_STDID;
                 break;
 
             case 2:
-                msg->stdId = MPPT_CHANNEL_TWO_STDID;
+                hcan2.pTxMsg->StdId = MPPT_CHANNEL_TWO_STDID;
                 break;
 
             default: //Shouldn't get here
@@ -36,30 +32,16 @@ void mpptRtrTask(void const* arg)
                 break;
         }
 
-        channel = (channel + 1) % 3;
+        hcan2.pTxMsg->DLC = MPPT_DLC;
+        hcan2.pTxMsg->RTR = MPPT_RTR;
+
         // Send CAN Message
-        osMessagePut(mpptCanTxQueue, (uint32_t)msg, osWaitForever);
-    }
-}
-
-void sendMpptRtrCanTask(void const* arg)
-{
-    for (;;)
-    {
-        osEvent evt = osMessageGet(mpptCanTxQueue, osWaitForever); // Blocks
-
-        if (evt.status == osEventMessage)
+        if(HAL_CAN_Transmit_IT(&hcan2) == HAL_OK)
         {
-            MpptCanMsg* msg = (MpptCanMsg*)evt.value.p;
-            // Populate CAN Message
-            hcan1.pTxMsg->StdId = msg->stdId;
-            hcan1.pTxMsg->DLC = msg->dlc;
-            hcan1.pTxMsg->RTR = msg->rtr;
-            // Send CAN Message
-            HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
-            HAL_CAN_Transmit_IT(&hcan1);
-            // Deallocate CAN message
-            osPoolFree(mpptCanTxPool, msg);
+           HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
         }
+
+        // Update Channel
+        channel = (channel + 1) % 3;
     }
 }
