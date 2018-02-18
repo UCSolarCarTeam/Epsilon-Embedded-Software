@@ -112,7 +112,8 @@ void setAuxContactorTask(void const* arg)
 
             /* Check that the current is below the threshold and that the sense pin is low*/
             // Do ADC conversion, normalize, and check
-
+            // Enable current sensing
+            HAL_GPIO_WritePin(CURRENT_SENSE_ENABLE_GPIO_Port, CURRENT_SENSE_ENABLE_Pin, GPIO_PIN_SET);
             if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
             {
                 current_sense = HAL_ADC_GetValue(&hadc1);
@@ -121,7 +122,8 @@ void setAuxContactorTask(void const* arg)
             {
                 current_sense = 0;
             }
-
+            // Disable current sensing
+            HAL_GPIO_WritePin(CURRENT_SENSE_ENABLE_GPIO_Port, CURRENT_SENSE_ENABLE_Pin, GPIO_PIN_RESET);
             current_sense = 3.3 * current_sense / 0xFFF; // change it into the voltage read
             pwr_current = current_sense / CURRENT_SENSE_RESISTOR; // convert voltage to current
 
@@ -152,6 +154,7 @@ void setAuxContactorTask(void const* arg)
 
             // Do ADC conversion, normalize, and check
 
+            HAL_GPIO_WritePin(CURRENT_SENSE_ENABLE_GPIO_Port, CURRENT_SENSE_ENABLE_Pin, GPIO_PIN_SET);
             if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
             {
                 current_sense = HAL_ADC_GetValue(&hadc1);
@@ -160,6 +163,7 @@ void setAuxContactorTask(void const* arg)
             {
                 current_sense = 0;
             }
+            HAL_GPIO_WritePin(CURRENT_SENSE_ENABLE_GPIO_Port, CURRENT_SENSE_ENABLE_Pin, GPIO_PIN_RESET);
 
             current_sense = 3.3 * current_sense / 0xFFF; // change it into the voltage read
             pwr_current = current_sense / CURRENT_SENSE_RESISTOR; // convert voltage to current
@@ -190,7 +194,7 @@ void setAuxContactorTask(void const* arg)
             /* Check that the current is below the threshold and that the sense pin is low*/
 
             // Do ADC conversion, normalize, and check
-
+            HAL_GPIO_WritePin(CURRENT_SENSE_ENABLE_GPIO_Port, CURRENT_SENSE_ENABLE_Pin, GPIO_PIN_SET);
             if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
             {
                 current_sense = HAL_ADC_GetValue(&hadc1);
@@ -199,7 +203,7 @@ void setAuxContactorTask(void const* arg)
             {
                 current_sense = 0;
             }
-
+            HAL_GPIO_WritePin(CURRENT_SENSE_ENABLE_GPIO_Port, CURRENT_SENSE_ENABLE_Pin, GPIO_PIN_RESET);
             current_sense = 3.3 * current_sense / 0xFFF; // change it into the voltage read
             pwr_current = current_sense / CURRENT_SENSE_RESISTOR; // convert voltage to current
 
