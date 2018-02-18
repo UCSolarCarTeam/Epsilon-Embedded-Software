@@ -74,12 +74,11 @@ osThreadId testTaskHandle;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_CAN1_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_SPI3_Init(void);
+static void MX_CAN1_Init(void);
 void StartDefaultTask(void const * argument);
-static void MX_NVIC_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -115,13 +114,10 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_CAN1_Init();
   MX_USART3_UART_Init();
   MX_ADC1_Init();
   MX_SPI3_Init();
-
-  /* Initialize interrupts */
-  MX_NVIC_Init();
+  MX_CAN1_Init();
 
   /* USER CODE BEGIN 2 */
 
@@ -227,21 +223,6 @@ void SystemClock_Config(void)
 
   /* SysTick_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(SysTick_IRQn, 15, 0);
-}
-
-/** NVIC Configuration
-*/
-static void MX_NVIC_Init(void)
-{
-  /* CAN1_TX_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(CAN1_TX_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(CAN1_TX_IRQn);
-  /* CAN1_RX0_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(CAN1_RX0_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(CAN1_RX0_IRQn);
-  /* EXTI9_5_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 }
 
 /* ADC1 init function */
@@ -435,15 +416,21 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+
 }
 
 /* USER CODE BEGIN 4 */
 static void TestingTask(void const * argument)
 {
+  uint32_t prevWakeTime = osKernelSysTick();
   for (;;)
   {
-      osDelay(50);
-      HAL_GPIO_WritePin(GPIOE, CONTACTOR_ENABLE1_Pin, GPIO_PIN_SET);
+      //osDelay(1000);
+      osDelayUntil(&prevWakeTime, 1000);
+      HAL_GPIO_TogglePin(GPIOE, CONTACTOR_ENABLE1_Pin);
   }
 }
 /* USER CODE END 4 */
@@ -457,7 +444,7 @@ void StartDefaultTask(void const * argument)
     for (;;)
     {
         osDelay(500);
-        HAL_GPIO_WritePin(GPIOE, CONTACTOR_ENABLE2_Pin, GPIO_PIN_SET);
+        HAL_GPIO_TogglePin(GPIOE, CONTACTOR_ENABLE2_Pin);
     }
 
   /* USER CODE END 5 */ 
