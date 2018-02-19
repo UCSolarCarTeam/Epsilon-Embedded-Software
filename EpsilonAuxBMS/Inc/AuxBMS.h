@@ -31,8 +31,8 @@
 #define DONE 4
 #define BLOCKED 5
 
-#define CURRENT_SENSE_RESISTOR 1 //actually 1 mOhm, but 1 Ohm for testing
-#define CURRENT_LOWER_THRESHOLD 1 // Lower current threshold
+#define CURRENT_SENSE_RESISTOR 0.001 //actually 1 mOhm, but 1 Ohm for testing
+#define CURRENT_LOWER_THRESHOLD 0.3 // Lower current threshold
 #define ADC_POLL_TIMEOUT 10
 
 #define SPI_TIMEOUT 50
