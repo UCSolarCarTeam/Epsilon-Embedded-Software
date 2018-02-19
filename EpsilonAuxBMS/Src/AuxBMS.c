@@ -45,189 +45,198 @@ void setAuxContactorTask(void const* arg)
     uint32_t prevWakeTime = osKernelSysTick();
 
     uint32_t current_sense = 0;
+    float pwr_voltage = 0.0;
     float pwr_current = 0.0;
-    char done = 0; // An internal enable for being "done"
     // Sense inputs
     char common = 0;
     char charge = 0;
     char discharge = 0;
 
     int cycleCount = 0; // Keep track of how many attempts there were to turn on a contactor
-
+    int state = FIRST_CHECK;
+    int prev_state;
     // If it's greater than 1, report to CAN that something is wrong
     for (;;)
     {
         osDelayUntil(&prevWakeTime, AUX_SET_CONTACTOR_FREQ);
 
-        common = !HAL_GPIO_ReadPin(SENSE1_GPIO_Port, SENSE1_Pin);
-        charge = !HAL_GPIO_ReadPin(SENSE2_GPIO_Port, SENSE2_Pin);
-        discharge = !HAL_GPIO_ReadPin(SENSE3_GPIO_Port, SENSE3_Pin);
-
-        done = common && charge && discharge;
-
-        if (orionOK && batteryVoltagesOK && !done)
+        if (cycleCount > 1)
         {
-            // Check current is low before enabling (ADC conversion and normalization)
-            if (cycleCount > 1)
+            auxStatus.contactorError = 1;
+        }
+        else
+        {
+            auxStatus.contactorError = 0;
+        }
+        switch(state){
+          case FIRST_CHECK:
+            if (orionOK && batteryVoltagesOK)
             {
-                auxStatus.contactorError = 1;
+              // Check current is low before enabling (ADC conversion and normalization)
+              // Get 12bit current analog input
+              if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
+              {
+                  current_sense = HAL_ADC_GetValue(&hadc1);
+              }
+              else
+              {
+                  current_sense = 0;
+              }
+              pwr_voltage = 3.3 * current_sense / 0xFFF; // change it into the voltage read
+              pwr_current = pwr_voltage / CURRENT_SENSE_RESISTOR; // convert voltage to current
+
+              // If current is high for some reason, skip the rest
+              if (pwr_current > CURRENT_LOWER_THRESHOLD)
+              {
+                  cycleCount++;
+                  continue;
+              }
+              cycleCount = 0;
+              // Turn on Common Contactor
+              HAL_GPIO_WritePin(CONTACTOR_ENABLE1_GPIO_Port, CONTACTOR_ENABLE1_Pin, GPIO_PIN_SET);
+              state = COMMON_CONTACTOR_ON;
             }
             else
             {
-                auxStatus.contactorError = 0;
+              prev_state = FIRST_CHECK;
+              state = BLOCKED;
             }
-
-            // Check current is low before enabling (ADC conversion and normalization)
-
-            // Get 12bit current analog input
-            if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
+          break;
+          case COMMON_CONTACTOR_ON:
+            if (orionOK && batteryVoltagesOK)
             {
-                current_sense = HAL_ADC_GetValue(&hadc1);
+              /* Check that the current is below the threshold and that the sense pin is low*/
+              // Do ADC conversion, normalize, and check
+              if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
+              {
+                  current_sense = HAL_ADC_GetValue(&hadc1);
+              }
+              else
+              {
+                  current_sense = 0;
+              }
+
+              pwr_voltage = 3.3 * current_sense / 0xFFF; // change it into the voltage read
+              pwr_current = pwr_voltage / CURRENT_SENSE_RESISTOR; // convert voltage to current
+
+              common = !HAL_GPIO_ReadPin(SENSE1_GPIO_Port, SENSE1_Pin);
+              auxStatus.commonContactorState = common;
+
+              // If current is high for some reason or sense pin is high, skip the rest
+              if (pwr_current > CURRENT_LOWER_THRESHOLD || !common)
+              {
+                  cycleCount++;
+                  auxStatus.commonContactorState = 0;
+                  continue;
+              }
+              cycleCount = 0;
+              // Turn on charge Contactor
+              HAL_GPIO_WritePin(CONTACTOR_ENABLE2_GPIO_Port, CONTACTOR_ENABLE2_Pin, GPIO_PIN_SET);
+              state = CHARGE_CONTACTOR_ON;
             }
             else
             {
-                current_sense = 0;
+              prev_state = COMMON_CONTACTOR_ON;
+              state = BLOCKED;
             }
-
-            current_sense = 3.3 * current_sense / 0xFFF; // change it into the voltage read
-            pwr_current = current_sense / CURRENT_SENSE_RESISTOR; // convert voltage to current
-
-            // If current is high for some reason, skip the rest
-            if (pwr_current > CURRENT_LOWER_THRESHOLD)
+          break;
+          case CHARGE_CONTACTOR_ON:
+            if (orionOK && batteryVoltagesOK)
             {
-                cycleCount++;
-                continue;
-            }
+              if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
+              {
+                  current_sense = HAL_ADC_GetValue(&hadc1);
+              }
+              else
+              {
+                  current_sense = 0;
+              }
 
-            cycleCount = 0; // Reset cycle count
-            // Turn on Common Contactor
-            HAL_GPIO_WritePin(CONTACTOR_ENABLE1_GPIO_Port, CONTACTOR_ENABLE1_Pin, GPIO_PIN_SET);
-            // Wait to allow for current peak
-            osDelay(CONTACTOR_WAIT_TIME);
+              pwr_voltage = 3.3 * current_sense / 0xFFF; // change it into the voltage read
+              pwr_current = pwr_voltage / CURRENT_SENSE_RESISTOR; // convert voltage to current
 
-            if (!orionOK || !batteryVoltagesOK)
-            {
-                continue;
-            }
+              charge = !HAL_GPIO_ReadPin(SENSE2_GPIO_Port, SENSE2_Pin);
+              auxStatus.chargeContactorState = charge;
 
-            /* Check that the current is below the threshold and that the sense pin is low*/
-            // Do ADC conversion, normalize, and check
-            // Enable current sensing
-            HAL_GPIO_WritePin(CURRENT_SENSE_ENABLE_GPIO_Port, CURRENT_SENSE_ENABLE_Pin, GPIO_PIN_SET);
+              // If current is high for some reason or sense pin is high, skip the rest
+              if (pwr_current > CURRENT_LOWER_THRESHOLD * 2 || !charge)
+              {
+                  cycleCount++;
+                  auxStatus.chargeContactorState = 0;
+                  continue;
+              }
 
-            if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
-            {
-                current_sense = HAL_ADC_GetValue(&hadc1);
+              cycleCount = 0;
+              // Turn on Discharge Contactor
+              HAL_GPIO_WritePin(CONTACTOR_ENABLE3_GPIO_Port, CONTACTOR_ENABLE3_Pin, GPIO_PIN_SET);
+              state = DISCHARGE_CONTACTOR_ON;
             }
             else
             {
-                current_sense = 0;
+              prev_state = CHARGE_CONTACTOR_ON;
+              state = BLOCKED;
             }
+          break;
+          case DISCHARGE_CONTACTOR_ON:
+            if (orionOK && batteryVoltagesOK)
+            {
+              if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
+              {
+                  current_sense = HAL_ADC_GetValue(&hadc1);
+              }
+              else
+              {
+                  current_sense = 0;
+              }
 
-            // Disable current sensing
-            HAL_GPIO_WritePin(CURRENT_SENSE_ENABLE_GPIO_Port, CURRENT_SENSE_ENABLE_Pin, GPIO_PIN_RESET);
-            current_sense = 3.3 * current_sense / 0xFFF; // change it into the voltage read
-            pwr_current = current_sense / CURRENT_SENSE_RESISTOR; // convert voltage to current
+              pwr_voltage = 3.3 * current_sense / 0xFFF; // change it into the voltage read
+              pwr_current = pwr_voltage / CURRENT_SENSE_RESISTOR; // convert voltage to current
 
+              discharge = !HAL_GPIO_ReadPin(SENSE3_GPIO_Port, SENSE3_Pin);
+              auxStatus.dischargeContactorState = discharge;
+
+              // If current is high for some reason or sense pin is high, skip the rest
+              if (pwr_current > CURRENT_LOWER_THRESHOLD * 3 || !discharge)
+              {
+                  cycleCount++;
+                  auxStatus.dischargeContactorState = 0;
+                  continue;
+              }
+
+              cycleCount = 0;
+
+              // Enable high voltage
+              HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_SET);
+              state = DONE;
+            }
+            else
+            {
+              prev_state = DISCHARGE_CONTACTOR_ON;
+              state = BLOCKED;
+            }
+          break;
+          case DONE:
             common = !HAL_GPIO_ReadPin(SENSE1_GPIO_Port, SENSE1_Pin);
-            auxStatus.commonContactorState = common;
-
-            // If current is high for some reason or sense pin is high, skip the rest
-            if (pwr_current > CURRENT_LOWER_THRESHOLD || !common)
-            {
-                cycleCount++;
-                auxStatus.commonContactorState = 0;
-                continue;
-            }
-
-            cycleCount = 0;
-
-            // Turn on charge Contactor
-            HAL_GPIO_WritePin(CONTACTOR_ENABLE2_GPIO_Port, CONTACTOR_ENABLE2_Pin, GPIO_PIN_SET);
-            // Wait to allow for current peak
-            osDelay(CONTACTOR_WAIT_TIME);
-
-            if (!orionOK || !batteryVoltagesOK)
-            {
-                continue;
-            }
-
-            /* Check that the current is below the threshold and that the sense pin is low*/
-
-            // Do ADC conversion, normalize, and check
-
-            HAL_GPIO_WritePin(CURRENT_SENSE_ENABLE_GPIO_Port, CURRENT_SENSE_ENABLE_Pin, GPIO_PIN_SET);
-
-            if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
-            {
-                current_sense = HAL_ADC_GetValue(&hadc1);
-            }
-            else
-            {
-                current_sense = 0;
-            }
-
-            HAL_GPIO_WritePin(CURRENT_SENSE_ENABLE_GPIO_Port, CURRENT_SENSE_ENABLE_Pin, GPIO_PIN_RESET);
-
-            current_sense = 3.3 * current_sense / 0xFFF; // change it into the voltage read
-            pwr_current = current_sense / CURRENT_SENSE_RESISTOR; // convert voltage to current
-
             charge = !HAL_GPIO_ReadPin(SENSE2_GPIO_Port, SENSE2_Pin);
-            auxStatus.chargeContactorState = charge;
-
-            // If current is high for some reason or sense pin is high, skip the rest
-            if (pwr_current > CURRENT_LOWER_THRESHOLD * 2 || !common)
+            discharge = !HAL_GPIO_ReadPin(SENSE3_GPIO_Port, SENSE3_Pin);
+            if (!common && !charge && !discharge) // None of the contactors are enabled
+              state = FIRST_CHECK;
+            else if(!charge || !discharge)
             {
-                cycleCount++;
-                auxStatus.chargeContactorState = 0;
-                continue;
+              if (!charge)
+                HAL_GPIO_WritePin(CONTACTOR_ENABLE2_GPIO_Port, CONTACTOR_ENABLE2_Pin, GPIO_PIN_SET);
+              else
+                HAL_GPIO_WritePin(CONTACTOR_ENABLE3_GPIO_Port, CONTACTOR_ENABLE3_Pin, GPIO_PIN_SET);
+
+              state = DISCHARGE_CONTACTOR_ON;
             }
-
-            cycleCount = 0;
-
-            // Turn on Discharge Contactor
-            HAL_GPIO_WritePin(CONTACTOR_ENABLE3_GPIO_Port, CONTACTOR_ENABLE3_Pin, GPIO_PIN_SET);
-            // Wait to allow for current peak
-            osDelay(CONTACTOR_WAIT_TIME);
-
-            if (!orionOK || !batteryVoltagesOK)
-            {
-                continue;
-            }
-
-            /* Check that the current is below the threshold and that the sense pin is low*/
-
-            // Do ADC conversion, normalize, and check
-            HAL_GPIO_WritePin(CURRENT_SENSE_ENABLE_GPIO_Port, CURRENT_SENSE_ENABLE_Pin, GPIO_PIN_SET);
-
-            if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
-            {
-                current_sense = HAL_ADC_GetValue(&hadc1);
-            }
-            else
-            {
-                current_sense = 0;
-            }
-
-            HAL_GPIO_WritePin(CURRENT_SENSE_ENABLE_GPIO_Port, CURRENT_SENSE_ENABLE_Pin, GPIO_PIN_RESET);
-            current_sense = 3.3 * current_sense / 0xFFF; // change it into the voltage read
-            pwr_current = current_sense / CURRENT_SENSE_RESISTOR; // convert voltage to current
-
-            discharge = !HAL_GPIO_ReadPin(SENSE3_GPIO_Port, SENSE2_Pin);
-            auxStatus.dischargeContactorState = discharge;
-
-            // If current is high for some reason or sense pin is high, skip the rest
-            if (pwr_current > CURRENT_LOWER_THRESHOLD * 3 || !common)
-            {
-                cycleCount++;
-                auxStatus.dischargeContactorState = 0;
-                continue;
-            }
-
-            cycleCount = 0;
-
-            // Enable high voltage
-            HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_SET);
+          break;
+          case BLOCKED:
+            if (orionOK && batteryVoltagesOK)
+              state = prev_state;
+          break;
+          default:
+            state = FIRST_CHECK;
         }
     }
 }

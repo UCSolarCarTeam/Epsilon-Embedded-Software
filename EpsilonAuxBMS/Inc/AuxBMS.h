@@ -9,7 +9,7 @@
 
 // Refer to https://docs.google.com/spreadsheets/d/1soVLjeD9Sl7z7Z6cYMyn1fmn-cG7tx_pfFDsvgkCqMU/edit?usp=sharing
 #define AUX_READ_ORION_ENABLE_FREQ 1 // Every 1ms
-#define AUX_SET_CONTACTOR_FREQ 20 // Every 20ms
+#define AUX_SET_CONTACTOR_FREQ 1000 // Every second
 #define AUX_UPDATE_AUX_VOLTAGE_FREQ 50 // Every 50ms
 
 #define AUX_HEARBEAT_FREQ 1000 // 1Hz
@@ -21,12 +21,18 @@
 #define MAX_MIN_VOLTAGES_STDID 0x30A
 // TODO
 // Will put legit when Bill knows
-#define MAX_VOLTAGE 3.3
-#define MIN_VOLTAGE 1.0
+#define MAX_VOLTAGE 3
+#define MIN_VOLTAGE 0
 
-#define CONTACTOR_WAIT_TIME 1000 // 1s
-#define CURRENT_SENSE_RESISTOR 0.001 //1 mOhm
-#define CURRENT_LOWER_THRESHOLD 0.3 // Lower current threshold
+#define FIRST_CHECK 0
+#define COMMON_CONTACTOR_ON 1
+#define CHARGE_CONTACTOR_ON 2
+#define DISCHARGE_CONTACTOR_ON 3
+#define DONE 4
+#define BLOCKED 5
+
+#define CURRENT_SENSE_RESISTOR 1 //actually 1 mOhm, but 1 Ohm for testing
+#define CURRENT_LOWER_THRESHOLD 1 // Lower current threshold
 #define ADC_POLL_TIMEOUT 10
 
 #define SPI_TIMEOUT 50
