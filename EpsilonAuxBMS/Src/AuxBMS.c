@@ -249,7 +249,6 @@ void updateAuxVoltageTask(void const* arg)
     uint16_t voltage = 0;
     // Size of data to be received
     uint32_t size = 1;
-
     for (;;)
     {
         osDelayUntil(&prevWakeTime, AUX_UPDATE_AUX_VOLTAGE_FREQ);
@@ -259,15 +258,21 @@ void updateAuxVoltageTask(void const* arg)
         // Set Chip Select to be low
         HAL_GPIO_WritePin(ADC_nCS_GPIO_Port, ADC_nCS_Pin, GPIO_PIN_RESET);
         // Start SCLK and receive input
-        HAL_SPI_Receive(&hspi3, rxBuff, size, SPI_TIMEOUT);
+        if (HAL_SPI_Receive(&hspi3, rxBuff, size, SPI_TIMEOUT) == HAL_OK)
+        {
+          // ADC sends 4 (could be 3, will get second opinion) zeros before sending data,
+          //so can ignore top 4 bits of rxBuff[0] and bottom 2 bits of rxBuff[1]
+          uint16_t upperBits = (uint16_t)(rxBuff[1] << 6);
+          uint16_t lowerBits = (uint16_t)(rxBuff[0] & 0xF6); // Don't care about bottom 2 bits
+          voltage =  0x03FF & ((upperBits) | (lowerBits >> 2)); // The top 6 bits should be zeros, but just in case
+        }
+        else
+        {
+          voltage = 0;
+        }
         // Set Chip Select to be high
         HAL_GPIO_WritePin(ADC_nCS_GPIO_Port, ADC_nCS_Pin, GPIO_PIN_SET);
 
-        // ADC sends 4 (could be 3, will get second opinion) zeros before sending data,
-        //so can ignore top 4 bits of rxBuff[0] and bottom 2 bits of rxBuff[1]
-        uint16_t upperBits = (uint16_t)(rxBuff[1] << 6);
-        uint16_t lowerBits = (uint16_t)(rxBuff[0] & 0xF6); // Don't care about bottom 2 bits
-        voltage =  0x03FF & ((upperBits) | (lowerBits >> 2)); // The top 6 bits should be zeros, but just in case
 
         float relative_voltage = AUX_NOMINAL_VOLTAGE * voltage / AUX_ADC_NOMINAL_OUTPUT;
 
