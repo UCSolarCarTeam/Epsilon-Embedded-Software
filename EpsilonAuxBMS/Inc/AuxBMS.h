@@ -86,4 +86,4 @@ void sendHeartbeatTask(void const* arg);
 // arg: osMutexId* canHandleMutex
 void reportAuxToCanTask(void const* arg);
 // Function for reading current amplifier value
-void readCurrent(int *counter, uint32_t *current_sense, uint32_t *prev_sense);
+void readCurrent(int* counter, uint32_t* current_sense, uint32_t* prev_sense);
