@@ -32,7 +32,9 @@
 #define BLOCKED 5
 
 #define CURRENT_SENSE_RESISTOR 0.001 //actually 1 mOhm, but 1 Ohm for testing
-#define CURRENT_LOWER_THRESHOLD 0.3 // Lower current threshold
+#define GAIN 250
+#define SENSE_SETTLING_TIME 50
+#define CURRENT_LOWER_THRESHOLD 4 // Lower current threshold
 #define ADC_POLL_TIMEOUT 10
 
 #define SPI_TIMEOUT 50
@@ -83,3 +85,5 @@ void sendHeartbeatTask(void const* arg);
 // Task for sending aux status via CAN
 // arg: osMutexId* canHandleMutex
 void reportAuxToCanTask(void const* arg);
+// Function for reading current amplifier value
+void readCurrent(int *counter, uint32_t *current_sense, uint32_t *prev_sense);

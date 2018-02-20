@@ -45,6 +45,7 @@ void setAuxContactorTask(void const* arg)
     uint32_t prevWakeTime = osKernelSysTick();
 
     uint32_t current_sense = 0;
+    uint32_t prev_sense = 0;
     float pwr_voltage = 0.0;
     float pwr_current = 0.0;
     // Sense inputs
@@ -53,14 +54,15 @@ void setAuxContactorTask(void const* arg)
     char discharge = 0;
 
     int cycleCount = 0; // Keep track of how many attempts there were to turn on a contactor
+    int count = 0; // Keeps track of how many good ADC reads we get
     int state = FIRST_CHECK;
     int prev_state;
-    // If it's greater than 1, report to CAN that something is wrong
+
     for (;;)
     {
         osDelayUntil(&prevWakeTime, AUX_SET_CONTACTOR_FREQ);
 
-        if (cycleCount > 1)
+        if (cycleCount > 1) // If it's greater than 1, report to CAN that something is wrong
         {
             auxStatus.contactorError = 1;
         }
@@ -74,15 +76,10 @@ void setAuxContactorTask(void const* arg)
             {
               // Check current is low before enabling (ADC conversion and normalization)
               // Get 12bit current analog input
-              if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
-              {
-                  current_sense = HAL_ADC_GetValue(&hadc1);
-              }
-              else
-              {
-                  current_sense = 0;
-              }
-              pwr_voltage = 3.3 * current_sense / 0xFFF; // change it into the voltage read
+              readCurrent(&count, &current_sense, &prev_sense);
+              prev_sense = 0;
+
+              pwr_voltage = 3.3 * current_sense / 0xFFF/ GAIN; // change ADC value into the voltage read
               pwr_current = pwr_voltage / CURRENT_SENSE_RESISTOR; // convert voltage to current
 
               // If current is high for some reason, skip the rest
@@ -107,16 +104,10 @@ void setAuxContactorTask(void const* arg)
             {
               /* Check that the current is below the threshold and that the sense pin is low*/
               // Do ADC conversion, normalize, and check
-              if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
-              {
-                  current_sense = HAL_ADC_GetValue(&hadc1);
-              }
-              else
-              {
-                  current_sense = 0;
-              }
+              readCurrent(&count, &current_sense, &prev_sense);
+              prev_sense = 0;
 
-              pwr_voltage = 3.3 * current_sense / 0xFFF; // change it into the voltage read
+              pwr_voltage = 3.3 * current_sense / 0xFFF/ GAIN; // change it into the voltage read
               pwr_current = pwr_voltage / CURRENT_SENSE_RESISTOR; // convert voltage to current
 
               common = !HAL_GPIO_ReadPin(SENSE1_GPIO_Port, SENSE1_Pin);
@@ -143,16 +134,10 @@ void setAuxContactorTask(void const* arg)
           case CHARGE_CONTACTOR_ON:
             if (orionOK && batteryVoltagesOK)
             {
-              if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
-              {
-                  current_sense = HAL_ADC_GetValue(&hadc1);
-              }
-              else
-              {
-                  current_sense = 0;
-              }
+              readCurrent(&count, &current_sense, &prev_sense);
+              prev_sense = 0;
 
-              pwr_voltage = 3.3 * current_sense / 0xFFF; // change it into the voltage read
+              pwr_voltage = 3.3 * current_sense / 0xFFF/ GAIN; // change it into the voltage read
               pwr_current = pwr_voltage / CURRENT_SENSE_RESISTOR; // convert voltage to current
 
               charge = !HAL_GPIO_ReadPin(SENSE2_GPIO_Port, SENSE2_Pin);
@@ -180,16 +165,10 @@ void setAuxContactorTask(void const* arg)
           case DISCHARGE_CONTACTOR_ON:
             if (orionOK && batteryVoltagesOK)
             {
-              if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
-              {
-                  current_sense = HAL_ADC_GetValue(&hadc1);
-              }
-              else
-              {
-                  current_sense = 0;
-              }
+              readCurrent(&count, &current_sense, &prev_sense);
+              prev_sense = 0;
 
-              pwr_voltage = 3.3 * current_sense / 0xFFF; // change it into the voltage read
+              pwr_voltage = 3.3 * current_sense / 0xFFF / GAIN; // change it into the voltage read
               pwr_current = pwr_voltage / CURRENT_SENSE_RESISTOR; // convert voltage to current
 
               discharge = !HAL_GPIO_ReadPin(SENSE3_GPIO_Port, SENSE3_Pin);
@@ -290,4 +269,32 @@ void updateAuxVoltageTask(void const* arg)
             auxStatus.auxVoltage = ((int)relative_voltage + 1) & 0x1F;
         }
     }
+}
+
+void readCurrent(int *counter, uint32_t *current_sense, uint32_t *prev_sense){
+  // Enable current amplifier. Allow time to settle and take multiple valid concurrent readings
+  // to make sure it isn't changing
+  HAL_GPIO_WritePin(CURRENT_SENSE_ENABLE_GPIO_Port, CURRENT_SENSE_ENABLE_Pin, GPIO_PIN_SET);
+  while(*counter < 3){
+    osDelay(SENSE_SETTLING_TIME);
+    if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
+    {
+        *current_sense = HAL_ADC_GetValue(&hadc1);
+        int diff = *current_sense - *prev_sense;
+        if (diff < 0)
+          diff *= -1;
+        if (diff > 50){
+          *prev_sense = *current_sense;
+          (*counter) = 0;
+        }
+        else
+          (*counter)++;
+    }
+    else
+    {
+        *current_sense = 0;
+        break;
+    }
+  }
+  HAL_GPIO_WritePin(CURRENT_SENSE_ENABLE_GPIO_Port, CURRENT_SENSE_ENABLE_Pin, GPIO_PIN_RESET);
 }
