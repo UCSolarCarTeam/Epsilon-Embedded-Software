@@ -161,13 +161,18 @@ void updateStrobeLight(void const* arg)
     // If blinkerTimer is within (BLINKER_FREQ - BLINKER_FREQ*2), keep blinkers off
     // If blinkerTimer is greater than (BLINKER_FREQ*2) reset blinkerTimer to 0
     uint32_t blinkerTimer = 0;
+    char strobeLight;
 
     for (;;)
     {
         osDelayUntil(&prevWakeTime, LIGHTS_UPDATE_FREQ);
+        //  headlightsOff = (lightsInputs >> HOFF_INPUT_INDEX) & 1;
+        //  brakes = (driversInputs[BRAKES_INPUT_INDEX_P1] >> BRAKES_INPUT_INDEX_P2) & 1;
+        strobeLight = (auxBmsInputs[1] >> 0) & 1;
 
         /*Update BMS Strobe*/
-        if (auxBmsInputs[1] & STROBE_FAULT_MASK && blinkerTimer >= BLINKER_FREQ)
+      //  if (auxBmsInputs[0] & STROBE_FAULT_MASK && blinkerTimer >= BLINKER_FREQ)
+        if (strobeLight && blinkerTimer >= BLINKER_FREQ)
         {
             HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_ON);
         }
@@ -288,6 +293,7 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     }
     else if (msg->StdId == AUXBMS_INPUT_STDID)// not sure if dlc should equal somthing
     {
+        // Memory is stored in Little Endian format
         auxBmsInputs[0] = msg->Data[1];
         auxBmsInputs[1] = msg->Data[0];
     }
