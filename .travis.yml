@@ -18,7 +18,6 @@ before_script:
     - source ~/.profile
     - (cd EpsilonLights && CubeMX2Makefile .)
     - (cd EpsilonDriverControls && CubeMX2Makefile .)
-    - (cd EpsilonCCS && CubeMX2Makefile .)
 
 script: 
     - (cd EpsilonLights && make)
