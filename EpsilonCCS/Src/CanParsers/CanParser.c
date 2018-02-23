@@ -33,6 +33,7 @@
 void parseCanTask(void const* arg)
 {
     uint32_t prevWakeTime = osKernelSysTick();
+
     for (;;)
     {
         osEvent evt = osMessageGet(canRxQueue, osWaitForever); // Blocks
