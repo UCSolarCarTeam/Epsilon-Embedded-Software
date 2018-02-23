@@ -76,14 +76,9 @@ static osThreadId sendMpptResponseHandle;
 osPoolDef(canRxPool, 64, CanMsg);
 osPoolId canRxPool;
 
-osPoolDef(mpptCanTxPool, 64, MpptCanMsg);
-osPoolId mpptCanTxPool;
-
 osMessageQDef(canRxQueue, 64, CanMsg); // CanMsg defined in CanParser.h
 osMessageQId canRxQueue;
 
-osMessageQDef(mpptCanTxQueue, 64, MpptCanMsg); // CanMsg defined in MpptRtr.h
-osMessageQId mpptCanTxQueue;
 
 /* USER CODE END PV */
 
@@ -97,7 +92,7 @@ void StartDefaultTask(void const* argument);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
-//static void MX_CAN1_UserInit(void);
+
 static void MX_CAN2_UserInit(void);
 static void MX_USART3_UART_UserInit(void);
 
@@ -137,9 +132,9 @@ int main(void)
     MX_CAN1_Init();
 
     /* USER CODE BEGIN 2 */
-    //MX_CAN1_UserInit();
     MX_CAN2_UserInit();
     MX_USART3_UART_UserInit();
+
     // Setup for next CAN Receive Interrupt
 
     if (HAL_CAN_Receive_IT(&hcan2, CAN_FIFO0) != HAL_OK)
@@ -455,11 +450,12 @@ void StartDefaultTask(void const* argument)
 {
 
     /* USER CODE BEGIN 5 */
-//   /* Infinite loop */
-//   for(;;)
-//   {
-//     osDelay(1);
-//   }
+    /* Infinite loop */
+    for (;;)
+    {
+        osDelay(1);
+    }
+
     /* USER CODE END 5 */
 }
 
