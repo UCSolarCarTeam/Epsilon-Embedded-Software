@@ -72,7 +72,6 @@ static osThreadId parseCanHandle;
 static osThreadId sendTelemHandle;
 static osThreadId activateHornHandle;
 static osThreadId sendMpptResponseHandle;
-static osThreadId mpptRtrHandle;
 
 osPoolDef(canRxPool, 64, CanMsg);
 osPoolId canRxPool;
@@ -100,6 +99,7 @@ void StartDefaultTask(void const * argument);
 /* Private function prototypes -----------------------------------------------*/
 //static void MX_CAN1_UserInit(void);
 static void MX_CAN2_UserInit(void);
+static void MX_USART3_UART_UserInit(void);
 
 /* USER CODE END PFP */
 
@@ -139,13 +139,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
   //MX_CAN1_UserInit();
   MX_CAN2_UserInit();
-
+  MX_USART3_UART_UserInit();
   // Setup for next CAN Receive Interrupt
-  // if (HAL_CAN_Receive_IT(&hcan1, CAN_FIFO0) != HAL_OK)
-  // {
-  //     /* Reception Error */
-  //     Error_Handler();
-  // }
 
   if (HAL_CAN_Receive_IT(&hcan2, CAN_FIFO0) != HAL_OK)
   {
@@ -185,12 +180,9 @@ int main(void)
   /* USER CODE END RTOS_TIMERS */
 
   /* Create the thread(s) */
-  /* definition and creation of defaultTask */
-  // osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 256);
-  // defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
-  /* Create the thread(s) */
+
   // parseCanTask() -> CanParser.h
   osThreadDef(canRxTask, parseCanTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
   parseCanHandle = osThreadCreate(osThread(canRxTask), NULL);
@@ -207,9 +199,7 @@ int main(void)
   osThreadDef(sendMpptRtrTask, mpptRtrTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
   sendMpptResponseHandle = osThreadCreate(osThread(sendMpptRtrTask), NULL);
 
-  // osThreadDef(mpptRtrCanTask, sendMpptRtrCanTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
-  // mpptRtrHandle = osThreadCreate(osThread(mpptRtrCanTask), NULL);
-  // /* USER CODE END RTOS_THREADS */
+  /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_QUEUES */
   canRxPool = osPoolCreate(osPool(canRxPool));
@@ -414,37 +404,11 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
-// static void MX_CAN1_UserInit(void)
-// {
-//     CAN_FilterConfTypeDef sFilterConfig;
-//     sFilterConfig.FilterNumber = 0; // Use first filter bank
-//     sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
-//     sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
-//     sFilterConfig.FilterIdHigh = 0; // Accept All
-//     sFilterConfig.FilterIdLow = 0; // Accept
-//     sFilterConfig.FilterMaskIdHigh = 0; // Accept All
-//     sFilterConfig.FilterMaskIdLow = 0; // Accept All
-//     sFilterConfig.FilterFIFOAssignment = 0;
-//     sFilterConfig.FilterActivation = ENABLE;
-//     sFilterConfig.BankNumber = 0; // Set all filter banks for CAN1
-
-//     if (HAL_CAN_ConfigFilter(&hcan1, &sFilterConfig) != HAL_OK)
-//     {
-//         /* Filter configuration Error */
-//         Error_Handler();
-//     }
-
-//     /* Configure Transmission process */
-//     static CanTxMsgTypeDef txMessage;
-//     static CanRxMsgTypeDef rxMessage;
-//     hcan1.pTxMsg = &txMessage;
-//     hcan1.pRxMsg = &rxMessage;
-//     // hcan1.pTxMsg->StdId = 0x0; // CAN message address
-//     hcan1.pTxMsg->ExtId = 0x0; // Only used if (hcan1.pTxMsg->IDE == CAN_ID_EXT)
-//     hcan1.pTxMsg->RTR = CAN_RTR_DATA; // Data request, not remote request
-//     hcan1.pTxMsg->IDE = CAN_ID_STD; // Standard CAN, not Extended
-//     hcan2.pTxMsg->DLC = 8;
-// }
+static void MX_USART3_UART_UserInit(void)
+{
+    SET_BIT(huart3.Instance->CR1, UART_STATE_ENABLE);
+    SET_BIT(huart3.Instance->CR1, USART_CR1_TE);
+}
 
 static void MX_CAN2_UserInit(void)
 {
