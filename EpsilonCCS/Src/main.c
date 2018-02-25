@@ -77,7 +77,7 @@ osPoolDef(canRxPool, 64, CanMsg);
 osPoolId canRxPool;
 
 osMessageQDef(canRxQueue, 64, CanMsg); // CanMsg defined in CanParser.h
-osMessageQId canRxQueue;
+osMessageQId canRxQueueId;
 
 
 /* USER CODE END PV */
@@ -176,6 +176,9 @@ int main(void)
     /* USER CODE END RTOS_TIMERS */
 
     /* Create the thread(s) */
+    /* definition and creation of defaultTask */
+    osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 256);
+    defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
     /* USER CODE BEGIN RTOS_THREADS */
 
@@ -199,7 +202,7 @@ int main(void)
 
     /* USER CODE BEGIN RTOS_QUEUES */
     canRxPool = osPoolCreate(osPool(canRxPool));
-    canRxQueue = osMessageCreate(osMessageQ(canRxQueue), NULL);
+    canRxQueueId = osMessageCreate(osMessageQ(canRxQueue), NULL);
     /* USER CODE END RTOS_QUEUES */
 
 
@@ -308,7 +311,7 @@ static void MX_CAN2_Init(void)
 
     hcan2.Instance = CAN2;
     hcan2.Init.Prescaler = 4;
-    hcan2.Init.Mode = CAN_MODE_LOOPBACK;
+    hcan2.Init.Mode = CAN_MODE_NORMAL;
     hcan2.Init.SJW = CAN_SJW_1TQ;
     hcan2.Init.BS1 = CAN_BS1_5TQ;
     hcan2.Init.BS2 = CAN_BS2_4TQ;
@@ -422,8 +425,8 @@ static void MX_CAN2_UserInit(void)
     sFilterConfig.FilterMaskIdHigh = 0;
     sFilterConfig.FilterMaskIdLow = 0;
     sFilterConfig.FilterFIFOAssignment = 0;
-    sFilterConfig.FilterActivation = DISABLE; // Accept all
-    sFilterConfig.BankNumber = 0;
+    sFilterConfig.FilterActivation = ENABLE; // Accept all
+    sFilterConfig.BankNumber = 20;
 
     if (HAL_CAN_ConfigFilter(&hcan2, &sFilterConfig) != HAL_OK)
     {

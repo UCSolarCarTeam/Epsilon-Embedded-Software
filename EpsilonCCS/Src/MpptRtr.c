@@ -38,7 +38,7 @@ void mpptRtrTask(void const* arg)
         // Send CAN Message
         if (HAL_CAN_Transmit_IT(&hcan2) == HAL_OK)
         {
-            HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
+            // HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
         }
 
         // Update Channel
