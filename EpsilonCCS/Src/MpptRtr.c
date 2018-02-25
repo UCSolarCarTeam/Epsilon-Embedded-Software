@@ -10,7 +10,7 @@ void mpptRtrTask(void const* arg)
 
     for (;;)
     {
-        osDelayUntil(&prevWakeTime, MPPT_HEARTBEAT_CAN_FREQ * 10);
+        osDelayUntil(&prevWakeTime, MPPT_HEARTBEAT_CAN_FREQ);
 
         // Populate CAN Message
         switch (channel)
