@@ -92,7 +92,7 @@ void sendKeyMotor()
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
 
-    transmitMessage(packetPayload, packetLength);
+    transmitMessage(packet, packetLength);
 }
 
 void sendMotorDetails(int n)
@@ -148,7 +148,7 @@ void sendMotorDetails(int n)
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
 
-    transmitMessage(packetPayload, packetLength);
+    transmitMessage(packet, packetLength);
 }
 
 void sendDriverControls()
@@ -169,7 +169,7 @@ void sendDriverControls()
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
 
-    transmitMessage(packetPayload, packetLength);
+    transmitMessage(packet, packetLength);
 }
 
 void sendMotorFaults()
@@ -191,7 +191,7 @@ void sendMotorFaults()
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
 
-    transmitMessage(packetPayload, packetLength);
+    transmitMessage(packet, packetLength);
 }
 
 void sendBatteryFaults()
@@ -206,7 +206,7 @@ void sendBatteryFaults()
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
 
-    transmitMessage(packetPayload, packetLength);
+    transmitMessage(packet, packetLength);
 }
 
 void sendBattery()
@@ -248,7 +248,7 @@ void sendBattery()
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
 
-    transmitMessage(packetPayload, packetLength);
+    transmitMessage(packet, packetLength);
 }
 
 void sendMppt(int n)
@@ -275,7 +275,7 @@ void sendMppt(int n)
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
 
-    transmitMessage(packetPayload, packetLength);
+    transmitMessage(packet, packetLength);
 }
 
 void sendLights()
@@ -292,5 +292,5 @@ void sendLights()
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
 
-    transmitMessage(packetPayload, packetLength);
+    transmitMessage(packet, packetLength);
 }
