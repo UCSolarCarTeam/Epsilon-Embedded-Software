@@ -335,7 +335,7 @@ static void MX_USART3_UART_Init(void)
 
     huart3.Instance = USART3;
     huart3.Init.BaudRate = 115200;
-    huart3.Init.WordLength = UART_WORDLENGTH_8B;
+    huart3.Init.WordLength = UART_WORDLENGTH_9B;
     huart3.Init.StopBits = UART_STOPBITS_1;
     huart3.Init.Parity = UART_PARITY_NONE;
     huart3.Init.Mode = UART_MODE_TX;
@@ -426,7 +426,7 @@ static void MX_CAN2_UserInit(void)
     sFilterConfig.FilterMaskIdLow = 0;
     sFilterConfig.FilterFIFOAssignment = 0;
     sFilterConfig.FilterActivation = ENABLE; // Accept all
-    sFilterConfig.BankNumber = 20;
+    sFilterConfig.BankNumber = 0;
 
     if (HAL_CAN_ConfigFilter(&hcan2, &sFilterConfig) != HAL_OK)
     {
