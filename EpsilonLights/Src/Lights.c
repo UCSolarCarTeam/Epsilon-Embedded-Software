@@ -171,7 +171,7 @@ void updateStrobeLight(void const* arg)
         strobeLight = (auxBmsInputs[1] >> 0) & 1;
 
         /*Update BMS Strobe*/
-      //  if (auxBmsInputs[0] & STROBE_FAULT_MASK && blinkerTimer >= BLINKER_FREQ)
+        //  if (auxBmsInputs[0] & STROBE_FAULT_MASK && blinkerTimer >= BLINKER_FREQ)
         if (strobeLight && blinkerTimer <= BLINKER_FREQ)
         {
             HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_ON);
