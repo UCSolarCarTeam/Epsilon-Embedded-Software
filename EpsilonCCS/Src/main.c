@@ -64,8 +64,6 @@ CAN_HandleTypeDef hcan2;
 
 UART_HandleTypeDef huart3;
 
-osThreadId defaultTaskHandle;
-
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 static osThreadId parseCanHandle;
@@ -88,7 +86,6 @@ static void MX_GPIO_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_CAN2_Init(void);
 static void MX_CAN1_Init(void);
-void StartDefaultTask(void const* argument);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -176,9 +173,6 @@ int main(void)
     /* USER CODE END RTOS_TIMERS */
 
     /* Create the thread(s) */
-    /* definition and creation of defaultTask */
-    osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 256);
-    defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
     /* USER CODE BEGIN RTOS_THREADS */
 
@@ -447,20 +441,6 @@ static void MX_CAN2_UserInit(void)
 }
 
 /* USER CODE END 4 */
-
-/* StartDefaultTask function */
-void StartDefaultTask(void const* argument)
-{
-
-    /* USER CODE BEGIN 5 */
-    /* Infinite loop */
-    for (;;)
-    {
-        osDelay(1);
-    }
-
-    /* USER CODE END 5 */
-}
 
 /**
   * @brief  Period elapsed callback in non blocking mode

@@ -40,7 +40,6 @@ void parseCanTask(void const* arg)
 
         if (evt.status == osEventMessage)
         {
-            HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
             CanMsg* msg = (CanMsg*)evt.value.p;
             parseCanMessage(msg->StdId, msg->Data);
             osPoolFree(canRxPool, msg);
@@ -80,11 +79,6 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 
     msg->StdId = hcan->pRxMsg->StdId;
 
-    // if (msg->StdId == 0x222U)
-    // {
-    //     HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
-    // }
-
     memcpy(msg->Data, hcan->pRxMsg->Data, 8);
 
     if (osMessagePut(canRxQueueId, (uint32_t)msg, 0) == osOK)
@@ -92,6 +86,5 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
         HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
     }
 
-    //__HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
     HAL_CAN_Receive_IT(hcan, CAN_FIFO0);
 }
