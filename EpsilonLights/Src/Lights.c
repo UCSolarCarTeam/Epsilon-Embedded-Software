@@ -172,7 +172,7 @@ void updateStrobeLight(void const* arg)
 
         /*Update BMS Strobe*/
       //  if (auxBmsInputs[0] & STROBE_FAULT_MASK && blinkerTimer >= BLINKER_FREQ)
-        if (strobeLight && blinkerTimer >= BLINKER_FREQ)
+        if (strobeLight && blinkerTimer <= BLINKER_FREQ)
         {
             HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_ON);
         }
@@ -182,7 +182,7 @@ void updateStrobeLight(void const* arg)
         }
 
         // Update blinker timer
-        if (blinkerTimer > BLINKER_FREQ * 2)
+        if (blinkerTimer > BLINKER_FREQ * 2 || !strobeLight)
         {
             // If blinkerTimer is greater than (BLINKER_FREQ*2) reset blinkerTimer to 0
             blinkerTimer = 0;
