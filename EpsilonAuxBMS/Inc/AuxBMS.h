@@ -34,7 +34,7 @@
 #define CURRENT_SENSE_RESISTOR 0.001 //actually 1 mOhm, but 1 Ohm for testing
 #define GAIN 250
 #define SENSE_SETTLING_TIME 50
-#define CURRENT_LOWER_THRESHOLD 4 // Lower current threshold
+#define CURRENT_LOWER_THRESHOLD 0.15 // Lower current threshold
 #define ADC_POLL_TIMEOUT 10
 
 #define SPI_TIMEOUT 50
