@@ -417,6 +417,7 @@ typedef struct
 #define CAN_FLAG_TME2              0x0000051CU  /*!< Transmit mailbox 0 empty flag */
 
 /* Receive Flags */
+ 
 #define CAN_FLAG_FF0               0x00000203U  /*!< FIFO 0 Full flag    */
 #define CAN_FLAG_FOV0              0x00000204U  /*!< FIFO 0 Overrun flag */
 

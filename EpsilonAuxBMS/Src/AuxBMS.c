@@ -252,14 +252,14 @@ void updateAuxVoltageTask(void const* arg)
     // Store voltage value
     uint16_t voltage = 0;
     // Size of data to be received
-    uint32_t size = 1;
+    uint32_t size = 2;
 
     for (;;)
     {
         osDelayUntil(&prevWakeTime, AUX_UPDATE_AUX_VOLTAGE_FREQ);
 
         // Data buffer
-        uint8_t rxBuff[2] = {0, 0};
+        uint8_t rxBuff[2] = {0};
         // Set Chip Select to be low
         HAL_GPIO_WritePin(ADC_nCS_GPIO_Port, ADC_nCS_Pin, GPIO_PIN_RESET);
 

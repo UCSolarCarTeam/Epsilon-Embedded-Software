@@ -42,6 +42,8 @@
 #define AUX_ADC_NOMINAL_OUTPUT 0x2EB // Pattern = 2.63/3.6 * 0x3FF
 // When ORION is coded, indices can be filled in
 
+// Will go in hal_can.h when code is finished
+#define CAN_FLAG_FMP0              0x12000003U
 
 typedef struct AuxStatus
 {
