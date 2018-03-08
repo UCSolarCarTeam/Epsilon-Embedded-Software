@@ -14,12 +14,12 @@ void transmitMessage(uint8_t* payload, uint16_t bufferSize)
     {
         HAL_StatusTypeDef transmitState = HAL_UART_Transmit(&huart3, payload, bufferSize, USART_TIMEOUT_PERIOD);
 
-        if(transmitState == HAL_OK)
+        if (transmitState == HAL_OK)
         {
             HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, LED_OFF);
-            break;  
+            break;
         }
-        else if(transmitState == HAL_TIMEOUT)
+        else if (transmitState == HAL_TIMEOUT)
         {
             HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, LED_ON);
             attemptCount++;
@@ -30,7 +30,7 @@ void transmitMessage(uint8_t* payload, uint16_t bufferSize)
             attemptCount++;
         }
 
-        if(attemptCount > 4) // Could not send
+        if (attemptCount > 4) // Could not send
         {
             break;
         }
