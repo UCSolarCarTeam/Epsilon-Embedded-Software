@@ -39,7 +39,7 @@
 
 #define SPI_TIMEOUT 50
 #define AUX_NOMINAL_VOLTAGE 12.0
-#define AUX_ADC_NOMINAL_OUTPUT 0x2EB // Pattern = 2.63/3.6 * 0x3FF
+#define AUX_ADC_NOMINAL_OUTPUT 0x32E // Pattern = 2.63/3.3 * 0x3FF
 // When ORION is coded, indices can be filled in
 
 // Will go in hal_can.h when code is finished

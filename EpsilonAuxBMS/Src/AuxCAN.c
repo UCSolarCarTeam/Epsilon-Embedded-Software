@@ -72,8 +72,8 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 {
     CanRxMsgTypeDef* msg = hcan->pRxMsg;
 
-    // Toggle Green LED for every message received
-    HAL_GPIO_TogglePin(GRN_LED_GPIO_Port, GRN_LED_Pin);
+    // Toggle Red LED for every message received
+    HAL_GPIO_TogglePin(RED_LED_GPIO_Port, RED_LED_Pin);
 
     if (msg->StdId == MAX_MIN_VOLTAGES_STDID)
     {
