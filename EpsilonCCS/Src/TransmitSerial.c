@@ -30,7 +30,7 @@ void transmitMessage(uint8_t* payload, uint16_t bufferSize)
             attemptCount++;
         }
 
-        if (attemptCount > 4) // Could not send
+        if (attemptCount > NUMBER_OF_ATTEMPTS) // Could not send
         {
             break;
         }
