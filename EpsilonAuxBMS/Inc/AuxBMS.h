@@ -30,6 +30,7 @@
 #define DISCHARGE_CONTACTOR_ON 3
 #define DONE 4
 #define BLOCKED 5
+#define ATTEMPTS 1
 
 #define CURRENT_SENSE_RESISTOR 0.001 //actually 1 mOhm, but 1 Ohm for testing
 #define GAIN 250

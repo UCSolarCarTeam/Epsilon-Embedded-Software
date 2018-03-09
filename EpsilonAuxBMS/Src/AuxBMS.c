@@ -62,7 +62,7 @@ void setAuxContactorTask(void const* arg)
     {
         osDelayUntil(&prevWakeTime, AUX_SET_CONTACTOR_FREQ);
 
-        if (cycleCount > 1) // If it's greater than 1, report to CAN that something is wrong
+        if (cycleCount > ATTEMPTS) // If it's greater than a certain number of attempts, report to CAN that something is wrong
         {
             auxStatus.contactorError = 1;
         }

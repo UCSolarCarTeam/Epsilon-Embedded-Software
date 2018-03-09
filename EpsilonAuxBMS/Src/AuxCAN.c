@@ -17,8 +17,9 @@ void sendHeartbeatTask(void const* arg)
             continue;
         }
 
-        // Toggle green LED for every heartbeat sent
-        HAL_GPIO_TogglePin(GRN_LED_GPIO_Port, GRN_LED_Pin);
+        // Toggle Red LED for every heartbeat sent
+        HAL_GPIO_TogglePin(RED_LED_GPIO_Port, RED_LED_Pin);
+
         // Set CAN message address
         hcan1.pTxMsg->StdId = AUX_HEARTBEAT_STDID;
         // Always 1
@@ -72,8 +73,8 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 {
     CanRxMsgTypeDef* msg = hcan->pRxMsg;
 
-    // Toggle Red LED for every message received
-    HAL_GPIO_TogglePin(RED_LED_GPIO_Port, RED_LED_Pin);
+    // Toggle green LED for every CAN message received
+    HAL_GPIO_TogglePin(GRN_LED_GPIO_Port, GRN_LED_Pin);
 
     if (msg->StdId == MAX_MIN_VOLTAGES_STDID)
     {
