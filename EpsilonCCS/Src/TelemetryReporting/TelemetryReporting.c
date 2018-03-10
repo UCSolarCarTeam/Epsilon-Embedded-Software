@@ -19,7 +19,7 @@
 #define DRIVER_CONTROLS_LENGTH (9)
 #define MOTOR_FAULTS_LENGTH (9)
 #define BATTERY_FAULTS_LENGTH (6)
-#define BATTERY_DETAILS_LENGTH (51)
+#define BATTERY_DETAILS_LENGTH (54)
 #define MPPT_DETAILS_LENGTH (10)
 #define LIGHTS_DETAILS_LENGTH (3)
 
@@ -241,8 +241,11 @@ void sendBattery()
     writeUShortIntoArray(packetPayload, 46, batteryData.averageCellVoltage);
     packetPayload[48] = batteryData.prechargeState;
     packetPayload[49] = batteryData.auxVoltage;
+    packetPayload[50] = batteryData.strobeBmsLight;
+    packetPayload[51] = batteryData.allowCharge;
+    packetPayload[52] = batteryData.contactorError;
     unsigned char auxBmsAliveArray[] = {messageIsRecent(batteryData.auxBmsLastReceived)};
-    writeBoolsIntoArray(packetPayload, 50, auxBmsAliveArray, 1);
+    writeBoolsIntoArray(packetPayload, 53, auxBmsAliveArray, 1);
 
     addChecksum(packetPayload, BATTERY_DETAILS_LENGTH);
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
