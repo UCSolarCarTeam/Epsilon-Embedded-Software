@@ -15,7 +15,7 @@
 #include "LightsData.h"
 
 #define KEY_MOTOR_LENGTH (43)
-#define MOTOR_DETAILS_LENGTH (69)
+#define MOTOR_DETAILS_LENGTH (65)
 #define DRIVER_CONTROLS_LENGTH (9)
 #define MOTOR_FAULTS_LENGTH (9)
 #define BATTERY_FAULTS_LENGTH (6)
