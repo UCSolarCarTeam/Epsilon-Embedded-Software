@@ -166,7 +166,7 @@ void updateStrobeLight(void const* arg)
     for (;;)
     {
         osDelayUntil(&prevWakeTime, LIGHTS_UPDATE_FREQ);
-        strobeLight = (auxBmsInputs[1] >> 0) & 1;
+        strobeLight = (auxBmsInputs[1] >> 0) & STROBE_FAULT_MASK;
 
         /*Update BMS Strobe*/
         if (strobeLight && (blinkerTimer <= BLINKER_FREQ))
