@@ -32,9 +32,6 @@
 #define BRAKES_INPUT_INDEX_P2 0 // 24 = [3] >> *0*
 
 #define BATTERY_STAT_ERRORS_STDID 0x303U
-// Mask for to check faults defined for Tritium BMS in TRI67.010 ver 2
-// Check for "cell over voltage" 0x01, "cell under voltage" 0x02, and "cell over temperature" 0x04
-#define BATTERY_CRIT_FAULT_MASK 0x07
 
 #define AUXBMS_INPUT_STDID 0x721U
 #define STROBE_FAULT_MASK 0x01
