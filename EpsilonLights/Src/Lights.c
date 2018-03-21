@@ -75,9 +75,6 @@ void updateLightsTask(void const* arg)
             sigLightsHandle.right = rightSignal;
         }
 
-        /*Update BMS Strobe*/
-        HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_OFF);
-
         // TODO Parse the Error Messages and turn on the BMS on certain messages
     }
 }
@@ -150,6 +147,46 @@ void blinkSignalLightsTask(void const* arg)
             }
 
             // Keep prevSigState = 1
+        }
+    }
+}
+
+void updateStrobeLight(void const* arg)
+{
+    uint32_t prevWakeTime = osKernelSysTick();
+    // Store inputs values
+    // NOTE: All Lights Out pins are active low
+
+    // If blinkerTimer is within (0 - BLINKER_FREQ), turn blinkers on
+    // If blinkerTimer is within (BLINKER_FREQ - BLINKER_FREQ*2), keep blinkers off
+    // If blinkerTimer is greater than (BLINKER_FREQ*2) reset blinkerTimer to 0
+    uint32_t blinkerTimer = 0;
+    char strobeLight;
+
+    for (;;)
+    {
+        osDelayUntil(&prevWakeTime, LIGHTS_UPDATE_FREQ);
+        strobeLight = (auxBmsInputs[1] >> 0) & STROBE_FAULT_MASK;
+
+        /*Update BMS Strobe*/
+        if (strobeLight && (blinkerTimer <= BLINKER_FREQ))
+        {
+            HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_ON);
+        }
+        else
+        {
+            HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_OFF);
+        }
+
+        // Update blinker timer
+        if ((blinkerTimer > BLINKER_FREQ * 2) || !strobeLight)
+        {
+            // If blinkerTimer is greater than (BLINKER_FREQ*2) reset blinkerTimer to 0
+            blinkerTimer = 0;
+        }
+        else
+        {
+            blinkerTimer += LIGHTS_UPDATE_FREQ;
         }
     }
 }
@@ -250,6 +287,12 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
         driversInputs[1] = msg->Data[2];
         driversInputs[2] = msg->Data[1];
         driversInputs[3] = msg->Data[0];
+    }
+    else if (msg->StdId == AUXBMS_INPUT_STDID && msg->DLC == 2)
+    {
+        // Memory is stored in Little Endian format
+        auxBmsInputs[0] = msg->Data[1];
+        auxBmsInputs[1] = msg->Data[0];
     }
 
     __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
