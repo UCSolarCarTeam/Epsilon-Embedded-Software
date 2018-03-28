@@ -2,7 +2,7 @@
 
 #include "AuxBmsCanParser.h"
 
-#include "BatteryData.h"
+#include "AuxBmsData.h"
 
 #define AUX_BMS_HEARTBEAT_ID (0x720)
 #define AUX_BMS_INFO_ID (0x721)
@@ -23,14 +23,14 @@ void parseAuxBmsCanMessage(uint32_t stdId, uint8_t* data)
 
 void parseAuxBmsHeartbeat()
 {
-    batteryData.auxBmsLastReceived = osKernelSysTick();
+    auxBmsData.auxBmsLastReceived = osKernelSysTick();
 }
 
 void parseAuxBmsInfo(uint8_t* data)
 {
-    batteryData.prechargeState = data[0] & PRECHARGE_STATE_MASK;
-    batteryData.auxVoltage = data[0] & AUX_VOLTAGE_MASK;
-    batteryData.strobeBmsLight = data[1] & STROBE_MASK;
-    batteryData.allowCharge = data[1] & ALLOW_CHARGE_MASK;
-    batteryData.contactorError = data[1] & CONTACTOR_ERROR_MASK;
+    auxBmsData.prechargeState = data[0] & PRECHARGE_STATE_MASK;
+    auxBmsData.auxVoltage = data[0] & AUX_VOLTAGE_MASK;
+    auxBmsData.strobeBmsLight = data[1] & STROBE_MASK;
+    auxBmsData.allowCharge = data[1] & ALLOW_CHARGE_MASK;
+    auxBmsData.contactorError = data[1] & CONTACTOR_ERROR_MASK;
 }

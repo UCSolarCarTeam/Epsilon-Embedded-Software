@@ -13,15 +13,17 @@
 #include "BatteryData.h"
 #include "MpptData.h"
 #include "LightsData.h"
+#include "AuxBmsData.h"
 
 #define KEY_MOTOR_LENGTH (43)
 #define MOTOR_DETAILS_LENGTH (65)
 #define DRIVER_CONTROLS_LENGTH (9)
 #define MOTOR_FAULTS_LENGTH (9)
 #define BATTERY_FAULTS_LENGTH (6)
-#define BATTERY_DETAILS_LENGTH (54)
+#define BATTERY_DETAILS_LENGTH (48)
 #define MPPT_DETAILS_LENGTH (10)
 #define LIGHTS_DETAILS_LENGTH (3)
+#define AUX_BMS_DETAILS_LENGTH (8)
 
 #define CCS_TELEM_PERIOD_MS (200) // 5Hz == 200ms
 
@@ -239,13 +241,6 @@ void sendBattery()
     writeUShortIntoArray(packetPayload, 43, batteryData.highCellVoltage);
     packetPayload[45] = batteryData.highCellVoltageId;
     writeUShortIntoArray(packetPayload, 46, batteryData.averageCellVoltage);
-    packetPayload[48] = batteryData.prechargeState;
-    packetPayload[49] = batteryData.auxVoltage;
-    packetPayload[50] = batteryData.strobeBmsLight;
-    packetPayload[51] = batteryData.allowCharge;
-    packetPayload[52] = batteryData.contactorError;
-    unsigned char auxBmsAliveArray[] = {messageIsRecent(batteryData.auxBmsLastReceived)};
-    writeBoolsIntoArray(packetPayload, 53, auxBmsAliveArray, 1);
 
     addChecksum(packetPayload, BATTERY_DETAILS_LENGTH);
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
@@ -292,6 +287,27 @@ void sendLights()
     writeBoolsIntoArray(packetPayload, 2, &lightsData.lowBeams, 6);
 
     addChecksum(packetPayload, LIGHTS_DETAILS_LENGTH);
+    unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
+    unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
+
+    transmitMessage(packet, packetLength);
+}
+
+void sendAuxBms()
+{
+    unsigned int unframedPacketLength = AUX_BMS_DETAILS_LENGTH + CHECKSUM_LENGTH;
+    unsigned char packetPayload[unframedPacketLength];
+
+    packetPayload[0] = AUX_BMS_PKG_ID;
+    packetPayload[1] = batteryData.prechargeState;
+    packetPayload[2] = batteryData.auxVoltage;
+    packetPayload[3] = batteryData.strobeBmsLight;
+    packetPayload[4] = batteryData.allowCharge;
+    packetPayload[5] = batteryData.contactorError;
+    unsigned char auxBmsAliveArray[] = {messageIsRecent(batteryData.auxBmsLastReceived)};
+    writeBoolsIntoArray(packetPayload, 6, auxBmsAliveArray, 1);
+
+    addChecksum(packetPayload, AUX_BMS_DETAILS_LENGTH);
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
 
