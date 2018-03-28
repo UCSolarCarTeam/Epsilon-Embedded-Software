@@ -23,7 +23,7 @@ enum BatteryPrechargeState
 
 struct AuxBmsData
 {
-	unsigned char prechargeState;
+    unsigned char prechargeState;
     unsigned char auxVoltage;
     unsigned char strobeBmsLight;
     unsigned char allowCharge;
