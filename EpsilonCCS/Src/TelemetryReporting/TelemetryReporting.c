@@ -299,12 +299,12 @@ void sendAuxBms()
     unsigned char packetPayload[unframedPacketLength];
 
     packetPayload[0] = AUX_BMS_PKG_ID;
-    packetPayload[1] = batteryData.prechargeState;
-    packetPayload[2] = batteryData.auxVoltage;
-    packetPayload[3] = batteryData.strobeBmsLight;
-    packetPayload[4] = batteryData.allowCharge;
-    packetPayload[5] = batteryData.contactorError;
-    unsigned char auxBmsAliveArray[] = {messageIsRecent(batteryData.auxBmsLastReceived)};
+    packetPayload[1] = auxBmsData.prechargeState;
+    packetPayload[2] = auxBmsData.auxVoltage;
+    packetPayload[3] = auxBmsData.strobeBmsLight;
+    packetPayload[4] = auxBmsData.allowCharge;
+    packetPayload[5] = auxBmsData.contactorError;
+    unsigned char auxBmsAliveArray[] = {messageIsRecent(auxBmsData.auxBmsLastReceived)};
     writeBoolsIntoArray(packetPayload, 6, auxBmsAliveArray, 1);
 
     addChecksum(packetPayload, AUX_BMS_DETAILS_LENGTH);
