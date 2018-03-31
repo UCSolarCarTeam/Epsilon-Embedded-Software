@@ -5,7 +5,7 @@
 
 #define LED_ON 1
 #define LED_OFF 0
-#define NUMBER_OF_ATTEMPTS 2
+#define NUMBER_OF_ATTEMPTS 3
 
 #define USART_TIMEOUT_PERIOD 5000
 
