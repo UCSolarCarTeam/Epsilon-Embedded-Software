@@ -31,10 +31,10 @@
 #define BRAKES_INPUT_INDEX_P1 3 // 24 = [*3*] >> 0
 #define BRAKES_INPUT_INDEX_P2 0 // 24 = [3] >> *0*
 
-#define BATTERY_STAT_STDID 0x6FBU
-// Mask for to check faults defined for Tritium BMS in TRI67.010 ver 2
-// Check for "cell over voltage" 0x01, "cell under voltage" 0x02, and "cell over temperature" 0x04
-#define BATTERY_CRIT_FAULT_MASK 0x07
+#define BATTERY_STAT_ERRORS_STDID 0x303U
+
+#define AUXBMS_INPUT_STDID 0x721U
+#define STROBE_FAULT_MASK 0x01
 
 typedef struct LightsStatus
 {
@@ -54,8 +54,9 @@ typedef struct SigLightsHandle
 
 extern CAN_HandleTypeDef hcan2; // main.c
 extern uint8_t lightsInputs;
+extern uint8_t auxBmsInputs[2];
+extern uint8_t batteryErrors[5];
 extern uint8_t driversInputs[4];
-extern uint8_t batteryStatus[4];
 extern SigLightsHandle sigLightsHandle;
 
 // Task for updating GPIOs
@@ -71,3 +72,5 @@ void reportLightsToCanTask(void const* arg);
 // Task for sending heartbeat via CAN
 // arg : osMutexId* canHandleMutex
 void sendHeartbeatTask(void const* arg);
+
+void updateStrobeLight(void const* arg);
