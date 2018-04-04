@@ -52,7 +52,8 @@
 #include "cmsis_os.h"
 
 /* USER CODE BEGIN Includes */
-#include "AuxBMS.h"
+#include "AuxBMSTasks.h"
+#include "CANHandler.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/

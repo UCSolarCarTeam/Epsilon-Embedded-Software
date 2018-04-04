@@ -1,5 +1,4 @@
-#include "cmsis_os.h"
-#include "AuxBMS.h"
+#include "CANHandler.h"
 
 void sendHeartbeatTask(void const* arg)
 {
@@ -17,15 +16,15 @@ void sendHeartbeatTask(void const* arg)
             continue;
         }
 
-        // Toggle Red LED for every heartbeat sent
-        HAL_GPIO_TogglePin(RED_LED_GPIO_Port, RED_LED_Pin);
-
         // Set CAN message address
         hcan1.pTxMsg->StdId = AUX_HEARTBEAT_STDID;
         // Always 1
         hcan1.pTxMsg->Data[0] = 1;
         // Send CAN message
-        HAL_CAN_Transmit_IT(&hcan1);
+        if(HAL_CAN_Transmit_IT(&hcan1) == HAL_OK)
+          // Toggle Red LED for every heartbeat sent
+          HAL_GPIO_TogglePin(RED_LED_GPIO_Port, RED_LED_Pin);
+
         osMutexRelease(canHandleMutex);
     }
 }
@@ -46,9 +45,6 @@ void reportAuxToCanTask(void const* arg)
             continue;
         }
 
-        // Toggle blue LED for every CAN message sent
-        HAL_GPIO_TogglePin(BLU_LED_GPIO_Port, BLU_LED_Pin);
-
         // Set CAN message address
         hcan1.pTxMsg->StdId = AUX_STATUS_STDID;
         // Set Data
@@ -63,7 +59,10 @@ void reportAuxToCanTask(void const* arg)
         hcan1.pTxMsg->Data[1] += auxStatus.allowCharge * 0x2;
         hcan1.pTxMsg->Data[1] += auxStatus.contactorError * 0x4;
         // Send CAN message
-        HAL_CAN_Transmit_IT(&hcan1);
+        if(HAL_CAN_Transmit_IT(&hcan1) == HAL_OK)
+          // Toggle blue LED for every CAN message sent
+          HAL_GPIO_TogglePin(BLU_LED_GPIO_Port, BLU_LED_Pin);
+
         osMutexRelease(canHandleMutex);
     }
 }
@@ -73,9 +72,6 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 {
     CanRxMsgTypeDef* msg = hcan->pRxMsg;
 
-    // Toggle green LED for every CAN message received
-    HAL_GPIO_TogglePin(GRN_LED_GPIO_Port, GRN_LED_Pin);
-
     if (msg->StdId == MAX_MIN_VOLTAGES_STDID)
     {
         orionBmsInputs[0] = (uint16_t)msg->Data[6]; // Max Cell voltage
@@ -83,5 +79,7 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     }
 
     __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
-    HAL_CAN_Receive_IT(hcan, CAN_FIFO0);
+    if(HAL_CAN_Receive_IT(hcan, CAN_FIFO0) == HAL_OK)
+      // Toggle green LED for every CAN message received
+      HAL_GPIO_TogglePin(GRN_LED_GPIO_Port, GRN_LED_Pin);
 }

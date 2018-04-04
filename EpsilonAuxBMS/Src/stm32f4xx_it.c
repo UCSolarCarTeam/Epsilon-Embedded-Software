@@ -37,7 +37,8 @@
 #include "cmsis_os.h"
 
 /* USER CODE BEGIN 0 */
-#include "AuxBMS.h"
+#include "AuxBMSTasks.h"
+#include "CANHandler.h"
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
