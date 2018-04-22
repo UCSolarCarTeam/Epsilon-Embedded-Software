@@ -37,8 +37,8 @@
 #include "cmsis_os.h"
 
 /* USER CODE BEGIN 0 */
-#include "AuxBMSTasks.h"
-#include "CANHandler.h"
+#include "AuxStatus.h"
+#include "OrionStatus.h"
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -111,7 +111,8 @@ void EXTI9_5_IRQHandler(void)
     HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_7);
     HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_8);
     /* USER CODE BEGIN EXTI9_5_IRQn 1 */
-    orionOK = 0;
+    // Shut everything down if any of the lines go low
+    orionStatus.gpioOk = 0;
     HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(CONTACTOR_ENABLE1_GPIO_Port, CONTACTOR_ENABLE1_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(CONTACTOR_ENABLE2_GPIO_Port, CONTACTOR_ENABLE2_Pin, GPIO_PIN_RESET);

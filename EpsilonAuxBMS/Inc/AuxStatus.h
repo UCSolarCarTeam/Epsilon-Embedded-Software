@@ -10,3 +10,5 @@ typedef struct AuxStatus
     unsigned allowCharge : 1;
     unsigned contactorError : 1;
 } AuxStatus;
+
+extern AuxStatus auxStatus;
