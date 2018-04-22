@@ -44,14 +44,16 @@ CAN_HandleTypeDef hcan2;
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 uint8_t lightsInputs; // Initialized to 0
+uint8_t batteryErrors[5]; //Initialized to {0,0,0,0,0}
 uint8_t driversInputs[4]; // Initialized to 0
-uint8_t batteryStatus[4]; // Initialized to {0, 0, 0, 0}
+uint8_t auxBmsInputs[2];
 SigLightsHandle sigLightsHandle;
 
 static osThreadId lightsTaskHandle;
 static osThreadId lightsCanTaskHandle;
 static osThreadId heartbeatHandle;
 static osThreadId blinkLightsHandle;
+static osThreadId strobeLightHandle;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -126,6 +128,9 @@ int main(void)
     // Setup task to handle blinking left and right signal lights
     osThreadDef(blinkLightsTask, blinkSignalLightsTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
     blinkLightsHandle = osThreadCreate(osThread(blinkLightsTask), NULL);
+    //Setup task to update strobe light
+    osThreadDef(strobeLightTask, updateStrobeLight, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    strobeLightHandle = osThreadCreate(osThread(strobeLightTask), NULL);
     /* USER CODE END RTOS_THREADS */
     /* USER CODE BEGIN RTOS_QUEUES */
     /* add queues, ... */
@@ -278,16 +283,34 @@ static void MX_CAN2_UserInit(void)
     // sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
     sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
     sFilterConfig.FilterIdHigh = LIGHTS_INPUT_STDID << 5; // Filter registers need to be shifted left 5 bits
-    sFilterConfig.FilterIdLow = BATTERY_STAT_STDID << 5; // Filter registers need to be shifted left 5 bits
+    sFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
     // sFilterConfig.FilterIdHigh = 0; // Filter registers need to be shifted left 5 bits
     // sFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
-    sFilterConfig.FilterMaskIdHigh = DRIVERS_INPUTS_STDID << 5; // Unused
+    sFilterConfig.FilterMaskIdHigh = DRIVERS_INPUTS_STDID << 5;
     sFilterConfig.FilterMaskIdLow = 0; // Unused
     sFilterConfig.FilterFIFOAssignment = 0;
     sFilterConfig.FilterActivation = ENABLE;
     sFilterConfig.BankNumber = 0; // Set all filter banks for CAN2
 
+    CAN_FilterConfTypeDef batteryFilterConfig;
+    batteryFilterConfig.FilterNumber = 1; // Use secondary filter bank
+    batteryFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+    batteryFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
+    batteryFilterConfig.FilterIdHigh = AUXBMS_INPUT_STDID << 5; // Filter registers need to be shifted left 5 bits
+    batteryFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
+    batteryFilterConfig.FilterMaskIdHigh = DRIVERS_INPUTS_STDID << 5;
+    batteryFilterConfig.FilterMaskIdLow = 0; //unused
+    batteryFilterConfig.FilterFIFOAssignment = 0;
+    batteryFilterConfig.FilterActivation = ENABLE;
+    batteryFilterConfig.BankNumber = 0; // Set all filter banks for CAN2
+
     if (HAL_CAN_ConfigFilter(&hcan2, &sFilterConfig) != HAL_OK)
+    {
+        /* Filter configuration Error */
+        Error_Handler();
+    }
+
+    if (HAL_CAN_ConfigFilter(&hcan2, &batteryFilterConfig) != HAL_OK)
     {
         /* Filter configuration Error */
         Error_Handler();
