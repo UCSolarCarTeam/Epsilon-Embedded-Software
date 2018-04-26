@@ -1,6 +1,6 @@
 #include "ReadAuxVoltageTask.h"
 
-static const uint32_t AUX_UPDATE_AUX_VOLTAGE_FREQ = 50;
+static const uint32_t AUX_UPDATE_AUX_VOLTAGE_FREQ = 50; // Every 50ms
 static const uint32_t SPI_TIMEOUT = 50;
 static const float AUX_NOMINAL_VOLTAGE = 12.0;
 static const uint16_t AUX_ADC_NOMINAL_OUTPUT = 0x32E; // Pattern = 2.63/3.3 * 0x3FF

@@ -1,6 +1,6 @@
 #include "SetContactorsTask.h"
 
-static const uint32_t AUX_SET_CONTACTOR_FREQ = 1000; // Every second
+static const uint32_t AUX_SET_CONTACTOR_FREQ = 1000; // Every 1 second
 static const float CURRENT_SENSE_RESISTOR  = 0.001; //actually 1 mOhm, but 1 Ohm for testing
 static const int GAIN  = 250;
 static const uint32_t SENSE_SETUP_TIME  = 50; // Setup time for current_sense
