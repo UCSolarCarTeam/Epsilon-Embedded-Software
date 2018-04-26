@@ -9,7 +9,8 @@ static const uint32_t ADC_POLL_TIMEOUT  = 10;
 static const int MAX_ATTEMPTS  = 2; // max attempts for trying to turn on a contactor
 
 typedef enum State {FIRST_CHECK, COMMON_CONTACTOR_ON, CHARGE_CONTACTOR_ON, DISCHARGE_CONTACTOR_ON,
-            DONE, BLOCKED} State;
+                    DONE, BLOCKED
+                   } State;
 
 void setContactorsTask(void const* arg)
 {
@@ -121,7 +122,7 @@ void setContactorsTask(void const* arg)
                 break;
 
             case DONE: ; // Put this here because compiler kept complaining about a declaration not being a statement
-                         // could potentially cause problems.
+                // could potentially cause problems.
                 uint8_t common = !HAL_GPIO_ReadPin(SENSE1_GPIO_Port, SENSE1_Pin);
                 uint8_t charge = !HAL_GPIO_ReadPin(SENSE2_GPIO_Port, SENSE2_Pin);
                 uint8_t discharge = !HAL_GPIO_ReadPin(SENSE3_GPIO_Port, SENSE3_Pin);
