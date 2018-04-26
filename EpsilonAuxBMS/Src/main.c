@@ -99,7 +99,7 @@ static void MX_CAN1_UserInit(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-static const ORION_MAX_MIN_VOLTAGES_STDID  = 0x30A;
+static const uint32_t ORION_MAX_MIN_VOLTAGES_STDID  = 0x30A;
 /* USER CODE END 0 */
 
 int main(void)
@@ -168,7 +168,7 @@ int main(void)
 
     osMutexId auxStatusMutex;
     osMutexDef(auxStatusMutex);
-    osMutex = osMutexCreate(osMutex(auxStatusMutex));
+    auxStatusMutex = osMutexCreate(osMutex(auxStatusMutex));
 
     if (auxStatusMutex == NULL)
     {
@@ -521,7 +521,7 @@ static void MX_CAN1_UserInit(void)
     sFilterConfig.FilterNumber = 0; // Use first filter bank
     sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
     sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
-    sFilterConfig.FilterIdHigh = MAX_MIN_VOLTAGES_STDID << 5; // Filter registers need to be shifted left 5 bits
+    sFilterConfig.FilterIdHigh = ORION_MAX_MIN_VOLTAGES_STDID << 5; // Filter registers need to be shifted left 5 bits
     sFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
     sFilterConfig.FilterFIFOAssignment = 0;
     sFilterConfig.FilterActivation = ENABLE;

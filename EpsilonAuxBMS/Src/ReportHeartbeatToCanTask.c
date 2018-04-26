@@ -1,7 +1,8 @@
 #include "ReportHeartbeatToCanTask.h"
 
-static const AUX_HEARBEAT_FREQ = 1000;
-static const AUX_HEARTBEAT_STDID 0x720U;
+// Refer to communications protocol
+static const uint32_t AUX_HEARBEAT_FREQ = 1000; // 1Hz
+static const uint32_t AUX_HEARTBEAT_STDID = 0x720U;
 
 void reportHeartbeatToCanTask(void const* arg)
 {

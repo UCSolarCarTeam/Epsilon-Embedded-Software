@@ -1,10 +1,10 @@
 #include "UpdateChargeStatusTask.h"
 
-static const CHARGE_STATUS_UPDATE_FREQ = 1; // Every 1ms
+static const uint32_t CHARGE_STATUS_UPDATE_FREQ = 1; // Every 1ms
 // These values are subject to change based on what regulations say
 // Ask Dan if any issues
-static const uint16_t MAX_CELL_VOLTAGE = 3.8;
-static const uint16_t MIN_CELL_VOLTAGE = 3.2;
+static const float MAX_CELL_VOLTAGE = 3.8;
+static const float MIN_CELL_VOLTAGE = 3.2;
 
 void updateChargeStatusTask(void const* arg)
 {
@@ -22,9 +22,9 @@ void updateChargeStatusTask(void const* arg)
             continue;
         }
 
-        if (orionStatus.maxCellVoltage > MAX_CELL_VOLTAGE * 0.8) // Will have the cutoff to be 20% below
+        if ((double)orionStatus.maxCellVoltage > MAX_CELL_VOLTAGE * 0.8) // Will have the cutoff to be 20% below
         {
-            orion.batteryVoltagesInRange = 0;
+            orionStatus.batteryVoltagesInRange = 0;
             // Turn off charge contactor
             HAL_GPIO_WritePin(CONTACTOR_ENABLE2_GPIO_Port, CONTACTOR_ENABLE2_Pin, GPIO_PIN_RESET);
             auxStatus.chargeContactorState = 0;
@@ -32,13 +32,13 @@ void updateChargeStatusTask(void const* arg)
         }
         else
         {
-            orion.batteryVoltagesInRange = 1;
+            orionStatus.batteryVoltagesInRange = 1;
             auxStatus.allowCharge = 1;
         }
 
-        if (orionStatus.minCellVoltage < MIN_CELL_VOLTAGE * 1.2) // Will have the cutoff to be 20% above
+        if ((double)orionStatus.minCellVoltage < MIN_CELL_VOLTAGE * 1.2) // Will have the cutoff to be 20% above
         {
-            orion.batteryVoltagesInRange = 0;
+            orionStatus.batteryVoltagesInRange = 0;
             // Turn off High voltage enable and discharge contactor
             HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
             HAL_GPIO_WritePin(CONTACTOR_ENABLE3_GPIO_Port, CONTACTOR_ENABLE3_Pin, GPIO_PIN_RESET);
@@ -46,7 +46,9 @@ void updateChargeStatusTask(void const* arg)
         }
         else
         {
-            orion.batteryVoltagesInRange = 1;
+            orionStatus.batteryVoltagesInRange = 1;
         }
     }
+
+    osMutexRelease(auxStatusMutex);
 }

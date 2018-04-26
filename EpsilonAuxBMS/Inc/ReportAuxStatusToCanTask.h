@@ -5,4 +5,4 @@
 
 // Task for sending aux status via CAN
 // arg: osMutexId* canHandleMutex
-void reportAuxToCanTask(void const* arg);
+void reportAuxStatusToCanTask(void const* arg);

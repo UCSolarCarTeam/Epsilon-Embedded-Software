@@ -1,16 +1,15 @@
 #include "SetContactorsTask.h"
 
-static const AUX_SET_CONTACTOR_FREQ = 1000; // Every second
-static const CURRENT_SENSE_RESISTOR  = 0.001; //actually 1 mOhm, but 1 Ohm for testing
-static const GAIN  = 250;
-static const SENSE_SETTLING_TIME  = 50;
-static const CURRENT_LOWER_THRESHOLD  = 0.15; // Lower current threshold
-static const ADC_POLL_TIMEOUT  = 10;
-static const MAX_ATTEMPTS  = 2; // max attempts for trying to turn on a contactor
+static const uint32_t AUX_SET_CONTACTOR_FREQ = 1000; // Every second
+static const float CURRENT_SENSE_RESISTOR  = 0.001; //actually 1 mOhm, but 1 Ohm for testing
+static const int GAIN  = 250;
+static const uint32_t SENSE_SETUP_TIME  = 50; // Setup time for current_sense
+static const float CURRENT_LOWER_THRESHOLD  = 0.15; // Lower current threshold
+static const uint32_t ADC_POLL_TIMEOUT  = 10;
+static const int MAX_ATTEMPTS  = 2; // max attempts for trying to turn on a contactor
 
-enum State {FIRST_CHECK, COMMON_CONTACTOR_ON, CHARGE_CONTACTOR_ON, DISCHARGE_CONTACTOR_ON,
-            DONE, BLOCKED
-           };
+typedef enum State {FIRST_CHECK, COMMON_CONTACTOR_ON, CHARGE_CONTACTOR_ON, DISCHARGE_CONTACTOR_ON,
+            DONE, BLOCKED} State;
 
 void setContactorsTask(void const* arg)
 {
@@ -55,7 +54,7 @@ void setContactorsTask(void const* arg)
                 // Check current is low before enabling (ADC conversion and normalization)
 
                 // If current is high for some reason, increment attempt count and cycle again
-                if (checkContactor(0xFF, 0xFF, 1))
+                if (checkContactor(0xFF, NULL, 1)) // Don't want to read an actual sense pin
                 {
                     attemptCount = 0;
                     // Turn on Common Contactor
@@ -121,7 +120,8 @@ void setContactorsTask(void const* arg)
 
                 break;
 
-            case DONE:
+            case DONE: ; // Put this here because compiler kept complaining about a declaration not being a statement
+                         // could potentially cause problems.
                 uint8_t common = !HAL_GPIO_ReadPin(SENSE1_GPIO_Port, SENSE1_Pin);
                 uint8_t charge = !HAL_GPIO_ReadPin(SENSE2_GPIO_Port, SENSE2_Pin);
                 uint8_t discharge = !HAL_GPIO_ReadPin(SENSE3_GPIO_Port, SENSE3_Pin);
@@ -157,10 +157,12 @@ void setContactorsTask(void const* arg)
             default:
                 state = FIRST_CHECK;
         }
+
+        osMutexRelease(auxStatusMutex);
     }
 }
 
-int checkContactor(uint8_t pin, uint8_t port, uint8_t current_multiplier)
+int checkContactor(uint16_t pin, GPIO_TypeDef* port, int current_multiplier)
 {
     float pwr_voltage = 0.0;
     float pwr_current = 0.0;
@@ -176,7 +178,7 @@ int checkContactor(uint8_t pin, uint8_t port, uint8_t current_multiplier)
     pwr_voltage = 3.3 * current_sense / 0xFFF / GAIN; // change ADC value into the voltage read
     pwr_current = pwr_voltage / CURRENT_SENSE_RESISTOR; // convert voltage to current
 
-    if (pin == 0xFF && port == 0xFF)
+    if (pin == 0xFF && port == NULL)
     {
         sense_pin = 1;
     }
@@ -205,7 +207,7 @@ uint32_t readCurrent(void)
 
     while (counter < 3)
     {
-        osDelay(SENSE_SETTLING_TIME);
+        osDelay(SENSE_SETUP_TIME);
 
         if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
         {

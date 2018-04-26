@@ -1,7 +1,8 @@
 #include "ReportAuxStatusToCanTask.h"
 
-static const AUX_STATUS_FREQ  = 100; // 10Hz
-static const AUX_STATUS_STDID  = 0x721U;
+// Refer to communication protocol
+static const uint32_t AUX_STATUS_FREQ  = 100; // 10Hz
+static const uint32_t AUX_STATUS_STDID  = 0x721U;
 
 void reportAuxStatusToCanTask(void const* arg)
 {
