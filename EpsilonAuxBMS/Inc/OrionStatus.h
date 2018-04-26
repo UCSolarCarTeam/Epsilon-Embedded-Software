@@ -10,7 +10,7 @@ typedef struct OrionStatus
     /**
     * Set to 1 maxCellVoltage is below defined maximum
     * and minCellVoltage is above defined minimum, otherwise 0
-    * see ReadOrionGpioTask.h
+    * see ReadOrionGpioTask.c
     */
     unsigned batteryVoltagesInRange : 1;
     uint16_t maxCellVoltage;
