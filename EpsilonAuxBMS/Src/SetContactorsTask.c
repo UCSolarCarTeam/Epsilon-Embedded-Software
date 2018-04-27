@@ -28,11 +28,12 @@ static const float CURRENT_LOWER_THRESHOLD  = 0.15; // Lower current threshold
 static const uint32_t ADC_POLL_TIMEOUT  = 10;
 
 typedef enum ContactorsSettingState {FIRST_CHECK,
-                    COMMON_CONTACTOR_ON,
-                    CHARGE_CONTACTOR_ON,
-                    DISCHARGE_CONTACTOR_ON,
-                    DONE,
-                    BLOCKED} ContactorsSettingState;
+                                     COMMON_CONTACTOR_ON,
+                                     CHARGE_CONTACTOR_ON,
+                                     DISCHARGE_CONTACTOR_ON,
+                                     DONE,
+                                     BLOCKED
+                                    } ContactorsSettingState;
 
 void setContactorsTask(void const* arg)
 {
@@ -64,16 +65,19 @@ void setContactorsTask(void const* arg)
                 // Check current is low before beginning to turn on contactors
                 // If current is high for some reason, cycle again
                 auxStatus.contactorError = checkIfContactorSet(0xFF, NULL, 1); // Don't want to read an actual sense pin
+
                 if (auxStatus.contactorError)
                 {
                     // Turn on Common Contactor
                     HAL_GPIO_WritePin(CONTACTOR_ENABLE1_GPIO_Port, CONTACTOR_ENABLE1_Pin, GPIO_PIN_SET);
                     state = COMMON_CONTACTOR_ON;
                 }
+
                 break;
 
             case COMMON_CONTACTOR_ON:
                 auxStatus.contactorError = checkIfContactorSet(SENSE1_Pin, SENSE1_GPIO_Port, 1);
+
                 if (auxStatus.contactorError)
                 {
                     auxStatus.commonContactorState = 1;
@@ -85,10 +89,12 @@ void setContactorsTask(void const* arg)
                 {
                     auxStatus.commonContactorState = 0;
                 }
+
                 break;
 
             case CHARGE_CONTACTOR_ON:
                 auxStatus.contactorError = checkIfContactorSet(SENSE2_Pin, SENSE2_GPIO_Port, 2);
+
                 if (auxStatus.contactorError)
                 {
                     auxStatus.chargeContactorState = 1;
@@ -100,10 +106,12 @@ void setContactorsTask(void const* arg)
                 {
                     auxStatus.chargeContactorState = 0;
                 }
+
                 break;
 
             case DISCHARGE_CONTACTOR_ON:
                 auxStatus.contactorError = checkIfContactorSet(SENSE3_Pin, SENSE3_GPIO_Port, 3);
+
                 if (auxStatus.contactorError)
                 {
                     auxStatus.dischargeContactorState = 1;

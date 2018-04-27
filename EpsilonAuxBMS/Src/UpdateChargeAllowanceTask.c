@@ -5,8 +5,9 @@ static const uint32_t CHARGE_ALLOWANCE_UPDATE_FREQ = 50; // Every 100ms
 // Ask Dan if any issues
 static const float MAX_CELL_VOLTAGE = 3.8;
 static const float MIN_CELL_VOLTAGE = 3.2;
-typedef enum ChargeAllowanceState{VOLTAGE_IN_RANGE,
-                                  OUT_OF_RANGE} ChargeAllowanceState;
+typedef enum ChargeAllowanceState {VOLTAGE_IN_RANGE,
+                                   OUT_OF_RANGE
+                                  } ChargeAllowanceState;
 
 void updateChargeAllowanceTask(void const* arg)
 {
@@ -14,6 +15,7 @@ void updateChargeAllowanceTask(void const* arg)
     uint32_t prevWakeTime = osKernelSysTick();
     ChargeAllowanceState maxCellVoltageChargeAllowanceState = VOLTAGE_IN_RANGE;
     ChargeAllowanceState minCellVoltageChargeAllowanceState = VOLTAGE_IN_RANGE;
+
     for (;;)
     {
         osDelayUntil(&prevWakeTime, CHARGE_ALLOWANCE_UPDATE_FREQ);
@@ -46,7 +48,7 @@ void updateChargeAllowanceTask(void const* arg)
         }
         else
         {
-          minCellVoltageChargeAllowanceState = VOLTAGE_IN_RANGE;
+            minCellVoltageChargeAllowanceState = VOLTAGE_IN_RANGE;
         }
 
         // Setting the allowance of charge and charge/discharge contactor state for auxStatus
@@ -55,19 +57,19 @@ void updateChargeAllowanceTask(void const* arg)
             continue;
         }
 
-        if(maxCellVoltageChargeAllowanceState == VOLTAGE_IN_RANGE)
+        if (maxCellVoltageChargeAllowanceState == VOLTAGE_IN_RANGE)
         {
-          auxStatus.allowCharge = 1;
+            auxStatus.allowCharge = 1;
         }
         else
         {
-          auxStatus.chargeContactorState = 0;
-          auxStatus.allowCharge = 0;
+            auxStatus.chargeContactorState = 0;
+            auxStatus.allowCharge = 0;
         }
 
-        if(minCellVoltageChargeAllowanceState == OUT_OF_RANGE)
+        if (minCellVoltageChargeAllowanceState == OUT_OF_RANGE)
         {
-          auxStatus.dischargeContactorState = 0;
+            auxStatus.dischargeContactorState = 0;
         }
 
         osMutexRelease(auxStatus.auxStatusMutex);
