@@ -13,13 +13,6 @@
   the whole system should shut down and there shouldn't be power for the board if anything on Orion's side goes wrong.
 */
 
-
-// Function for reading current through the contactors.
-// The current is read from the current amplifier
-uint32_t readCurrentThroughContactors(void);
-// Function for checking if a specific contactor has been set
-int checkIfContactorSet(uint16_t pin, GPIO_TypeDef* port, int current_multiplier);
-
 static const uint32_t AUX_SET_CONTACTOR_FREQ = 1000; // Every 1 second
 static const float CURRENT_SENSE_RESISTOR  = 0.001; //actually 1 mOhm, but 1 Ohm for testing
 static const int GAIN  = 250;
@@ -28,12 +21,26 @@ static const float CURRENT_LOWER_THRESHOLD  = 0.15; // Lower current threshold
 static const uint32_t ADC_POLL_TIMEOUT  = 10;
 
 typedef enum ContactorsSettingState {FIRST_CHECK,
-                                     COMMON_CONTACTOR_ON,
-                                     CHARGE_CONTACTOR_ON,
-                                     DISCHARGE_CONTACTOR_ON,
+                                     COMMON_CONTACTOR_CHECK,
+                                     CHARGE_CONTACTOR_CHECK,
+                                     DISCHARGE_CONTACTOR_CHECK,
                                      DONE,
                                      BLOCKED
                                     } ContactorsSettingState;
+
+typedef enum ContactorState {OFF, ON} ContactorState;
+typedef enum Contactor {COMMON,
+                        CHARGE,
+                        DISCHARGE
+                       } Contactor;
+
+// Function for reading current through the contactors.
+// The current is read from the current amplifier
+uint32_t readCurrentThroughContactors(void);
+// Function for checking if a specific contactor has been set
+int checkIfContactorSet(uint16_t pin, GPIO_TypeDef* port, int current_multiplier);
+// Updates the contactorState in auxStatus
+int updateContactorState(ContactorState state, Contactor contactor);
 
 void setContactorsTask(void const* arg)
 {
@@ -42,15 +49,11 @@ void setContactorsTask(void const* arg)
 
     ContactorsSettingState state = FIRST_CHECK;
     ContactorsSettingState prevState;
+    ContactorState contactorState = OFF;
 
     for (;;)
     {
         osDelayUntil(&prevWakeTime, AUX_SET_CONTACTOR_FREQ);
-
-        if (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK)
-        {
-            continue;
-        }
 
         // Check everuthing is all good from orion's side
         if (!(orionStatus.gpioOk && orionStatus.batteryVoltagesInRange))
@@ -66,62 +69,74 @@ void setContactorsTask(void const* arg)
                 // If current is high for some reason, cycle again
                 auxStatus.contactorError = checkIfContactorSet(0xFF, NULL, 1); // Don't want to read an actual sense pin
 
-                if (auxStatus.contactorError)
+                if (!auxStatus.contactorError)
                 {
                     // Turn on Common Contactor
                     HAL_GPIO_WritePin(CONTACTOR_ENABLE1_GPIO_Port, CONTACTOR_ENABLE1_Pin, GPIO_PIN_SET);
-                    state = COMMON_CONTACTOR_ON;
+                    state = COMMON_CONTACTOR_CHECK;
                 }
 
                 break;
 
-            case COMMON_CONTACTOR_ON:
+            case COMMON_CONTACTOR_CHECK:
                 auxStatus.contactorError = checkIfContactorSet(SENSE1_Pin, SENSE1_GPIO_Port, 1);
 
-                if (auxStatus.contactorError)
+                if (!auxStatus.contactorError)
                 {
-                    auxStatus.commonContactorState = 1;
+                    contactorState = ON;
                     // Turn on charge Contactor
                     HAL_GPIO_WritePin(CONTACTOR_ENABLE2_GPIO_Port, CONTACTOR_ENABLE2_Pin, GPIO_PIN_SET);
-                    state = CHARGE_CONTACTOR_ON;
                 }
                 else
                 {
-                    auxStatus.commonContactorState = 0;
+                    contactorState = OFF;
+                }
+
+                if (updateContactorState(contactorState, COMMON))
+                {
+                    state = CHARGE_CONTACTOR_CHECK;
                 }
 
                 break;
 
-            case CHARGE_CONTACTOR_ON:
+            case CHARGE_CONTACTOR_CHECK:
                 auxStatus.contactorError = checkIfContactorSet(SENSE2_Pin, SENSE2_GPIO_Port, 2);
 
-                if (auxStatus.contactorError)
+                if (!auxStatus.contactorError)
                 {
-                    auxStatus.chargeContactorState = 1;
+                    contactorState = ON;
                     // Turn on discharge contactor
                     HAL_GPIO_WritePin(CONTACTOR_ENABLE3_GPIO_Port, CONTACTOR_ENABLE3_Pin, GPIO_PIN_SET);
-                    state = DISCHARGE_CONTACTOR_ON;
                 }
                 else
                 {
-                    auxStatus.chargeContactorState = 0;
+                    contactorState = OFF;
+                }
+
+                if (updateContactorState(contactorState, CHARGE))
+                {
+                    state = DISCHARGE_CONTACTOR_CHECK;
                 }
 
                 break;
 
-            case DISCHARGE_CONTACTOR_ON:
+            case DISCHARGE_CONTACTOR_CHECK:
                 auxStatus.contactorError = checkIfContactorSet(SENSE3_Pin, SENSE3_GPIO_Port, 3);
 
-                if (auxStatus.contactorError)
+                if (!auxStatus.contactorError)
                 {
-                    auxStatus.dischargeContactorState = 1;
+                    contactorState = ON;
                     // Enable high voltage
                     HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_SET);
-                    state = DONE;
                 }
                 else
                 {
-                    auxStatus.dischargeContactorState = 0;
+                    contactorState = OFF;
+                }
+
+                if (updateContactorState(contactorState, DISCHARGE))
+                {
+                    state = DONE;
                 }
 
                 break;
@@ -138,15 +153,15 @@ void setContactorsTask(void const* arg)
                 }
                 else if (!charge || !discharge) // Charge or discharge aren't enabled
                 {
-                    if (!charge) // If charge isn't enabled, turn on charge
+                    if (!charge) // If charge isn't enabled, turn on charge and check it
                     {
                         HAL_GPIO_WritePin(CONTACTOR_ENABLE2_GPIO_Port, CONTACTOR_ENABLE2_Pin, GPIO_PIN_SET);
-                        state = CHARGE_CONTACTOR_ON;
+                        state = CHARGE_CONTACTOR_CHECK;
                     }
-                    else // If discharge isn't enabled, turn on discharge
+                    else // If discharge isn't enabled, turn on discharge and check it
                     {
                         HAL_GPIO_WritePin(CONTACTOR_ENABLE3_GPIO_Port, CONTACTOR_ENABLE3_Pin, GPIO_PIN_SET);
-                        state = DISCHARGE_CONTACTOR_ON;
+                        state = DISCHARGE_CONTACTOR_CHECK;
                     }
                 }
 
@@ -163,9 +178,31 @@ void setContactorsTask(void const* arg)
             default:
                 state = FIRST_CHECK;
         }
-
-        osMutexRelease(auxStatus.auxStatusMutex);
     }
+}
+
+int updateContactorState(ContactorState state, Contactor contactor)
+{
+    if (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK)
+    {
+        return 0;
+    }
+
+    if (contactor == COMMON)
+    {
+        auxStatus.commonContactorState = state;
+    }
+    else if (contactor == CHARGE)
+    {
+        auxStatus.chargeContactorState = state;
+    }
+    else if (contactor == DISCHARGE)
+    {
+        auxStatus.dischargeContactorState = state;
+    }
+
+    osMutexRelease(auxStatus.auxStatusMutex);
+    return 1;
 }
 
 int checkIfContactorSet(uint16_t pin, GPIO_TypeDef* port, int current_multiplier)
@@ -178,7 +215,7 @@ int checkIfContactorSet(uint16_t pin, GPIO_TypeDef* port, int current_multiplier
 
     if (current_sense == 0xFFFFFFFF)
     {
-        return 0;
+        return -1;
     }
 
     pwrVoltage = 3.3 * current_sense / 0xFFF / GAIN; // change ADC value into the voltage read
@@ -196,10 +233,10 @@ int checkIfContactorSet(uint16_t pin, GPIO_TypeDef* port, int current_multiplier
     // If current is high for some reason or sense pin is high something is wrong
     if (pwrCurrent > CURRENT_LOWER_THRESHOLD * current_multiplier || !sense_pin)
     {
-        return 0;
+        return -1;
     }
 
-    return 1;
+    return 0;
 }
 
 /*
