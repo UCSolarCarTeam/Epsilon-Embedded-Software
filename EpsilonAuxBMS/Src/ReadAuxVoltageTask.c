@@ -1,6 +1,6 @@
 #include "ReadAuxVoltageTask.h"
 
-static const uint32_t AUX_UPDATE_AUX_VOLTAGE_FREQ = 50; // Every 50ms
+static const uint32_t AUX_UPDATE_AUX_VOLTAGE_FREQ = 100; // Every 100ms
 static const uint32_t SPI_TIMEOUT = 50;
 static const float AUX_NOMINAL_VOLTAGE = 12.0;
 static const uint16_t AUX_ADC_NOMINAL_OUTPUT = 0x32E; // Pattern = 2.63/3.3 * 0x3FF
@@ -24,6 +24,8 @@ void readAuxVoltageTask(void const* arg)
         // Start SCLK and receive input
         if (HAL_SPI_Receive(&hspi3, rxBuff, AUX_VOLTAGE_MSG_SIZE, SPI_TIMEOUT) == HAL_OK)
         {
+            // Set Chip Select to be high. Placed here to keep pin low as short as possible
+            HAL_GPIO_WritePin(ADC_nCS_GPIO_Port, ADC_nCS_Pin, GPIO_PIN_SET);
             // ADC sends 10 bits of data with MSB being sent first.
             // ADC sends 4 zeros before sending data, so can ignore top 4 bits of rxBuff[1] (only want bottom 4 bits).
             // Want bit 3 of rxBuff[1] to become bit 9 so left shift
@@ -35,11 +37,11 @@ void readAuxVoltageTask(void const* arg)
         }
         else
         {
+            // Set Chip Select to be high. Placed here to keep pin low as short as possible
+            HAL_GPIO_WritePin(ADC_nCS_GPIO_Port, ADC_nCS_Pin, GPIO_PIN_SET);
             spiVoltage = 0xFFFF;
         }
 
-        // Set Chip Select to be high
-        HAL_GPIO_WritePin(ADC_nCS_GPIO_Port, ADC_nCS_Pin, GPIO_PIN_SET);
 
         if (spiVoltage == 0xFFFF) // Something went wrong during SPI-ADC read
         {

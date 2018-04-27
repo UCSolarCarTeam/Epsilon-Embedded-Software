@@ -1,5 +1,5 @@
 #pragma once
-
+#include "cmsis_os.h"
 typedef struct AuxStatus
 {
     unsigned commonContactorState : 1;
@@ -9,6 +9,7 @@ typedef struct AuxStatus
     unsigned strobeBmsLight : 1;
     unsigned allowCharge : 1;
     unsigned contactorError : 1;
+    osMutexId auxStatusMutex;
 } AuxStatus;
 
 extern AuxStatus auxStatus;

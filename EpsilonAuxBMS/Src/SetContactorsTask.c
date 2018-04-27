@@ -1,4 +1,24 @@
 #include "SetContactorsTask.h"
+/*
+  This task allows for the turnin gon of the common, charge, and discharge contactors.
+  It works by checking if the current through the contactors is high for any reason and keeps
+  doing so until the current is low. Once the current is low, it turns the common contactor on
+  and then waits for one second. Within that second, it is expected that the current spike through
+  the contactors would have come down and the contactor sense line should be low. If this isn't
+  the case, it tries again. However, if this is the case, it carries on by turning the charge contactor,
+  going through the same process, turning on the discharge contactor, going through the same process, and
+  finally turning on the high voltage enable line. It then enters a state of being finished.
+  If any of the Orion gpio lines are low, or the battery voltages that Orion are not in the expected range,
+  it enters a blocked state and waits for everything to return to normal. This is a just a safety measure because in reality
+  the whole system should shut down and there shouldn't be power for the board if anything on Orion's side goes wrong.
+*/
+
+
+// Function for reading current through the contactors.
+// The current is read from the current amplifier
+uint32_t readCurrentThroughContactors(void);
+// Function for checking if a specific contactor has been set
+int checkIfContactorSet(uint16_t pin, GPIO_TypeDef* port, int current_multiplier);
 
 static const uint32_t AUX_SET_CONTACTOR_FREQ = 1000; // Every 1 second
 static const float CURRENT_SENSE_RESISTOR  = 0.001; //actually 1 mOhm, but 1 Ohm for testing
@@ -6,91 +26,71 @@ static const int GAIN  = 250;
 static const uint32_t SENSE_SETUP_TIME  = 50; // Setup time for current_sense
 static const float CURRENT_LOWER_THRESHOLD  = 0.15; // Lower current threshold
 static const uint32_t ADC_POLL_TIMEOUT  = 10;
-static const int MAX_ATTEMPTS  = 2; // max attempts for trying to turn on a contactor
 
-typedef enum State {FIRST_CHECK, COMMON_CONTACTOR_ON, CHARGE_CONTACTOR_ON, DISCHARGE_CONTACTOR_ON,
-                    DONE, BLOCKED
-                   } State;
+typedef enum ContactorsSettingState {FIRST_CHECK,
+                    COMMON_CONTACTOR_ON,
+                    CHARGE_CONTACTOR_ON,
+                    DISCHARGE_CONTACTOR_ON,
+                    DONE,
+                    BLOCKED} ContactorsSettingState;
 
 void setContactorsTask(void const* arg)
 {
-    // For concurrency with updateChargeStatusTask()
-    osMutexId* auxStatusMutex = (osMutexId*) arg;
     // One time osDelayUntil initialization
     uint32_t prevWakeTime = osKernelSysTick();
 
-    int attemptCount = 0; // Keep track of how many attempts there were to turn on a contactor
-    State state = FIRST_CHECK;
-    State prev_state;
+    ContactorsSettingState state = FIRST_CHECK;
+    ContactorsSettingState prevState;
 
     for (;;)
     {
         osDelayUntil(&prevWakeTime, AUX_SET_CONTACTOR_FREQ);
 
-        if (osMutexWait(auxStatusMutex, 0) != osOK)
+        if (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK)
         {
             continue;
-        }
-
-        if (attemptCount > MAX_ATTEMPTS) // If it's greater than a certain number of attempts, report to CAN that something is wrong
-        {
-            auxStatus.contactorError = 1;
-        }
-        else
-        {
-            auxStatus.contactorError = 0;
         }
 
         // Check everuthing is all good from orion's side
         if (!(orionStatus.gpioOk && orionStatus.batteryVoltagesInRange))
         {
-            prev_state = state;
+            prevState = state;
             state = BLOCKED;
         }
 
         switch (state)
         {
             case FIRST_CHECK:
-
-                // Check current is low before enabling (ADC conversion and normalization)
-
-                // If current is high for some reason, increment attempt count and cycle again
-                if (checkContactor(0xFF, NULL, 1)) // Don't want to read an actual sense pin
+                // Check current is low before beginning to turn on contactors
+                // If current is high for some reason, cycle again
+                auxStatus.contactorError = checkIfContactorSet(0xFF, NULL, 1); // Don't want to read an actual sense pin
+                if (auxStatus.contactorError)
                 {
-                    attemptCount = 0;
                     // Turn on Common Contactor
                     HAL_GPIO_WritePin(CONTACTOR_ENABLE1_GPIO_Port, CONTACTOR_ENABLE1_Pin, GPIO_PIN_SET);
                     state = COMMON_CONTACTOR_ON;
                 }
-                else
-                {
-                    attemptCount++;
-                }
-
                 break;
 
             case COMMON_CONTACTOR_ON:
-                if (checkContactor(SENSE1_Pin, SENSE1_GPIO_Port, 1))
+                auxStatus.contactorError = checkIfContactorSet(SENSE1_Pin, SENSE1_GPIO_Port, 1);
+                if (auxStatus.contactorError)
                 {
                     auxStatus.commonContactorState = 1;
-                    attemptCount = 0;
                     // Turn on charge Contactor
                     HAL_GPIO_WritePin(CONTACTOR_ENABLE2_GPIO_Port, CONTACTOR_ENABLE2_Pin, GPIO_PIN_SET);
                     state = CHARGE_CONTACTOR_ON;
                 }
                 else
                 {
-                    // If something went wrong when checking contactor, increment attempt count and cycle again
-                    attemptCount++;
                     auxStatus.commonContactorState = 0;
                 }
-
                 break;
 
             case CHARGE_CONTACTOR_ON:
-                if (checkContactor(SENSE2_Pin, SENSE2_GPIO_Port, 2))
+                auxStatus.contactorError = checkIfContactorSet(SENSE2_Pin, SENSE2_GPIO_Port, 2);
+                if (auxStatus.contactorError)
                 {
-                    attemptCount = 0;
                     auxStatus.chargeContactorState = 1;
                     // Turn on discharge contactor
                     HAL_GPIO_WritePin(CONTACTOR_ENABLE3_GPIO_Port, CONTACTOR_ENABLE3_Pin, GPIO_PIN_SET);
@@ -98,16 +98,14 @@ void setContactorsTask(void const* arg)
                 }
                 else
                 {
-                    attemptCount++;
                     auxStatus.chargeContactorState = 0;
                 }
-
                 break;
 
             case DISCHARGE_CONTACTOR_ON:
-                if (checkContactor(SENSE3_Pin, SENSE3_GPIO_Port, 3))
+                auxStatus.contactorError = checkIfContactorSet(SENSE3_Pin, SENSE3_GPIO_Port, 3);
+                if (auxStatus.contactorError)
                 {
-                    attemptCount = 0;
                     auxStatus.dischargeContactorState = 1;
                     // Enable high voltage
                     HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_SET);
@@ -115,7 +113,6 @@ void setContactorsTask(void const* arg)
                 }
                 else
                 {
-                    attemptCount++;
                     auxStatus.dischargeContactorState = 0;
                 }
 
@@ -150,7 +147,7 @@ void setContactorsTask(void const* arg)
             case BLOCKED:
                 if (orionStatus.gpioOk && orionStatus.batteryVoltagesInRange)
                 {
-                    state = prev_state;
+                    state = prevState;
                 }
 
                 break;
@@ -159,25 +156,25 @@ void setContactorsTask(void const* arg)
                 state = FIRST_CHECK;
         }
 
-        osMutexRelease(auxStatusMutex);
+        osMutexRelease(auxStatus.auxStatusMutex);
     }
 }
 
-int checkContactor(uint16_t pin, GPIO_TypeDef* port, int current_multiplier)
+int checkIfContactorSet(uint16_t pin, GPIO_TypeDef* port, int current_multiplier)
 {
-    float pwr_voltage = 0.0;
-    float pwr_current = 0.0;
+    float pwrVoltage = 0.0;
+    float pwrCurrent = 0.0;
     uint8_t sense_pin;
     // Get 12bit current analog input
-    uint32_t current_sense = readCurrent();
+    uint32_t current_sense = readCurrentThroughContactors();
 
     if (current_sense == 0xFFFFFFFF)
     {
         return 0;
     }
 
-    pwr_voltage = 3.3 * current_sense / 0xFFF / GAIN; // change ADC value into the voltage read
-    pwr_current = pwr_voltage / CURRENT_SENSE_RESISTOR; // convert voltage to current
+    pwrVoltage = 3.3 * current_sense / 0xFFF / GAIN; // change ADC value into the voltage read
+    pwrCurrent = pwrVoltage / CURRENT_SENSE_RESISTOR; // convert voltage to current
 
     if (pin == 0xFF && port == NULL)
     {
@@ -189,7 +186,7 @@ int checkContactor(uint16_t pin, GPIO_TypeDef* port, int current_multiplier)
     }
 
     // If current is high for some reason or sense pin is high something is wrong
-    if (pwr_current > CURRENT_LOWER_THRESHOLD * current_multiplier || !sense_pin)
+    if (pwrCurrent > CURRENT_LOWER_THRESHOLD * current_multiplier || !sense_pin)
     {
         return 0;
     }
@@ -197,16 +194,20 @@ int checkContactor(uint16_t pin, GPIO_TypeDef* port, int current_multiplier)
     return 1;
 }
 
-uint32_t readCurrent(void)
+/*
+  This function takes multiple reads because the current amplifier has a bit of a setup time
+  to make sure that erroneous values aren't read, multiple reads are taken till we have a
+  relatively steady value. Dan suggested that 3 good reads in a row is good.
+*/
+uint32_t readCurrentThroughContactors(void)
 {
     // Enable current amplifier. Allow time to settle and take multiple valid concurrent readings
     // to make sure it isn't changing
     HAL_GPIO_WritePin(CURRENT_SENSE_ENABLE_GPIO_Port, CURRENT_SENSE_ENABLE_Pin, GPIO_PIN_SET);
     uint32_t sense = 0;
     uint32_t prev_sense = 0;
-    int counter = 0;
 
-    while (counter < 3)
+    for (int counter = 0; counter < 3; counter++)
     {
         osDelay(SENSE_SETUP_TIME);
 
@@ -223,11 +224,7 @@ uint32_t readCurrent(void)
             if (diff > 50)
             {
                 prev_sense = sense;
-                counter = 0;
-            }
-            else
-            {
-                counter++;
+                counter = -1; // Will be incremented to 0 at the end of the loop
             }
         }
         else

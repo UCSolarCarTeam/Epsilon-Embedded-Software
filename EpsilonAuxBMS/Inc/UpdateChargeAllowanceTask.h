@@ -7,4 +7,4 @@ extern OrionStatus orionStatus;
 // It will turn off charge contactor if max cell voltage is too high,
 // and discharge contactor is min cell voltage is too low
 // arg: osMutexId* auxStatusMutex
-void updateChargeStatusTask(void const* arg);
+void updateChargeAllowanceTask(void const* arg);

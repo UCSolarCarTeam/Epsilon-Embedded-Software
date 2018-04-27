@@ -52,7 +52,7 @@
 #include "cmsis_os.h"
 
 /* USER CODE BEGIN Includes */
-#include "UpdateChargeStatusTask.h"
+#include "UpdateChargeAllowanceTask.h"
 #include "SetContactorsTask.h"
 #include "ReadAuxVoltageTask.h"
 #include "ReportAuxStatusToCanTask.h"
@@ -75,7 +75,7 @@ osThreadId defaultTaskHandle;
 OrionStatus orionStatus;
 AuxStatus auxStatus;
 
-static osThreadId updateChargeStatusTaskHandle;
+static osThreadId updateChargeAllowanceTaskHandle;
 static osThreadId setContactorsTaskHandle;
 static osThreadId readAuxVoltageTaskHandle;
 static osThreadId reportAuxStatusToCanTaskHandle;
@@ -166,11 +166,10 @@ int main(void)
         _Error_Handler(__FILE__, __LINE__);
     }
 
-    osMutexId auxStatusMutex;
     osMutexDef(auxStatusMutex);
-    auxStatusMutex = osMutexCreate(osMutex(auxStatusMutex));
+    auxStatus.auxStatusMutex = osMutexCreate(osMutex(auxStatusMutex));
 
-    if (auxStatusMutex == NULL)
+    if (auxStatus.auxStatusMutex == NULL)
     {
         _Error_Handler(__FILE__, __LINE__);
     }
@@ -188,18 +187,18 @@ int main(void)
     /* Create the thread(s) */
     /* definition and creation of defaultTask */
     /* USER CODE BEGIN RTOS_THREADS */
-    // Setup task to read Orion GPIO outputs
-    osThreadDef(readOrionTask, updateChargeStatusTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
-    updateChargeStatusTaskHandle = osThreadCreate(osThread(readOrionTask), auxStatusMutex);
+    // Setup task to determine allowance of charge/discharge based on Orion voltage inputs
+    osThreadDef(chargeAllowanceTask, updateChargeAllowanceTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    updateChargeAllowanceTaskHandle = osThreadCreate(osThread(chargeAllowanceTask), NULL);
     // Setup task to turn on contactors
     osThreadDef(setContactorTask, setContactorsTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
-    setContactorsTaskHandle = osThreadCreate(osThread(setContactorTask), auxStatusMutex);
+    setContactorsTaskHandle = osThreadCreate(osThread(setContactorTask), NULL);
     // Setup task to read aux voltage
-    osThreadDef(auxVoltageTask, readAuxVoltageTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
-    readAuxVoltageTaskHandle = osThreadCreate(osThread(auxVoltageTask), NULL);
+    osThreadDef(readVoltageTask, readAuxVoltageTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    readAuxVoltageTaskHandle = osThreadCreate(osThread(readVoltageTask), NULL);
     // Setup task to report aux status to CAN
-    osThreadDef(auxCANTask, reportAuxStatusToCanTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
-    reportAuxStatusToCanTaskHandle = osThreadCreate(osThread(auxCANTask), canHandleMutex);
+    osThreadDef(auxStatusCanTask, reportAuxStatusToCanTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    reportAuxStatusToCanTaskHandle = osThreadCreate(osThread(auxStatusCanTask), canHandleMutex);
     // Setup task to report hearbeat to CAN
     osThreadDef(heartbeatTask, reportHeartbeatToCanTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
     reportHeartbeatToCanTaskHandle = osThreadCreate(osThread(heartbeatTask), canHandleMutex);
