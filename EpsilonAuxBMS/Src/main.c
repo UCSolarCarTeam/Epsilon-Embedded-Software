@@ -139,8 +139,8 @@ int main(void)
     MX_CAN1_UserInit();
     HAL_ADC_Start(&hadc1);
 
-    // Start with allowing charge
-    auxStatus.allowCharge = 1;
+    // Start with not allowing charge
+    auxStatus.allowCharge = 0;
 
     // Start with orionGpioOk and orionBatteryVoltagesOk set to 1 to allow contactor setting
     orionStatus.gpioOk = 1;
@@ -174,6 +174,14 @@ int main(void)
         _Error_Handler(__FILE__, __LINE__);
     }
 
+    osMutexDef(orionStatusMutex);
+    orionStatus.orionStatusMutex = osMutexCreate(osMutex(orionStatusMutex));
+
+    if (orionStatus.orionStatusMutex == NULL)
+    {
+        _Error_Handler(__FILE__, __LINE__);
+    }
+
     /* USER CODE END RTOS_MUTEX */
 
     /* USER CODE BEGIN RTOS_SEMAPHORES */
@@ -191,14 +199,14 @@ int main(void)
     osThreadDef(chargeAllowanceTask, updateChargeAllowanceTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
     updateChargeAllowanceTaskHandle = osThreadCreate(osThread(chargeAllowanceTask), NULL);
     // Setup task to turn on contactors
-    osThreadDef(setContactorTask, setContactorsTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
-    setContactorsTaskHandle = osThreadCreate(osThread(setContactorTask), NULL);
+    osThreadDef(contactorsTask, setContactorsTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    setContactorsTaskHandle = osThreadCreate(osThread(contactorsTask), NULL);
     // Setup task to read aux voltage
-    osThreadDef(readVoltageTask, readAuxVoltageTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
-    readAuxVoltageTaskHandle = osThreadCreate(osThread(readVoltageTask), NULL);
+    osThreadDef(auxVoltageTask, readAuxVoltageTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    readAuxVoltageTaskHandle = osThreadCreate(osThread(auxVoltageTask), NULL);
     // Setup task to report aux status to CAN
-    osThreadDef(auxStatusCanTask, reportAuxStatusToCanTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
-    reportAuxStatusToCanTaskHandle = osThreadCreate(osThread(auxStatusCanTask), canHandleMutex);
+    osThreadDef(auxStatusTask, reportAuxStatusToCanTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    reportAuxStatusToCanTaskHandle = osThreadCreate(osThread(auxStatusTask), canHandleMutex);
     // Setup task to report hearbeat to CAN
     osThreadDef(heartbeatTask, reportHeartbeatToCanTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
     reportHeartbeatToCanTaskHandle = osThreadCreate(osThread(heartbeatTask), canHandleMutex);
@@ -497,6 +505,11 @@ static void MX_GPIO_Init(void)
 // Reimplement weak definition in stm32f4xx_hal_can.c
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 {
+    if (osMutexWait(orionStatus.orionStatusMutex, 0) != osOK)
+    {
+        return;
+    }
+
     CanRxMsgTypeDef* msg = hcan->pRxMsg;
 
     if (msg->StdId == ORION_MAX_MIN_VOLTAGES_STDID)
@@ -512,6 +525,8 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     {
         HAL_GPIO_TogglePin(GRN_LED_GPIO_Port, GRN_LED_Pin);
     }
+
+    osMutexRelease(orionStatus.orionStatusMutex);
 }
 
 static void MX_CAN1_UserInit(void)

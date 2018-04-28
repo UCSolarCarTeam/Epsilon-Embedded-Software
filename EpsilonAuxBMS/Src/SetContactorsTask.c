@@ -1,6 +1,6 @@
 #include "SetContactorsTask.h"
 /*
-  This task allows for the turnin gon of the common, charge, and discharge contactors.
+  This task allows for the turnin on of the common, charge, and discharge contactors.
   It works by checking if the current through the contactors is high for any reason and keeps
   doing so until the current is low. Once the current is low, it turns the common contactor on
   and then waits for one second. Within that second, it is expected that the current spike through
@@ -48,7 +48,6 @@ void setContactorsTask(void const* arg)
     uint32_t prevWakeTime = osKernelSysTick();
 
     ContactorsSettingState state = FIRST_CHECK;
-    ContactorsSettingState prevState;
     ContactorState contactorState = OFF;
 
     for (;;)
@@ -58,7 +57,6 @@ void setContactorsTask(void const* arg)
         // Check everuthing is all good from orion's side
         if (!(orionStatus.gpioOk && orionStatus.batteryVoltagesInRange))
         {
-            prevState = state;
             state = BLOCKED;
         }
 
@@ -141,36 +139,24 @@ void setContactorsTask(void const* arg)
 
                 break;
 
-            case DONE: ; // Put this here because compiler kept complaining about a declaration not being a statement
-                // could potentially cause problems.
+            case DONE:
+            {
                 uint8_t common = !HAL_GPIO_ReadPin(SENSE1_GPIO_Port, SENSE1_Pin);
                 uint8_t charge = !HAL_GPIO_ReadPin(SENSE2_GPIO_Port, SENSE2_Pin);
                 uint8_t discharge = !HAL_GPIO_ReadPin(SENSE3_GPIO_Port, SENSE3_Pin);
 
-                if (!common && !charge && !discharge) // None of the contactors are enabled
+                if (!common || !charge || !discharge) // None of the contactors are enabled
                 {
                     state = FIRST_CHECK;
                 }
-                else if (!charge || !discharge) // Charge or discharge aren't enabled
-                {
-                    if (!charge) // If charge isn't enabled, turn on charge and check it
-                    {
-                        HAL_GPIO_WritePin(CONTACTOR_ENABLE2_GPIO_Port, CONTACTOR_ENABLE2_Pin, GPIO_PIN_SET);
-                        state = CHARGE_CONTACTOR_CHECK;
-                    }
-                    else // If discharge isn't enabled, turn on discharge and check it
-                    {
-                        HAL_GPIO_WritePin(CONTACTOR_ENABLE3_GPIO_Port, CONTACTOR_ENABLE3_Pin, GPIO_PIN_SET);
-                        state = DISCHARGE_CONTACTOR_CHECK;
-                    }
-                }
 
                 break;
+            }
 
             case BLOCKED:
                 if (orionStatus.gpioOk && orionStatus.batteryVoltagesInRange)
                 {
-                    state = prevState;
+                    state = FIRST_CHECK;
                 }
 
                 break;

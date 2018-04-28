@@ -5,16 +5,11 @@ static const uint32_t CHARGE_ALLOWANCE_UPDATE_FREQ = 50; // Every 100ms
 // Ask Dan if any issues
 static const float MAX_CELL_VOLTAGE = 3.8;
 static const float MIN_CELL_VOLTAGE = 3.2;
-typedef enum ChargeAllowanceState {VOLTAGE_IN_RANGE,
-                                   OUT_OF_RANGE
-                                  } ChargeAllowanceState;
 
 void updateChargeAllowanceTask(void const* arg)
 {
     // One time osDelayUntil initialization
     uint32_t prevWakeTime = osKernelSysTick();
-    ChargeAllowanceState maxCellVoltageChargeAllowanceState = VOLTAGE_IN_RANGE;
-    ChargeAllowanceState minCellVoltageChargeAllowanceState = VOLTAGE_IN_RANGE;
 
     for (;;)
     {
@@ -24,31 +19,26 @@ void updateChargeAllowanceTask(void const* arg)
            and the cell with the lowest voltage. Must check if the voltage of the cell with the highest
            voltage is too high or in range and if the cell with the lowest voltage is too low or in range.
         */
-        orionStatus.batteryVoltagesInRange = 1;
+
+        uint8_t voltagesInRange = 1;
+        uint8_t allowCharge = 1;
+        uint8_t allowDischarge = 1;
 
         if ((double)orionStatus.maxCellVoltage > MAX_CELL_VOLTAGE * 0.8) // Will have the cutoff to be 20% below
         {
-            orionStatus.batteryVoltagesInRange = 0;
+            voltagesInRange = 0;
+            allowCharge = 0;
             // Turn off charge contactor
             HAL_GPIO_WritePin(CONTACTOR_ENABLE2_GPIO_Port, CONTACTOR_ENABLE2_Pin, GPIO_PIN_RESET);
-            maxCellVoltageChargeAllowanceState = OUT_OF_RANGE;
-        }
-        else
-        {
-            maxCellVoltageChargeAllowanceState = VOLTAGE_IN_RANGE;
         }
 
         if ((double)orionStatus.minCellVoltage < MIN_CELL_VOLTAGE * 1.2) // Will have the cutoff to be 20% above
         {
-            orionStatus.batteryVoltagesInRange = 0;
+            voltagesInRange = 0;
+            allowDischarge = 0;
             // Turn off High voltage enable and discharge contactor
             HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
             HAL_GPIO_WritePin(CONTACTOR_ENABLE3_GPIO_Port, CONTACTOR_ENABLE3_Pin, GPIO_PIN_RESET);
-            minCellVoltageChargeAllowanceState = OUT_OF_RANGE;
-        }
-        else
-        {
-            minCellVoltageChargeAllowanceState = VOLTAGE_IN_RANGE;
         }
 
         // Setting the allowance of charge and charge/discharge contactor state for auxStatus
@@ -57,7 +47,7 @@ void updateChargeAllowanceTask(void const* arg)
             continue;
         }
 
-        if (maxCellVoltageChargeAllowanceState == VOLTAGE_IN_RANGE)
+        if (allowCharge)
         {
             auxStatus.allowCharge = 1;
         }
@@ -67,11 +57,20 @@ void updateChargeAllowanceTask(void const* arg)
             auxStatus.allowCharge = 0;
         }
 
-        if (minCellVoltageChargeAllowanceState == OUT_OF_RANGE)
+        if (!allowDischarge)
         {
             auxStatus.dischargeContactorState = 0;
         }
 
         osMutexRelease(auxStatus.auxStatusMutex);
+
+        // Setting the battery voltage in range indicator for orionStatus
+        if (osMutexWait(orionStatus.orionStatusMutex, 0) != osOK)
+        {
+            continue;
+        }
+
+        orionStatus.batteryVoltagesInRange = voltagesInRange;
+        osMutexRelease(orionStatus.orionStatusMutex);
     }
 }

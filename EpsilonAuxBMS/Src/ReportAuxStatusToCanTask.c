@@ -23,14 +23,10 @@ void reportAuxStatusToCanTask(void const* arg)
         // Set CAN message address
         hcan1.pTxMsg->StdId = AUX_STATUS_STDID;
         // Set Data
-        hcan1.pTxMsg->Data[0] += auxStatus.commonContactorState;
-        hcan1.pTxMsg->Data[0] += auxStatus.chargeContactorState << 1;
-        hcan1.pTxMsg->Data[0] += auxStatus.dischargeContactorState << 2;
-        hcan1.pTxMsg->Data[0] |= auxStatus.auxVoltage << 3;
+        hcan1.pTxMsg->Data[0] = auxStatus.commonContactorState | auxStatus.chargeContactorState << 1
+                                | auxStatus.dischargeContactorState << 2 | auxStatus.auxVoltage << 3;
 
-        hcan1.pTxMsg->Data[1] += auxStatus.strobeBmsLight;
-        hcan1.pTxMsg->Data[1] += auxStatus.allowCharge << 1;
-        hcan1.pTxMsg->Data[1] += auxStatus.contactorError << 2;
+        hcan1.pTxMsg->Data[1] = auxStatus.strobeBmsLight | auxStatus.allowCharge << 1 | auxStatus.contactorError << 2;
 
         // Send CAN message
         if (HAL_CAN_Transmit_IT(&hcan1) == HAL_OK)

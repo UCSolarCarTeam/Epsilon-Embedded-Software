@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cmsis_os.h"
 typedef struct OrionStatus
 {
     /**
@@ -15,6 +16,7 @@ typedef struct OrionStatus
     unsigned batteryVoltagesInRange : 1;
     uint16_t maxCellVoltage;
     uint16_t minCellVoltage;
+    osMutexId orionStatusMutex;
 } OrionStatus;
 
 extern OrionStatus orionStatus;
