@@ -1,5 +1,6 @@
 #pragma once
 #include "cmsis_os.h"
+
 typedef struct AuxStatus
 {
     unsigned commonContactorState : 1;

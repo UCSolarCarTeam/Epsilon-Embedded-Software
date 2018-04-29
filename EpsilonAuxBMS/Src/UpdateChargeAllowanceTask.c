@@ -47,14 +47,11 @@ void updateChargeAllowanceTask(void const* arg)
             continue;
         }
 
-        if (allowCharge)
-        {
-            auxStatus.allowCharge = 1;
-        }
-        else
+        auxStatus.allowCharge = allowCharge;
+
+        if (!allowCharge)
         {
             auxStatus.chargeContactorState = 0;
-            auxStatus.allowCharge = 0;
         }
 
         if (!allowDischarge)
@@ -71,6 +68,7 @@ void updateChargeAllowanceTask(void const* arg)
         }
 
         orionStatus.batteryVoltagesInRange = voltagesInRange;
+
         osMutexRelease(orionStatus.orionStatusMutex);
     }
 }

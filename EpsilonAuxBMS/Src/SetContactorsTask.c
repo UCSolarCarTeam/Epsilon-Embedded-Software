@@ -20,19 +20,28 @@ static const uint32_t SENSE_SETUP_TIME  = 50; // Setup time for current_sense
 static const float CURRENT_LOWER_THRESHOLD  = 0.15; // Lower current threshold
 static const uint32_t ADC_POLL_TIMEOUT  = 10;
 
-typedef enum ContactorsSettingState {FIRST_CHECK,
-                                     COMMON_CONTACTOR_CHECK,
-                                     CHARGE_CONTACTOR_CHECK,
-                                     DISCHARGE_CONTACTOR_CHECK,
-                                     DONE,
-                                     BLOCKED
-                                    } ContactorsSettingState;
+typedef enum ContactorsSettingState
+{
+    FIRST_CHECK,
+    COMMON_CONTACTOR_CHECK,
+    CHARGE_CONTACTOR_CHECK,
+    DISCHARGE_CONTACTOR_CHECK,
+    DONE,
+    BLOCKED
+} ContactorsSettingState;
 
-typedef enum ContactorState {OFF, ON} ContactorState;
-typedef enum Contactor {COMMON,
-                        CHARGE,
-                        DISCHARGE
-                       } Contactor;
+typedef enum ContactorState
+{
+    OFF,
+    ON
+} ContactorState;
+
+typedef enum Contactor
+{
+    COMMON,
+    CHARGE,
+    DISCHARGE
+} Contactor;
 
 // Function for reading current through the contactors.
 // The current is read from the current amplifier
@@ -254,9 +263,11 @@ uint32_t readCurrentThroughContactors(void)
 
             if (diff > 50)
             {
-                prev_sense = sense;
+                // sense is still not stable
                 counter = -1; // Will be incremented to 0 at the end of the loop
             }
+
+            prev_sense = sense;
         }
         else
         {
