@@ -4,7 +4,7 @@
 
 // Defined at https://docs.google.com/spreadsheets/d/1soVLjeD9Sl7z7Z6cYMyn1fmn-cG7tx_pfFDsvgkCqMU/edit?usp=sharing
 
-#define AUX_BMS_PKG_ID 12
+#define AUX_BMS_PKG_ID 11
 
 #define PRECHARGE_STATE_MASK (0x07) // First 3 bits
 #define AUX_VOLTAGE_MASK (0xF8) // Last 5 bits
@@ -14,11 +14,12 @@
 
 enum BatteryPrechargeState
 {
-    IDLE = 0,
-    PRECHARGE = 1,
-    MEASURE = 2,
-    ENABLE_PACK = 3,
-    RUN = 4
+    OFF = 0,
+    COMMON_ENGAGED = 1,
+    CHARGE_ENGAGED = 2,
+    DISCHARGE_ENGAGED = 3,
+    ALL_ENGAGED = 4,
+    INVALID_STATE = 5
 };
 
 struct AuxBmsData

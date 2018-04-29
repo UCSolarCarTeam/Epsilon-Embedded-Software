@@ -28,9 +28,9 @@ void parseAuxBmsHeartbeat()
 
 void parseAuxBmsInfo(uint8_t* data)
 {
-    auxBmsData.prechargeState = data[0] & PRECHARGE_STATE_MASK;
-    auxBmsData.auxVoltage = data[0] & AUX_VOLTAGE_MASK;
-    auxBmsData.strobeBmsLight = data[1] & STROBE_MASK;
-    auxBmsData.allowCharge = data[1] & ALLOW_CHARGE_MASK;
-    auxBmsData.contactorError = data[1] & CONTACTOR_ERROR_MASK;
+    auxBmsData.prechargeState = data[1] & PRECHARGE_STATE_MASK;
+    auxBmsData.auxVoltage = data[1] & AUX_VOLTAGE_MASK;
+    auxBmsData.strobeBmsLight = data[0] & STROBE_MASK;
+    auxBmsData.allowCharge = data[0] & ALLOW_CHARGE_MASK;
+    auxBmsData.contactorError = data[0] & CONTACTOR_ERROR_MASK;
 }
