@@ -307,7 +307,7 @@ void sendAuxBms()
     packetPayload[4] = auxBmsData.strobeBmsLight;
     packetPayload[5] = auxBmsData.allowCharge;
     packetPayload[6] = auxBmsData.contactorError;
-   
+
 
     addChecksum(packetPayload, AUX_BMS_DETAILS_LENGTH);
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
