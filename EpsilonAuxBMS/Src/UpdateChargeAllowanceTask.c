@@ -29,7 +29,7 @@ void updateChargeAllowanceTask(void const* arg)
             voltagesInRange = 0;
             allowCharge = 0;
             // Turn off charge contactor
-            HAL_GPIO_WritePin(CONTACTOR_ENABLE2_GPIO_Port, CHARGE_CONTACTOR_ENABLE, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
         }
 
         if ((double)orionStatus.minCellVoltage < MIN_CELL_VOLTAGE * 1.2) // Will have the cutoff to be 20% above

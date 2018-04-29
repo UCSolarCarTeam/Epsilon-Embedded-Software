@@ -23,9 +23,9 @@ static const uint32_t ADC_POLL_TIMEOUT  = 10;
 typedef enum ContactorsSettingState
 {
     FIRST_CHECK,
-    COMMON_CONTACTOR_CHECK,
-    CHARGE_CONTACTOR_CHECK,
-    DISCHARGE_CONTACTOR_CHECK,
+    COMMON_CONTACTOR_ENABLE_CHECK,
+    CHARGE_CONTACTOR_ENABLE_CHECK,
+    DISCHARGE_CONTACTOR_ENABLE_CHECK,
     DONE,
     BLOCKED
 } ContactorsSettingState;
@@ -80,19 +80,19 @@ void setContactorsTask(void const* arg)
                 {
                     // Turn on Common Contactor
                     HAL_GPIO_WritePin(COMMON_CONTACTOR_ENABLE_GPIO_Port, COMMON_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
-                    state = COMMON_CONTACTOR_CHECK;
+                    state = COMMON_CONTACTOR_ENABLE_CHECK;
                 }
 
                 break;
 
-            case COMMON_CONTACTOR_CHECK:
+            case COMMON_CONTACTOR_ENABLE_CHECK:
                 auxStatus.contactorError = !isContactorSet(COMMON_SENSE_Pin, COMMON_SENSE_GPIO_Port, 1);
 
                 if (!auxStatus.contactorError)
                 {
                     contactorState = ON;
                     // Turn on charge Contactor
-                    HAL_GPIO_WritePin(CONTACTOR_ENABLE2_GPIO_Port, CHARGE_CONTACTOR_ENABLE, GPIO_PIN_SET);
+                    HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
                 }
                 else
                 {
@@ -101,12 +101,12 @@ void setContactorsTask(void const* arg)
 
                 if (updateContactorState(contactorState, COMMON))
                 {
-                    state = CHARGE_CONTACTOR_CHECK;
+                    state = CHARGE_CONTACTOR_ENABLE_CHECK;
                 }
 
                 break;
 
-            case CHARGE_CONTACTOR_CHECK:
+            case CHARGE_CONTACTOR_ENABLE_CHECK:
                 auxStatus.contactorError = !isContactorSet(CHARGE_SENSE_Pin, CHARGE_SENSE_GPIO_Port, 2);
 
                 if (!auxStatus.contactorError)
@@ -122,12 +122,12 @@ void setContactorsTask(void const* arg)
 
                 if (updateContactorState(contactorState, CHARGE))
                 {
-                    state = DISCHARGE_CONTACTOR_CHECK;
+                    state = DISCHARGE_CONTACTOR_ENABLE_CHECK;
                 }
 
                 break;
 
-            case DISCHARGE_CONTACTOR_CHECK:
+            case DISCHARGE_CONTACTOR_ENABLE_CHECK:
                 auxStatus.contactorError = !isContactorSet(DISCHARGE_SENSE_Pin, DISCHARGE_SENSE_GPIO_Port, 3);
 
                 if (!auxStatus.contactorError)

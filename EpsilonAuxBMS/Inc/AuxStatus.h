@@ -14,3 +14,4 @@ typedef struct AuxStatus
 } AuxStatus;
 
 extern AuxStatus auxStatus;
+
