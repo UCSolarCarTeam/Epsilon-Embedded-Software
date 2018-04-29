@@ -431,7 +431,7 @@ static void MX_GPIO_Init(void)
     __HAL_RCC_GPIOD_CLK_ENABLE();
 
     /*Configure GPIO pin Output Level */
-    HAL_GPIO_WritePin(GPIOE, CONTACTOR_ENABLE2_Pin | CONTACTOR_ENABLE4_Pin | CONTACTOR_ENABLE3_Pin | CONTACTOR_ENABLE1_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOE, CHARGE_CONTACTOR_ENABLE | CONTACTOR_ENABLE4_Pin | DISCHARGE_CONTACTOR_ENABLE_Pin | COMMON_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
 
     /*Configure GPIO pin Output Level */
     HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
@@ -445,8 +445,8 @@ static void MX_GPIO_Init(void)
     /*Configure GPIO pin Output Level */
     HAL_GPIO_WritePin(ADC_nCS_GPIO_Port, ADC_nCS_Pin, GPIO_PIN_SET);
 
-    /*Configure GPIO pins : CONTACTOR_ENABLE2_Pin CONTACTOR_ENABLE4_Pin CONTACTOR_ENABLE3_Pin CONTACTOR_ENABLE1_Pin */
-    GPIO_InitStruct.Pin = CONTACTOR_ENABLE2_Pin | CONTACTOR_ENABLE4_Pin | CONTACTOR_ENABLE3_Pin | CONTACTOR_ENABLE1_Pin;
+    /*Configure GPIO pins : CHARGE_CONTACTOR_ENABLE CONTACTOR_ENABLE4_Pin DISCHARGE_CONTACTOR_ENABLE_Pin COMMON_CONTACTOR_ENABLE_Pin */
+    GPIO_InitStruct.Pin = CHARGE_CONTACTOR_ENABLE | CONTACTOR_ENABLE4_Pin | DISCHARGE_CONTACTOR_ENABLE_Pin | COMMON_CONTACTOR_ENABLE_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -486,14 +486,14 @@ static void MX_GPIO_Init(void)
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(ADC_nCS_GPIO_Port, &GPIO_InitStruct);
 
-    /*Configure GPIO pins : SENSE4_Pin SENSE3_Pin */
-    GPIO_InitStruct.Pin = SENSE4_Pin | SENSE3_Pin;
+    /*Configure GPIO pins : SENSE4_Pin DISCHARGE_SENSE_Pin */
+    GPIO_InitStruct.Pin = SENSE4_Pin | DISCHARGE_SENSE_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-    /*Configure GPIO pins : SENSE2_Pin SENSE1_Pin */
-    GPIO_InitStruct.Pin = SENSE2_Pin | SENSE1_Pin;
+    /*Configure GPIO pins : CHARGE_SENSE_Pin COMMON_SENSE_Pin */
+    GPIO_InitStruct.Pin = CHARGE_SENSE_Pin | COMMON_SENSE_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);

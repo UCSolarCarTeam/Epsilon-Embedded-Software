@@ -57,14 +57,14 @@
 
 /* Private define ------------------------------------------------------------*/
 
-#define CONTACTOR_ENABLE2_Pin GPIO_PIN_2
+#define CHARGE_CONTACTOR_ENABLE GPIO_PIN_2
 #define CONTACTOR_ENABLE2_GPIO_Port GPIOE
 #define CONTACTOR_ENABLE4_Pin GPIO_PIN_3
 #define CONTACTOR_ENABLE4_GPIO_Port GPIOE
-#define CONTACTOR_ENABLE3_Pin GPIO_PIN_4
-#define CONTACTOR_ENABLE3_GPIO_Port GPIOE
-#define CONTACTOR_ENABLE1_Pin GPIO_PIN_5
-#define CONTACTOR_ENABLE1_GPIO_Port GPIOE
+#define DISCHARGE_CONTACTOR_ENABLE_Pin GPIO_PIN_4
+#define DISCHARGE_CONTACTOR_ENABLE_GPIO_Port GPIOE
+#define COMMON_CONTACTOR_ENABLE_Pin GPIO_PIN_5
+#define COMMON_CONTACTOR_ENABLE_GPIO_Port GPIOE
 #define PH0_OSC_IN_Pin GPIO_PIN_0
 #define PH0_OSC_IN_GPIO_Port GPIOH
 #define PH1_OSC_OUT_Pin GPIO_PIN_1
@@ -108,12 +108,12 @@
 #define ADC_nCS_GPIO_Port GPIOB
 #define SENSE4_Pin GPIO_PIN_8
 #define SENSE4_GPIO_Port GPIOB
-#define SENSE3_Pin GPIO_PIN_9
-#define SENSE3_GPIO_Port GPIOB
-#define SENSE2_Pin GPIO_PIN_0
-#define SENSE2_GPIO_Port GPIOE
-#define SENSE1_Pin GPIO_PIN_1
-#define SENSE1_GPIO_Port GPIOE
+#define DISCHARGE_SENSE_Pin GPIO_PIN_9
+#define DISCHARGE_SENSE_GPIO_Port GPIOB
+#define CHARGE_SENSE_Pin GPIO_PIN_0
+#define CHARGE_SENSE_GPIO_Port GPIOE
+#define COMMON_SENSE_Pin GPIO_PIN_1
+#define COMMON_SENSE_GPIO_Port GPIOE
 
 /* ########################## Assert Selection ############################## */
 /**
