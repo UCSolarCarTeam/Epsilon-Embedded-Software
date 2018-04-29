@@ -39,8 +39,8 @@ typedef enum Contactor {COMMON,
 uint32_t readCurrentThroughContactors(void);
 // Function for checking if a specific contactor has been set
 int checkIfContactorSet(uint16_t pin, GPIO_TypeDef* port, int current_multiplier);
-// Updates the contactorState in auxStatus
-int updateContactorState(ContactorState state, Contactor contactor);
+// Updates the contactorState and contactorError in auxStatus
+int updateContactorState(ContactorState state, uint8_t error, Contactor contactor);
 
 void setContactorsTask(void const* arg)
 {
@@ -49,6 +49,7 @@ void setContactorsTask(void const* arg)
 
     ContactorsSettingState state = FIRST_CHECK;
     ContactorState contactorState = OFF;
+    uint8_t contactorError = 0;
 
     for (;;)
     {
@@ -65,9 +66,9 @@ void setContactorsTask(void const* arg)
             case FIRST_CHECK:
                 // Check current is low before beginning to turn on contactors
                 // If current is high for some reason, cycle again
-                auxStatus.contactorError = checkIfContactorSet(0xFF, NULL, 1); // Don't want to read an actual sense pin
+                contactorError = checkIfContactorSet(0xFF, NULL, 1); // Don't want to read an actual sense pin
 
-                if (!auxStatus.contactorError)
+                if (!contactorError)
                 {
                     // Turn on Common Contactor
                     HAL_GPIO_WritePin(CONTACTOR_ENABLE1_GPIO_Port, CONTACTOR_ENABLE1_Pin, GPIO_PIN_SET);
@@ -77,9 +78,9 @@ void setContactorsTask(void const* arg)
                 break;
 
             case COMMON_CONTACTOR_CHECK:
-                auxStatus.contactorError = checkIfContactorSet(SENSE1_Pin, SENSE1_GPIO_Port, 1);
+                contactorError = checkIfContactorSet(SENSE1_Pin, SENSE1_GPIO_Port, 1);
 
-                if (!auxStatus.contactorError)
+                if (!contactorError)
                 {
                     contactorState = ON;
                     // Turn on charge Contactor
@@ -90,7 +91,7 @@ void setContactorsTask(void const* arg)
                     contactorState = OFF;
                 }
 
-                if (updateContactorState(contactorState, COMMON))
+                if (updateContactorState(contactorState, contactorError, COMMON))
                 {
                     state = CHARGE_CONTACTOR_CHECK;
                 }
@@ -98,9 +99,9 @@ void setContactorsTask(void const* arg)
                 break;
 
             case CHARGE_CONTACTOR_CHECK:
-                auxStatus.contactorError = checkIfContactorSet(SENSE2_Pin, SENSE2_GPIO_Port, 2);
+                contactorError = checkIfContactorSet(SENSE2_Pin, SENSE2_GPIO_Port, 2);
 
-                if (!auxStatus.contactorError)
+                if (!contactorError)
                 {
                     contactorState = ON;
                     // Turn on discharge contactor
@@ -111,7 +112,7 @@ void setContactorsTask(void const* arg)
                     contactorState = OFF;
                 }
 
-                if (updateContactorState(contactorState, CHARGE))
+                if (updateContactorState(contactorState, contactorError, CHARGE))
                 {
                     state = DISCHARGE_CONTACTOR_CHECK;
                 }
@@ -119,9 +120,9 @@ void setContactorsTask(void const* arg)
                 break;
 
             case DISCHARGE_CONTACTOR_CHECK:
-                auxStatus.contactorError = checkIfContactorSet(SENSE3_Pin, SENSE3_GPIO_Port, 3);
+                contactorError = checkIfContactorSet(SENSE3_Pin, SENSE3_GPIO_Port, 3);
 
-                if (!auxStatus.contactorError)
+                if (!contactorError)
                 {
                     contactorState = ON;
                     // Enable high voltage
@@ -132,7 +133,7 @@ void setContactorsTask(void const* arg)
                     contactorState = OFF;
                 }
 
-                if (updateContactorState(contactorState, DISCHARGE))
+                if (updateContactorState(contactorState, contactorError, DISCHARGE))
                 {
                     state = DONE;
                 }
@@ -167,12 +168,14 @@ void setContactorsTask(void const* arg)
     }
 }
 
-int updateContactorState(ContactorState state, Contactor contactor)
+int updateContactorState(ContactorState state, uint8_t error, Contactor contactor)
 {
     if (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK)
     {
         return 0;
     }
+
+    auxStatus.contactorError = error;
 
     if (contactor == COMMON)
     {
@@ -201,7 +204,7 @@ int checkIfContactorSet(uint16_t pin, GPIO_TypeDef* port, int current_multiplier
 
     if (current_sense == 0xFFFFFFFF)
     {
-        return -1;
+        return 1;
     }
 
     pwrVoltage = 3.3 * current_sense / 0xFFF / GAIN; // change ADC value into the voltage read
@@ -219,7 +222,7 @@ int checkIfContactorSet(uint16_t pin, GPIO_TypeDef* port, int current_multiplier
     // If current is high for some reason or sense pin is high something is wrong
     if (pwrCurrent > CURRENT_LOWER_THRESHOLD * current_multiplier || !sense_pin)
     {
-        return -1;
+        return 1;
     }
 
     return 0;
