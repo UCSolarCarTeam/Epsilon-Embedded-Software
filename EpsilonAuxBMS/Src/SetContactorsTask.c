@@ -40,7 +40,8 @@ typedef enum Contactor
 {
     COMMON,
     CHARGE,
-    DISCHARGE
+    DISCHARGE,
+    NONE
 } Contactor;
 
 // Function for reading current through the contactors.
@@ -49,7 +50,7 @@ uint32_t readCurrentThroughContactors(void);
 // Function for checking if a specific contactor has been set
 int isContactorSet(uint16_t pin, GPIO_TypeDef* port, int current_multiplier);
 // Updates the contactorState and contactorError in auxStatus
-int updateContactorState(ContactorState state, uint8_t error, Contactor contactor);
+int updateContactorState(ContactorState newState, uint8_t error, Contactor contactor);
 
 void setContactorsTask(void const* arg)
 {
@@ -75,15 +76,18 @@ void setContactorsTask(void const* arg)
             case FIRST_CHECK:
                 // Check current is low before beginning to turn on contactors
                 // If current is high for some reason, cycle again
-                contactorError = checkIfContactorSet(0xFF, NULL, 1); // Don't want to read an actual sense pin
+                contactorError = !isContactorSet(0xFF, NULL, 1); // Don't want to read an actual sense pin
 
                 if (!contactorError)
                 {
                     // Turn on Common Contactor
                     HAL_GPIO_WritePin(COMMON_CONTACTOR_ENABLE_GPIO_Port, COMMON_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
-                    state = COMMON_CONTACTOR_ENABLE_CHECK;
                 }
 
+                if(updateContactorState(OFF, contactorError, NONE))
+                {
+                  state = COMMON_CONTACTOR_ENABLE_CHECK;
+                }
                 break;
 
             case COMMON_CONTACTOR_ENABLE_CHECK:
@@ -178,7 +182,7 @@ void setContactorsTask(void const* arg)
     }
 }
 
-int updateContactorState(ContactorState state, uint8_t error, Contactor contactor)
+int updateContactorState(ContactorState newState, uint8_t error, Contactor contactor)
 {
     if (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK)
     {
@@ -186,7 +190,7 @@ int updateContactorState(ContactorState state, uint8_t error, Contactor contacto
     }
 
     auxStatus.contactorError = error;
-    
+
     switch (contactor)
     {
         case COMMON:
@@ -200,10 +204,23 @@ int updateContactorState(ContactorState state, uint8_t error, Contactor contacto
         case DISCHARGE:
             auxStatus.commonContactorState = newState;
             break;
+        default:
+        {
+          // Do nothing
+        }
     }
 
     osMutexRelease(auxStatus.auxStatusMutex);
-    return 1;
+
+    if(error)
+    {
+      return 0;
+    }
+
+    else
+    {
+      return 1;
+    }
 }
 
 int isContactorSet(uint16_t pin, GPIO_TypeDef* port, int current_multiplier)
