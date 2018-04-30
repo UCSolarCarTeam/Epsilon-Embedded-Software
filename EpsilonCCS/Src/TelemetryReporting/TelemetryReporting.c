@@ -300,7 +300,36 @@ void sendAuxBms()
     unsigned char packetPayload[unframedPacketLength];
 
     packetPayload[0] = AUX_BMS_PKG_ID;
-    packetPayload[1] = auxBmsData.prechargeState;
+    enum BatteryPrechargeState prechargeState;
+
+    switch (auxBmsData.prechargeState)
+    {
+        case 0:
+            prechargeState = OFF;
+            break;
+
+        case 1:
+            prechargeState = COMMON_ENGAGED;
+            break;
+
+        case 3:
+            prechargeState = CHARGE_ENGAGED;
+            break;
+
+        case 5:
+            prechargeState = DISCHARGE_ENGAGED;
+            break;
+
+        case 7:
+            prechargeState = ALL_ENGAGED;
+            break;
+
+        default:
+            prechargeState = INVALID_STATE;
+            break;
+    }
+
+    packetPayload[1] = prechargeState;
     packetPayload[2] = auxBmsData.auxVoltage;
     unsigned char auxBmsAliveArray[] = {messageIsRecent(auxBmsData.auxBmsLastReceived)};
     writeBoolsIntoArray(packetPayload, 3, auxBmsAliveArray, 1);
