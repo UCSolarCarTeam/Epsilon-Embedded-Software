@@ -84,10 +84,11 @@ void setContactorsTask(void const* arg)
                     HAL_GPIO_WritePin(COMMON_CONTACTOR_ENABLE_GPIO_Port, COMMON_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
                 }
 
-                if(updateContactorState(OFF, contactorError, NONE))
+                if (updateContactorState(OFF, contactorError, NONE))
                 {
-                  state = COMMON_CONTACTOR_ENABLE_CHECK;
+                    state = COMMON_CONTACTOR_ENABLE_CHECK;
                 }
+
                 break;
 
             case COMMON_CONTACTOR_ENABLE_CHECK:
@@ -204,22 +205,23 @@ int updateContactorState(ContactorState newState, uint8_t error, Contactor conta
         case DISCHARGE:
             auxStatus.commonContactorState = newState;
             break;
+
         default:
         {
-          // Do nothing
+            // Do nothing
         }
     }
 
     osMutexRelease(auxStatus.auxStatusMutex);
 
-    if(error)
+    if (error)
     {
-      return 0;
+        return 0;
     }
 
     else
     {
-      return 1;
+        return 1;
     }
 }
 
