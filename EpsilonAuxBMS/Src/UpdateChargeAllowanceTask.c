@@ -25,7 +25,7 @@ void updateChargeAllowanceTask(void const* arg)
         uint8_t allowCharge = 1;
         uint8_t allowDischarge = 1;
 
-        if (DEFAULT_VOLTAGE_UNITS * (float)orionStatus.maxCellVoltage > MAX_CELL_VOLTAGE * 0.8) // Will have the cutoff to be 20% below
+        if (DEFAULT_VOLTAGE_UNITS * orionStatus.maxCellVoltage > MAX_CELL_VOLTAGE * 0.8) // Will have the cutoff to be 20% below
         {
             voltagesInRange = 0;
             allowCharge = 0;
@@ -33,7 +33,7 @@ void updateChargeAllowanceTask(void const* arg)
             HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
         }
 
-        if (DEFAULT_VOLTAGE_UNITS * (float)orionStatus.minCellVoltage < MIN_CELL_VOLTAGE * 1.2) // Will have the cutoff to be 20% above
+        if (DEFAULT_VOLTAGE_UNITS * orionStatus.minCellVoltage < MIN_CELL_VOLTAGE * 1.2) // Will have the cutoff to be 20% above
         {
             voltagesInRange = 0;
             allowDischarge = 0;
