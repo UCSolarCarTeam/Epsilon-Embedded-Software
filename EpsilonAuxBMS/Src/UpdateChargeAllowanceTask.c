@@ -5,6 +5,7 @@ static const uint32_t CHARGE_ALLOWANCE_UPDATE_FREQ = 50; // Every 100ms
 // Ask Dan if any issues
 static const float MAX_CELL_VOLTAGE = 3.8;
 static const float MIN_CELL_VOLTAGE = 3.2;
+static const float DEFAULT_VOLTAGE_UNITS = 0.0001; // Gotten from Orion Utility Manual
 
 void updateChargeAllowanceTask(void const* arg)
 {
@@ -24,7 +25,7 @@ void updateChargeAllowanceTask(void const* arg)
         uint8_t allowCharge = 1;
         uint8_t allowDischarge = 1;
 
-        if ((float)orionStatus.maxCellVoltage > MAX_CELL_VOLTAGE * 0.8) // Will have the cutoff to be 20% below
+        if (DEFAULT_VOLTAGE_UNITS * (float)orionStatus.maxCellVoltage > MAX_CELL_VOLTAGE * 0.8) // Will have the cutoff to be 20% below
         {
             voltagesInRange = 0;
             allowCharge = 0;
@@ -32,7 +33,7 @@ void updateChargeAllowanceTask(void const* arg)
             HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
         }
 
-        if ((float)orionStatus.minCellVoltage < MIN_CELL_VOLTAGE * 1.2) // Will have the cutoff to be 20% above
+        if (DEFAULT_VOLTAGE_UNITS * (float)orionStatus.minCellVoltage < MIN_CELL_VOLTAGE * 1.2) // Will have the cutoff to be 20% above
         {
             voltagesInRange = 0;
             allowDischarge = 0;
