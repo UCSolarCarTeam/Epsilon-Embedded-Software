@@ -5,7 +5,7 @@ static const uint32_t CHARGE_ALLOWANCE_UPDATE_FREQ = 50; // Every 100ms
 // Ask Dan if any issues
 static const float MAX_CELL_VOLTAGE = 3.8;
 static const float MIN_CELL_VOLTAGE = 3.2;
-static const float DEFAULT_VOLTAGE_UNITS = 0.0001; // Gotten from Orion Utility Manual
+static const float DEFAULT_VOLTAGE_UNITS = 0.0001; // From: https://www.orionbms.com/manuals/utility/
 
 void updateChargeAllowanceTask(void const* arg)
 {
