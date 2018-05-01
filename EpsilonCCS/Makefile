@@ -83,6 +83,7 @@ Middlewares/Third_Party/FreeRTOS/Source/timers.c \
 Src/TransmitSerial.c \
 Src/ActivateHorn.c \
 Src/MpptRtr.c \
+Src/Data/AuxBmsData.c \
 Src/Data/KeyMotorData.c \
 Src/Data/LightsData.c \
 Src/Data/BatteryFaultsData.c \
