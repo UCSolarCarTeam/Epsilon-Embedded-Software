@@ -4,6 +4,28 @@
 
 #include "DriverControls.h"
 
+#define REGEN_QUEUE_SIZE 5
+#define ACCEL_QUEUE_SIZE 5
+
+static uint32_t regenValuesQueue[REGEN_QUEUE_SIZE] = {0};
+static uint32_t accelValuesQueue[ACCEL_QUEUE_SIZE] = {0};
+
+uint32_t getAvgRegen() {
+    uint64_t sum = 0;
+    for(int i = 0; i < REGEN_QUEUE_SIZE; i++) {
+        sum += regenValuesQueue[i];
+    }
+    return (uint32_t)((float)sum / (float)REGEN_QUEUE_SIZE);
+}
+
+uint32_t getAvgAccel() {
+    uint64_t sum = 0;
+    for(int i = 0; i < ACCEL_QUEUE_SIZE; i++) {
+        sum += accelValuesQueue[i];
+    }
+    return (uint32_t)((float)sum / (float)ACCEL_QUEUE_SIZE);
+}
+
 void sendHeartbeatTask(void const* arg)
 {
     uint32_t prevWakeTime = osKernelSysTick();
@@ -74,8 +96,6 @@ void sendMusicTask(void const* arg)
 void sendDriverTask(void const* arg)
 {
     uint32_t prevWakeTime = osKernelSysTick();
-    uint32_t regen = 0;
-    uint32_t accel = 0;
 
     for (;;)
     {
@@ -85,34 +105,14 @@ void sendDriverTask(void const* arg)
         // Zero CAN Message
         memset(msg->Data, 0, 4);
 
-        // Get 12bit regen analog input
-        if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
-        {
-            regen = HAL_ADC_GetValue(&hadc1);
-        }
-        else
-        {
-            regen = 0;
-        }
-
-        // Get 12bit acceleration analog input
-        if (HAL_ADC_PollForConversion(&hadc2, ADC_POLL_TIMEOUT) == HAL_OK)
-        {
-            accel = HAL_ADC_GetValue(&hadc2);
-        }
-        else
-        {
-            accel = 0;
-        }
-
         // Populate CAN Message
         msg->StdId = DRIVER_STDID;
         msg->DLC = DRIVER_DLC;
         // Populate analog inputs
-        msg->Data[0] |= (regen & 0x000000ffUL);
-        msg->Data[1] |= (regen & 0x00000f00UL) >> 8; // Use first 4 bits|
-        msg->Data[1] |= (accel & 0x0000000fUL) << 4; // Use last 4 bits
-        msg->Data[2] |= (accel & 0x00000ff0UL) >> 4;
+        msg->Data[0] |= (getAvgAccel() & 0x000000ffUL);
+        msg->Data[1] |= (getAvgAccel() & 0x00000f00UL) >> 8; // Use first 4 bits|
+        msg->Data[1] |= (getAvgRegen() & 0x0000000fUL) << 4; // Use last 4 bits
+        msg->Data[2] |= (getAvgRegen() & 0x00000ff0UL) >> 4;
         // Populate GPIO inputs
         msg->Data[3] |= 0x01 * !HAL_GPIO_ReadPin(BRAKES_GPIO_Port, BRAKES_Pin);
         msg->Data[3] |= 0x02 * !HAL_GPIO_ReadPin(FORWARD_GPIO_Port, FORWARD_Pin);
@@ -129,8 +129,8 @@ void sendDriverTask(void const* arg)
 void sendDriveCommandsTask(void const* arg)
 {
     uint32_t prevWakeTime = osKernelSysTick();
-    uint32_t regenPercentage = 0;
-    uint32_t accelPercentage = 0;
+    uint32_t newRegen = 0;
+    uint32_t newAccel = 0;
     uint8_t forward = 0;
     uint8_t reverse = 0;
     uint8_t reset = 0;
@@ -140,6 +140,9 @@ void sendDriveCommandsTask(void const* arg)
     uint8_t prevResetStatus = 0;
     float dataToSendFloat[2];
 
+    uint8_t regenQueueIndex = 0;
+    uint8_t accelQueueIndex = 0;
+
     for (;;)
     {
         osDelayUntil(&prevWakeTime, DRIVE_COMMANDS_FREQ);
@@ -147,21 +150,32 @@ void sendDriveCommandsTask(void const* arg)
         // Read analog inputs
         if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
         {
-            regenPercentage = ((float)HAL_ADC_GetValue(&hadc1)) / ((float)MAX_ANALOG);
+            newRegen = ((float)HAL_ADC_GetValue(&hadc1)) / ((float)MAX_ANALOG);
         }
         else
         {
-            regenPercentage = 0;
+            newRegen = 0;
         }
+
+        regenValuesQueue[regenQueueIndex++] = newRegen;
+
 
         if (HAL_ADC_PollForConversion(&hadc2, ADC_POLL_TIMEOUT) == HAL_OK)
         {
-            accelPercentage = ((float)HAL_ADC_GetValue(&hadc2)) / ((float)MAX_ANALOG);
+            newAccel = ((float)HAL_ADC_GetValue(&hadc2)) / ((float)MAX_ANALOG);
         }
         else
         {
-            accelPercentage = 0;
+            newAccel = 0;
         }
+
+        accelValuesQueue[accelQueueIndex++] = newAccel;
+
+        accelQueueIndex %= REGEN_QUEUE_SIZE;
+        regenQueueIndex %= ACCEL_QUEUE_SIZE;
+
+        uint32_t regenPercentage = ((float)getAvgRegen()) / ((float)MAX_ANALOG);
+        uint32_t accelPercentage = ((float)getAvgAccel()) / ((float)MAX_ANALOG);
 
         // Read GPIO Inputs
         forward = !HAL_GPIO_ReadPin(FORWARD_GPIO_Port, FORWARD_Pin); // `!` for active low
@@ -248,3 +262,4 @@ void sendCanTask(void const* arg)
         }
     }
 }
+
