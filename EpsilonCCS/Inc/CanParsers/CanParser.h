@@ -3,7 +3,7 @@
 #include "stm32f4xx.h"
 #include "stm32f4xx_hal_can.h"
 
-extern osMessageQId canRxQueue;
+extern osMessageQId canRxQueueId;
 extern osPoolId canRxPool;
 
 typedef struct

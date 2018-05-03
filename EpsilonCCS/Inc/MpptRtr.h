@@ -9,7 +9,7 @@
 #define MPPT_DLC 8
 #define MPPT_RTR 1
 
-extern CAN_HandleTypeDef hcan1;
+extern CAN_HandleTypeDef hcan2;
 extern osPoolId mpptCanTxPool;
 extern osMessageQId mpptCanTxQueue;
 
