@@ -15,7 +15,7 @@ uint32_t getAvgRegen() {
     for(int i = 0; i < REGEN_QUEUE_SIZE; i++) {
         sum += regenValuesQueue[i];
     }
-    return (uint32_t)((sum / (float)REGEN_QUEUE_SIZE) * 100);
+    return (uint32_t)((sum / (float)REGEN_QUEUE_SIZE));
 }
 
 uint32_t getAvgAccel() {
@@ -23,7 +23,7 @@ uint32_t getAvgAccel() {
     for(int i = 0; i < ACCEL_QUEUE_SIZE; i++) {
         sum += accelValuesQueue[i];
     }
-    return (uint32_t)((sum / (float)ACCEL_QUEUE_SIZE) * 100);
+    return (uint32_t)((sum / (float)ACCEL_QUEUE_SIZE));
 }
 
 void sendHeartbeatTask(void const* arg)
@@ -150,7 +150,7 @@ void sendDriveCommandsTask(void const* arg)
         // Read analog inputs
         if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
         {
-            newRegen = ((float)HAL_ADC_GetValue(&hadc1)) / ((float)MAX_ANALOG);
+            newRegen = (((float)HAL_ADC_GetValue(&hadc1)) / ((float)MAX_ANALOG)) * 100.0;
         }
         else
         {
@@ -162,7 +162,7 @@ void sendDriveCommandsTask(void const* arg)
 
         if (HAL_ADC_PollForConversion(&hadc2, ADC_POLL_TIMEOUT) == HAL_OK)
         {
-            newAccel = ((float)HAL_ADC_GetValue(&hadc2)) / ((float)MAX_ANALOG);
+            newAccel = (((float)HAL_ADC_GetValue(&hadc2)) / ((float)MAX_ANALOG)) * 100.0;
         }
         else
         {
