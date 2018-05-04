@@ -7,23 +7,23 @@
 #define REGEN_QUEUE_SIZE 5
 #define ACCEL_QUEUE_SIZE 5
 
-static uint32_t regenValuesQueue[REGEN_QUEUE_SIZE] = {0};
-static uint32_t accelValuesQueue[ACCEL_QUEUE_SIZE] = {0};
+static float regenValuesQueue[REGEN_QUEUE_SIZE] = {0};
+static float accelValuesQueue[ACCEL_QUEUE_SIZE] = {0};
 
 uint32_t getAvgRegen() {
-    uint64_t sum = 0;
+    float sum = 0;
     for(int i = 0; i < REGEN_QUEUE_SIZE; i++) {
         sum += regenValuesQueue[i];
     }
-    return (uint32_t)((float)sum / (float)REGEN_QUEUE_SIZE);
+    return (uint32_t)((sum / (float)REGEN_QUEUE_SIZE) * 100);
 }
 
 uint32_t getAvgAccel() {
-    uint64_t sum = 0;
+    float sum = 0;
     for(int i = 0; i < ACCEL_QUEUE_SIZE; i++) {
         sum += accelValuesQueue[i];
     }
-    return (uint32_t)((float)sum / (float)ACCEL_QUEUE_SIZE);
+    return (uint32_t)((sum / (float)ACCEL_QUEUE_SIZE) * 100);
 }
 
 void sendHeartbeatTask(void const* arg)
@@ -129,8 +129,8 @@ void sendDriverTask(void const* arg)
 void sendDriveCommandsTask(void const* arg)
 {
     uint32_t prevWakeTime = osKernelSysTick();
-    uint32_t newRegen = 0;
-    uint32_t newAccel = 0;
+    float newRegen = 0;
+    float newAccel = 0;
     uint8_t forward = 0;
     uint8_t reverse = 0;
     uint8_t reset = 0;
