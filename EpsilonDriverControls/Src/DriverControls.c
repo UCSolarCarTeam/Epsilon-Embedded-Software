@@ -141,6 +141,7 @@ void sendDriveCommandsTask(void const* arg)
     float newAccel = 0;
     uint8_t forward = 0;
     uint8_t reverse = 0;
+    uint8_t brake = 0;
     uint8_t reset = 0;
     float busCurrentOut = 1.0f; // Percentage 0 -1 always 100%
     float motorVelocityOut = 0; // RPM
@@ -189,6 +190,7 @@ void sendDriveCommandsTask(void const* arg)
         // Read GPIO Inputs
         forward = !HAL_GPIO_ReadPin(FORWARD_GPIO_Port, FORWARD_Pin); // `!` for active low
         reverse = !HAL_GPIO_ReadPin(REVERSE_GPIO_Port, REVERSE_Pin);
+        brake = !HAL_GPIO_ReadPin(BRAKES_GPIO_Port, BRAKES_Pin);
 
         // Determine data to send
         if (forward && reverse) // Error state
@@ -201,7 +203,12 @@ void sendDriveCommandsTask(void const* arg)
             motorVelocityOut = 0;
             motorCurrentOut = regenPercentage * REGEN_INPUT_SCALING;
         }
-        else if (forward) // Forward State
+        else if (brake) // Mechanical Brake Pressed
+        {
+            motorVelocityOut = 0;
+            motorCurrentOut = 0;
+        }
+        else if (forward) // Forward state
         {
             if (accelPercentage > NON_ZERO_THRESHOLD)
             {
