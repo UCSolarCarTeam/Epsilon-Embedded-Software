@@ -158,7 +158,7 @@ void sendDriveCommandsTask(void const* arg)
         // Read analog inputs
         if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
         {
-            newRegen = (((float)HAL_ADC_GetValue(&hadc1)) / ((float)MAX_ANALOG)) * 100.0;
+            newRegen = (((float)HAL_ADC_GetValue(&hadc1)) / ((float)MAX_ANALOG)) * 100.0; // Convert to full value for reporting
         }
         else
         {
@@ -182,6 +182,7 @@ void sendDriveCommandsTask(void const* arg)
         accelQueueIndex %= REGEN_QUEUE_SIZE;
         regenQueueIndex %= ACCEL_QUEUE_SIZE;
 
+        // Convert values back to floating percentages for motors
         float regenPercentage = (float)getAvgRegen() / 100.0;
         float accelPercentage = (float)getAvgAccel() / 100.0;
 
@@ -200,8 +201,7 @@ void sendDriveCommandsTask(void const* arg)
             motorVelocityOut = 0;
             motorCurrentOut = regenPercentage * REGEN_INPUT_SCALING;
         }
-
-        if (forward)
+        else if (forward) // Forward State
         {
             if (accelPercentage > NON_ZERO_THRESHOLD)
             {
@@ -210,7 +210,7 @@ void sendDriveCommandsTask(void const* arg)
                 motorCurrentOut = accelPercentage;
             }
         }
-        else if (reverse)
+        else if (reverse) // Reverse State
         {
             if (accelPercentage > NON_ZERO_THRESHOLD)
             {
