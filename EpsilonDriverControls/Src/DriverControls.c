@@ -10,20 +10,28 @@
 static float regenValuesQueue[REGEN_QUEUE_SIZE] = {0};
 static float accelValuesQueue[ACCEL_QUEUE_SIZE] = {0};
 
-uint32_t getAvgRegen() {
+uint32_t getAvgRegen()
+{
     float sum = 0;
-    for(int i = 0; i < REGEN_QUEUE_SIZE; i++) {
+
+    for (int i = 0; i < REGEN_QUEUE_SIZE; i++)
+    {
         sum += regenValuesQueue[i];
     }
-    return (uint32_t)((sum / (float)REGEN_QUEUE_SIZE) * 100);
+
+    return (uint32_t)((sum / (float)REGEN_QUEUE_SIZE));
 }
 
-uint32_t getAvgAccel() {
+uint32_t getAvgAccel()
+{
     float sum = 0;
-    for(int i = 0; i < ACCEL_QUEUE_SIZE; i++) {
+
+    for (int i = 0; i < ACCEL_QUEUE_SIZE; i++)
+    {
         sum += accelValuesQueue[i];
     }
-    return (uint32_t)((sum / (float)ACCEL_QUEUE_SIZE) * 100);
+
+    return (uint32_t)((sum / (float)ACCEL_QUEUE_SIZE));
 }
 
 void sendHeartbeatTask(void const* arg)
@@ -135,7 +143,7 @@ void sendDriveCommandsTask(void const* arg)
     uint8_t reverse = 0;
     uint8_t reset = 0;
     float busCurrentOut = 1.0f; // Percentage 0 -1 always 100%
-    uint32_t motorVelocityOut = 0; // RPM
+    float motorVelocityOut = 0; // RPM
     float motorCurrentOut = 0.0f; // Percentage 0 - 1
     uint8_t prevResetStatus = 0;
     float dataToSendFloat[2];
@@ -150,7 +158,7 @@ void sendDriveCommandsTask(void const* arg)
         // Read analog inputs
         if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
         {
-            newRegen = ((float)HAL_ADC_GetValue(&hadc1)) / ((float)MAX_ANALOG);
+            newRegen = (((float)HAL_ADC_GetValue(&hadc1)) / ((float)MAX_ANALOG)) * 100.0; // Convert to full value for reporting
         }
         else
         {
@@ -162,7 +170,7 @@ void sendDriveCommandsTask(void const* arg)
 
         if (HAL_ADC_PollForConversion(&hadc2, ADC_POLL_TIMEOUT) == HAL_OK)
         {
-            newAccel = ((float)HAL_ADC_GetValue(&hadc2)) / ((float)MAX_ANALOG);
+            newAccel = (((float)HAL_ADC_GetValue(&hadc2)) / ((float)MAX_ANALOG)) * 100.0;
         }
         else
         {
@@ -174,8 +182,9 @@ void sendDriveCommandsTask(void const* arg)
         accelQueueIndex %= REGEN_QUEUE_SIZE;
         regenQueueIndex %= ACCEL_QUEUE_SIZE;
 
-        uint32_t regenPercentage = ((float)getAvgRegen()) / ((float)MAX_ANALOG);
-        uint32_t accelPercentage = ((float)getAvgAccel()) / ((float)MAX_ANALOG);
+        // Convert values back to floating percentages for motors
+        float regenPercentage = (float)getAvgRegen() / 100.0;
+        float accelPercentage = (float)getAvgAccel() / 100.0;
 
         // Read GPIO Inputs
         forward = !HAL_GPIO_ReadPin(FORWARD_GPIO_Port, FORWARD_Pin); // `!` for active low
@@ -192,18 +201,27 @@ void sendDriveCommandsTask(void const* arg)
             motorVelocityOut = 0;
             motorCurrentOut = regenPercentage * REGEN_INPUT_SCALING;
         }
-        else if (forward) // Forward state
+        else if (forward) // Forward State
         {
-            motorVelocityOut = MAX_FORWARD_RPM;
-            motorCurrentOut = accelPercentage;
+            if (accelPercentage > NON_ZERO_THRESHOLD)
+            {
+                HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
+                motorVelocityOut = MAX_FORWARD_RPM;
+                motorCurrentOut = accelPercentage;
+            }
         }
-        else if (reverse) // Reverse state
+        else if (reverse) // Reverse State
         {
-            motorVelocityOut = MAX_REVERSE_RPM;
-            motorCurrentOut = accelPercentage;
+            if (accelPercentage > NON_ZERO_THRESHOLD)
+            {
+                HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
+                motorVelocityOut = MAX_REVERSE_RPM;
+                motorCurrentOut = accelPercentage;
+            }
         }
         else  // Off state
         {
+
             motorVelocityOut = 0;
             motorCurrentOut = 0;
         }
