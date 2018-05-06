@@ -4,6 +4,36 @@
 
 #include "DriverControls.h"
 
+#define REGEN_QUEUE_SIZE 5
+#define ACCEL_QUEUE_SIZE 5
+
+static float regenValuesQueue[REGEN_QUEUE_SIZE] = {0};
+static float accelValuesQueue[ACCEL_QUEUE_SIZE] = {0};
+
+uint32_t getAvgRegen()
+{
+    float sum = 0;
+
+    for (int i = 0; i < REGEN_QUEUE_SIZE; i++)
+    {
+        sum += regenValuesQueue[i];
+    }
+
+    return (uint32_t)((sum / (float)REGEN_QUEUE_SIZE));
+}
+
+uint32_t getAvgAccel()
+{
+    float sum = 0;
+
+    for (int i = 0; i < ACCEL_QUEUE_SIZE; i++)
+    {
+        sum += accelValuesQueue[i];
+    }
+
+    return (uint32_t)((sum / (float)ACCEL_QUEUE_SIZE));
+}
+
 void sendHeartbeatTask(void const* arg)
 {
     uint32_t prevWakeTime = osKernelSysTick();
@@ -74,8 +104,6 @@ void sendMusicTask(void const* arg)
 void sendDriverTask(void const* arg)
 {
     uint32_t prevWakeTime = osKernelSysTick();
-    uint32_t regen = 0;
-    uint32_t accel = 0;
 
     for (;;)
     {
@@ -85,34 +113,14 @@ void sendDriverTask(void const* arg)
         // Zero CAN Message
         memset(msg->Data, 0, 4);
 
-        // Get 12bit regen analog input
-        if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
-        {
-            regen = HAL_ADC_GetValue(&hadc1);
-        }
-        else
-        {
-            regen = 0;
-        }
-
-        // Get 12bit acceleration analog input
-        if (HAL_ADC_PollForConversion(&hadc2, ADC_POLL_TIMEOUT) == HAL_OK)
-        {
-            accel = HAL_ADC_GetValue(&hadc2);
-        }
-        else
-        {
-            accel = 0;
-        }
-
         // Populate CAN Message
         msg->StdId = DRIVER_STDID;
         msg->DLC = DRIVER_DLC;
         // Populate analog inputs
-        msg->Data[0] |= (regen & 0x000000ffUL);
-        msg->Data[1] |= (regen & 0x00000f00UL) >> 8; // Use first 4 bits|
-        msg->Data[1] |= (accel & 0x0000000fUL) << 4; // Use last 4 bits
-        msg->Data[2] |= (accel & 0x00000ff0UL) >> 4;
+        msg->Data[0] |= (getAvgAccel() & 0x000000ffUL);
+        msg->Data[1] |= (getAvgAccel() & 0x00000f00UL) >> 8; // Use first 4 bits|
+        msg->Data[1] |= (getAvgRegen() & 0x0000000fUL) << 4; // Use last 4 bits
+        msg->Data[2] |= (getAvgRegen() & 0x00000ff0UL) >> 4;
         // Populate GPIO inputs
         msg->Data[3] |= 0x01 * !HAL_GPIO_ReadPin(BRAKES_GPIO_Port, BRAKES_Pin);
         msg->Data[3] |= 0x02 * !HAL_GPIO_ReadPin(FORWARD_GPIO_Port, FORWARD_Pin);
@@ -129,16 +137,20 @@ void sendDriverTask(void const* arg)
 void sendDriveCommandsTask(void const* arg)
 {
     uint32_t prevWakeTime = osKernelSysTick();
-    uint32_t regenPercentage = 0;
-    uint32_t accelPercentage = 0;
+    float newRegen = 0;
+    float newAccel = 0;
     uint8_t forward = 0;
     uint8_t reverse = 0;
+    uint8_t brake = 0;
     uint8_t reset = 0;
     float busCurrentOut = 1.0f; // Percentage 0 -1 always 100%
-    uint32_t motorVelocityOut = 0; // RPM
+    float motorVelocityOut = 0; // RPM
     float motorCurrentOut = 0.0f; // Percentage 0 - 1
     uint8_t prevResetStatus = 0;
     float dataToSendFloat[2];
+
+    uint8_t regenQueueIndex = 0;
+    uint8_t accelQueueIndex = 0;
 
     for (;;)
     {
@@ -147,25 +159,38 @@ void sendDriveCommandsTask(void const* arg)
         // Read analog inputs
         if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
         {
-            regenPercentage = ((float)HAL_ADC_GetValue(&hadc1)) / ((float)MAX_ANALOG);
+            newRegen = (((float)HAL_ADC_GetValue(&hadc1)) / ((float)MAX_ANALOG)) * 100.0; // Convert to full value for reporting
         }
         else
         {
-            regenPercentage = 0;
+            newRegen = 0;
         }
+
+        regenValuesQueue[regenQueueIndex++] = newRegen;
+
 
         if (HAL_ADC_PollForConversion(&hadc2, ADC_POLL_TIMEOUT) == HAL_OK)
         {
-            accelPercentage = ((float)HAL_ADC_GetValue(&hadc2)) / ((float)MAX_ANALOG);
+            newAccel = (((float)HAL_ADC_GetValue(&hadc2)) / ((float)MAX_ANALOG)) * 100.0;
         }
         else
         {
-            accelPercentage = 0;
+            newAccel = 0;
         }
+
+        accelValuesQueue[accelQueueIndex++] = newAccel;
+
+        accelQueueIndex %= REGEN_QUEUE_SIZE;
+        regenQueueIndex %= ACCEL_QUEUE_SIZE;
+
+        // Convert values back to floating percentages for motors
+        float regenPercentage = (float)getAvgRegen() / 100.0;
+        float accelPercentage = (float)getAvgAccel() / 100.0;
 
         // Read GPIO Inputs
         forward = !HAL_GPIO_ReadPin(FORWARD_GPIO_Port, FORWARD_Pin); // `!` for active low
         reverse = !HAL_GPIO_ReadPin(REVERSE_GPIO_Port, REVERSE_Pin);
+        brake = !HAL_GPIO_ReadPin(BRAKES_GPIO_Port, BRAKES_Pin);
 
         // Determine data to send
         if (forward && reverse) // Error state
@@ -178,18 +203,32 @@ void sendDriveCommandsTask(void const* arg)
             motorVelocityOut = 0;
             motorCurrentOut = regenPercentage * REGEN_INPUT_SCALING;
         }
+        else if (brake) // Mechanical Brake Pressed
+        {
+            motorVelocityOut = 0;
+            motorCurrentOut = 0;
+        }
         else if (forward) // Forward state
         {
-            motorVelocityOut = MAX_FORWARD_RPM;
-            motorCurrentOut = accelPercentage;
+            if (accelPercentage > NON_ZERO_THRESHOLD)
+            {
+                HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
+                motorVelocityOut = MAX_FORWARD_RPM;
+                motorCurrentOut = accelPercentage;
+            }
         }
-        else if (reverse) // Reverse state
+        else if (reverse) // Reverse State
         {
-            motorVelocityOut = MAX_REVERSE_RPM;
-            motorCurrentOut = accelPercentage;
+            if (accelPercentage > NON_ZERO_THRESHOLD)
+            {
+                HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
+                motorVelocityOut = MAX_REVERSE_RPM;
+                motorCurrentOut = accelPercentage;
+            }
         }
         else  // Off state
         {
+
             motorVelocityOut = 0;
             motorCurrentOut = 0;
         }
@@ -248,3 +287,4 @@ void sendCanTask(void const* arg)
         }
     }
 }
+
