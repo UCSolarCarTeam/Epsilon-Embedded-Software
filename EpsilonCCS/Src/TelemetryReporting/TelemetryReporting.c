@@ -13,15 +13,17 @@
 #include "BatteryData.h"
 #include "MpptData.h"
 #include "LightsData.h"
+#include "AuxBmsData.h"
 
 #define KEY_MOTOR_LENGTH (43)
-#define MOTOR_DETAILS_LENGTH (69)
+#define MOTOR_DETAILS_LENGTH (65)
 #define DRIVER_CONTROLS_LENGTH (9)
 #define MOTOR_FAULTS_LENGTH (9)
 #define BATTERY_FAULTS_LENGTH (6)
-#define BATTERY_DETAILS_LENGTH (54)
+#define BATTERY_DETAILS_LENGTH (48)
 #define MPPT_DETAILS_LENGTH (10)
 #define LIGHTS_DETAILS_LENGTH (3)
+#define AUX_BMS_DETAILS_LENGTH (7)
 
 #define CCS_TELEM_PERIOD_MS (200) // 5Hz == 200ms
 
@@ -52,6 +54,7 @@ void sendTelemetryTask()
                 break;
 
             case 2:
+                sendAuxBms();
                 sendMotorDetails(1);
                 sendMppt(2);
                 salvo = 1;
@@ -92,7 +95,7 @@ void sendKeyMotor()
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
 
-    transmitMessage(packetPayload, packetLength);
+    transmitMessage(packet, packetLength);
 }
 
 void sendMotorDetails(int n)
@@ -148,7 +151,7 @@ void sendMotorDetails(int n)
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
 
-    transmitMessage(packetPayload, packetLength);
+    transmitMessage(packet, packetLength);
 }
 
 void sendDriverControls()
@@ -169,7 +172,7 @@ void sendDriverControls()
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
 
-    transmitMessage(packetPayload, packetLength);
+    transmitMessage(packet, packetLength);
 }
 
 void sendMotorFaults()
@@ -191,7 +194,7 @@ void sendMotorFaults()
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
 
-    transmitMessage(packetPayload, packetLength);
+    transmitMessage(packet, packetLength);
 }
 
 void sendBatteryFaults()
@@ -206,7 +209,7 @@ void sendBatteryFaults()
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
 
-    transmitMessage(packetPayload, packetLength);
+    transmitMessage(packet, packetLength);
 }
 
 void sendBattery()
@@ -239,19 +242,12 @@ void sendBattery()
     writeUShortIntoArray(packetPayload, 43, batteryData.highCellVoltage);
     packetPayload[45] = batteryData.highCellVoltageId;
     writeUShortIntoArray(packetPayload, 46, batteryData.averageCellVoltage);
-    packetPayload[48] = batteryData.prechargeState;
-    packetPayload[49] = batteryData.auxVoltage;
-    packetPayload[50] = batteryData.strobeBmsLight;
-    packetPayload[51] = batteryData.allowCharge;
-    packetPayload[52] = batteryData.contactorError;
-    unsigned char auxBmsAliveArray[] = {messageIsRecent(batteryData.auxBmsLastReceived)};
-    writeBoolsIntoArray(packetPayload, 53, auxBmsAliveArray, 1);
 
     addChecksum(packetPayload, BATTERY_DETAILS_LENGTH);
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
 
-    transmitMessage(packetPayload, packetLength);
+    transmitMessage(packet, packetLength);
 }
 
 void sendMppt(int n)
@@ -278,7 +274,7 @@ void sendMppt(int n)
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
 
-    transmitMessage(packetPayload, packetLength);
+    transmitMessage(packet, packetLength);
 }
 
 void sendLights()
@@ -295,5 +291,56 @@ void sendLights()
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
     unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
 
-    transmitMessage(packetPayload, packetLength);
+    transmitMessage(packet, packetLength);
+}
+
+void sendAuxBms()
+{
+    unsigned int unframedPacketLength = AUX_BMS_DETAILS_LENGTH + CHECKSUM_LENGTH;
+    unsigned char packetPayload[unframedPacketLength];
+
+    packetPayload[0] = AUX_BMS_PKG_ID;
+    enum BatteryPrechargeState prechargeState;
+
+    switch (auxBmsData.prechargeState)
+    {
+        case 0:
+            prechargeState = OFF;
+            break;
+
+        case 1:
+            prechargeState = COMMON_ENGAGED;
+            break;
+
+        case 3:
+            prechargeState = CHARGE_ENGAGED;
+            break;
+
+        case 5:
+            prechargeState = DISCHARGE_ENGAGED;
+            break;
+
+        case 7:
+            prechargeState = ALL_ENGAGED;
+            break;
+
+        default:
+            prechargeState = INVALID_STATE;
+            break;
+    }
+
+    packetPayload[1] = prechargeState;
+    packetPayload[2] = auxBmsData.auxVoltage;
+    unsigned char auxBmsAliveArray[] = {messageIsRecent(auxBmsData.auxBmsLastReceived)};
+    writeBoolsIntoArray(packetPayload, 3, auxBmsAliveArray, 1);
+    packetPayload[4] = auxBmsData.strobeBmsLight;
+    packetPayload[5] = auxBmsData.allowCharge;
+    packetPayload[6] = auxBmsData.contactorError;
+
+
+    addChecksum(packetPayload, AUX_BMS_DETAILS_LENGTH);
+    unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];
+    unsigned int packetLength = frameData(packetPayload, unframedPacketLength, packet);
+
+    transmitMessage(packet, packetLength);
 }

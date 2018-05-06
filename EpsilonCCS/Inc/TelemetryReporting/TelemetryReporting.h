@@ -9,3 +9,4 @@ void sendBatteryFaults();
 void sendBattery();
 void sendMppt(int n);
 void sendLights();
+void sendAuxBms();
