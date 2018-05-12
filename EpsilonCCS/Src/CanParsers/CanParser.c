@@ -30,6 +30,9 @@
 #define MPPT_CAN_MIN (0x600)
 #define MPPT_CAN_MAX (0x602)
 
+#define LED_ON 1
+#define LED_OFF 0
+
 void parseCanTask(void const* arg)
 {
     uint32_t prevWakeTime = osKernelSysTick();
@@ -81,9 +84,13 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 
     memcpy(msg->Data, hcan->pRxMsg->Data, 8);
 
-    if (osMessagePut(canRxQueueId, (uint32_t)msg, 0) != osOK)
+    if (osMessagePut(canRxQueueId, (uint32_t)msg, 0) == osOK)
     {
-        HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
+        HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, LED_ON);
+    }
+    else
+    {
+        HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, LED_OFF);
     }
 
     HAL_CAN_Receive_IT(hcan, CAN_FIFO0);
