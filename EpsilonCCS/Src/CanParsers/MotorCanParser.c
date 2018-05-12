@@ -38,10 +38,27 @@
 #define M1_ODOMETER_BUS_AMPHOURS_CAN_ID (0x42E)
 #define M1_SLIP_SPEED_CAN_ID (0x437)
 
+#define MOTOR_COMMANDS_CAN_ID (0x501)
+
 void parseMotorCanMessage(uint32_t stdId, uint8_t* data)
 {
+    float setVelocity; 
+    float setCurrent;
     switch (stdId)
     {
+        case MOTOR_COMMANDS_CAN_ID:
+            
+            setVelocity = arrayToFloat(&data[0]); 
+            setCurrent = arrayToFloat(&data[4]);
+
+            keyMotorData.m0SetVelocity = setVelocity;
+            keyMotorData.m0SetCurrent = setCurrent;
+
+            keyMotorData.m1SetVelocity = setVelocity;
+            keyMotorData.m1SetCurrent = setCurrent;
+
+            break;
+
         case M0_BASE_CAN_ID:
             keyMotorData.m0lastReceived = osKernelSysTick();
             break;
