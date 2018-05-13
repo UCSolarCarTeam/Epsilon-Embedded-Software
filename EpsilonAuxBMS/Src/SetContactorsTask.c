@@ -199,11 +199,11 @@ int updateContactorState(ContactorState newState, uint8_t error, Contactor conta
             break;
 
         case CHARGE:
-            auxStatus.commonContactorState = newState;
+            auxStatus.chargeContactorState = newState;
             break;
 
         case DISCHARGE:
-            auxStatus.commonContactorState = newState;
+            auxStatus.dischargeContactorState = newState;
             break;
 
         default:
