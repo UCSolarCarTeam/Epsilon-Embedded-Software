@@ -531,6 +531,8 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 
 static void MX_CAN1_UserInit(void)
 {
+    HAL_GPIO_WritePin(CAN1_STBY_GPIO_Port, CAN1_STBY_Pin, GPIO_PIN_RESET);
+    
     CAN_FilterConfTypeDef sFilterConfig;
     sFilterConfig.FilterNumber = 0; // Use first filter bank
     sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
