@@ -83,8 +83,9 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     msg->StdId = hcan->pRxMsg->StdId;
 
     memcpy(msg->Data, hcan->pRxMsg->Data, 8);
-
-    if (osMessagePut(canRxQueueId, (uint32_t)msg, 0) == osOK)
+    osMessagePut(canRxQueueId, (uint32_t)msg, 0);
+        
+    if (HAL_CAN_Receive_IT(hcan, CAN_FIFO0) == osOK)
     {
         HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, LED_ON);
     }
@@ -92,6 +93,4 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     {
         HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, LED_OFF);
     }
-
-    HAL_CAN_Receive_IT(hcan, CAN_FIFO0);
 }
