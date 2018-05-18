@@ -280,10 +280,18 @@ void sendCanTask(void const* arg)
             hcan2.pTxMsg->DLC = msg->DLC;
             memcpy(hcan2.pTxMsg->Data, msg->Data, sizeof(uint8_t) * msg->DLC);
             // Send CAN Message
-            HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
-            HAL_CAN_Transmit_IT(&hcan2);
+
             // Deallocate CAN message
             osPoolFree(canPool, msg);
+
+            if (HAL_CAN_Transmit_IT(&hcan2) == HAL_OK)
+            {
+                HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
+            }
+            else
+            {
+                HAL_CAN_Init(&hcan2);
+            }
         }
     }
 }
