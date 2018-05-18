@@ -84,7 +84,7 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 
     memcpy(msg->Data, hcan->pRxMsg->Data, 8);
     osMessagePut(canRxQueueId, (uint32_t)msg, 0);
-        
+
     if (HAL_CAN_Receive_IT(hcan, CAN_FIFO0) == osOK)
     {
         HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, LED_ON);

@@ -42,13 +42,14 @@
 
 void parseMotorCanMessage(uint32_t stdId, uint8_t* data)
 {
-    float setVelocity; 
+    float setVelocity;
     float setCurrent;
+
     switch (stdId)
     {
         case MOTOR_COMMANDS_CAN_ID:
-            
-            setVelocity = arrayToFloat(&data[0]); 
+
+            setVelocity = arrayToFloat(&data[0]);
             setCurrent = arrayToFloat(&data[4]);
 
             keyMotorData.m0SetVelocity = setVelocity;
