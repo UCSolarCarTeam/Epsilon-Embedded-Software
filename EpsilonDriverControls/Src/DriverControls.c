@@ -228,7 +228,6 @@ void sendDriveCommandsTask(void const* arg)
         }
         else  // Off state
         {
-
             motorVelocityOut = 0;
             motorCurrentOut = 0;
         }

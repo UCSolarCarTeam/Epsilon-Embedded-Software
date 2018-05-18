@@ -25,7 +25,7 @@
 #define LIGHTS_CAN_MAX (0x71F)
 
 #define MOTOR_CAN_MIN (0x400)
-#define MOTOR_CAN_MAX (0x4FF)
+#define MOTOR_CAN_MAX (0x503)
 
 #define MPPT_CAN_MIN (0x600)
 #define MPPT_CAN_MAX (0x602)
@@ -72,6 +72,10 @@ void parseCanMessage(uint32_t stdId, uint8_t* data)
     else if (stdId >= MPPT_CAN_MIN && stdId <= MPPT_CAN_MAX)
     {
         parseMpptCanMessage(stdId, data);
+    }
+    else if (stdId >= MOTOR_CAN_MIN && stdId <= MOTOR_CAN_MAX)
+    {
+        parseMotorCanMessage(stdId, data);
     }
 }
 
