@@ -145,9 +145,10 @@ void setContactorsTask(void const* arg)
                   HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
                   HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
 
-                  if (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK)
+                  while (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK) // Not sure if this is the best idea
+                                                                           // will guarantee that we return to this spot though
                   {
-                      continue;
+                      osDelay(10);
                   }
 
                   auxStatus.contactorError = 1;
@@ -189,9 +190,9 @@ void setContactorsTask(void const* arg)
                   HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
                   HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
                   HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
-                  if (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK)
+                  while (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK)
                   {
-                      continue;
+                      osDelay(10);
                   }
 
                   auxStatus.contactorError = 1;
@@ -219,9 +220,9 @@ void setContactorsTask(void const* arg)
                     HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
                     HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
                     HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
-                    if (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK)
+                    while (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK)
                     {
-                        continue;
+                        osDelay(10);
                     }
 
                     auxStatus.contactorError = 1;
