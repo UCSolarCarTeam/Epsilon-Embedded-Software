@@ -27,40 +27,40 @@ void updateChargeAllowanceTask(void const* arg)
         uint8_t commonContactorOff = 0;
         uint8_t orionGpioOk = 1;
 
-        if(driversInput.aux)
+        if (driversInput.aux)
         {
-          if(!HAL_GPIO_ReadPin(CHARGE_ENABLE_SENSE_GPIO_Port, CHARGE_ENABLE_SENSE_Pin))
-          {
-            orionGpioOk = 0;
-            allowCharge = 0;
-            // Turn off charge contactor
-            HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
+            if (!HAL_GPIO_ReadPin(CHARGE_ENABLE_SENSE_GPIO_Port, CHARGE_ENABLE_SENSE_Pin))
+            {
+                orionGpioOk = 0;
+                allowCharge = 0;
+                // Turn off charge contactor
+                HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
 
-            if(!HAL_GPIO_ReadPin(DISCHARGE_ENABLE_SENSE_GPIO_Port, DISCHARGE_ENABLE_SENSE_Pin))
-            {
-              allowDischarge = 0;
-              // Turn off discharge contactor, and high voltage enable
-              HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
-              HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
+                if (!HAL_GPIO_ReadPin(DISCHARGE_ENABLE_SENSE_GPIO_Port, DISCHARGE_ENABLE_SENSE_Pin))
+                {
+                    allowDischarge = 0;
+                    // Turn off discharge contactor, and high voltage enable
+                    HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
+                    HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
+                }
             }
-          }
-          else
-          {
-            if(!HAL_GPIO_ReadPin(DISCHARGE_ENABLE_SENSE_GPIO_Port, DISCHARGE_ENABLE_SENSE_Pin))
+            else
             {
-              orionGpioOk = 0;
-              allowDischarge = 0;
-              // Turn off discharge contactor and high voltage enable
-              HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
-              HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
+                if (!HAL_GPIO_ReadPin(DISCHARGE_ENABLE_SENSE_GPIO_Port, DISCHARGE_ENABLE_SENSE_Pin))
+                {
+                    orionGpioOk = 0;
+                    allowDischarge = 0;
+                    // Turn off discharge contactor and high voltage enable
+                    HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
+                    HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
+                }
             }
-          }
         }
         else // In forward or reverse
         {
-          if(!HAL_GPIO_ReadPin(CHARGE_ENABLE_SENSE_GPIO_Port, CHARGE_ENABLE_SENSE_Pin) ||
-              !HAL_GPIO_ReadPin(DISCHARGE_ENABLE_SENSE_GPIO_Port, DISCHARGE_ENABLE_SENSE_Pin))
-              {
+            if (!HAL_GPIO_ReadPin(CHARGE_ENABLE_SENSE_GPIO_Port, CHARGE_ENABLE_SENSE_Pin) ||
+                    !HAL_GPIO_ReadPin(DISCHARGE_ENABLE_SENSE_GPIO_Port, DISCHARGE_ENABLE_SENSE_Pin))
+            {
                 orionGpioOk = 0;
                 commonContactorOff = 1;
                 allowCharge = 0;
@@ -70,29 +70,31 @@ void updateChargeAllowanceTask(void const* arg)
                 HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
                 HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
                 HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
-              }
+            }
         }
 
         if (DEFAULT_VOLTAGE_UNITS * orionStatus.maxCellVoltage > MAX_CELL_VOLTAGE * 0.8) // Will have the cutoff to be 20% below
         {
             voltagesInRange = 0;
-            if(allowCharge) // To avoid wasting time writing to the pin again
+
+            if (allowCharge) // To avoid wasting time writing to the pin again
             {
-              allowCharge = 0;
-              // Turn off charge contactor
-              HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
+                allowCharge = 0;
+                // Turn off charge contactor
+                HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
             }
         }
 
         if (DEFAULT_VOLTAGE_UNITS * orionStatus.minCellVoltage < MIN_CELL_VOLTAGE * 1.2) // Will have the cutoff to be 20% above
         {
             voltagesInRange = 0;
-            if(allowDischarge) // To avoid wasting time writing to the pin again
+
+            if (allowDischarge) // To avoid wasting time writing to the pin again
             {
-              allowDischarge = 0;
-              // Turn off High voltage enable and discharge contactor
-              HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
-              HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
+                allowDischarge = 0;
+                // Turn off High voltage enable and discharge contactor
+                HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
+                HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
             }
         }
 
@@ -114,7 +116,7 @@ void updateChargeAllowanceTask(void const* arg)
             auxStatus.dischargeContactorState = 0;
         }
 
-        if(commonContactorOff)
+        if (commonContactorOff)
         {
             auxStatus.commonContactorState = 0;
         }

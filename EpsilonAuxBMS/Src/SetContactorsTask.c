@@ -69,8 +69,10 @@ void setContactorsTask(void const* arg)
         // Check everuthing is all good from orion's side
         if (!(orionStatus.gpioOk && orionStatus.batteryVoltagesInRange))
         {
-            if(state != CONTACTOR_UNPLUGGED)
-              state = BLOCKED;
+            if (state != CONTACTOR_UNPLUGGED)
+            {
+                state = BLOCKED;
+            }
         }
 
         switch (state)
@@ -134,7 +136,8 @@ void setContactorsTask(void const* arg)
                 }
 
                 uint8_t common = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
-                if(!common) // Common contactor must be disconnected
+
+                if (!common) // Common contactor must be disconnected
                 {
                   // Turn all contactors and high voltage enable off
                   HAL_GPIO_WritePin(COMMON_CONTACTOR_ENABLE_GPIO_Port, COMMON_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
@@ -155,6 +158,7 @@ void setContactorsTask(void const* arg)
                   osMutexRelease(auxStatus.auxStatusMutex);
                   state = CONTACTOR_UNPLUGGED;
                 }
+
                 break;
 
             case DISCHARGE_CONTACTOR_ENABLE_CHECK:
@@ -177,7 +181,8 @@ void setContactorsTask(void const* arg)
                 }
 
                 uint8_t charge = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
-                if(!charge) // Charge contactor must be disconnected
+
+                if (!charge) // Charge contactor must be disconnected
                 {
                   // Turn all contactors and high voltage enable off
                   HAL_GPIO_WritePin(COMMON_CONTACTOR_ENABLE_GPIO_Port, COMMON_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
@@ -238,9 +243,11 @@ void setContactorsTask(void const* arg)
                 }
 
                 break;
+
             case CONTACTOR_UNPLUGGED:
-              // This is currently an unrecoverable state
-            break;
+                // This is currently an unrecoverable state
+                break;
+
             default:
                 state = FIRST_CHECK;
         }
