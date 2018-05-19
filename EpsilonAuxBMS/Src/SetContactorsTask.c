@@ -144,8 +144,8 @@ void setContactorsTask(void const* arg)
 
                 if (!common) // Common contactor must be disconnected
                 {
-                  contactorDisconnected();
-                  state = CONTACTOR_DISCONNECTED;
+                    contactorDisconnected();
+                    state = CONTACTOR_DISCONNECTED;
                 }
 
                 break;
@@ -174,8 +174,8 @@ void setContactorsTask(void const* arg)
 
                 if (!charge || !common) // Charge or common contactor must be disconnected
                 {
-                  contactorDisconnected();
-                  state = CONTACTOR_DISCONNECTED;
+                    contactorDisconnected();
+                    state = CONTACTOR_DISCONNECTED;
                 }
 
                 break;
@@ -338,22 +338,22 @@ uint32_t readCurrentThroughContactors(void)
 
 void contactorDisconnected(void)
 {
-  // Turn all contactors and high voltage enable off
-  HAL_GPIO_WritePin(COMMON_CONTACTOR_ENABLE_GPIO_Port, COMMON_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
+    // Turn all contactors and high voltage enable off
+    HAL_GPIO_WritePin(COMMON_CONTACTOR_ENABLE_GPIO_Port, COMMON_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
 
-  while (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK) // Not sure if this is the best idea
-                                                           // but will guarantee that we return to this spot
-  {
-      osDelay(10);
-  }
+    while (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK) // Not sure if this is the best idea
+        // but will guarantee that we return to this spot
+    {
+        osDelay(10);
+    }
 
-  auxStatus.contactorError = 1;
-  auxStatus.commonContactorState = 0;
-  auxStatus.chargeContactorState = 0;
-  auxStatus.dischargeContactorState = 0;
+    auxStatus.contactorError = 1;
+    auxStatus.commonContactorState = 0;
+    auxStatus.chargeContactorState = 0;
+    auxStatus.dischargeContactorState = 0;
 
-  osMutexRelease(auxStatus.auxStatusMutex);
+    osMutexRelease(auxStatus.auxStatusMutex);
 }
