@@ -22,6 +22,7 @@ void reportAuxStatusToCanTask(void const* arg)
 
         // Set CAN message address
         hcan1.pTxMsg->StdId = AUX_STATUS_STDID;
+        hcan1.pTxMsg->DLC = 2;
         // Set Data
         hcan1.pTxMsg->Data[0] =
             auxStatus.commonContactorState |

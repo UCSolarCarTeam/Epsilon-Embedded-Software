@@ -19,9 +19,10 @@ void reportHeartbeatToCanTask(void const* arg)
         {
             continue;
         }
-
+        hcan1.pTxMsg->DLC = 1;
         // Set CAN message address
         hcan1.pTxMsg->StdId = AUX_HEARTBEAT_STDID;
+        hcan1.pTxMsg->DLC = 1;
         // Always 1
         hcan1.pTxMsg->Data[0] = 1;
 
