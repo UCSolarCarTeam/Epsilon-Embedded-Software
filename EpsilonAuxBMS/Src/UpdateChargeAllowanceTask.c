@@ -38,10 +38,8 @@ void updateChargeAllowanceTask(void const* arg)
 
             if(!HAL_GPIO_ReadPin(DISCHARGE_ENABLE_SENSE_GPIO_Port, DISCHARGE_ENABLE_SENSE_Pin))
             {
-              commonContactorOff = 1;
               allowDischarge = 0;
-              // Turn off common contactor, and discharge contactor, and high voltage enable
-              HAL_GPIO_WritePin(COMMON_CONTACTOR_ENABLE_GPIO_Port, COMMON_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
+              // Turn off discharge contactor, and high voltage enable
               HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
               HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
             }
