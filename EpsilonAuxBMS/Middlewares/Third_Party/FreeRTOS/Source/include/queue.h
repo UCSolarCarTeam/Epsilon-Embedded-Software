@@ -72,7 +72,7 @@
 #define QUEUE_H
 
 #ifndef INC_FREERTOS_H
-	#error "include FreeRTOS.h" must appear in source files before "include queue.h"
+#error "include FreeRTOS.h" must appear in source files before "include queue.h"
 #endif
 
 #ifdef __cplusplus
@@ -85,21 +85,21 @@ extern "C" {
  * returns an QueueHandle_t variable that can then be used as a parameter to
  * xQueueSend(), xQueueReceive(), etc.
  */
-typedef void * QueueHandle_t;
+typedef void* QueueHandle_t;
 
 /**
  * Type by which queue sets are referenced.  For example, a call to
  * xQueueCreateSet() returns an xQueueSet variable that can then be used as a
  * parameter to xQueueSelectFromSet(), xQueueAddToSet(), etc.
  */
-typedef void * QueueSetHandle_t;
+typedef void* QueueSetHandle_t;
 
 /**
  * Queue sets can contain both queues and semaphores, so the
  * QueueSetMemberHandle_t is defined as a type to be used where a parameter or
  * return value can be either an QueueHandle_t or an SemaphoreHandle_t.
  */
-typedef void * QueueSetMemberHandle_t;
+typedef void* QueueSetMemberHandle_t;
 
 /* For internal use only. */
 #define	queueSEND_TO_BACK		( ( BaseType_t ) 0 )
@@ -183,7 +183,7 @@ typedef void * QueueSetMemberHandle_t;
  * \ingroup QueueManagement
  */
 #if( configSUPPORT_DYNAMIC_ALLOCATION == 1 )
-	#define xQueueCreate( uxQueueLength, uxItemSize ) xQueueGenericCreate( ( uxQueueLength ), ( uxItemSize ), ( queueQUEUE_TYPE_BASE ) )
+#define xQueueCreate( uxQueueLength, uxItemSize ) xQueueGenericCreate( ( uxQueueLength ), ( uxItemSize ), ( queueQUEUE_TYPE_BASE ) )
 #endif
 
 /**
@@ -269,7 +269,7 @@ typedef void * QueueSetMemberHandle_t;
  * \ingroup QueueManagement
  */
 #if( configSUPPORT_STATIC_ALLOCATION == 1 )
-	#define xQueueCreateStatic( uxQueueLength, uxItemSize, pucQueueStorage, pxQueueBuffer ) xQueueGenericCreateStatic( ( uxQueueLength ), ( uxItemSize ), ( pucQueueStorage ), ( pxQueueBuffer ), ( queueQUEUE_TYPE_BASE ) )
+#define xQueueCreateStatic( uxQueueLength, uxItemSize, pucQueueStorage, pxQueueBuffer ) xQueueGenericCreateStatic( ( uxQueueLength ), ( uxItemSize ), ( pucQueueStorage ), ( pxQueueBuffer ), ( queueQUEUE_TYPE_BASE ) )
 #endif /* configSUPPORT_STATIC_ALLOCATION */
 
 /**
@@ -689,7 +689,7 @@ typedef void * QueueSetMemberHandle_t;
  * \defgroup xQueueSend xQueueSend
  * \ingroup QueueManagement
  */
-PRIVILEGED_FUNCTION BaseType_t xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQueue, TickType_t xTicksToWait, const BaseType_t xCopyPosition );
+PRIVILEGED_FUNCTION BaseType_t xQueueGenericSend( QueueHandle_t xQueue, const void* const pvItemToQueue, TickType_t xTicksToWait, const BaseType_t xCopyPosition );
 
 /**
  * queue. h
@@ -818,7 +818,7 @@ PRIVILEGED_FUNCTION BaseType_t xQueueGenericSend( QueueHandle_t xQueue, const vo
  * \defgroup xQueuePeekFromISR xQueuePeekFromISR
  * \ingroup QueueManagement
  */
-PRIVILEGED_FUNCTION BaseType_t xQueuePeekFromISR( QueueHandle_t xQueue, void * const pvBuffer );
+PRIVILEGED_FUNCTION BaseType_t xQueuePeekFromISR( QueueHandle_t xQueue, void* const pvBuffer );
 
 /**
  * queue. h
@@ -1010,7 +1010,7 @@ PRIVILEGED_FUNCTION BaseType_t xQueuePeekFromISR( QueueHandle_t xQueue, void * c
  * \defgroup xQueueReceive xQueueReceive
  * \ingroup QueueManagement
  */
-PRIVILEGED_FUNCTION BaseType_t xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer, TickType_t xTicksToWait, const BaseType_t xJustPeek );
+PRIVILEGED_FUNCTION BaseType_t xQueueGenericReceive( QueueHandle_t xQueue, void* const pvBuffer, TickType_t xTicksToWait, const BaseType_t xJustPeek );
 
 /**
  * queue. h
@@ -1437,8 +1437,8 @@ uint32_t ulVarToSend, ulValReceived;
  * \defgroup xQueueSendFromISR xQueueSendFromISR
  * \ingroup QueueManagement
  */
-PRIVILEGED_FUNCTION BaseType_t xQueueGenericSendFromISR( QueueHandle_t xQueue, const void * const pvItemToQueue, BaseType_t * const pxHigherPriorityTaskWoken, const BaseType_t xCopyPosition );
-PRIVILEGED_FUNCTION BaseType_t xQueueGiveFromISR( QueueHandle_t xQueue, BaseType_t * const pxHigherPriorityTaskWoken );
+PRIVILEGED_FUNCTION BaseType_t xQueueGenericSendFromISR( QueueHandle_t xQueue, const void* const pvItemToQueue, BaseType_t* const pxHigherPriorityTaskWoken, const BaseType_t xCopyPosition );
+PRIVILEGED_FUNCTION BaseType_t xQueueGiveFromISR( QueueHandle_t xQueue, BaseType_t* const pxHigherPriorityTaskWoken );
 
 /**
  * queue. h
@@ -1527,7 +1527,7 @@ PRIVILEGED_FUNCTION BaseType_t xQueueGiveFromISR( QueueHandle_t xQueue, BaseType
  * \defgroup xQueueReceiveFromISR xQueueReceiveFromISR
  * \ingroup QueueManagement
  */
-PRIVILEGED_FUNCTION BaseType_t xQueueReceiveFromISR( QueueHandle_t xQueue, void * const pvBuffer, BaseType_t * const pxHigherPriorityTaskWoken );
+PRIVILEGED_FUNCTION BaseType_t xQueueReceiveFromISR( QueueHandle_t xQueue, void* const pvBuffer, BaseType_t* const pxHigherPriorityTaskWoken );
 
 /*
  * Utilities to query queues that are safe to use from an ISR.  These utilities
@@ -1546,10 +1546,10 @@ PRIVILEGED_FUNCTION UBaseType_t uxQueueMessagesWaitingFromISR( const QueueHandle
  * should not be called directly from application code.  Instead use the macro
  * wrappers defined within croutine.h.
  */
-BaseType_t xQueueCRSendFromISR( QueueHandle_t xQueue, const void *pvItemToQueue, BaseType_t xCoRoutinePreviouslyWoken );
-BaseType_t xQueueCRReceiveFromISR( QueueHandle_t xQueue, void *pvBuffer, BaseType_t *pxTaskWoken );
-BaseType_t xQueueCRSend( QueueHandle_t xQueue, const void *pvItemToQueue, TickType_t xTicksToWait );
-BaseType_t xQueueCRReceive( QueueHandle_t xQueue, void *pvBuffer, TickType_t xTicksToWait );
+BaseType_t xQueueCRSendFromISR( QueueHandle_t xQueue, const void* pvItemToQueue, BaseType_t xCoRoutinePreviouslyWoken );
+BaseType_t xQueueCRReceiveFromISR( QueueHandle_t xQueue, void* pvBuffer, BaseType_t* pxTaskWoken );
+BaseType_t xQueueCRSend( QueueHandle_t xQueue, const void* pvItemToQueue, TickType_t xTicksToWait );
+BaseType_t xQueueCRReceive( QueueHandle_t xQueue, void* pvBuffer, TickType_t xTicksToWait );
 
 /*
  * For internal use only.  Use xSemaphoreCreateMutex(),
@@ -1557,9 +1557,9 @@ BaseType_t xQueueCRReceive( QueueHandle_t xQueue, void *pvBuffer, TickType_t xTi
  * these functions directly.
  */
 PRIVILEGED_FUNCTION QueueHandle_t xQueueCreateMutex( const uint8_t ucQueueType );
-PRIVILEGED_FUNCTION QueueHandle_t xQueueCreateMutexStatic( const uint8_t ucQueueType, StaticQueue_t *pxStaticQueue );
+PRIVILEGED_FUNCTION QueueHandle_t xQueueCreateMutexStatic( const uint8_t ucQueueType, StaticQueue_t* pxStaticQueue );
 PRIVILEGED_FUNCTION QueueHandle_t xQueueCreateCountingSemaphore( const UBaseType_t uxMaxCount, const UBaseType_t uxInitialCount );
-PRIVILEGED_FUNCTION QueueHandle_t xQueueCreateCountingSemaphoreStatic( const UBaseType_t uxMaxCount, const UBaseType_t uxInitialCount, StaticQueue_t *pxStaticQueue );
+PRIVILEGED_FUNCTION QueueHandle_t xQueueCreateCountingSemaphoreStatic( const UBaseType_t uxMaxCount, const UBaseType_t uxInitialCount, StaticQueue_t* pxStaticQueue );
 PRIVILEGED_FUNCTION void* xQueueGetMutexHolder( QueueHandle_t xSemaphore );
 
 /*
@@ -1598,7 +1598,7 @@ PRIVILEGED_FUNCTION BaseType_t xQueueGiveMutexRecursive( QueueHandle_t pxMutex )
  * preferably in ROM/Flash), not on the stack.
  */
 #if( configQUEUE_REGISTRY_SIZE > 0 )
-	PRIVILEGED_FUNCTION void vQueueAddToRegistry( QueueHandle_t xQueue, const char *pcName ); /*lint !e971 Unqualified char types are allowed for strings and single characters only. */
+PRIVILEGED_FUNCTION void vQueueAddToRegistry( QueueHandle_t xQueue, const char* pcName ); /*lint !e971 Unqualified char types are allowed for strings and single characters only. */
 #endif
 
 /*
@@ -1612,7 +1612,7 @@ PRIVILEGED_FUNCTION BaseType_t xQueueGiveMutexRecursive( QueueHandle_t pxMutex )
  * @param xQueue The handle of the queue being removed from the registry.
  */
 #if( configQUEUE_REGISTRY_SIZE > 0 )
-	PRIVILEGED_FUNCTION void vQueueUnregisterQueue( QueueHandle_t xQueue );
+PRIVILEGED_FUNCTION void vQueueUnregisterQueue( QueueHandle_t xQueue );
 #endif
 
 /*
@@ -1627,7 +1627,7 @@ PRIVILEGED_FUNCTION BaseType_t xQueueGiveMutexRecursive( QueueHandle_t pxMutex )
  * returned.
  */
 #if( configQUEUE_REGISTRY_SIZE > 0 )
-	PRIVILEGED_FUNCTION const char *pcQueueGetName( QueueHandle_t xQueue ); /*lint !e971 Unqualified char types are allowed for strings and single characters only. */
+PRIVILEGED_FUNCTION const char* pcQueueGetName( QueueHandle_t xQueue ); /*lint !e971 Unqualified char types are allowed for strings and single characters only. */
 #endif
 
 /*
@@ -1636,7 +1636,7 @@ PRIVILEGED_FUNCTION BaseType_t xQueueGiveMutexRecursive( QueueHandle_t pxMutex )
  * RTOS objects that use the queue structure as their base.
  */
 #if( configSUPPORT_DYNAMIC_ALLOCATION == 1 )
-	PRIVILEGED_FUNCTION QueueHandle_t xQueueGenericCreate( const UBaseType_t uxQueueLength, const UBaseType_t uxItemSize, const uint8_t ucQueueType );
+PRIVILEGED_FUNCTION QueueHandle_t xQueueGenericCreate( const UBaseType_t uxQueueLength, const UBaseType_t uxItemSize, const uint8_t ucQueueType );
 #endif
 
 /*
@@ -1645,7 +1645,7 @@ PRIVILEGED_FUNCTION BaseType_t xQueueGiveMutexRecursive( QueueHandle_t pxMutex )
  * RTOS objects that use the queue structure as their base.
  */
 #if( configSUPPORT_STATIC_ALLOCATION == 1 )
-	PRIVILEGED_FUNCTION QueueHandle_t xQueueGenericCreateStatic( const UBaseType_t uxQueueLength, const UBaseType_t uxItemSize, uint8_t *pucQueueStorage, StaticQueue_t *pxStaticQueue, const uint8_t ucQueueType );
+PRIVILEGED_FUNCTION QueueHandle_t xQueueGenericCreateStatic( const UBaseType_t uxQueueLength, const UBaseType_t uxItemSize, uint8_t* pucQueueStorage, StaticQueue_t* pxStaticQueue, const uint8_t ucQueueType );
 #endif
 
 /*
