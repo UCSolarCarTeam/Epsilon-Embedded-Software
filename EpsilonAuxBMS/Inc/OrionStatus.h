@@ -4,7 +4,7 @@
 typedef struct OrionStatus
 {
     /**
-    * Set to 1 if charge, discharge, and safety lines from Orion are all high,
+    * Set to 1 if charge and discharge enables lines are high
     * otherwise 0
     */
     unsigned gpioOk : 1;

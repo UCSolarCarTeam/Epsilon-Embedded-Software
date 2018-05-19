@@ -27,7 +27,8 @@ typedef enum ContactorsSettingState
     CHARGE_CONTACTOR_ENABLE_CHECK,
     DISCHARGE_CONTACTOR_ENABLE_CHECK,
     DONE,
-    BLOCKED
+    BLOCKED,
+    CONTACTOR_UNPLUGGED
 } ContactorsSettingState;
 
 typedef enum ContactorState
@@ -68,7 +69,8 @@ void setContactorsTask(void const* arg)
         // Check everuthing is all good from orion's side
         if (!(orionStatus.gpioOk && orionStatus.batteryVoltagesInRange))
         {
-            state = BLOCKED;
+            if(state != CONTACTOR_UNPLUGGED)
+              state = BLOCKED;
         }
 
         switch (state)
@@ -131,6 +133,19 @@ void setContactorsTask(void const* arg)
                     state = DISCHARGE_CONTACTOR_ENABLE_CHECK;
                 }
 
+                uint8_t common = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
+                if(!common) // Common contactor must be disconnected
+                {
+                  if (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK)
+                  {
+                      continue;
+                  }
+
+                  auxStatus.contactorError = 1;
+
+                  osMutexRelease(auxStatus.auxStatusMutex);
+                  state = CONTACTOR_UNPLUGGED;
+                }
                 break;
 
             case DISCHARGE_CONTACTOR_ENABLE_CHECK:
@@ -152,6 +167,20 @@ void setContactorsTask(void const* arg)
                     state = DONE;
                 }
 
+                uint8_t charge = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
+                if(!charge) // Charge contactor must be disconnected
+                {
+                  if (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK)
+                  {
+                      continue;
+                  }
+
+                  auxStatus.contactorError = 1;
+
+                  osMutexRelease(auxStatus.auxStatusMutex);
+                  state = CONTACTOR_UNPLUGGED;
+                }
+
                 break;
 
             case DONE:
@@ -162,8 +191,16 @@ void setContactorsTask(void const* arg)
 
                 if (!common || !charge || !discharge)
                 {
-                    // If any of the contactors are not enabled
-                    state = FIRST_CHECK;
+                    // If any of the contactors are not enabled, one of them must be disconnected
+                    if (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK)
+                    {
+                        continue;
+                    }
+
+                    auxStatus.contactorError = 1;
+
+                    osMutexRelease(auxStatus.auxStatusMutex);
+                    state = CONTACTOR_UNPLUGGED;
                 }
 
                 break;
@@ -176,7 +213,9 @@ void setContactorsTask(void const* arg)
                 }
 
                 break;
-
+            case CONTACTOR_UNPLUGGED:
+              // This is currently an unrecoverable state
+            break;
             default:
                 state = FIRST_CHECK;
         }
