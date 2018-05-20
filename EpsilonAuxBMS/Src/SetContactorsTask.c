@@ -53,7 +53,7 @@ int isContactorSet(uint16_t pin, GPIO_TypeDef* port, int current_multiplier);
 // Updates the contactorState and contactorError in auxStatus
 int updateContactorState(ContactorState newState, uint8_t error, Contactor contactor);
 // Turns off all contactors and adjusts auxstatus
-void contactorDisconnected(void);
+void disconnectContactors(void);
 
 void setContactorsTask(void const* arg)
 {
@@ -142,9 +142,9 @@ void setContactorsTask(void const* arg)
 
                 common = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
 
-                if (!common) // Common contactor must be disconnected
+                if (!common) // Common contactor has been disconnected
                 {
-                    contactorDisconnected();
+                    disconnectContactors();
                     state = CONTACTOR_DISCONNECTED;
                 }
 
@@ -172,9 +172,9 @@ void setContactorsTask(void const* arg)
                 common = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
                 charge = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
 
-                if (!charge || !common) // Charge or common contactor must be disconnected
+                if (!charge || !common) // Charge or common contactor have been disconnected
                 {
-                    contactorDisconnected();
+                    disconnectContactors();
                     state = CONTACTOR_DISCONNECTED;
                 }
 
@@ -188,8 +188,8 @@ void setContactorsTask(void const* arg)
 
                 if (!common || !charge || !discharge)
                 {
-                    // If any of the contactors are not enabled, one of them must be disconnected
-                    contactorDisconnected();
+                    // If any of the contactors are not enabled, one of them has been disconnected
+                    disconnectContactors();
                     state = CONTACTOR_DISCONNECTED;
                 }
 
@@ -336,13 +336,13 @@ uint32_t readCurrentThroughContactors(void)
     return sense;
 }
 
-void contactorDisconnected(void)
+void disconnectContactors(void)
 {
     // Turn all contactors and high voltage enable off
+    HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(COMMON_CONTACTOR_ENABLE_GPIO_Port, COMMON_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
 
     while (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK) // Not sure if this is the best idea
         // but will guarantee that we return to this spot
