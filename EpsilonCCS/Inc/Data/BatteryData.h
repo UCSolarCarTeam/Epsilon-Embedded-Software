@@ -14,15 +14,6 @@
 #define IS_READY_SIGNAL_STATUS_MASK 0x40
 #define IS_CHARGING_SIGNAL_STATUS_MASK 0x80
 
-enum BatteryPrechargeState
-{
-    IDLE = 0,
-    PRECHARGE = 1,
-    MEASURE = 2,
-    ENABLE_PACK = 3,
-    RUN = 4
-};
-
 struct BatteryData
 {
     uint32_t bmsLastReceived;
@@ -48,9 +39,6 @@ struct BatteryData
     unsigned short int highCellVoltage;
     unsigned char highCellVoltageId;
     unsigned short int averageCellVoltage;
-    unsigned char prechargeState;
-    unsigned char auxVoltage;
-    uint32_t auxBmsLastReceived;
 };
 
 extern struct BatteryData batteryData;
