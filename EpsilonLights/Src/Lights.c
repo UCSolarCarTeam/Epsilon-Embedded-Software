@@ -269,7 +269,7 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 
     if (msg->StdId == LIGHTS_INPUT_STDID && msg->DLC == 1)
     {
-        lightsInputs = msg->Data[4];
+        lightsInputs = msg->Data[0];
     }
     else if (msg->StdId == BATTERY_STAT_ERRORS_STDID && msg->DLC == 5)
     {
