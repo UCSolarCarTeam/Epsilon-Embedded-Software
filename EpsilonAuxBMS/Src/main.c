@@ -101,8 +101,8 @@ static void MX_CAN1_UserInit(void);
 /* USER CODE BEGIN 0 */
 static const uint32_t ORION_MAX_MIN_VOLTAGES_STDID  = 0x30A;
 static const uint32_t DRIVERS_INPUTS_STDID  = 0x703;
-// Assuming extra bit is placed at the beginning (XDDDDDDDD)
-static const uint8_t DRIVERS_INPUTS_AUX_BIT_POSITION = 7;
+// Assuming extra bit is placed at the end (DDDDDDDDX)
+static const uint8_t DRIVERS_INPUTS_AUX_BIT_POSITION = 6;
 /* USER CODE END 0 */
 
 int main(void)
@@ -509,12 +509,12 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     if (msg->StdId == ORION_MAX_MIN_VOLTAGES_STDID && msg->DLC == 8)
     {
         // Voltages are 2 bytes each, and memory is stored in little endian format
-        orionStatus.maxCellVoltage = (uint16_t)msg->Data[6] << 8 | msg->Data[7]; // Max Cell voltage
-        orionStatus.minCellVoltage = (uint16_t)msg->Data[4] << 8 | msg->Data[5]; // Min Cell Voltage
+        orionStatus.maxCellVoltage = (uint16_t)msg->Data[0] << 8 | msg->Data[1]; // Max Cell voltage
+        orionStatus.minCellVoltage = (uint16_t)msg->Data[3] << 8 | msg->Data[2]; // Min Cell Voltage
     }
     else if (msg->StdId == DRIVERS_INPUTS_STDID && msg->DLC == 4)
     {
-        driversInput.aux = msg->Data[0] >> DRIVERS_INPUTS_AUX_BIT_POSITION & 1;
+        driversInput.aux = msg->Data[3] >> DRIVERS_INPUTS_AUX_BIT_POSITION & 1;
     }
 
     __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);

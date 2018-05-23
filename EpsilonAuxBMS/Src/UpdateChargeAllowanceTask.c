@@ -20,6 +20,10 @@ void updateChargeAllowanceTask(void const* arg)
            and the cell with the lowest voltage. Must check if the voltage of the cell with the highest
            voltage is too high or in range and if the cell with the lowest voltage is too low or in range.
         */
+        if(!auxStatus.startUpSequenceDone)
+        {
+          continue;
+        }
 
         uint8_t voltagesInRange = 1;
         uint8_t allowCharge = 1;
@@ -39,8 +43,10 @@ void updateChargeAllowanceTask(void const* arg)
                 if (!HAL_GPIO_ReadPin(DISCHARGE_ENABLE_SENSE_GPIO_Port, DISCHARGE_ENABLE_SENSE_Pin))
                 {
                     allowDischarge = 0;
-                    // Turn off discharge contactor, and high voltage enable
+                    commonContactorOff = 1;
+                    // Turn off common and discharge contactor, and high voltage enable
                     HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
+                    HAL_GPIO_WritePin(COMMON_CONTACTOR_ENABLE_GPIO_Port, COMMON_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
                     HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
                 }
             }
@@ -131,6 +137,8 @@ void updateChargeAllowanceTask(void const* arg)
 
         orionStatus.batteryVoltagesInRange = voltagesInRange;
         orionStatus.gpioOk = orionGpioOk;
+        orionStatus.allowCharge = allowCharge;
+        orionStatus.allowDischarge = allowDischarge;
 
         osMutexRelease(orionStatus.orionStatusMutex);
     }

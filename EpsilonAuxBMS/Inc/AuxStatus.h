@@ -10,8 +10,8 @@ typedef struct AuxStatus
     unsigned strobeBmsLight : 1;
     unsigned allowCharge : 1;
     unsigned contactorError : 1;
+    unsigned startUpSequenceDone: 1;
     osMutexId auxStatusMutex;
 } AuxStatus;
 
 extern AuxStatus auxStatus;
-

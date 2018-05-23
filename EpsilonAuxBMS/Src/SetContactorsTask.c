@@ -27,7 +27,6 @@ typedef enum ContactorsSettingState
     CHARGE_CONTACTOR_ENABLE_CHECK,
     DISCHARGE_CONTACTOR_ENABLE_CHECK,
     DONE,
-    BLOCKED,
     CONTACTOR_DISCONNECTED
 } ContactorsSettingState;
 
@@ -70,15 +69,6 @@ void setContactorsTask(void const* arg)
     for (;;)
     {
         osDelayUntil(&prevWakeTime, AUX_SET_CONTACTOR_FREQ);
-
-        // Check everything is all good from orion's side
-        if (!(orionStatus.gpioOk && orionStatus.batteryVoltagesInRange))
-        {
-            if (state != CONTACTOR_DISCONNECTED)
-            {
-                state = BLOCKED;
-            }
-        }
 
         switch (state)
         {
@@ -127,8 +117,11 @@ void setContactorsTask(void const* arg)
                 if (!contactorError)
                 {
                     contactorState = ON;
-                    // Turn on discharge contactor
-                    HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
+                    if(!auxStatus.startUpSequenceDone)
+                    {
+                      // Turn on discharge contactor
+                      HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
+                    }
                 }
                 else
                 {
@@ -137,7 +130,14 @@ void setContactorsTask(void const* arg)
 
                 if (updateContactorState(contactorState, contactorError, CHARGE))
                 {
-                    state = DISCHARGE_CONTACTOR_ENABLE_CHECK;
+                    if(!auxStatus.startUpSequenceDone)
+                    {
+                      state = DISCHARGE_CONTACTOR_ENABLE_CHECK;
+                    }
+                    else
+                    {
+                      state = DONE;
+                    }
                 }
 
                 common = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
@@ -186,23 +186,28 @@ void setContactorsTask(void const* arg)
                 charge = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
                 discharge = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
 
-                if (!common || !charge || !discharge)
+                if ((orionStatus.gpioOk && orionStatus.batteryVoltagesInRange) &&
+                    !(common && charge && discharge))
                 {
                     // If any of the contactors are not enabled, one of them has been disconnected
                     disconnectContactors();
                     state = CONTACTOR_DISCONNECTED;
                 }
-
-                break;
-            }
-
-            case BLOCKED:
-                if (orionStatus.gpioOk && orionStatus.batteryVoltagesInRange)
+                else if (orionStatus.allowCharge && !charge)
                 {
-                    state = FIRST_CHECK;
+                  // Turn on charge Contactor and go back to recheck
+                  HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
+                  state = CHARGE_CONTACTOR_ENABLE_CHECK;
+                }
+                else if (orionStatus.allowDischarge && !discharge)
+                {
+                  // Turn on discharge contactor and go back to recheck
+                  HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
+                  state = DISCHARGE_CONTACTOR_ENABLE_CHECK;
                 }
 
                 break;
+            }
 
             case CONTACTOR_DISCONNECTED:
                 // This is currently an unrecoverable state
@@ -235,6 +240,10 @@ int updateContactorState(ContactorState newState, uint8_t error, Contactor conta
 
         case DISCHARGE:
             auxStatus.dischargeContactorState = newState;
+            if(newState == ON)
+            {
+              auxStatus.startUpSequenceDone = 1;
+            }
             break;
 
         default:
