@@ -117,10 +117,11 @@ void setContactorsTask(void const* arg)
                 if (!contactorError)
                 {
                     contactorState = ON;
-                    if(!auxStatus.startUpSequenceDone)
+
+                    if (!auxStatus.startUpSequenceDone)
                     {
-                      // Turn on discharge contactor
-                      HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
+                        // Turn on discharge contactor
+                        HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
                     }
                 }
                 else
@@ -130,13 +131,13 @@ void setContactorsTask(void const* arg)
 
                 if (updateContactorState(contactorState, contactorError, CHARGE))
                 {
-                    if(!auxStatus.startUpSequenceDone)
+                    if (!auxStatus.startUpSequenceDone)
                     {
-                      state = DISCHARGE_CONTACTOR_ENABLE_CHECK;
+                        state = DISCHARGE_CONTACTOR_ENABLE_CHECK;
                     }
                     else
                     {
-                      state = DONE;
+                        state = DONE;
                     }
                 }
 
@@ -187,7 +188,7 @@ void setContactorsTask(void const* arg)
                 discharge = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
 
                 if ((orionStatus.gpioOk && orionStatus.batteryVoltagesInRange) &&
-                    !(common && charge && discharge))
+                        !(common && charge && discharge))
                 {
                     // If any of the contactors are not enabled, one of them has been disconnected
                     disconnectContactors();
@@ -195,15 +196,15 @@ void setContactorsTask(void const* arg)
                 }
                 else if (orionStatus.allowCharge && !charge)
                 {
-                  // Turn on charge Contactor and go back to recheck
-                  HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
-                  state = CHARGE_CONTACTOR_ENABLE_CHECK;
+                    // Turn on charge Contactor and go back to recheck
+                    HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
+                    state = CHARGE_CONTACTOR_ENABLE_CHECK;
                 }
                 else if (orionStatus.allowDischarge && !discharge)
                 {
-                  // Turn on discharge contactor and go back to recheck
-                  HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
-                  state = DISCHARGE_CONTACTOR_ENABLE_CHECK;
+                    // Turn on discharge contactor and go back to recheck
+                    HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
+                    state = DISCHARGE_CONTACTOR_ENABLE_CHECK;
                 }
 
                 break;
@@ -240,10 +241,12 @@ int updateContactorState(ContactorState newState, uint8_t error, Contactor conta
 
         case DISCHARGE:
             auxStatus.dischargeContactorState = newState;
-            if(newState == ON)
+
+            if (newState == ON)
             {
-              auxStatus.startUpSequenceDone = 1;
+                auxStatus.startUpSequenceDone = 1;
             }
+
             break;
 
         default:

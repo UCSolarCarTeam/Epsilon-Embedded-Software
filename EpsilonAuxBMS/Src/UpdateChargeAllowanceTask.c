@@ -20,9 +20,9 @@ void updateChargeAllowanceTask(void const* arg)
            and the cell with the lowest voltage. Must check if the voltage of the cell with the highest
            voltage is too high or in range and if the cell with the lowest voltage is too low or in range.
         */
-        if(!auxStatus.startUpSequenceDone)
+        if (!auxStatus.startUpSequenceDone)
         {
-          continue;
+            continue;
         }
 
         uint8_t voltagesInRange = 1;
