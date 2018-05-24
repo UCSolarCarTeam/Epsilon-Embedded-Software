@@ -14,6 +14,10 @@ typedef struct OrionStatus
     * see ReadOrionGpioTask.c
     */
     unsigned batteryVoltagesInRange : 1;
+    /**
+    * Set to 1 if Orion had overriden the previous contactor gpio value.
+    * otherwise 0
+    */
     unsigned contactorOverriden : 1;
     unsigned allowCharge : 1;
     unsigned allowDischarge : 1;

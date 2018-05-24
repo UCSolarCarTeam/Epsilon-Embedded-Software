@@ -33,7 +33,7 @@ void updateChargeAllowanceTask(void const* arg)
 
         if (auxStatus.startUpSequenceDone)
         {
-          if (driversInput.aux)
+          if (driversInput.aux) // Aux mode
           {
               if (!HAL_GPIO_ReadPin(CHARGE_ENABLE_SENSE_GPIO_Port, CHARGE_ENABLE_SENSE_Pin))
               {
@@ -91,6 +91,7 @@ void updateChargeAllowanceTask(void const* arg)
         if (DEFAULT_VOLTAGE_UNITS * orionStatus.maxCellVoltage > MAX_CELL_VOLTAGE)
         {
             voltagesInRange = 0;
+            contactorOverride = 1;
 
             if (allowCharge) // To avoid wasting time writing to the pin again
             {
@@ -103,7 +104,8 @@ void updateChargeAllowanceTask(void const* arg)
         if (DEFAULT_VOLTAGE_UNITS * orionStatus.minCellVoltage < MIN_CELL_VOLTAGE)
         {
             voltagesInRange = 0;
-
+            contactorOverride = 1;
+            
             if (allowDischarge) // To avoid wasting time writing to the pin again
             {
                 allowDischarge = 0;
@@ -129,6 +131,7 @@ void updateChargeAllowanceTask(void const* arg)
         if (!allowDischarge)
         {
             auxStatus.dischargeContactorState = 0;
+            auxStatus.highVoltageEnableState = 0;
         }
 
         if (commonContactorOff)

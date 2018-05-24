@@ -33,7 +33,8 @@ void reportAuxStatusToCanTask(void const* arg)
         hcan1.pTxMsg->Data[1] =
             auxStatus.strobeBmsLight |
             auxStatus.allowCharge << 1 |
-            auxStatus.contactorError << 2;
+            auxStatus.contactorError << 2 |
+            auxStatus.highVoltageEnableState << 3;
 
         // Send CAN message
         if (HAL_CAN_Transmit_IT(&hcan1) == HAL_OK)

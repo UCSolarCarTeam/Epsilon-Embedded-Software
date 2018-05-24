@@ -277,6 +277,7 @@ int updateContactorState(ContactorState newState, uint8_t error, Contactor conta
             if (newState == ON)
             {
                 auxStatus.startUpSequenceDone = 1;
+                auxStatus.highVoltageEnableState = 1;
             }
 
             break;
@@ -398,6 +399,7 @@ void disconnectContactors(void)
     auxStatus.commonContactorState = 0;
     auxStatus.chargeContactorState = 0;
     auxStatus.dischargeContactorState = 0;
+    auxStatus.highVoltageEnableState = 0;
 
     osMutexRelease(auxStatus.auxStatusMutex);
 }
