@@ -27,7 +27,7 @@ void updateChargeAllowanceTask(void const* arg)
         uint8_t commonContactorOff = 0;
         uint8_t orionGpioOk = 1;
 
-        if (!auxStatus.startUpSequenceDone)
+        if (auxStatus.startUpSequenceDone)
         {
           if (driversInput.aux)
           {
