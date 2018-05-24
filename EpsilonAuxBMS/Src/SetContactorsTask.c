@@ -27,6 +27,7 @@ typedef enum ContactorsSettingState
     CHARGE_CONTACTOR_ENABLE_CHECK,
     DISCHARGE_CONTACTOR_ENABLE_CHECK,
     DONE,
+    BLOCKED,
     CONTACTOR_DISCONNECTED
 } ContactorsSettingState;
 
@@ -70,6 +71,10 @@ void setContactorsTask(void const* arg)
     {
         osDelayUntil(&prevWakeTime, AUX_SET_CONTACTOR_FREQ);
 
+        if(!orionStatus.batteryVoltagesInRange && !auxStatus.startUpSequenceDone)
+        {
+          state = BLOCKED;
+        }
         switch (state)
         {
             case FIRST_CHECK:
@@ -210,6 +215,12 @@ void setContactorsTask(void const* arg)
                 break;
             }
 
+            case BLOCKED:
+                if(orionStatus.batteryVoltagesInRange)
+                {
+                  state = FIRST_CHECK;
+                }
+                break;
             case CONTACTOR_DISCONNECTED:
                 // This is currently an unrecoverable state
                 break;
