@@ -72,10 +72,11 @@ void setContactorsTask(void const* arg)
     {
         osDelayUntil(&prevWakeTime, AUX_SET_CONTACTOR_FREQ);
 
-        if(!orionStatus.batteryVoltagesInRange && !auxStatus.startUpSequenceDone)
+        if (!orionStatus.batteryVoltagesInRange && !auxStatus.startUpSequenceDone)
         {
-          state = BLOCKED;
+            state = BLOCKED;
         }
+
         switch (state)
         {
             case FIRST_CHECK:
@@ -193,10 +194,10 @@ void setContactorsTask(void const* arg)
                 charge = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
                 discharge = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
 
-                if(orionStatus.shutOff)
+                if (orionStatus.shutOff)
                 {
-                  state = SHUTDOWN;
-                  continue;
+                    state = SHUTDOWN;
+                    continue;
                 }
 
                 if (orionStatus.allowCharge && orionStatus.contactorOverriden && !charge)
@@ -205,6 +206,7 @@ void setContactorsTask(void const* arg)
                     {
                         continue;
                     }
+
                     orionStatus.contactorOverriden = 0;
                     osMutexRelease(orionStatus.orionStatusMutex);
 
@@ -218,6 +220,7 @@ void setContactorsTask(void const* arg)
                     {
                         continue;
                     }
+
                     orionStatus.contactorOverriden = 0;
                     osMutexRelease(orionStatus.orionStatusMutex);
 
@@ -226,7 +229,7 @@ void setContactorsTask(void const* arg)
                     state = DISCHARGE_CONTACTOR_ENABLE_CHECK;
                 }
                 else if ((orionStatus.gpioOk && orionStatus.batteryVoltagesInRange) &&
-                          !(common && charge && discharge))
+                         !(common && charge && discharge))
                 {
                     // If any of the contactors are not enabled, one of them has been disconnected
                     disconnectContactors();
@@ -237,15 +240,17 @@ void setContactorsTask(void const* arg)
             }
 
             case BLOCKED:
-                if(orionStatus.batteryVoltagesInRange)
+                if (orionStatus.batteryVoltagesInRange)
                 {
-                  state = FIRST_CHECK;
+                    state = FIRST_CHECK;
                 }
+
                 break;
 
             case CONTACTOR_DISCONNECTED:
             case SHUTDOWN:
                 break;
+
             default:
                 state = FIRST_CHECK;
         }
