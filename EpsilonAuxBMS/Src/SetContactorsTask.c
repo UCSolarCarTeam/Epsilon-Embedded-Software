@@ -28,7 +28,8 @@ typedef enum ContactorsSettingState
     DISCHARGE_CONTACTOR_ENABLE_CHECK,
     DONE,
     BLOCKED,
-    CONTACTOR_DISCONNECTED
+    CONTACTOR_DISCONNECTED,
+    SHUTDOWN
 } ContactorsSettingState;
 
 typedef enum ContactorState
@@ -192,28 +193,34 @@ void setContactorsTask(void const* arg)
                 charge = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
                 discharge = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
 
-                if (orionStatus.allowCharge && orionStatus.contactorOverride && !charge)
+                if(orionStatus.shutOff)
+                {
+                  state = SHUTDOWN;
+                  continue;
+                }
+
+                if (orionStatus.allowCharge && orionStatus.contactorOverriden && !charge)
                 {
                     if (osMutexWait(orionStatus.orionStatusMutex, 0) != osOK)
                     {
                         continue;
                     }
-                    orionStatus.contactorOverride = 0;
+                    orionStatus.contactorOverriden = 0;
                     osMutexRelease(orionStatus.orionStatusMutex);
 
                     // Turn on charge Contactor and go back to recheck
                     HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
                     state = CHARGE_CONTACTOR_ENABLE_CHECK;
                 }
-                else if (orionStatus.allowDischarge && orionStatus.contactorOverride && !discharge)
+                else if (orionStatus.allowDischarge && orionStatus.contactorOverriden && !discharge)
                 {
                     if (osMutexWait(orionStatus.orionStatusMutex, 0) != osOK)
                     {
                         continue;
                     }
-                    orionStatus.contactorOverride = 0;
+                    orionStatus.contactorOverriden = 0;
                     osMutexRelease(orionStatus.orionStatusMutex);
-                    
+
                     // Turn on discharge contactor and go back to recheck
                     HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
                     state = DISCHARGE_CONTACTOR_ENABLE_CHECK;
@@ -235,10 +242,10 @@ void setContactorsTask(void const* arg)
                   state = FIRST_CHECK;
                 }
                 break;
-            case CONTACTOR_DISCONNECTED:
-                // This is currently an unrecoverable state
-                break;
 
+            case CONTACTOR_DISCONNECTED:
+            case SHUTDOWN:
+                break;
             default:
                 state = FIRST_CHECK;
         }

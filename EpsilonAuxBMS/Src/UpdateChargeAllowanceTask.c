@@ -11,7 +11,6 @@ void updateChargeAllowanceTask(void const* arg)
 {
     // One time osDelayUntil initialization
     uint32_t prevWakeTime = osKernelSysTick();
-
     for (;;)
     {
         osDelayUntil(&prevWakeTime, CHARGE_ALLOWANCE_UPDATE_FREQ);
@@ -20,13 +19,17 @@ void updateChargeAllowanceTask(void const* arg)
            and the cell with the lowest voltage. Must check if the voltage of the cell with the highest
            voltage is too high or in range and if the cell with the lowest voltage is too low or in range.
         */
-
+        if(orionStatus.shutOff)
+        {
+          continue;
+        }
         uint8_t voltagesInRange = 1;
         uint8_t allowCharge = 1;
         uint8_t allowDischarge = 1;
         uint8_t contactorOverride = 0;
         uint8_t commonContactorOff = 0;
         uint8_t orionGpioOk = 1;
+        uint8_t shutOff = 0;
 
         if (auxStatus.startUpSequenceDone)
         {
@@ -44,6 +47,7 @@ void updateChargeAllowanceTask(void const* arg)
                   {
                       allowDischarge = 0;
                       commonContactorOff = 1;
+                      shutOff = 1;
                       // Turn off common and discharge contactor, and high voltage enable
                       HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
                       HAL_GPIO_WritePin(COMMON_CONTACTOR_ENABLE_GPIO_Port, COMMON_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
@@ -73,6 +77,7 @@ void updateChargeAllowanceTask(void const* arg)
                   commonContactorOff = 1;
                   allowCharge = 0;
                   allowDischarge = 0;
+                  shutOff = 1;
                   // Turn all contactors and high voltage enable off
                   HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
                   HAL_GPIO_WritePin(COMMON_CONTACTOR_ENABLE_GPIO_Port, COMMON_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
@@ -143,9 +148,10 @@ void updateChargeAllowanceTask(void const* arg)
         orionStatus.gpioOk = orionGpioOk;
         orionStatus.allowCharge = allowCharge;
         orionStatus.allowDischarge = allowDischarge;
+        orionStatus.shutOff = shutOff;
         if(contactorOverride)
         {
-          orionStatus.contactorOverride = 1;
+          orionStatus.contactorOverriden = 1;
         }
 
         osMutexRelease(orionStatus.orionStatusMutex);

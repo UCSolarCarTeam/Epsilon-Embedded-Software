@@ -14,9 +14,10 @@ typedef struct OrionStatus
     * see ReadOrionGpioTask.c
     */
     unsigned batteryVoltagesInRange : 1;
-    unsigned contactorOverride : 1;
+    unsigned contactorOverriden : 1;
     unsigned allowCharge : 1;
     unsigned allowDischarge : 1;
+    unsigned shutOff : 1;
     uint16_t maxCellVoltage;
     uint16_t minCellVoltage;
     osMutexId orionStatusMutex;
