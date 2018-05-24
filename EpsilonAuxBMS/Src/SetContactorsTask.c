@@ -192,24 +192,38 @@ void setContactorsTask(void const* arg)
                 charge = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
                 discharge = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
 
-                if ((orionStatus.gpioOk && orionStatus.batteryVoltagesInRange) &&
-                        !(common && charge && discharge))
+                if (orionStatus.allowCharge && orionStatus.contactorOverride && !charge)
                 {
-                    // If any of the contactors are not enabled, one of them has been disconnected
-                    disconnectContactors();
-                    state = CONTACTOR_DISCONNECTED;
-                }
-                else if (orionStatus.allowCharge && !charge)
-                {
+                    if (osMutexWait(orionStatus.orionStatusMutex, 0) != osOK)
+                    {
+                        continue;
+                    }
+                    orionStatus.contactorOverride = 0;
+                    osMutexRelease(orionStatus.orionStatusMutex);
+
                     // Turn on charge Contactor and go back to recheck
                     HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
                     state = CHARGE_CONTACTOR_ENABLE_CHECK;
                 }
-                else if (orionStatus.allowDischarge && !discharge)
+                else if (orionStatus.allowDischarge && orionStatus.contactorOverride && !discharge)
                 {
+                    if (osMutexWait(orionStatus.orionStatusMutex, 0) != osOK)
+                    {
+                        continue;
+                    }
+                    orionStatus.contactorOverride = 0;
+                    osMutexRelease(orionStatus.orionStatusMutex);
+                    
                     // Turn on discharge contactor and go back to recheck
                     HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
                     state = DISCHARGE_CONTACTOR_ENABLE_CHECK;
+                }
+                else if ((orionStatus.gpioOk && orionStatus.batteryVoltagesInRange) &&
+                          !(common && charge && discharge))
+                {
+                    // If any of the contactors are not enabled, one of them has been disconnected
+                    disconnectContactors();
+                    state = CONTACTOR_DISCONNECTED;
                 }
 
                 break;
