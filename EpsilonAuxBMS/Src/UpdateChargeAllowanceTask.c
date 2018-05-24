@@ -25,7 +25,6 @@ void updateChargeAllowanceTask(void const* arg)
         uint8_t allowCharge = 1;
         uint8_t allowDischarge = 1;
         uint8_t commonContactorOff = 0;
-        uint8_t orionGpioOk = 1;
 
         if (!auxStatus.startUpSequenceDone)
         {
@@ -33,7 +32,6 @@ void updateChargeAllowanceTask(void const* arg)
           {
               if (!HAL_GPIO_ReadPin(CHARGE_ENABLE_SENSE_GPIO_Port, CHARGE_ENABLE_SENSE_Pin))
               {
-                  orionGpioOk = 0;
                   allowCharge = 0;
                   // Turn off charge contactor
                   HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
@@ -52,7 +50,6 @@ void updateChargeAllowanceTask(void const* arg)
               {
                   if (!HAL_GPIO_ReadPin(DISCHARGE_ENABLE_SENSE_GPIO_Port, DISCHARGE_ENABLE_SENSE_Pin))
                   {
-                      orionGpioOk = 0;
                       allowDischarge = 0;
                       // Turn off discharge contactor and high voltage enable
                       HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
@@ -65,7 +62,6 @@ void updateChargeAllowanceTask(void const* arg)
               if (!HAL_GPIO_ReadPin(CHARGE_ENABLE_SENSE_GPIO_Port, CHARGE_ENABLE_SENSE_Pin) ||
                       !HAL_GPIO_ReadPin(DISCHARGE_ENABLE_SENSE_GPIO_Port, DISCHARGE_ENABLE_SENSE_Pin))
               {
-                  orionGpioOk = 0;
                   commonContactorOff = 1;
                   allowCharge = 0;
                   allowDischarge = 0;
@@ -77,7 +73,7 @@ void updateChargeAllowanceTask(void const* arg)
               }
           }
         }
-        
+
         if (DEFAULT_VOLTAGE_UNITS * orionStatus.maxCellVoltage > MAX_CELL_VOLTAGE)
         {
             voltagesInRange = 0;
@@ -135,7 +131,6 @@ void updateChargeAllowanceTask(void const* arg)
         }
 
         orionStatus.batteryVoltagesInRange = voltagesInRange;
-        orionStatus.gpioOk = orionGpioOk;
         orionStatus.allowCharge = allowCharge;
         orionStatus.allowDischarge = allowDischarge;
 
