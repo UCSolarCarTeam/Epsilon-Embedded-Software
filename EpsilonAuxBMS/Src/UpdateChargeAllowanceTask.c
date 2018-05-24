@@ -143,7 +143,10 @@ void updateChargeAllowanceTask(void const* arg)
         orionStatus.gpioOk = orionGpioOk;
         orionStatus.allowCharge = allowCharge;
         orionStatus.allowDischarge = allowDischarge;
-        orionStatus.contactorOverride = contactorOverride;
+        if(contactorOverride)
+        {
+          orionStatus.contactorOverride = 1;
+        }
 
         osMutexRelease(orionStatus.orionStatusMutex);
     }
