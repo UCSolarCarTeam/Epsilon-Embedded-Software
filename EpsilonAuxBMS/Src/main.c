@@ -103,6 +103,7 @@ static const uint32_t ORION_MAX_MIN_VOLTAGES_STDID  = 0x30A;
 static const uint32_t DRIVERS_INPUTS_STDID  = 0x703;
 // Assuming extra bit is placed at the end (DDDDDDDDX)
 static const uint8_t DRIVERS_INPUTS_AUX_BIT_POSITION = 6;
+static const uint8_t DRIVERS_INPUTS_FORWARD_REVERSE_BIT_POSITION = 1;
 /* USER CODE END 0 */
 
 int main(void)
@@ -515,6 +516,7 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     else if (msg->StdId == DRIVERS_INPUTS_STDID && msg->DLC == 4)
     {
         driversInput.aux = msg->Data[3] >> DRIVERS_INPUTS_AUX_BIT_POSITION & 1;
+        driversInput.forwardReverse = msg->Data[3] >> DRIVERS_INPUTS_FORWARD_REVERSE_BIT_POSITION & 1;
     }
 
     __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
