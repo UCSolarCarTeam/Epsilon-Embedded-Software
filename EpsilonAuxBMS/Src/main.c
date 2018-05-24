@@ -142,7 +142,8 @@ int main(void)
     // Start with not allowing charge
     auxStatus.allowCharge = 0;
 
-    // Start with orionBatteryVoltagesOk set to 1 to allow contactor setting
+    // Start with orionGpioOk and orionBatteryVoltagesOk set to 1 to allow contactor setting
+    orionStatus.gpioOk = 1;
     orionStatus.batteryVoltagesInRange = 1;
 
     // Setup for next CAN Receive Interrupt

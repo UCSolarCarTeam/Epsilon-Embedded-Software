@@ -4,6 +4,11 @@
 typedef struct OrionStatus
 {
     /**
+    * Set to 1 if charge and discharge enables lines are high
+    * otherwise 0
+    */
+    unsigned gpioOk : 1;
+    /**
     * Set to 1 maxCellVoltage is below defined maximum
     * and minCellVoltage is above defined minimum, otherwise 0
     * see ReadOrionGpioTask.c
