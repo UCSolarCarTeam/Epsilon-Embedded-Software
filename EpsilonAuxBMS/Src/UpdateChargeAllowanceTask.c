@@ -79,7 +79,7 @@ void updateChargeAllowanceTask(void const* arg)
             }
         }
 
-        if (DEFAULT_VOLTAGE_UNITS * orionStatus.maxCellVoltage > MAX_CELL_VOLTAGE * 0.8) // Will have the cutoff to be 20% below
+        if (DEFAULT_VOLTAGE_UNITS * orionStatus.maxCellVoltage > MAX_CELL_VOLTAGE)
         {
             voltagesInRange = 0;
 
@@ -91,7 +91,7 @@ void updateChargeAllowanceTask(void const* arg)
             }
         }
 
-        if (DEFAULT_VOLTAGE_UNITS * orionStatus.minCellVoltage < MIN_CELL_VOLTAGE * 1.2) // Will have the cutoff to be 20% above
+        if (DEFAULT_VOLTAGE_UNITS * orionStatus.minCellVoltage < MIN_CELL_VOLTAGE)
         {
             voltagesInRange = 0;
 
