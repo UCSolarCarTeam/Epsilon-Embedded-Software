@@ -236,8 +236,8 @@ void setContactorsTask(void const* arg)
                     state = DISCHARGE_CONTACTOR_ENABLE_CHECK;
                 }
 
-                if((orionStatus.allowCharge && !(common && charge) && !turningOnCharge) ||
-                  (orionStatus.allowDischarge && !(common && discharge) && !turningOnDischarge))
+                if ((orionStatus.allowCharge && !(common && charge) && !turningOnCharge) ||
+                        (orionStatus.allowDischarge && !(common && discharge) && !turningOnDischarge))
                 {
                     disconnectContactors();
                     state = CONTACTOR_DISCONNECTED;
@@ -250,11 +250,12 @@ void setContactorsTask(void const* arg)
             case BLOCKED:
                 common = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
                 charge = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
-                if((prevState == DISCHARGE_CONTACTOR_ENABLE_CHECK && !(common && charge)) ||
-                    (prevState == CHARGE_CONTACTOR_ENABLE_CHECK && !common))
+
+                if ((prevState == DISCHARGE_CONTACTOR_ENABLE_CHECK && !(common && charge)) ||
+                        (prevState == CHARGE_CONTACTOR_ENABLE_CHECK && !common))
                 {
-                  disconnectContactors();
-                  state = CONTACTOR_DISCONNECTED;
+                    disconnectContactors();
+                    state = CONTACTOR_DISCONNECTED;
                 }
                 else if (orionStatus.batteryVoltagesInRange)
                 {
