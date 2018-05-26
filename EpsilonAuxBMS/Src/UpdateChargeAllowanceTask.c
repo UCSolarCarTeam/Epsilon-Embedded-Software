@@ -92,11 +92,11 @@ void updateChargeAllowanceTask(void const* arg)
         if (DEFAULT_VOLTAGE_UNITS * orionStatus.maxCellVoltage > MAX_CELL_VOLTAGE)
         {
             voltagesInRange = 0;
-            chargeContactorOverride = 1;
 
             if (allowCharge) // To avoid wasting time writing to the pin again
             {
                 allowCharge = 0;
+                chargeContactorOverride = 1;
                 // Turn off charge contactor
                 HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
             }
@@ -105,11 +105,11 @@ void updateChargeAllowanceTask(void const* arg)
         if (DEFAULT_VOLTAGE_UNITS * orionStatus.minCellVoltage < MIN_CELL_VOLTAGE)
         {
             voltagesInRange = 0;
-            dischargeContactorOverride = 1;
 
             if (allowDischarge) // To avoid wasting time writing to the pin again
             {
                 allowDischarge = 0;
+                dischargeContactorOverride = 1;
                 // Turn off High voltage enable and discharge contactor
                 HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
                 HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
