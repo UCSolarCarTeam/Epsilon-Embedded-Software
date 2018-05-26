@@ -38,7 +38,7 @@
 #define __STM32F4xx_HAL_DMA_EX_H
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
@@ -50,22 +50,22 @@
 
 /** @addtogroup DMAEx
   * @{
-  */ 
+  */
 
 /* Exported types ------------------------------------------------------------*/
 /** @defgroup DMAEx_Exported_Types DMAEx Exported Types
   * @brief DMAEx Exported types
   * @{
   */
-   
-/** 
-  * @brief  HAL DMA Memory definition  
-  */ 
+
+/**
+  * @brief  HAL DMA Memory definition
+  */
 typedef enum
 {
-  MEMORY0      = 0x00U,    /*!< Memory 0     */
-  MEMORY1      = 0x01U     /*!< Memory 1     */
-}HAL_DMA_MemoryTypeDef;
+    MEMORY0      = 0x00U,    /*!< Memory 0     */
+    MEMORY1      = 0x01U     /*!< Memory 1     */
+} HAL_DMA_MemoryTypeDef;
 
 /**
   * @}
@@ -83,9 +83,9 @@ typedef enum
   */
 
 /* IO operation functions *******************************************************/
-HAL_StatusTypeDef HAL_DMAEx_MultiBufferStart(DMA_HandleTypeDef *hdma, uint32_t SrcAddress, uint32_t DstAddress, uint32_t SecondMemAddress, uint32_t DataLength);
-HAL_StatusTypeDef HAL_DMAEx_MultiBufferStart_IT(DMA_HandleTypeDef *hdma, uint32_t SrcAddress, uint32_t DstAddress, uint32_t SecondMemAddress, uint32_t DataLength);
-HAL_StatusTypeDef HAL_DMAEx_ChangeMemory(DMA_HandleTypeDef *hdma, uint32_t Address, HAL_DMA_MemoryTypeDef memory);
+HAL_StatusTypeDef HAL_DMAEx_MultiBufferStart(DMA_HandleTypeDef* hdma, uint32_t SrcAddress, uint32_t DstAddress, uint32_t SecondMemAddress, uint32_t DataLength);
+HAL_StatusTypeDef HAL_DMAEx_MultiBufferStart_IT(DMA_HandleTypeDef* hdma, uint32_t SrcAddress, uint32_t DstAddress, uint32_t SecondMemAddress, uint32_t DataLength);
+HAL_StatusTypeDef HAL_DMAEx_ChangeMemory(DMA_HandleTypeDef* hdma, uint32_t Address, HAL_DMA_MemoryTypeDef memory);
 
 /**
   * @}
@@ -93,7 +93,7 @@ HAL_StatusTypeDef HAL_DMAEx_ChangeMemory(DMA_HandleTypeDef *hdma, uint32_t Addre
 /**
   * @}
   */
-         
+
 /* Private functions ---------------------------------------------------------*/
 /** @defgroup DMAEx_Private_Functions DMAEx Private Functions
   * @brief DMAEx Private functions
