@@ -511,7 +511,7 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     {
         // Voltages are 2 bytes each, and memory is stored in little endian format
         orionStatus.maxCellVoltage = (uint16_t)msg->Data[0] << 8 | msg->Data[1]; // Max Cell voltage
-        orionStatus.minCellVoltage = (uint16_t)msg->Data[3] << 8 | msg->Data[2]; // Min Cell Voltage
+        orionStatus.minCellVoltage = (uint16_t)msg->Data[2] << 8 | msg->Data[3]; // Min Cell Voltage
     }
     else if (msg->StdId == DRIVERS_INPUTS_STDID && msg->DLC == 4)
     {
