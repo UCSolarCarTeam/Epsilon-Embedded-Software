@@ -205,14 +205,14 @@ void setContactorsTask(void const* arg)
                     continue;
                 }
 
-                if (orionStatus.allowCharge && orionStatus.contactorOverriden && !charge)
+                if (orionStatus.allowCharge && orionStatus.chargeContactorOverriden && !charge)
                 {
                     if (osMutexWait(orionStatus.orionStatusMutex, 0) != osOK)
                     {
                         continue;
                     }
 
-                    orionStatus.contactorOverriden = 0;
+                    orionStatus.chargeContactorOverriden = 0;
                     osMutexRelease(orionStatus.orionStatusMutex);
 
                     turningOnCharge = 1;
@@ -220,14 +220,14 @@ void setContactorsTask(void const* arg)
                     HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
                     state = CHARGE_CONTACTOR_ENABLE_CHECK;
                 }
-                else if (orionStatus.allowDischarge && orionStatus.contactorOverriden && !discharge)
+                else if (orionStatus.allowDischarge && orionStatus.dischargeContactorOverriden && !discharge)
                 {
                     if (osMutexWait(orionStatus.orionStatusMutex, 0) != osOK)
                     {
                         continue;
                     }
 
-                    orionStatus.contactorOverriden = 0;
+                    orionStatus.dischargeContactorOverriden = 0;
                     osMutexRelease(orionStatus.orionStatusMutex);
 
                     turningOnDischarge = 1;
@@ -241,7 +241,6 @@ void setContactorsTask(void const* arg)
                 {
                     disconnectContactors();
                     state = CONTACTOR_DISCONNECTED;
-                    continue;
                 }
 
                 break;

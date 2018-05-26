@@ -13,7 +13,8 @@ typedef struct OrionStatus
     * Set to 1 if Orion had overriden the previous contactor gpio value.
     * otherwise 0
     */
-    unsigned contactorOverriden : 1;
+    unsigned chargeContactorOverriden : 1;
+    unsigned dischargeContactorOverriden : 1;
     unsigned allowCharge : 1;
     unsigned allowDischarge : 1;
     unsigned shutOff : 1;
