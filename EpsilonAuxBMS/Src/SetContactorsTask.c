@@ -314,7 +314,7 @@ int isContactorSet(uint16_t pin, GPIO_TypeDef* port, int current_multiplier)
     // Get 12bit current analog input
     uint32_t current_sense = readCurrentThroughContactors();
 
-    if (current_sense == 0xFFFFFFFF)
+    if (current_sense == 0xDEADBEEF)
     {
         return 0;
     }
@@ -377,7 +377,7 @@ uint32_t readCurrentThroughContactors(void)
         }
         else
         {
-            sense = 0xFFFFFFFF;
+            sense = 0xDEADBEEF;
             break;
         }
     }
@@ -401,6 +401,7 @@ void disconnectContactors(void)
     }
 
     auxStatus.contactorError = 1;
+    auxStatus.strobeBmsLight = 1;
     auxStatus.commonContactorState = 0;
     auxStatus.chargeContactorState = 0;
     auxStatus.dischargeContactorState = 0;

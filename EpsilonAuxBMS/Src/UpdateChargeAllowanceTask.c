@@ -139,6 +139,7 @@ void updateChargeAllowanceTask(void const* arg)
         if (commonContactorOff)
         {
             auxStatus.commonContactorState = 0;
+            auxStatus.strobeBmsLight = 1;
         }
 
         osMutexRelease(auxStatus.auxStatusMutex);
