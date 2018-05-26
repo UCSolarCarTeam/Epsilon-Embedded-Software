@@ -62,6 +62,7 @@ void setContactorsTask(void const* arg)
     uint32_t prevWakeTime = osKernelSysTick();
 
     ContactorsSettingState state = FIRST_CHECK;
+    ContactorsSettingState prevState = state;
     ContactorState contactorState = OFF;
     uint8_t contactorError = 0;
     uint8_t common;
@@ -74,6 +75,7 @@ void setContactorsTask(void const* arg)
 
         if (!orionStatus.batteryVoltagesInRange && !auxStatus.startUpSequenceDone)
         {
+            prevState = state;
             state = BLOCKED;
         }
 
@@ -194,6 +196,9 @@ void setContactorsTask(void const* arg)
                 charge = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
                 discharge = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
 
+                uint8_t turningOnCharge = 0;
+                uint8_t turningOnDischarge = 0;
+
                 if (orionStatus.shutOff)
                 {
                     state = SHUTDOWN;
@@ -210,6 +215,7 @@ void setContactorsTask(void const* arg)
                     orionStatus.contactorOverriden = 0;
                     osMutexRelease(orionStatus.orionStatusMutex);
 
+                    turningOnCharge = 1;
                     // Turn on charge Contactor and go back to recheck
                     HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
                     state = CHARGE_CONTACTOR_ENABLE_CHECK;
@@ -224,23 +230,33 @@ void setContactorsTask(void const* arg)
                     orionStatus.contactorOverriden = 0;
                     osMutexRelease(orionStatus.orionStatusMutex);
 
+                    turningOnDischarge = 1;
                     // Turn on discharge contactor and go back to recheck
                     HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
                     state = DISCHARGE_CONTACTOR_ENABLE_CHECK;
                 }
-                else if ((orionStatus.gpioOk && orionStatus.batteryVoltagesInRange) &&
-                         !(common && charge && discharge))
+
+                if((orionStatus.allowCharge && !(common && charge) && !turningOnCharge) ||
+                  (orionStatus.allowDischarge && !(common && discharge) && !turningOnDischarge))
                 {
-                    // If any of the contactors are not enabled, one of them has been disconnected
                     disconnectContactors();
                     state = CONTACTOR_DISCONNECTED;
+                    continue;
                 }
 
                 break;
             }
 
             case BLOCKED:
-                if (orionStatus.batteryVoltagesInRange)
+                common = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
+                charge = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
+                if((prevState == DISCHARGE_CONTACTOR_ENABLE_CHECK && !(common && charge)) ||
+                    (prevState == CHARGE_CONTACTOR_ENABLE_CHECK && !common))
+                {
+                  disconnectContactors();
+                  state = CONTACTOR_DISCONNECTED;
+                }
+                else if (orionStatus.batteryVoltagesInRange)
                 {
                     state = FIRST_CHECK;
                 }
