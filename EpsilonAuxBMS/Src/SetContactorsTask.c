@@ -258,6 +258,15 @@ void setContactorsTask(void const* arg)
                 }
                 else if (orionStatus.batteryVoltagesInRange)
                 {
+                    if (osMutexWait(orionStatus.orionStatusMutex, 0) != osOK)
+                    {
+                        continue;
+                    }
+                    
+                    orionStatus.chargeContactorOverriden = 0;
+                    orionStatus.dischargeContactorOverriden = 0;
+
+                    osMutexRelease(orionStatus.orionStatusMutex);
                     state = FIRST_CHECK;
                 }
 
