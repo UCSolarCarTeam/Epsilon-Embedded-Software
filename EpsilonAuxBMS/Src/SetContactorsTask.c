@@ -32,12 +32,6 @@ typedef enum ContactorsSettingState
     SHUTDOWN
 } ContactorsSettingState;
 
-typedef enum ContactorState
-{
-    OFF,
-    ON
-} ContactorState;
-
 typedef enum Contactor
 {
     COMMON,
@@ -51,8 +45,6 @@ typedef enum Contactor
 uint32_t readCurrentThroughContactors(void);
 // Function for checking if a specific contactor has been set
 int isContactorSet(uint16_t pin, GPIO_TypeDef* port, int current_multiplier);
-// Updates the contactorState and contactorError in auxStatus
-int updateContactorState(ContactorState newState, uint8_t error, Contactor contactor);
 // Turns off all contactors and adjusts auxstatus
 void disconnectContactors(void);
 
@@ -63,7 +55,6 @@ void setContactorsTask(void const* arg)
 
     ContactorsSettingState state = FIRST_CHECK;
     ContactorsSettingState prevState = state;
-    ContactorState contactorState = OFF;
     uint8_t contactorError = 0;
     uint8_t common;
     uint8_t charge;
@@ -86,14 +77,19 @@ void setContactorsTask(void const* arg)
                 // If current is high for some reason, cycle again
                 contactorError = !isContactorSet(0xFF, NULL, 1); // Don't want to read an actual sense pin
 
+                if (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK)
+                {
+                    continue;
+                }
+
+                auxStatus.contactorError = contactorError;
+
+                osMutexRelease(auxStatus.auxStatusMutex);
+
                 if (!contactorError)
                 {
                     // Turn on Common Contactor
                     HAL_GPIO_WritePin(COMMON_CONTACTOR_ENABLE_GPIO_Port, COMMON_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
-                }
-
-                if (updateContactorState(OFF, contactorError, NONE))
-                {
                     state = COMMON_CONTACTOR_ENABLE_CHECK;
                 }
 
@@ -102,20 +98,20 @@ void setContactorsTask(void const* arg)
             case COMMON_CONTACTOR_ENABLE_CHECK:
                 contactorError = !isContactorSet(COMMON_SENSE_Pin, COMMON_SENSE_GPIO_Port, 1);
 
-                if (!contactorError)
+                if (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK)
                 {
-                    contactorState = ON;
-                    // Turn on charge Contactor
-                    HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
-                }
-                else
-                {
-                    contactorState = OFF;
+                    continue;
                 }
 
-                if (updateContactorState(contactorState, contactorError, COMMON))
+                auxStatus.contactorError = contactorError;
+
+                osMutexRelease(auxStatus.auxStatusMutex);
+
+                if (!contactorError)
                 {
                     state = CHARGE_CONTACTOR_ENABLE_CHECK;
+                    // Turn on charge Contactor
+                    HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
                 }
 
                 break;
@@ -123,30 +119,26 @@ void setContactorsTask(void const* arg)
             case CHARGE_CONTACTOR_ENABLE_CHECK:
                 contactorError = !isContactorSet(CHARGE_SENSE_Pin, CHARGE_SENSE_GPIO_Port, 2);
 
+                if (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK)
+                {
+                    continue;
+                }
+
+                auxStatus.contactorError = contactorError;
+
+                osMutexRelease(auxStatus.auxStatusMutex);
+
                 if (!contactorError)
                 {
-                    contactorState = ON;
-
                     if (!auxStatus.startUpSequenceDone)
                     {
                         // Turn on discharge contactor
                         HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
-                    }
-                }
-                else
-                {
-                    contactorState = OFF;
-                }
-
-                if (updateContactorState(contactorState, contactorError, CHARGE))
-                {
-                    if (!auxStatus.startUpSequenceDone)
-                    {
                         state = DISCHARGE_CONTACTOR_ENABLE_CHECK;
                     }
                     else
                     {
-                        state = DONE;
+                      state = DONE;
                     }
                 }
 
@@ -156,6 +148,7 @@ void setContactorsTask(void const* arg)
                 {
                     disconnectContactors();
                     state = CONTACTOR_DISCONNECTED;
+                    continue;
                 }
 
                 break;
@@ -165,19 +158,22 @@ void setContactorsTask(void const* arg)
 
                 if (!contactorError)
                 {
-                    contactorState = ON;
                     // Enable high voltage
                     HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_SET);
-                }
-                else
-                {
-                    contactorState = OFF;
-                }
-
-                if (updateContactorState(contactorState, contactorError, DISCHARGE))
-                {
                     state = DONE;
                 }
+
+                if (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK)
+                {
+                    continue;
+                }
+
+                auxStatus.contactorError = contactorError;
+                auxStatus.startUpSequenceDone = 1;
+                auxStatus.highVoltageEnableState = 1;
+
+                osMutexRelease(auxStatus.auxStatusMutex);
+
 
                 common = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
                 charge = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
@@ -262,7 +258,7 @@ void setContactorsTask(void const* arg)
                     {
                         continue;
                     }
-                    
+
                     orionStatus.chargeContactorOverriden = 0;
                     orionStatus.dischargeContactorOverriden = 0;
 
@@ -279,55 +275,6 @@ void setContactorsTask(void const* arg)
             default:
                 state = FIRST_CHECK;
         }
-    }
-}
-
-int updateContactorState(ContactorState newState, uint8_t error, Contactor contactor)
-{
-    if (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK)
-    {
-        return 0;
-    }
-
-    auxStatus.contactorError = error;
-
-    switch (contactor)
-    {
-        case COMMON:
-            auxStatus.commonContactorState = newState;
-            break;
-
-        case CHARGE:
-            auxStatus.chargeContactorState = newState;
-            break;
-
-        case DISCHARGE:
-            auxStatus.dischargeContactorState = newState;
-
-            if (newState == ON)
-            {
-                auxStatus.startUpSequenceDone = 1;
-                auxStatus.highVoltageEnableState = 1;
-            }
-
-            break;
-
-        default:
-        {
-            // Do nothing
-        }
-    }
-
-    osMutexRelease(auxStatus.auxStatusMutex);
-
-    if (error)
-    {
-        return 0;
-    }
-
-    else
-    {
-        return 1;
     }
 }
 
@@ -427,9 +374,6 @@ void disconnectContactors(void)
 
     auxStatus.contactorError = 1;
     auxStatus.strobeBmsLight = 1;
-    auxStatus.commonContactorState = 0;
-    auxStatus.chargeContactorState = 0;
-    auxStatus.dischargeContactorState = 0;
     auxStatus.highVoltageEnableState = 0;
 
     osMutexRelease(auxStatus.auxStatusMutex);

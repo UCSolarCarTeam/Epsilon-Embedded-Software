@@ -14,7 +14,10 @@ void reportAuxStatusToCanTask(void const* arg)
     for (;;)
     {
         osDelayUntil(&prevWakeTime, AUX_STATUS_FREQ);
-
+        
+        auxStatus.commonContactorState = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
+        auxStatus.chargeContactorState = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
+        auxStatus.dischargeContactorState = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
         if (osMutexWait(canHandleMutex, 0) != osOK)
         {
             continue;

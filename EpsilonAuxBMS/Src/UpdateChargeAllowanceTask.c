@@ -124,20 +124,13 @@ void updateChargeAllowanceTask(void const* arg)
 
         auxStatus.allowCharge = allowCharge;
 
-        if (!allowCharge)
-        {
-            auxStatus.chargeContactorState = 0;
-        }
-
         if (!allowDischarge)
         {
-            auxStatus.dischargeContactorState = 0;
             auxStatus.highVoltageEnableState = 0;
         }
 
         if (commonContactorOff)
         {
-            auxStatus.commonContactorState = 0;
             auxStatus.strobeBmsLight = 1;
         }
 
