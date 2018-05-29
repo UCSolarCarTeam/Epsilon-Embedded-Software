@@ -152,9 +152,9 @@ void updateChargeAllowanceTask(void const* arg)
             orionStatus.chargeContactorOverriden = 1;
         }
 
-        if(dischargeContactorOverride)
+        if (dischargeContactorOverride)
         {
-          orionStatus.dischargeContactorOverriden = 1;
+            orionStatus.dischargeContactorOverriden = 1;
         }
 
         osMutexRelease(orionStatus.orionStatusMutex);

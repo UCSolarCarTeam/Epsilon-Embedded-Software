@@ -138,7 +138,7 @@ void setContactorsTask(void const* arg)
                     }
                     else
                     {
-                      state = DONE;
+                        state = DONE;
                     }
                 }
 
