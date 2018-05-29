@@ -45,8 +45,8 @@ typedef enum Contactor
 uint32_t readCurrentThroughContactors(void);
 // Function for checking if a specific contactor has been set
 int isContactorSet(uint16_t pin, GPIO_TypeDef* port, int current_multiplier);
-// Turns off all contactors and adjusts auxstatus
-void disconnectContactors(void);
+// Turns off all contactors and adjusts auxstatus if updateAuxStatus is 1
+void disconnectContactors(uint8_t updateAuxStatus);
 
 void setContactorsTask(void const* arg)
 {
@@ -146,7 +146,7 @@ void setContactorsTask(void const* arg)
 
                 if (!common) // Common contactor has been disconnected
                 {
-                    disconnectContactors();
+                    disconnectContactors(1);
                     state = CONTACTOR_DISCONNECTED;
                     continue;
                 }
@@ -180,7 +180,7 @@ void setContactorsTask(void const* arg)
 
                 if (!charge || !common) // Charge or common contactor have been disconnected
                 {
-                    disconnectContactors();
+                    disconnectContactors(1);
                     state = CONTACTOR_DISCONNECTED;
                 }
 
@@ -199,6 +199,11 @@ void setContactorsTask(void const* arg)
                 {
                     state = SHUTDOWN;
                     continue;
+                }
+                else if (!common)
+                {
+                  disconnectContactors(1);
+                  state = CONTACTOR_DISCONNECTED;
                 }
 
                 if (orionStatus.allowCharge && orionStatus.chargeContactorOverriden && !charge)
@@ -232,10 +237,10 @@ void setContactorsTask(void const* arg)
                     state = DISCHARGE_CONTACTOR_ENABLE_CHECK;
                 }
 
-                if ((orionStatus.allowCharge && !(common && charge) && !turningOnCharge) ||
-                        (orionStatus.allowDischarge && !(common && discharge) && !turningOnDischarge))
+                if ((orionStatus.allowCharge && !charge && !turningOnCharge) ||
+                        (orionStatus.allowDischarge && !discharge && !turningOnDischarge))
                 {
-                    disconnectContactors();
+                    disconnectContactors(1);
                     state = CONTACTOR_DISCONNECTED;
                 }
 
@@ -249,7 +254,7 @@ void setContactorsTask(void const* arg)
                 if ((prevState == DISCHARGE_CONTACTOR_ENABLE_CHECK && !(common && charge)) ||
                         (prevState == CHARGE_CONTACTOR_ENABLE_CHECK && !common))
                 {
-                    disconnectContactors();
+                    disconnectContactors(1);
                     state = CONTACTOR_DISCONNECTED;
                 }
                 else if (orionStatus.batteryVoltagesInRange)
@@ -358,7 +363,7 @@ uint32_t readCurrentThroughContactors(void)
     return sense;
 }
 
-void disconnectContactors(void)
+void disconnectContactors(uint8_t updateAuxStatus)
 {
     // Turn all contactors and high voltage enable off
     HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
@@ -366,15 +371,18 @@ void disconnectContactors(void)
     HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
 
-    while (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK) // Not sure if this is the best idea
-        // but will guarantee that we return to this spot
+    if(updateAuxStatus)
     {
-        osDelay(10);
+      while (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK) // Not sure if this is the best idea
+          // but will guarantee that we return to this spot
+      {
+          osDelay(10);
+      }
+
+      auxStatus.contactorError = 1;
+      auxStatus.strobeBmsLight = 1;
+      auxStatus.highVoltageEnableState = 0;
+
+      osMutexRelease(auxStatus.auxStatusMutex);
     }
-
-    auxStatus.contactorError = 1;
-    auxStatus.strobeBmsLight = 1;
-    auxStatus.highVoltageEnableState = 0;
-
-    osMutexRelease(auxStatus.auxStatusMutex);
 }
