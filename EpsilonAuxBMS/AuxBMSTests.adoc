@@ -15,37 +15,43 @@ Elapsed 1000ms{
 ----
 
 == Test Cases
+
+=== Expected Outputs
 [options="header"]
 |===
 | Test | CAN_ADDRESS | DATA_INDEX | TIME_FRAME
-| Precharge State |  0x721  |  |  100ms 
-| Aux Voltage |  0x721 |  3-7 |  100ms 
-| Charge Contactor State |  0x721  | 0-2 |  100ms 
-| Contactor State |  0x721  | 0 |  100ms 
-| All Contactor On |  0x721 |  0-2 |  100ms 
-| Discharge Off |  0x721  | 0-2 |  100ms 
-| Safety |  0x721 |  0-2 |  100ms 
-| Allow Charge |  0x721  | 9 |  100ms 
-| Strobe BMS Light |  0x721 | 8 |  100ms |
+| Precharge State |  0x721 | 0-2 |  100ms 
+| Aux Voltage |  0x721 | 3-7 |  100ms 
+| Discharge Contactor State | 0x721 |  2 |  100ms
+| Charge Contactor State | 0x721 |  1 |  100ms
+| Common Contactor State |  0x721  | 0 |  100ms 
+| Contactor Error |  0x721  | 10 |  100ms 
+| All Contactors On |  0x721 | 0-2 |  1000ms 
+| Discharge Off |  0x721  |  0-2 |  1000ms 
+| Safety |  0x721 | 0-2 |  1000ms 
+| Allow Charge |  0x721  | 9 |  1000ms
+| High Voltage Enable State|  0x721  | 11 |  1000ms
+| Strobe BMS Light |  0x721 | 8 |  200ms |
 |===
+
+= Contactor Tests
 
 == Precharge State Test
 ----
-Send (PRECHARGE_CAN_MESSAGE(CAN_ADDRESS))
 	Elapsed TIME_FRAME{
-		Expect (PRECHARGE_CAN_MESSAGE(CAN_ADDRESS))
+		Expect (CONTACTOR_CAN_MESSAGE(CAN_ADDRESS)[DATA_INDEX])
 }
 ----
 
 == Aux Voltage Test
 ----
-//Start Test
+Input Voltage From Voltage Source
 Elapsed TIME_FRAME{
-    Expect (VOLTAGE_CAN_MESSAGE(CAN_ADDRESS)[DATA_INDEX])
+    Expect (VOLTAGE_CAN_MESSAGE(CAN_ADDRESS)[DATA_INDEX] == Input Voltage)
 }
 ----
 
-== Charge Contactor Test
+== Discharge Contactor State Test
 ----
 //Start Test
 Within TIME_FRAME{
@@ -53,11 +59,35 @@ Within TIME_FRAME{
 }
 ----
 
-== Contactor State Test
+== Charge Contactor State Test
 ----
 //Start Test
 Within TIME_FRAME{
 	Expect (CONTACTOR_CAN_MESSAGE(CAN_ADDRESS)[DATA_INDEX])
+}
+----
+
+== Common Contactor State Test
+----
+//Start Test
+Within TIME_FRAME{
+	Expect (CONTACTOR_CAN_MESSAGE(CAN_ADDRESS)[DATA_INDEX])
+}
+----
+
+== Contactor Error Test
+----
+Unplug A Contactor
+Within TIME_FRAME{
+	Expect (CONTACTOR_CAN_MESSAGE(CAN_ADDRESS)[DATA_INDEX] == 0b1)
+}
+----
+
+== Contactor Removal Test -- not too sure about this one
+----
+Remove A Contactor In DONE State
+Within TIME_FRAME{
+	COMMON LED ON Before CHARGE And DISCHARGE
 }
 ----
 
@@ -65,22 +95,25 @@ Within TIME_FRAME{
 ----
 //Start Test
 
-Within 5s{
+Within TIME_FRAME{
     Expect (CONTACTOR_CAN_MESSAGE(CAN_ADDRESS)[DATA_INDEX] == 0b001) 
         COMMON LED ON
+        CHARGE LED OFF
+        DISCHARGE LED OFF
 }
-Within 5s{
+Within TIME_FRAME{
     Expect (CONTACTOR_CAN_MESSAGE(CAN_ADDRESS)[DATA_INDEX] == 0b011) 
         COMMON LED ON
         CHARGE LED ON
+        DISCHARGE LED OFF
 }
-Within 5s{
+Within TIME_FRAME{
     Expect (CONTACTOR_CAN_MESSAGE(CAN_ADDRESS)[DATA_INDEX] == 0b111) 
         COMMON LED ON
         CHARGE LED ON
         DISCHARGE LED ON
 }
-Within 5s{
+Within TIME_FRAME{
     Expect (CONTACTOR_CAN_MESSAGE(CAN_ADDRESS)[DATA_INDEX] == 0b111) 
    	    COMMON LED ON
    	    CHARGE LED ON
@@ -91,38 +124,79 @@ Within 5s{
 == Discharge Off Test
 ----
 //Start Discharge Test
-
-Within 5s{
+Within TIME_FRAME{
     Expect (CONTACTOR_CAN_MESSAGE(CAN_ADDRESS)[DATA_INDEX] == 0b101) 
         COMMON LED ON
         CHARGE LED ON
+        DISCHARGE LED OFF
 }
 ----
 
 == Safety Test
 ----
 //Start Safety Test
-
-Within 5s{
+Within TIME_FRAME{
     Expect (CONTACTOR_CAN_MESSAGE(CAN_ADDRESS)[DATA_INDEX] == 0b000) 
-        COMMON LED ON
-        DISCHARGE LED ON
+        COMMON LED OFF
+        CHARGE LED OFF
+        DISCHARGE LED OFF
 }
 ----
 
-== Strobe BMS Light Test
+== Strobe Light Test
 ----
-Send(BMS_CAN_MESSAGE(CAN_ADDRESS) == 0x200)
-    Within 200ms{
-        Expect (LIGHTS_CAN_MESSAGE(0x711) == 0x20)
+Input(BMS_CAN_MESSAGE(CAN_ADDRESS) == 0x200)
+    Within TIME_FRAME{
+        Expect (LIGHTS_CAN_MESSAGE(LIGHTS_CAN_ADDRESS) == 0x20)
 }
 ----
 
 == Allow Charge Test
 ----
-Send(BMS_CAN_MESSAGE(CAN_ADDRESS)[DATA_INDEX] == 1)
+Input Voltage < MAX_CELL_VOLTAGE And Charge Enable On
     Within TIME_FRAME{
         COMMON LED ON
         CHARGE LED ON
+        DISCHARGE LED OFF
+}
+----
+
+== Max Cell Voltage 
+----
+Input Voltage > MAX_CELL_VOLTAGE
+    Within TIME_FRAME{
+        COMMON LED ON
+        CHARGE LED OFF
+        DISCHARGE LED OFF
+}
+----
+
+== Max Cell Voltage In Range
+----
+Input Voltage < MAX_CELL_VOLTAGE
+    Within TIME_FRAME{
+        COMMON LED ON
+        CHARGE LED ON
+        DISCHARGE LED OFF
+}
+----
+
+== Min Cell Voltage 
+----
+Input Voltage < MIN_CELL_VOLTAGE
+    Within TIME_FRAME{
+        COMMON LED ON
+        DISCHARGE LED OFF
+        CHARGE LED OFF
+}
+----
+
+== Min Cell Voltage In Range 
+----
+Input Voltage > MIN_CELL_VOLTAGE
+    Within TIME_FRAME{
+        COMMON LED ON
+        DISCHARGE LED ON
+        CHARGE LED OFF
 }
 ----
