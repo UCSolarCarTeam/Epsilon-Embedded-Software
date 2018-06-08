@@ -201,8 +201,8 @@ void setContactorsTask(void const* arg)
                 }
                 else if (!common)
                 {
-                  disconnectContactors(1);
-                  state = CONTACTOR_DISCONNECTED;
+                    disconnectContactors(1);
+                    state = CONTACTOR_DISCONNECTED;
                 }
 
                 if (orionStatus.allowCharge && orionStatus.chargeContactorOverriden && !charge)
@@ -370,17 +370,17 @@ void disconnectContactors(uint8_t updateAuxStatus)
     HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
 
-    if(updateAuxStatus)
+    if (updateAuxStatus)
     {
-      while (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK) // Not sure if this is the best idea
-          // but will guarantee that we return to this spot
-      {
-          osDelay(10);
-      }
+        while (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK) // Not sure if this is the best idea
+            // but will guarantee that we return to this spot
+        {
+            osDelay(10);
+        }
 
-      auxStatus.contactorError = 1;
-      auxStatus.strobeBmsLight = 1;
+        auxStatus.contactorError = 1;
+        auxStatus.strobeBmsLight = 1;
 
-      osMutexRelease(auxStatus.auxStatusMutex);
+        osMutexRelease(auxStatus.auxStatusMutex);
     }
 }

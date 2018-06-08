@@ -27,6 +27,7 @@ void updateChargeAllowanceTask(void const* arg)
         {
             continue;
         }
+
         // Indicates if the max and min cell voltages from orion are in the desired range.
         // Defaults to 1, gets reset to 0 if any of the two cell voltages are not in range.
         // Used for communication with SetContactorsTask
