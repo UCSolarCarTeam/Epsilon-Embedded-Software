@@ -136,11 +136,6 @@ void updateChargeAllowanceTask(void const* arg)
 
         auxStatus.allowCharge = allowCharge;
 
-        if (!allowDischarge)
-        {
-            auxStatus.highVoltageEnableState = 0;
-        }
-
         if (shutOff)
         {
             auxStatus.strobeBmsLight = 1;

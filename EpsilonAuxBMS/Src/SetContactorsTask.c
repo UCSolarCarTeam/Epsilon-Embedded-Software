@@ -170,7 +170,6 @@ void setContactorsTask(void const* arg)
 
                 auxStatus.contactorError = contactorError;
                 auxStatus.startUpSequenceDone = 1;
-                auxStatus.highVoltageEnableState = 1;
 
                 osMutexRelease(auxStatus.auxStatusMutex);
 
@@ -381,7 +380,6 @@ void disconnectContactors(uint8_t updateAuxStatus)
 
       auxStatus.contactorError = 1;
       auxStatus.strobeBmsLight = 1;
-      auxStatus.highVoltageEnableState = 0;
 
       osMutexRelease(auxStatus.auxStatusMutex);
     }

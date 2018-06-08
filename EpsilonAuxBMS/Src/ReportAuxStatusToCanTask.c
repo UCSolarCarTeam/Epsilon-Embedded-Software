@@ -18,6 +18,7 @@ void reportAuxStatusToCanTask(void const* arg)
         auxStatus.commonContactorState = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
         auxStatus.chargeContactorState = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
         auxStatus.dischargeContactorState = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
+        auxStatus.highVoltageEnableState = HAL_GPIO_ReadPin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin);
 
         if (osMutexWait(canHandleMutex, 0) != osOK)
         {
