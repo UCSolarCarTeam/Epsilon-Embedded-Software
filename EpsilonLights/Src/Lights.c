@@ -265,7 +265,6 @@ void sendHeartbeatTask(void const* arg)
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 {
     CanRxMsgTypeDef* msg = hcan->pRxMsg;
-    HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
 
     if (msg->StdId == LIGHTS_INPUT_STDID && msg->DLC == 1)
     {
@@ -296,5 +295,9 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     }
 
     __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
-    HAL_CAN_Receive_IT(hcan, CAN_FIFO0);
+
+    if(HAL_CAN_Receive_IT(hcan, CAN_FIFO0) != HAL_OK)
+    {
+        HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
+    }
 }
