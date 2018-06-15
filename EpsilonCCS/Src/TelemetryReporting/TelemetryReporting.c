@@ -23,7 +23,7 @@
 #define BATTERY_DETAILS_LENGTH (48)
 #define MPPT_DETAILS_LENGTH (10)
 #define LIGHTS_DETAILS_LENGTH (3)
-#define AUX_BMS_DETAILS_LENGTH (7)
+#define AUX_BMS_DETAILS_LENGTH (8)
 
 #define CCS_TELEM_PERIOD_MS (200) // 5Hz == 200ms
 
@@ -336,6 +336,7 @@ void sendAuxBms()
     packetPayload[4] = auxBmsData.strobeBmsLight;
     packetPayload[5] = auxBmsData.allowCharge;
     packetPayload[6] = auxBmsData.contactorError;
+    packetPayload[7] = auxBmsData.highVoltageEnable;
 
 
     addChecksum(packetPayload, AUX_BMS_DETAILS_LENGTH);
