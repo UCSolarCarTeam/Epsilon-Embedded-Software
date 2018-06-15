@@ -33,4 +33,5 @@ void parseAuxBmsInfo(uint8_t* data)
     auxBmsData.strobeBmsLight = data[1] & STROBE_MASK;
     auxBmsData.allowCharge = data[1] & ALLOW_CHARGE_MASK;
     auxBmsData.contactorError = data[1] & CONTACTOR_ERROR_MASK;
+    auxBmsData.highVoltageEnable = data[1] & HIGH_VOLTAGE_ENABLE_MASK;
 }
