@@ -60,13 +60,7 @@ void updateLightsTask(void const* arg)
 
         /* UPDATE SIGNAL LIGHTS */
         // Set to enable or disable for use in blinkSignalLights
-        if (leftSignal && rightSignal)
-        {
-            //Error State, lights should turn off
-            sigLightsHandle.left = LIGHT_OFF;
-            sigLightsHandle.right = LIGHT_OFF;
-        }
-        else if (hazards)
+        if (hazards)
         {
             sigLightsHandle.left = LIGHT_ON;
             sigLightsHandle.right = LIGHT_ON;
@@ -124,6 +118,8 @@ void blinkSignalLightsTask(void const* arg)
         else if (!prevSigState) // Going from DISABLED to ENABLED
         {
             // Prepare to keep blinkers on (If blinkerTimer is within (0 - BLINKER_FREQ), turn blinkers on)
+            HAL_GPIO_WritePin(RSIGNAL_GPIO_Port, RSIGNAL_Pin, sigLightsHandle.right);
+            HAL_GPIO_WritePin(LSIGNAL_GPIO_Port, LSIGNAL_Pin, sigLightsHandle.left);
             blinkerTimer = 0;
             prevSigState = 1;
         }
