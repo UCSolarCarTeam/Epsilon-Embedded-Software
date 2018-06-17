@@ -72,7 +72,7 @@ void updateLightsTask(void const* arg)
         }
 
         /* UPDATE BMS STROBE */
-        if(bmsStrobe)
+        if (bmsStrobe)
         {
             HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_ON);
         }
@@ -297,7 +297,7 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 
     __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
 
-    if(HAL_CAN_Receive_IT(hcan, CAN_FIFO0) != HAL_OK)
+    if (HAL_CAN_Receive_IT(hcan, CAN_FIFO0) != HAL_OK)
     {
         HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
     }
