@@ -276,7 +276,6 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     }
     else if (msg->StdId == BATTERY_STAT_ERRORS_STDID && msg->DLC == 5)
     {
-        // Memory is stored in Little Endian format
         batteryErrors[0] = msg->Data[0];
         batteryErrors[1] = msg->Data[1];
         batteryErrors[2] = msg->Data[2];
@@ -285,7 +284,6 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     }
     else if (msg->StdId == DRIVERS_INPUTS_STDID && msg->DLC == 4)
     {
-        // Memory is stored in Little Endian format
         driversInputs[0] = msg->Data[0];
         driversInputs[1] = msg->Data[1];
         driversInputs[2] = msg->Data[2];
@@ -293,7 +291,6 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     }
     else if (msg->StdId == AUXBMS_INPUT_STDID && msg->DLC == 2)
     {
-        // Memory is stored in Little Endian format
         auxBmsInputs[0] = msg->Data[0];
         auxBmsInputs[1] = msg->Data[1];
     }
