@@ -159,7 +159,7 @@ void sendDriveCommandsTask(void const* arg)
         // Read analog inputs
         if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
         {
-            newRegen = (((float)HAL_ADC_GetValue(&hadc1)) / ((float)MAX_ANALOG)) * 100.0; // Convert to full value for reporting
+            newRegen = pow(((((float)HAL_ADC_GetValue(&hadc1)) / ((float)MAX_ANALOG)) * 100.0), (log(100)/log(75))); // Convert to full value for reporting
         }
         else
         {
