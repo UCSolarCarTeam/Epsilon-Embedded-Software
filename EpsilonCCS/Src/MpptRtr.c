@@ -27,6 +27,10 @@ void mpptRtrTask(void const* arg)
                 hcan2.pTxMsg->StdId = MPPT_CHANNEL_TWO_STDID;
                 break;
 
+            case 3:
+                hcan2.pTxMsg->StdId = MPPT_CHANNEL_THREE_STDID;
+                break;
+
             default: //Shouldn't get here
                 channel = 0;
                 break;
@@ -46,6 +50,6 @@ void mpptRtrTask(void const* arg)
         }
 
         // Update Channel
-        channel = (channel + 1) % 3;
+        channel = (channel + 1) % 4;
     }
 }
