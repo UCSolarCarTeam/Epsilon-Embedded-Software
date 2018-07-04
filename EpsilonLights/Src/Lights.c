@@ -14,6 +14,7 @@ void updateLightsTask(void const* arg)
     char leftSignal;
     char hazards;
     char brakes;
+    char bmsStrobe;
 
     // NOTE: All Lights Out pins are active low
     for (;;)
@@ -25,6 +26,7 @@ void updateLightsTask(void const* arg)
         rightSignal = (lightsInputs >> RSIGNAL_INPUT_INDEX) & 1;
         leftSignal = (lightsInputs >> LSIGNAL_INPUT_INDEX) & 1;
         hazards = (lightsInputs >> HAZARDS_INPUT_INDEX) & 1;
+        bmsStrobe = ((auxBmsInputs[1] >> 0) & STROBE_FAULT_MASK) & 1;
 
         /* UPDATE HEADLIGHTS */
         if ((headlightsOff))
@@ -40,8 +42,8 @@ void updateLightsTask(void const* arg)
         }
         else
         {
-            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, !headlightsHigh);
-            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, !headlightsLow);
+            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, headlightsHigh);
+            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, headlightsLow);
         }
 
         /* UPDATE BRAKE LIGHTS */
@@ -58,16 +60,10 @@ void updateLightsTask(void const* arg)
 
         /* UPDATE SIGNAL LIGHTS */
         // Set to enable or disable for use in blinkSignalLights
-        if (leftSignal && rightSignal)
+        if (hazards)
         {
-            //Error State, lights should turn off
-            sigLightsHandle.left = 0;
-            sigLightsHandle.right = 0;
-        }
-        else if (hazards)
-        {
-            sigLightsHandle.left = 1;
-            sigLightsHandle.right = 1;
+            sigLightsHandle.left = LIGHT_ON;
+            sigLightsHandle.right = LIGHT_ON;
         }
         else
         {
@@ -75,7 +71,15 @@ void updateLightsTask(void const* arg)
             sigLightsHandle.right = rightSignal;
         }
 
-        // TODO Parse the Error Messages and turn on the BMS on certain messages
+        /* UPDATE BMS STROBE */
+        if (bmsStrobe)
+        {
+            HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_ON);
+        }
+        else
+        {
+            HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_OFF);
+        }
     }
 }
 
@@ -113,9 +117,9 @@ void blinkSignalLightsTask(void const* arg)
         }
         else if (!prevSigState) // Going from DISABLED to ENABLED
         {
-            HAL_GPIO_WritePin(RSIGNAL_GPIO_Port, RSIGNAL_Pin, LIGHT_ON);
-            HAL_GPIO_WritePin(LSIGNAL_GPIO_Port, LSIGNAL_Pin, LIGHT_ON);
             // Prepare to keep blinkers on (If blinkerTimer is within (0 - BLINKER_FREQ), turn blinkers on)
+            HAL_GPIO_WritePin(RSIGNAL_GPIO_Port, RSIGNAL_Pin, sigLightsHandle.right);
+            HAL_GPIO_WritePin(LSIGNAL_GPIO_Port, LSIGNAL_Pin, sigLightsHandle.left);
             blinkerTimer = 0;
             prevSigState = 1;
         }
@@ -131,8 +135,8 @@ void blinkSignalLightsTask(void const* arg)
             else
             {
                 // If blinkerTimer is within (0 - BLINKER_FREQ), turn blinkers on
-                HAL_GPIO_WritePin(RSIGNAL_GPIO_Port, RSIGNAL_Pin, !sigLightsHandle.right);
-                HAL_GPIO_WritePin(LSIGNAL_GPIO_Port, LSIGNAL_Pin, !sigLightsHandle.left);
+                HAL_GPIO_WritePin(RSIGNAL_GPIO_Port, RSIGNAL_Pin, sigLightsHandle.right);
+                HAL_GPIO_WritePin(LSIGNAL_GPIO_Port, LSIGNAL_Pin, sigLightsHandle.left);
             }
 
             // Update blinker timer
@@ -221,12 +225,12 @@ void reportLightsToCanTask(void const* arg)
         stat.rightSignal = HAL_GPIO_ReadPin(RSIGNAL_GPIO_Port, RSIGNAL_Pin);
         stat.bmsStrobeLight = HAL_GPIO_ReadPin(ESTROBE_GPIO_Port, ESTROBE_Pin);
         hcan2.pTxMsg->Data[0] = 0;
-        hcan2.pTxMsg->Data[0] += !stat.lowBeams * 0x01;
-        hcan2.pTxMsg->Data[0] += !stat.highBeams * 0x02;
-        hcan2.pTxMsg->Data[0] += !stat.brakes * 0x04;
-        hcan2.pTxMsg->Data[0] += !stat.leftSignal * 0x08;
-        hcan2.pTxMsg->Data[0] += !stat.rightSignal * 0x10;
-        hcan2.pTxMsg->Data[0] += !stat.bmsStrobeLight * 0x20;
+        hcan2.pTxMsg->Data[0] += stat.lowBeams * 0x01;
+        hcan2.pTxMsg->Data[0] += stat.highBeams * 0x02;
+        hcan2.pTxMsg->Data[0] += stat.brakes * 0x04;
+        hcan2.pTxMsg->Data[0] += stat.leftSignal * 0x08;
+        hcan2.pTxMsg->Data[0] += stat.rightSignal * 0x10;
+        hcan2.pTxMsg->Data[0] += stat.bmsStrobeLight * 0x20;
         // Send CAN msg
         HAL_CAN_Transmit_IT(&hcan2);
         osMutexRelease(canHandleMutex);
@@ -265,7 +269,6 @@ void sendHeartbeatTask(void const* arg)
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 {
     CanRxMsgTypeDef* msg = hcan->pRxMsg;
-    HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
 
     if (msg->StdId == LIGHTS_INPUT_STDID && msg->DLC == 1)
     {
@@ -273,28 +276,29 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     }
     else if (msg->StdId == BATTERY_STAT_ERRORS_STDID && msg->DLC == 5)
     {
-        // Memory is stored in Little Endian format
-        batteryErrors[0] = msg->Data[4];
-        batteryErrors[1] = msg->Data[3];
+        batteryErrors[0] = msg->Data[0];
+        batteryErrors[1] = msg->Data[1];
         batteryErrors[2] = msg->Data[2];
-        batteryErrors[3] = msg->Data[1];
-        batteryErrors[4] = msg->Data[0];
+        batteryErrors[3] = msg->Data[3];
+        batteryErrors[4] = msg->Data[4];
     }
     else if (msg->StdId == DRIVERS_INPUTS_STDID && msg->DLC == 4)
     {
-        // Memory is stored in Little Endian format
-        driversInputs[0] = msg->Data[3];
-        driversInputs[1] = msg->Data[2];
-        driversInputs[2] = msg->Data[1];
-        driversInputs[3] = msg->Data[0];
+        driversInputs[0] = msg->Data[0];
+        driversInputs[1] = msg->Data[1];
+        driversInputs[2] = msg->Data[2];
+        driversInputs[3] = msg->Data[3];
     }
     else if (msg->StdId == AUXBMS_INPUT_STDID && msg->DLC == 2)
     {
-        // Memory is stored in Little Endian format
-        auxBmsInputs[0] = msg->Data[1];
-        auxBmsInputs[1] = msg->Data[0];
+        auxBmsInputs[0] = msg->Data[0];
+        auxBmsInputs[1] = msg->Data[1];
     }
 
     __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
-    HAL_CAN_Receive_IT(hcan, CAN_FIFO0);
+
+    if (HAL_CAN_Receive_IT(hcan, CAN_FIFO0) != HAL_OK)
+    {
+        HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
+    }
 }

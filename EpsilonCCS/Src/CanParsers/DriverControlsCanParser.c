@@ -58,17 +58,17 @@ void parseDriverControlsMusicInput(uint8_t* data)
 void parseDriverControlsDriverInput(uint8_t* data)
 {
     driverControlData.acceleration = // bits 0-11
-        ((data[3] & 0xFF) << 0) | // bits 0-7
-        ((data[2] & 0x0F) << 8);  // bits 8-11
+        ((data[0] & 0xFF) << 0) | // bits 0-7
+        ((data[1] & 0x0F) << 8);  // bits 8-11
     driverControlData.regenBraking = // bits 12-23
-        ((data[2] & 0xF0) >> 4) | // bits 12-19
-        ((data[1] & 0xFF) << 4);  // bits 20-23
+        ((data[1] & 0xF0) >> 4) | // bits 12-19
+        ((data[2] & 0xFF) << 4);  // bits 20-23
     // bits 24-29
-    driverControlData.driverInputs.brakes = data[0] & BRAKES_MASK;
-    driverControlData.driverInputs.forward = data[0] & FORWARD_MASK;
-    driverControlData.driverInputs.reverse = data[0] & REVERSE_MASK;
-    driverControlData.driverInputs.pushToTalk = data[0] & PUSH_TO_TALK_MASK;
-    driverControlData.driverInputs.horn = data[0] & HORN_MASK;
-    driverControlData.driverInputs.reset = data[0] & RESET_MASK;
-    driverControlData.driverInputs.aux = data[0] & AUX_MASK;
+    driverControlData.driverInputs.brakes = data[3] & BRAKES_MASK;
+    driverControlData.driverInputs.forward = data[3] & FORWARD_MASK;
+    driverControlData.driverInputs.reverse = data[3] & REVERSE_MASK;
+    driverControlData.driverInputs.pushToTalk = data[3] & PUSH_TO_TALK_MASK;
+    driverControlData.driverInputs.horn = data[3] & HORN_MASK;
+    driverControlData.driverInputs.reset = data[3] & RESET_MASK;
+    driverControlData.driverInputs.aux = data[3] & AUX_MASK;
 }
