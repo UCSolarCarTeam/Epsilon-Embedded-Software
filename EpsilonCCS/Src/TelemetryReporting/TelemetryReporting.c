@@ -37,25 +37,25 @@ void sendTelemetryTask()
     {
         osDelayUntil(&prevWakeTime, CCS_TELEM_PERIOD_MS);
 
-        // sendKeyMotor();
-        // sendLights();
-        // sendMotorFaults();
-        // sendBatteryFaults();
-        // sendDriverControls();
-        // sendBattery();
+        sendKeyMotor();
+        sendLights();
+        sendMotorFaults();
+        sendBatteryFaults();
+        sendDriverControls();
+        sendBattery();
 
         switch (salvo)
         {
             case 1:
-                // sendMotorDetails(0);
-                // sendMppt(0);
-                // sendMppt(1);
+                sendMotorDetails(0);
+                sendMppt(0);
+                sendMppt(1);
                 salvo = 2;
                 break;
 
             case 2:
-                // sendAuxBms();
-                // sendMotorDetails(1);
+                sendAuxBms();
+                sendMotorDetails(1);
                 sendMppt(2);
                 sendMppt(3);
                 salvo = 1;
