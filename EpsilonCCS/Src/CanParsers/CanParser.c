@@ -25,10 +25,13 @@
 #define LIGHTS_CAN_MAX (0x71F)
 
 #define MOTOR_CAN_MIN (0x400)
-#define MOTOR_CAN_MAX (0x4FF)
+#define MOTOR_CAN_MAX (0x503)
 
 #define MPPT_CAN_MIN (0x600)
 #define MPPT_CAN_MAX (0x602)
+
+#define LED_ON 1
+#define LED_OFF 0
 
 void parseCanTask(void const* arg)
 {
@@ -70,6 +73,10 @@ void parseCanMessage(uint32_t stdId, uint8_t* data)
     {
         parseMpptCanMessage(stdId, data);
     }
+    else if (stdId >= MOTOR_CAN_MIN && stdId <= MOTOR_CAN_MAX)
+    {
+        parseMotorCanMessage(stdId, data);
+    }
 }
 
 // Reimplement weak definition in stm32f4xx_hal_can.c
@@ -80,11 +87,14 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     msg->StdId = hcan->pRxMsg->StdId;
 
     memcpy(msg->Data, hcan->pRxMsg->Data, 8);
+    osMessagePut(canRxQueueId, (uint32_t)msg, 0);
 
-    if (osMessagePut(canRxQueueId, (uint32_t)msg, 0) == osOK)
+    if (HAL_CAN_Receive_IT(hcan, CAN_FIFO0) == osOK)
     {
-        HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
+        HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, LED_ON);
     }
-
-    HAL_CAN_Receive_IT(hcan, CAN_FIFO0);
+    else
+    {
+        HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, LED_OFF);
+    }
 }

@@ -129,8 +129,8 @@ int main(void)
     osThreadDef(blinkLightsTask, blinkSignalLightsTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
     blinkLightsHandle = osThreadCreate(osThread(blinkLightsTask), NULL);
     //Setup task to update strobe light
-    osThreadDef(strobeLightTask, updateStrobeLight, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
-    strobeLightHandle = osThreadCreate(osThread(strobeLightTask), NULL);
+    // osThreadDef(strobeLightTask, updateStrobeLight, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    // strobeLightHandle = osThreadCreate(osThread(strobeLightTask), NULL);
     /* USER CODE END RTOS_THREADS */
     /* USER CODE BEGIN RTOS_QUEUES */
     /* add queues, ... */

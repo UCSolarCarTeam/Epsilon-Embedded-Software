@@ -40,6 +40,10 @@ void mpptRtrTask(void const* arg)
         {
             HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
         }
+        else
+        {
+            HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
+        }
 
         // Update Channel
         channel = (channel + 1) % 3;
