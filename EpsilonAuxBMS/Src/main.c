@@ -68,12 +68,12 @@ SPI_HandleTypeDef hspi3;
 
 UART_HandleTypeDef huart3;
 
-osThreadId defaultTaskHandle;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 OrionStatus orionStatus;
 AuxStatus auxStatus;
+DriversInput driversInput;
 
 static osThreadId updateChargeAllowanceTaskHandle;
 static osThreadId setContactorsTaskHandle;
@@ -89,8 +89,6 @@ static void MX_CAN1_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_SPI3_Init(void);
-void StartDefaultTask(void const* argument);
-static void MX_NVIC_Init(void);
 
 /* USER CODE BEGIN PFP */
 static void MX_CAN1_UserInit(void);
@@ -100,6 +98,11 @@ static void MX_CAN1_UserInit(void);
 
 /* USER CODE BEGIN 0 */
 static const uint32_t ORION_MAX_MIN_VOLTAGES_STDID  = 0x30A;
+static const uint32_t DRIVERS_INPUTS_STDID  = 0x703;
+// Assuming extra bit is placed at the end (DDDDDDDDX)
+static const uint8_t DRIVERS_INPUTS_AUX_BIT_POSITION = 6;
+static const uint8_t DRIVERS_INPUTS_FORWARD_BIT_POSITION = 1;
+static const uint8_t DRIVERS_INPUTS_REVERSE_BIT_POSITION = 2;
 /* USER CODE END 0 */
 
 int main(void)
@@ -132,9 +135,6 @@ int main(void)
     MX_ADC1_Init();
     MX_SPI3_Init();
 
-    /* Initialize interrupts */
-    MX_NVIC_Init();
-
     /* USER CODE BEGIN 2 */
     MX_CAN1_UserInit();
     HAL_ADC_Start(&hadc1);
@@ -142,8 +142,7 @@ int main(void)
     // Start with not allowing charge
     auxStatus.allowCharge = 0;
 
-    // Start with orionGpioOk and orionBatteryVoltagesOk set to 1 to allow contactor setting
-    orionStatus.gpioOk = 1;
+    // Start with orionBatteryVoltagesOk set to 1 to allow contactor setting
     orionStatus.batteryVoltagesInRange = 1;
 
     // Setup for next CAN Receive Interrupt
@@ -194,6 +193,7 @@ int main(void)
 
     /* Create the thread(s) */
     /* definition and creation of defaultTask */
+
     /* USER CODE BEGIN RTOS_THREADS */
     // Setup task to determine allowance of charge/discharge based on Orion voltage inputs
     osThreadDef(chargeAllowanceTask, updateChargeAllowanceTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
@@ -293,15 +293,6 @@ void SystemClock_Config(void)
     HAL_NVIC_SetPriority(SysTick_IRQn, 15, 0);
 }
 
-/** NVIC Configuration
-*/
-static void MX_NVIC_Init(void)
-{
-    /* EXTI9_5_IRQn interrupt configuration */
-    HAL_NVIC_SetPriority(EXTI9_5_IRQn, 5, 0);
-    HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
-}
-
 /* ADC1 init function */
 static void MX_ADC1_Init(void)
 {
@@ -347,7 +338,7 @@ static void MX_CAN1_Init(void)
 
     hcan1.Instance = CAN1;
     hcan1.Init.Prescaler = 4;
-    hcan1.Init.Mode = CAN_MODE_LOOPBACK;
+    hcan1.Init.Mode = CAN_MODE_NORMAL;
     hcan1.Init.SJW = CAN_SJW_1TQ;
     hcan1.Init.BS1 = CAN_BS1_5TQ;
     hcan1.Init.BS2 = CAN_BS2_4TQ;
@@ -466,9 +457,9 @@ static void MX_GPIO_Init(void)
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    /*Configure GPIO pins : CHARGE_ENABLE_SENSE_Pin DISCHARGE_ENABLE_SENSE_Pin CHARGE_SAFETY_SENSE_Pin */
-    GPIO_InitStruct.Pin = CHARGE_ENABLE_SENSE_Pin | DISCHARGE_ENABLE_SENSE_Pin | CHARGE_SAFETY_SENSE_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+    /*Configure GPIO pins : CHARGE_ENABLE_SENSE_Pin DISCHARGE_ENABLE_SENSE_Pin */
+    GPIO_InitStruct.Pin = CHARGE_ENABLE_SENSE_Pin | DISCHARGE_ENABLE_SENSE_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
@@ -505,17 +496,19 @@ static void MX_GPIO_Init(void)
 // Reimplement weak definition in stm32f4xx_hal_can.c
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 {
-    if (osMutexWait(orionStatus.orionStatusMutex, 0) != osOK)
-    {
-        return;
-    }
-
     CanRxMsgTypeDef* msg = hcan->pRxMsg;
 
-    if (msg->StdId == ORION_MAX_MIN_VOLTAGES_STDID)
+    if (msg->StdId == ORION_MAX_MIN_VOLTAGES_STDID && msg->DLC == 8)
     {
-        orionStatus.maxCellVoltage = (uint16_t)msg->Data[6]; // Max Cell voltage
-        orionStatus.minCellVoltage = (uint16_t)msg->Data[4]; // Min Cell Voltage
+        // Voltages are 2 bytes each, and memory is stored in little endian format
+        orionStatus.maxCellVoltage = (uint16_t)msg->Data[0] << 8 | msg->Data[1]; // Max Cell voltage
+        orionStatus.minCellVoltage = (uint16_t)msg->Data[2] << 8 | msg->Data[3]; // Min Cell Voltage
+    }
+    else if (msg->StdId == DRIVERS_INPUTS_STDID && msg->DLC == 4)
+    {
+        driversInput.aux = msg->Data[3] >> DRIVERS_INPUTS_AUX_BIT_POSITION & 1;
+        driversInput.forward = msg->Data[3] >> DRIVERS_INPUTS_FORWARD_BIT_POSITION & 1;
+        driversInput.reverse = msg->Data[3] >> DRIVERS_INPUTS_REVERSE_BIT_POSITION & 1;
     }
 
     __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
@@ -525,20 +518,20 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     {
         HAL_GPIO_TogglePin(GRN_LED_GPIO_Port, GRN_LED_Pin);
     }
-
-    osMutexRelease(orionStatus.orionStatusMutex);
 }
 
 static void MX_CAN1_UserInit(void)
 {
     HAL_GPIO_WritePin(CAN1_STBY_GPIO_Port, CAN1_STBY_Pin, GPIO_PIN_RESET);
-    
+
     CAN_FilterConfTypeDef sFilterConfig;
     sFilterConfig.FilterNumber = 0; // Use first filter bank
     sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
     sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
     sFilterConfig.FilterIdHigh = ORION_MAX_MIN_VOLTAGES_STDID << 5; // Filter registers need to be shifted left 5 bits
     sFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
+    sFilterConfig.FilterMaskIdHigh = DRIVERS_INPUTS_STDID << 5;
+    sFilterConfig.FilterMaskIdLow = 0; // Unused
     sFilterConfig.FilterFIFOAssignment = 0;
     sFilterConfig.FilterActivation = ENABLE;
     sFilterConfig.BankNumber = 0; // Set all filter banks for CAN1
@@ -563,19 +556,6 @@ static void MX_CAN1_UserInit(void)
 
 /* USER CODE END 4 */
 
-/* StartDefaultTask function */
-void StartDefaultTask(void const* argument)
-{
-
-    /* USER CODE BEGIN 5 */
-    /* Infinite loop */
-    for (;;)
-    {
-        osDelay(1);
-    }
-
-    /* USER CODE END 5 */
-}
 
 /**
   * @brief  Period elapsed callback in non blocking mode

@@ -15,6 +15,11 @@ void reportAuxStatusToCanTask(void const* arg)
     {
         osDelayUntil(&prevWakeTime, AUX_STATUS_FREQ);
 
+        auxStatus.commonContactorState = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
+        auxStatus.chargeContactorState = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
+        auxStatus.dischargeContactorState = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
+        auxStatus.highVoltageEnableState = HAL_GPIO_ReadPin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin);
+
         if (osMutexWait(canHandleMutex, 0) != osOK)
         {
             continue;
@@ -33,7 +38,8 @@ void reportAuxStatusToCanTask(void const* arg)
         hcan1.pTxMsg->Data[1] =
             auxStatus.strobeBmsLight |
             auxStatus.allowCharge << 1 |
-            auxStatus.contactorError << 2;
+            auxStatus.contactorError << 2 |
+            auxStatus.highVoltageEnableState << 3;
 
         // Send CAN message
         if (HAL_CAN_Transmit_IT(&hcan1) == HAL_OK)

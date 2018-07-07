@@ -37,8 +37,6 @@
 #include "cmsis_os.h"
 
 /* USER CODE BEGIN 0 */
-#include "AuxStatus.h"
-#include "OrionStatus.h"
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -97,31 +95,6 @@ void CAN1_RX0_IRQHandler(void)
     /* USER CODE BEGIN CAN1_RX0_IRQn 1 */
 
     /* USER CODE END CAN1_RX0_IRQn 1 */
-}
-
-/**
-* @brief This function handles EXTI line[9:5] interrupts.
-*/
-void EXTI9_5_IRQHandler(void)
-{
-    /* USER CODE BEGIN EXTI9_5_IRQn 0 */
-
-    /* USER CODE END EXTI9_5_IRQn 0 */
-    HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_6);
-    HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_7);
-    HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_8);
-    /* USER CODE BEGIN EXTI9_5_IRQn 1 */
-    // Shut everything down if any of the lines go low
-    orionStatus.gpioOk = 0;
-    HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(CONTACTOR_ENABLE1_GPIO_Port, CONTACTOR_ENABLE1_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(CONTACTOR_ENABLE2_GPIO_Port, CONTACTOR_ENABLE2_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(CONTACTOR_ENABLE3_GPIO_Port, CONTACTOR_ENABLE3_Pin, GPIO_PIN_RESET);
-    auxStatus.commonContactorState = 0;
-    auxStatus.chargeContactorState = 0;
-    auxStatus.dischargeContactorState = 0;
-    auxStatus.strobeBmsLight = 1;
-    /* USER CODE END EXTI9_5_IRQn 1 */
 }
 
 /**
