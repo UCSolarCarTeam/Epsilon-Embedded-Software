@@ -53,7 +53,7 @@ void updateChargeAllowanceTask(void const* arg)
 
         if (auxStatus.startUpSequenceDone)
         {
-            if (driversInput.forwardReverse) // In forward or reverse
+            if (driversInput.forward || driversInput.reverse) // In forward or reverse
             {
                 if (!HAL_GPIO_ReadPin(CHARGE_ENABLE_SENSE_GPIO_Port, CHARGE_ENABLE_SENSE_Pin) ||
                         !HAL_GPIO_ReadPin(DISCHARGE_ENABLE_SENSE_GPIO_Port, DISCHARGE_ENABLE_SENSE_Pin))

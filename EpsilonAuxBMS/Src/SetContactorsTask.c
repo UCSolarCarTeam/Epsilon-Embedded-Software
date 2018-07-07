@@ -45,8 +45,8 @@ typedef enum Contactor
 uint32_t readCurrentThroughContactors(void);
 // Function for checking if a specific contactor has been set
 int isContactorSet(uint16_t pin, GPIO_TypeDef* port, int current_multiplier);
-// Turns off all contactors and adjusts auxstatus if updateAuxStatus is 1
-void disconnectContactors(uint8_t updateAuxStatus);
+// Turns off all contactors and adjusts auxstatus if isContactorError is 1
+void disconnectContactors(uint8_t isContactorError);
 
 void setContactorsTask(void const* arg)
 {
@@ -191,8 +191,8 @@ void setContactorsTask(void const* arg)
                 charge = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
                 discharge = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
 
-                uint8_t turningOnCharge = 0;
-                uint8_t turningOnDischarge = 0;
+                uint8_t isChargeTurningOn = 0;
+                uint8_t isDischargeTurningOn = 0;
 
                 if (orionStatus.shutOff)
                 {
@@ -215,7 +215,7 @@ void setContactorsTask(void const* arg)
                     orionStatus.chargeContactorOverriden = 0;
                     osMutexRelease(orionStatus.orionStatusMutex);
 
-                    turningOnCharge = 1;
+                    isChargeTurningOn = 1;
                     // Turn on charge Contactor and go back to recheck
                     HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
                     state = CHARGE_CONTACTOR_ENABLE_CHECK;
@@ -230,14 +230,14 @@ void setContactorsTask(void const* arg)
                     orionStatus.dischargeContactorOverriden = 0;
                     osMutexRelease(orionStatus.orionStatusMutex);
 
-                    turningOnDischarge = 1;
+                    isDischargeTurningOn = 1;
                     // Turn on discharge contactor and go back to recheck
                     HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
                     state = DISCHARGE_CONTACTOR_ENABLE_CHECK;
                 }
 
-                if ((orionStatus.allowCharge && !charge && !turningOnCharge) ||
-                        (orionStatus.allowDischarge && !discharge && !turningOnDischarge))
+                if ((orionStatus.allowCharge && !charge && !isChargeTurningOn) ||
+                        (orionStatus.allowDischarge && !discharge && !isDischargeTurningOn))
                 {
                     disconnectContactors(1);
                     state = CONTACTOR_DISCONNECTED;
@@ -362,7 +362,7 @@ uint32_t readCurrentThroughContactors(void)
     return sense;
 }
 
-void disconnectContactors(uint8_t updateAuxStatus)
+void disconnectContactors(uint8_t isContactorError)
 {
     // Turn all contactors and high voltage enable off
     HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
@@ -370,7 +370,7 @@ void disconnectContactors(uint8_t updateAuxStatus)
     HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_RESET);
 
-    if (updateAuxStatus)
+    if (isContactorError)
     {
         while (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK) // Not sure if this is the best idea
             // but will guarantee that we return to this spot

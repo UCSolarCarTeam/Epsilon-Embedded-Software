@@ -68,7 +68,6 @@ SPI_HandleTypeDef hspi3;
 
 UART_HandleTypeDef huart3;
 
-osThreadId defaultTaskHandle;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
@@ -90,7 +89,6 @@ static void MX_CAN1_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_SPI3_Init(void);
-void StartDefaultTask(void const* argument);
 
 /* USER CODE BEGIN PFP */
 static void MX_CAN1_UserInit(void);
@@ -103,7 +101,8 @@ static const uint32_t ORION_MAX_MIN_VOLTAGES_STDID  = 0x30A;
 static const uint32_t DRIVERS_INPUTS_STDID  = 0x703;
 // Assuming extra bit is placed at the end (DDDDDDDDX)
 static const uint8_t DRIVERS_INPUTS_AUX_BIT_POSITION = 6;
-static const uint8_t DRIVERS_INPUTS_FORWARD_REVERSE_BIT_POSITION = 1;
+static const uint8_t DRIVERS_INPUTS_FORWARD_BIT_POSITION = 1;
+static const uint8_t DRIVERS_INPUTS_REVERSE_BIT_POSITION = 2;
 /* USER CODE END 0 */
 
 int main(void)
@@ -194,8 +193,6 @@ int main(void)
 
     /* Create the thread(s) */
     /* definition and creation of defaultTask */
-    osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
-    defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
     /* USER CODE BEGIN RTOS_THREADS */
     // Setup task to determine allowance of charge/discharge based on Orion voltage inputs
@@ -510,7 +507,8 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     else if (msg->StdId == DRIVERS_INPUTS_STDID && msg->DLC == 4)
     {
         driversInput.aux = msg->Data[3] >> DRIVERS_INPUTS_AUX_BIT_POSITION & 1;
-        driversInput.forwardReverse = msg->Data[3] >> DRIVERS_INPUTS_FORWARD_REVERSE_BIT_POSITION & 1;
+        driversInput.forward = msg->Data[3] >> DRIVERS_INPUTS_FORWARD_BIT_POSITION & 1;
+        driversInput.reverse = msg->Data[3] >> DRIVERS_INPUTS_REVERSE_BIT_POSITION & 1;
     }
 
     __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
@@ -558,19 +556,6 @@ static void MX_CAN1_UserInit(void)
 
 /* USER CODE END 4 */
 
-/* StartDefaultTask function */
-void StartDefaultTask(void const* argument)
-{
-
-    /* USER CODE BEGIN 5 */
-    /* Infinite loop */
-    for (;;)
-    {
-        osDelay(1);
-    }
-
-    /* USER CODE END 5 */
-}
 
 /**
   * @brief  Period elapsed callback in non blocking mode
