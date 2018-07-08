@@ -9,7 +9,7 @@ typedef struct AuxStatus
     unsigned highVoltageEnableState : 1;
     unsigned auxVoltage : 5;
     unsigned strobeBmsLight : 1;
-    unsigned allowCharge : 1;
+    unsigned allowCharge : 1; // Tells drivers controls to tell MPPTs and Motor Sculptors not to charge
     unsigned contactorError : 1;
     // The following members will not be reported to CAN
     unsigned startUpSequenceDone: 1;
