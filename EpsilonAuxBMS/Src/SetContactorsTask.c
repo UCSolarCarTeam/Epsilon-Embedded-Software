@@ -380,6 +380,7 @@ void disconnectContactors(uint8_t isContactorError)
 
         auxStatus.contactorError = 1;
         auxStatus.strobeBmsLight = 1;
+        auxStatus.allowCharge = 0;
 
         osMutexRelease(auxStatus.auxStatusMutex);
     }
