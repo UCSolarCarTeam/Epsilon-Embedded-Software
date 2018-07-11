@@ -82,7 +82,6 @@ Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c \
 Middlewares/Third_Party/FreeRTOS/Source/timers.c \
 Src/TransmitSerial.c \
 Src/ActivateHorn.c \
-Src/MpptRtr.c \
 Src/Data/AuxBmsData.c \
 Src/Data/KeyMotorData.c \
 Src/Data/LightsData.c \
