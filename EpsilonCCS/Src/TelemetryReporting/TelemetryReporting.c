@@ -57,6 +57,7 @@ void sendTelemetryTask()
                 sendAuxBms();
                 sendMotorDetails(1);
                 sendMppt(2);
+                sendMppt(3);
                 salvo = 1;
                 break;
 

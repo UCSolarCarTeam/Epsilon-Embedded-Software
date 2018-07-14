@@ -28,7 +28,7 @@
 #define MOTOR_CAN_MAX (0x503)
 
 #define MPPT_CAN_MIN (0x600)
-#define MPPT_CAN_MAX (0x602)
+#define MPPT_CAN_MAX (0x603)
 
 #define LED_ON 1
 #define LED_OFF 0
