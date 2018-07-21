@@ -52,11 +52,6 @@ typedef struct
     uint8_t Data[8];
 } CanMsg;
 
-typedef struct AuxStatus
-{
-    unsigned int allowCharge : 1;
-} AuxStatus;
-
 void sendHeartbeatTask(void const* arg);
 void sendLightsTask(void const* arg);
 void sendMusicTask(void const* arg);

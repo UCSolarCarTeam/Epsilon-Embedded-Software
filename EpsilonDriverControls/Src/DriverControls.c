@@ -205,22 +205,22 @@ void sendDriveCommandsTask(void const* arg)
         }
         else if (regenPercentage > NON_ZERO_THRESHOLD) // Regen state
         {
-             // To stop regen braking, set motorCurrentOut to desired value and zero motorVelocityOut
-             // To stop without regen braking, zero both motorCurrentOut and motorVelocityOut
-             // https://tritium.com.au/includes/TRI88.004v4-Users-Manual.pdf - Section 13
-                
+            // To stop regen braking, set motorCurrentOut to desired value and zero motorVelocityOut
+            // To stop without regen braking, zero both motorCurrentOut and motorVelocityOut
+            // https://tritium.com.au/includes/TRI88.004v4-Users-Manual.pdf - Section 13
+
             motorVelocityOut = 0;
 
             // Alow regen braking based on input from AuxBMS
-            if(allowCharge)
+            if (allowCharge)
             {
-               motorCurrentOut = regenPercentage * REGEN_INPUT_SCALING;    
+                motorCurrentOut = regenPercentage * REGEN_INPUT_SCALING;
             }
             else
             {
                 motorCurrentOut = 0;
             }
-            
+
         }
         else if (brake) // Mechanical Brake Pressed
         {
