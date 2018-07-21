@@ -152,6 +152,8 @@ void sendDriveCommandsTask(void const* arg)
     uint8_t regenQueueIndex = 0;
     uint8_t accelQueueIndex = 0;
 
+    char allowCharge;
+
     for (;;)
     {
         osDelayUntil(&prevWakeTime, DRIVE_COMMANDS_FREQ);
@@ -192,6 +194,9 @@ void sendDriveCommandsTask(void const* arg)
         reverse = !HAL_GPIO_ReadPin(REVERSE_GPIO_Port, REVERSE_Pin);
         brake = !HAL_GPIO_ReadPin(BRAKES_GPIO_Port, BRAKES_Pin);
 
+        // Read AuxBMS messages
+        allowCharge = auxBmsInputs[1] & 0x02;
+
         // Determine data to send
         if (forward && reverse) // Error state
         {
@@ -201,7 +206,16 @@ void sendDriveCommandsTask(void const* arg)
         else if (regenPercentage > NON_ZERO_THRESHOLD) // Regen state
         {
             motorVelocityOut = 0;
-            motorCurrentOut = regenPercentage * REGEN_INPUT_SCALING;
+
+            if(allowCharge)
+            {
+                motorCurrentOut = regenPercentage * REGEN_INPUT_SCALING;    
+            }
+            else
+            {
+                motorCurrentOut = 0;
+            }
+            
         }
         else if (brake) // Mechanical Brake Pressed
         {
@@ -295,3 +309,16 @@ void sendCanTask(void const* arg)
     }
 }
 
+// Reimplement weak definition in stm32f4xx_hal_can.c
+void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
+{
+    CanRxMsgTypeDef* msg = hcan->pRxMsg;
+
+    if (msg->StdId == AUXBMS_INPUT_STDID && msg->DLC == 2)
+    {
+        auxBmsInputs[0] = msg->Data[0];
+        auxBmsInputs[1] = msg->Data[1];
+    }
+
+    __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
+}
