@@ -145,9 +145,7 @@ int main(void)
     // Start with orionBatteryVoltagesOk set to 1 to allow contactor setting
     orionStatus.batteryVoltagesInRange = 1;
 
-    // Start with minCellVoltage to be a high value, so it doesn't trigger the
-    // Min Cell voltage check in UpdateChargeAllowance right away
-    orionStatus.minCellVoltage = 50000;
+    orionStatus.minCellVoltage = 0;
 
     // Setup for next CAN Receive Interrupt
     if (HAL_CAN_Receive_IT(&hcan1, CAN_FIFO0) != HAL_OK)
