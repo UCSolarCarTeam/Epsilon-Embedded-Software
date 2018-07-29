@@ -115,7 +115,10 @@ void updateChargeAllowanceTask(void const* arg)
             }
         }
 
-        if (DEFAULT_VOLTAGE_UNITS * orionStatus.minCellVoltage < MIN_CELL_VOLTAGE)
+        // Min Cell voltage is initialized to be zero. 
+        // Check to see if the minCellVoltage has been updated through CAN, 
+        // so to not trigger this statement immediately on startup
+        if (orionStatus.minCellVoltage > 0 && (DEFAULT_VOLTAGE_UNITS * orionStatus.minCellVoltage < MIN_CELL_VOLTAGE))
         {
             voltagesInRange = 0;
 
