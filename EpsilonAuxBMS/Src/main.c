@@ -145,9 +145,6 @@ int main(void)
     // Start with orionBatteryVoltagesOk set to 1 to allow contactor setting
     orionStatus.batteryVoltagesInRange = 1;
 
-    orionStatus.dischargeContactorOverriden = 0;
-    orionStatus.chargeContactorOverriden = 0;
-
     // Start with minCellVoltage to be a high value, so it doesn't trigger the 
     // Min Cell voltage check in UpdateChargeAllowance right away
     orionStatus.minCellVoltage = 50000;
