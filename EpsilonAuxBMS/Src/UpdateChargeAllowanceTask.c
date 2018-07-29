@@ -102,7 +102,7 @@ void updateChargeAllowanceTask(void const* arg)
         }
 
 
-        if (DEFAULT_VOLTAGE_UNITS * orionStatus.maxCellVoltage > MAX_CELL_VOLTAGE)
+        if (DEFAULT_VOLTAGE_UNITS * orionStatus.maxCellVoltage > MAX_CELL_VOLTAGE && orionStatus.canMsgReceived)
         {
             voltagesInRange = 0;
 
@@ -115,7 +115,7 @@ void updateChargeAllowanceTask(void const* arg)
             }
         }
 
-        if (DEFAULT_VOLTAGE_UNITS * orionStatus.minCellVoltage < MIN_CELL_VOLTAGE)
+        if (DEFAULT_VOLTAGE_UNITS * orionStatus.minCellVoltage < MIN_CELL_VOLTAGE && orionStatus.canMsgReceived)
         {
             voltagesInRange = 0;
 
