@@ -502,7 +502,7 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 {
     CanRxMsgTypeDef* msg = hcan->pRxMsg;
 
-    if (msg->StdId == ORION_MAX_MIN_VOLTAGES_STDID && msg->DLC == 6)
+    if (msg->StdId == ORION_MAX_MIN_VOLTAGES_STDID && msg->DLC == 8)
     {
         // Voltages are 2 bytes each, and memory is stored in little endian format
         orionStatus.minCellVoltage = (uint16_t)msg->Data[0] | msg->Data[1] << 8; // Min Cell voltage
