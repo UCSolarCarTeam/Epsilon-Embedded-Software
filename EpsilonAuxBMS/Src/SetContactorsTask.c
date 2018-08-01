@@ -51,13 +51,13 @@ int isContactorSet(uint16_t pin, GPIO_TypeDef* port, int current_multiplier);
 // Turns off all contactors and adjusts auxstatus if isContactorError is 1
 void disconnectContactors(uint8_t isContactorError);
 // Resets sense array to all 0s
-void resetSenseArray(uint32_t senses[NUM_SENSES]);
+void resetSenseArray(uint32_t senses[]);
 // Function for checking if CURRENT_SENSE is at a stable value
-int isSenseStable(uint32_t senses[NUM_SENSES]);
+int isSenseStable(uint32_t senses[]);
 // Finds the maximum sense value read
-uint32_t findMax(uint32_t senses[NUM_SENSES]);
+uint32_t findMax(uint32_t senses[]);
 // Finds the minimum sense value read
-uint32_t findMin(uint32_t senses[NUM_SENSES]);
+uint32_t findMin(uint32_t senses[]);
 
 void setContactorsTask(void const* arg)
 {
@@ -345,14 +345,14 @@ uint32_t readCurrentThroughContactors(void)
     {
         resetSenseArray(senses);
         osDelay(SENSE_SETUP_TIME);
-        int ret_val = isSenseStable(senses);
+        int senseStable = isSenseStable(senses);
 
-        if (ret_val == 1)
+        if (senseStable == 1)
         {
             HAL_GPIO_WritePin(CURRENT_SENSE_ENABLE_GPIO_Port, CURRENT_SENSE_ENABLE_Pin, GPIO_PIN_RESET);
             return senses[0];
         }
-        else if (ret_val == -1)
+        else if (senseStable == -1)
         {
             HAL_GPIO_WritePin(CURRENT_SENSE_ENABLE_GPIO_Port, CURRENT_SENSE_ENABLE_Pin, GPIO_PIN_RESET);
             return 0xDEADBEEF;
@@ -371,11 +371,11 @@ uint32_t readCurrentThroughContactors(void)
   or equal to the allowable difference. If it is, the CURRENT_SENSE is stable, otherwise, it is deemed
   not stable
 */
-int isSenseStable(uint32_t senses[NUM_SENSES])
+int isSenseStable(uint32_t senses[])
 {
     for (int counter = 0; counter < NUM_SENSES; counter++)
     {
-        for (int i = NUM_SENSES - 1; i > 0; i++)
+        for (int i = NUM_SENSES - 1; i > 0; i--)
         {
             senses[i] = senses[i - 1];
         }
@@ -403,7 +403,7 @@ int isSenseStable(uint32_t senses[NUM_SENSES])
     }
 }
 
-void resetSenseArray(uint32_t senses[NUM_SENSES])
+void resetSenseArray(uint32_t senses[])
 {
     for (int i = 0; i < NUM_SENSES; i++)
     {
@@ -411,7 +411,7 @@ void resetSenseArray(uint32_t senses[NUM_SENSES])
     }
 }
 
-uint32_t findMax(uint32_t senses[NUM_SENSES])
+uint32_t findMax(uint32_t senses[])
 {
     uint32_t max = senses[0];
 
@@ -426,7 +426,7 @@ uint32_t findMax(uint32_t senses[NUM_SENSES])
     return max;
 }
 
-uint32_t findMin(uint32_t senses[NUM_SENSES])
+uint32_t findMin(uint32_t senses[])
 {
     uint32_t min = senses[0];
 
