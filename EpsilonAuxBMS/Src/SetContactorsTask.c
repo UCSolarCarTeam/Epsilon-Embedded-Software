@@ -54,10 +54,6 @@ void disconnectContactors(uint8_t isContactorError);
 void resetSenseArray(uint32_t senses[]);
 // Function for checking if CURRENT_SENSE is at a stable value
 int isSenseStable(uint32_t senses[]);
-// Finds the maximum sense value read
-uint32_t findMax(uint32_t senses[]);
-// Finds the minimum sense value read
-uint32_t findMin(uint32_t senses[]);
 
 void setContactorsTask(void const* arg)
 {
@@ -338,6 +334,7 @@ uint32_t readCurrentThroughContactors(void)
     // to make sure it isn't changing
     HAL_GPIO_WritePin(CURRENT_SENSE_ENABLE_GPIO_Port, CURRENT_SENSE_ENABLE_Pin, GPIO_PIN_SET);
     uint32_t senses[NUM_SENSES];
+    uint32_t returnValue = 0xDEADBEEF;
     int count = 0;
 
     // Want to limit it so we don't get an infinite loop
@@ -350,19 +347,20 @@ uint32_t readCurrentThroughContactors(void)
         if (senseStable == 1)
         {
             HAL_GPIO_WritePin(CURRENT_SENSE_ENABLE_GPIO_Port, CURRENT_SENSE_ENABLE_Pin, GPIO_PIN_RESET);
-            return senses[0];
+            returnValue =  senses[0];
+            break;
         }
         else if (senseStable == -1)
         {
             HAL_GPIO_WritePin(CURRENT_SENSE_ENABLE_GPIO_Port, CURRENT_SENSE_ENABLE_Pin, GPIO_PIN_RESET);
-            return 0xDEADBEEF;
+            break;
         }
 
         count++;
     }
 
     HAL_GPIO_WritePin(CURRENT_SENSE_ENABLE_GPIO_Port, CURRENT_SENSE_ENABLE_Pin, GPIO_PIN_RESET);
-    return 0xDEADBEEF;
+    return returnValue;
 }
 
 /*
@@ -390,8 +388,21 @@ int isSenseStable(uint32_t senses[])
         }
     }
 
-    uint32_t max = findMax(senses);
-    uint32_t min = findMin(senses);
+    uint32_t max = senses[0];
+    uint32_t min = senses[0];
+
+    for (int i = 1; i < NUM_SENSES; i++)
+    {
+        if (senses[i] > max)
+        {
+            max = senses[i];
+        }
+
+        if (senses[i] < min)
+        {
+            min = senses[i];
+        }
+    }
 
     if (max - min > MAX_SENSE_DIFF)
     {
@@ -409,36 +420,6 @@ void resetSenseArray(uint32_t senses[])
     {
         senses[i] = 0;
     }
-}
-
-uint32_t findMax(uint32_t senses[])
-{
-    uint32_t max = senses[0];
-
-    for (int i = 1; i < NUM_SENSES; i++)
-    {
-        if (senses[i] > max)
-        {
-            max = senses[i];
-        }
-    }
-
-    return max;
-}
-
-uint32_t findMin(uint32_t senses[])
-{
-    uint32_t min = senses[0];
-
-    for (int i = 1; i < NUM_SENSES; i++)
-    {
-        if (senses[i] < min)
-        {
-            min = senses[i];
-        }
-    }
-
-    return min;
 }
 
 void disconnectContactors(uint8_t isContactorError)
