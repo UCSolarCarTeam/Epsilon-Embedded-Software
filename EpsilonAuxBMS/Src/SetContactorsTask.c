@@ -109,26 +109,9 @@ void setContactorsTask(void const* arg)
                 if (!contactorError)
                 {
                     state = CHARGE_AND_DISCHARGE_CONTACTOR_ENABLE_CHECK;
-                    charge = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
-                    discharge = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
-
-                    // Turn on charge and discharge contactors with a delay between them if neither of them
-                    // were on. There is no delay if one of them was on. This is done so there isn't any wasted
-                    // time
-                    if (!charge)
-                    {
-                        HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
-                    }
-
-                    if (!charge && !discharge)
-                    {
-                        osDelay(AUX_SET_CONTACTOR_FREQ);
-                        HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
-                    }
-                    else if (!discharge)
-                    {
-                        HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
-                    }
+                    HAL_GPIO_WritePin(CHARGE_CONTACTOR_ENABLE_GPIO_Port, CHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
+                    osDelay(AUX_SET_CONTACTOR_FREQ);
+                    HAL_GPIO_WritePin(DISCHARGE_CONTACTOR_ENABLE_GPIO_Port, DISCHARGE_CONTACTOR_ENABLE_Pin, GPIO_PIN_SET);
                 }
 
                 break;
@@ -164,7 +147,6 @@ void setContactorsTask(void const* arg)
                 {
                     disconnectContactors(1);
                     state = CONTACTOR_DISCONNECTED;
-                    continue;
                 }
 
                 break;
@@ -232,12 +214,8 @@ void setContactorsTask(void const* arg)
 
             case BLOCKED:
                 common = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
-                charge = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
-                discharge = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
 
-                if (prevState == CHARGE_AND_DISCHARGE_CONTACTOR_ENABLE_CHECK &&
-                        (!common || (auxStatus.chargeContactorState && !charge) ||
-                         (auxStatus.dischargeContactorState && !discharge)))
+                if (prevState == CHARGE_AND_DISCHARGE_CONTACTOR_ENABLE_CHECK && !common)
                 {
                     disconnectContactors(1);
                     state = CONTACTOR_DISCONNECTED;
