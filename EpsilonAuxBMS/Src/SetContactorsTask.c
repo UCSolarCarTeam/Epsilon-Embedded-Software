@@ -43,14 +43,6 @@ typedef enum Contactor
     NONE
 } Contactor;
 
-typedef enum Contactor
-{
-    COMMON,
-    CHARGE,
-    DISCHARGE,
-    NONE
-} Contactor;
-
 // Function for reading current through the contactors.
 // The current is read from the current amplifier
 uint32_t readCurrentThroughContactors(void);
