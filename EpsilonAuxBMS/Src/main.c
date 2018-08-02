@@ -508,7 +508,6 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
         orionStatus.minCellVoltage = (uint16_t)msg->Data[0] | msg->Data[1] << 8; // Min Cell voltage
         orionStatus.maxCellVoltage = (uint16_t)msg->Data[3] | msg->Data[4] << 8; // Max Cell Voltage
         orionStatus.canMsgReceived = 1;
-        HAL_GPIO_TogglePin(BLU_LED_GPIO_Port, BLU_LED_Pin);
     }
     else if (msg->StdId == DRIVERS_INPUTS_STDID && msg->DLC == 4)
     {
