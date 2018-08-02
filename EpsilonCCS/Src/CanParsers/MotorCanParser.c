@@ -75,7 +75,7 @@ void parseMotorCanMessage(uint32_t stdId, uint8_t* data)
 
         case M0_VELOCITY_CAN_ID:
             // motorVelocity = arrayToFloat(&data[0]);
-            keyMotorData.m0VehicleVelocity = (float)arrayToFloat(&data[4]) * 3.6f;
+            keyMotorData.m0VehicleVelocity = arrayToFloat(&data[4]) * 3.6f;
             break;
 
         case M0_PHASE_CURRENT_CAN_ID:
@@ -140,7 +140,7 @@ void parseMotorCanMessage(uint32_t stdId, uint8_t* data)
 
         case M1_VELOCITY_CAN_ID:
             // motorVelocity = arrayToFloat(&data[0]);
-            keyMotorData.m1VehicleVelocity = (float)arrayToFloat(&data[4]) * 3.6f;
+            keyMotorData.m1VehicleVelocity = arrayToFloat(&data[4]) * 3.6f;
             break;
 
         case M1_PHASE_CURRENT_CAN_ID:

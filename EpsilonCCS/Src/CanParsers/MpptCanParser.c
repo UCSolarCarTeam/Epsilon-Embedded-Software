@@ -17,21 +17,17 @@ void parseMpptCanMessage(uint32_t stdId, uint8_t* data)
     else
     {
         mpptData[mpptId].lastReceived = osKernelSysTick();
-        uint16_t arrayVoltageInt =
+        mpptData[mpptId].arrayVoltage =
             (data[0] << 0) |
             (data[1] << 8);
-        mpptData[mpptId].arrayVoltage = (float)arrayVoltageInt / 100.0f;
-        uint64_t arrayCurrentInt =
+        mpptData[mpptId].arrayCurrent =
             (data[2] << 0) |
             (data[3] << 8);
-        mpptData[mpptId].arrayCurrent = (float)arrayCurrentInt / 1000.0f;
-        uint64_t batteryVoltageInt =
+        mpptData[mpptId].batteryVoltage
             (data[4] << 0) |
             (data[5] << 8);
-        mpptData[mpptId].batteryVoltage = (float)batteryVoltageInt / 100.0f;
-        uint64_t temperatureInt =
+        mpptData[mpptId].temperature
             (data[6] << 0) |
             (data[7] << 8);
-        mpptData[mpptId].temperature = (float)temperatureInt / 100.0f;
     }
 }
