@@ -202,11 +202,12 @@ void setContactorsTask(void const* arg)
                     osMutexRelease(orionStatus.orionStatusMutex);
 
                     isChargeTurningOn = 1;
+                    hasChargeBeenSet = 0;
                     // Turn on charge Contactor and go back to recheck
                     HAL_GPIO_WritePin(CHARGE_ENABLE_GPIO_Port, CHARGE_ENABLE_Pin, GPIO_PIN_SET);
-                    state = CHARGE_AND_DISCHARGE_ENABLE_CHECK;
                 }
-                else if (orionStatus.allowDischarge && orionStatus.dischargeContactorOverriden && !discharge)
+
+                if (orionStatus.allowDischarge && orionStatus.dischargeContactorOverriden && !discharge)
                 {
                     if (osMutexWait(orionStatus.orionStatusMutex, 0) != osOK)
                     {
@@ -217,9 +218,9 @@ void setContactorsTask(void const* arg)
                     osMutexRelease(orionStatus.orionStatusMutex);
 
                     isDischargeTurningOn = 1;
+                    hasDischargeBeenSet = 0;
                     // Turn on discharge contactor and go back to recheck
                     HAL_GPIO_WritePin(DISCHARGE_ENABLE_GPIO_Port, DISCHARGE_ENABLE_Pin, GPIO_PIN_SET);
-                    state = CHARGE_AND_DISCHARGE_ENABLE_CHECK;
                 }
 
                 if ((orionStatus.allowCharge && !charge && !isChargeTurningOn) ||
@@ -227,6 +228,10 @@ void setContactorsTask(void const* arg)
                 {
                     disconnectContactors(1);
                     state = CONTACTOR_DISCONNECTED;
+                }
+                else if (isChargeTurningOn || isDischargeTurningOn)
+                {
+                    state = CHARGE_AND_DISCHARGE_ENABLE_CHECK;
                 }
 
                 break;
