@@ -145,9 +145,9 @@ int main(void)
     // Start with orionBatteryVoltagesOk set to 1 to allow contactor setting
     orionStatus.batteryVoltagesInRange = 1;
 
-    // Start with minCellVoltage to be a high value, so it doesn't trigger the
-    // Min Cell voltage check in UpdateChargeAllowance right away
-    orionStatus.minCellVoltage = 50000;
+    // Start with canMsgReceived set to 0 to prevent minCellVoltage causing
+    // contactor setting problems
+    orionStatus.canMsgReceived = 0;
 
     // Setup for next CAN Receive Interrupt
     if (HAL_CAN_Receive_IT(&hcan1, CAN_FIFO0) != HAL_OK)
@@ -502,11 +502,12 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 {
     CanRxMsgTypeDef* msg = hcan->pRxMsg;
 
-    if (msg->StdId == ORION_MAX_MIN_VOLTAGES_STDID && msg->DLC == 6)
+    if (msg->StdId == ORION_MAX_MIN_VOLTAGES_STDID && msg->DLC == 8)
     {
         // Voltages are 2 bytes each, and memory is stored in little endian format
         orionStatus.minCellVoltage = (uint16_t)msg->Data[0] | msg->Data[1] << 8; // Min Cell voltage
         orionStatus.maxCellVoltage = (uint16_t)msg->Data[3] | msg->Data[4] << 8; // Max Cell Voltage
+        orionStatus.canMsgReceived = 1;
     }
     else if (msg->StdId == DRIVERS_INPUTS_STDID && msg->DLC == 4)
     {
