@@ -183,6 +183,8 @@ void setContactorsTask(void const* arg)
                     state = CONTACTOR_DISCONNECTED;
                 }
 
+                break;
+
             case DISCHARGE_ENABLE_CHECK:
                 if (!hasDischargeBeenSet)
                 {
