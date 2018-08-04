@@ -3,8 +3,8 @@
 static const uint32_t CHARGE_ALLOWANCE_UPDATE_FREQ = 100; // Every 100ms
 // These values are subject to change based on what regulations say
 // Ask Dan if any issues
-static const float MAX_CELL_VOLTAGE = 3.8;
-static const float MIN_CELL_VOLTAGE = 3.2;
+static const float MAX_CELL_VOLTAGE = 4.05;
+static const float MIN_CELL_VOLTAGE = 2.85;
 static const float DEFAULT_VOLTAGE_UNITS = 0.0001; // From: https://www.orionbms.com/manuals/utility/
 
 // From SetContactorsTask.c
