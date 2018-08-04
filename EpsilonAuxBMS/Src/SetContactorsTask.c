@@ -173,6 +173,11 @@ void setContactorsTask(void const* arg)
                     prevState = state;
                     state = DISCHARGE_ENABLE_CHECK;
                 }
+                else if (!hasChargeBeenSet)
+                {
+                    prevState = state;
+                    state = DISCHARGE_ENABLE_CHECK;
+                }
 
                 common = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
                 discharge = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
@@ -244,6 +249,11 @@ void setContactorsTask(void const* arg)
                     prevState = state;
                     state = CHARGE_ENABLE_CHECK;
                     HAL_GPIO_WritePin(CHARGE_ENABLE_GPIO_Port, CHARGE_ENABLE_Pin, GPIO_PIN_SET);
+                }
+                else if (!hasDischargeBeenSet)
+                {
+                    prevState = state;
+                    state = CHARGE_ENABLE_CHECK;
                 }
 
                 common = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
