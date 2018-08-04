@@ -134,6 +134,12 @@ void setContactorsTask(void const* arg)
                 if (!hasDischargeBeenSet)
                 {
                     hasDischargeBeenSet = isContactorSet(DISCHARGE_SENSE_Pin, DISCHARGE_SENSE_GPIO_Port, 3);
+
+                    if (hasDischargeBeenSet)
+                    {
+                        // Enable high voltage
+                        HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_SET);
+                    }
                 }
 
                 contactorError = !(hasChargeBeenSet && hasDischargeBeenSet);
@@ -154,8 +160,6 @@ void setContactorsTask(void const* arg)
 
                 if (auxStatus.startUpSequenceDone)
                 {
-                    // Enable high voltage
-                    HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_SET);
                     state = DONE;
                 }
 
