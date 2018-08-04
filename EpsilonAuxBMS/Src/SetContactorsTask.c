@@ -207,7 +207,7 @@ void setContactorsTask(void const* arg)
 
                     isChargeTurningOn = 1;
                     hasChargeBeenSet = 0;
-                    // Turn on charge Contactor and go back to recheck
+                    // Turn on charge Contactor
                     HAL_GPIO_WritePin(CHARGE_ENABLE_GPIO_Port, CHARGE_ENABLE_Pin, GPIO_PIN_SET);
                 }
 
@@ -223,7 +223,13 @@ void setContactorsTask(void const* arg)
 
                     isDischargeTurningOn = 1;
                     hasDischargeBeenSet = 0;
-                    // Turn on discharge contactor and go back to recheck
+
+                    // Turn on discharge contactor
+                    if (isChargeTurningOn)
+                    {
+                        osDelay(AUX_SET_CONTACTOR_FREQ)
+                    }
+
                     HAL_GPIO_WritePin(DISCHARGE_ENABLE_GPIO_Port, DISCHARGE_ENABLE_Pin, GPIO_PIN_SET);
                 }
 
