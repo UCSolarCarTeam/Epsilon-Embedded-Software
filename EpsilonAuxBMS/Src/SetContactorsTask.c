@@ -65,8 +65,8 @@ void setContactorsTask(void const* arg)
     uint8_t common;
     uint8_t charge;
     uint8_t discharge;
-    uint8_t isChargeOn = 0;
-    uint8_t isDischargeOn = 0;
+    uint8_t hasChargeBeenSet = 0;
+    uint8_t hasDischargeBeenSet = 0;
 
     for (;;)
     {
@@ -126,17 +126,17 @@ void setContactorsTask(void const* arg)
                 break;
 
             case CHARGE_AND_DISCHARGE_ENABLE_CHECK:
-                if (!isChargeOn)
+                if (!hasChargeBeenSet)
                 {
-                    isChargeOn = isContactorSet(CHARGE_SENSE_Pin, CHARGE_SENSE_GPIO_Port, 3);
+                    hasChargeBeenSet = isContactorSet(CHARGE_SENSE_Pin, CHARGE_SENSE_GPIO_Port, 3);
                 }
 
-                if (!isDischargeOn)
+                if (!hasDischargeBeenSet)
                 {
-                    isDischargeOn = isContactorSet(DISCHARGE_SENSE_Pin, DISCHARGE_SENSE_GPIO_Port, 3);
+                    hasDischargeBeenSet = isContactorSet(DISCHARGE_SENSE_Pin, DISCHARGE_SENSE_GPIO_Port, 3);
                 }
 
-                contactorError = !(isChargeOn && isDischargeOn);
+                contactorError = !(hasChargeBeenSet && hasDischargeBeenSet);
 
                 if (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK)
                 {
@@ -163,7 +163,7 @@ void setContactorsTask(void const* arg)
                 charge = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
                 discharge = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
 
-                if (!common || (isChargeOn && !charge) || (isDischargeOn && !discharge))
+                if (!common || (hasChargeBeenSet && !charge) || (hasDischargeBeenSet && !discharge))
                 {
                     disconnectContactors(1);
                     state = CONTACTOR_DISCONNECTED;
@@ -238,7 +238,7 @@ void setContactorsTask(void const* arg)
                 discharge = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
 
                 if (prevState == CHARGE_AND_DISCHARGE_ENABLE_CHECK
-                        && (!common || (isChargeOn && !charge) || (isDischargeOn && !discharge)))
+                        && (!common || (hasChargeBeenSet && !charge) || (hasDischargeBeenSet && !discharge)))
                 {
                     disconnectContactors(1);
                     state = CONTACTOR_DISCONNECTED;
