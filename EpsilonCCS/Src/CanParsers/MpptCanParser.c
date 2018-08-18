@@ -23,11 +23,11 @@ void parseMpptCanMessage(uint32_t stdId, uint8_t* data)
         mpptData[mpptId].arrayCurrent =
             (data[2] << 0) |
             (data[3] << 8);
-        mpptData[mpptId].batteryVoltage
-        (data[4] << 0) |
-        (data[5] << 8);
-        mpptData[mpptId].temperature
-        (data[6] << 0) |
-        (data[7] << 8);
+        mpptData[mpptId].batteryVoltage =
+            (data[4] << 0) |
+            (data[5] << 8);
+        mpptData[mpptId].temperature =
+            (data[6] << 0) |
+            (data[7] << 8);
     }
 }
