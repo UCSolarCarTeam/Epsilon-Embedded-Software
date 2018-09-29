@@ -1,0 +1,33 @@
+In Car Embedded Systems
+------------------------
+
+The In-Car embedded systems are a mixture of custom printed circuit boards using the https://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/mcu-eval-tools/stm32-mcu-eval-tools/stm32-mcu-discovery-kits/stm32f4discovery.html[STM32F4 Discovery Processors] and proprietary systems. Proprietary systems are in use for the battery monitoring system (BMS), motor controllers, and the maximum power point trackers (MPPTs).
+
+Proprietary Systems: 
+
+* https://www.dilithiumpower.com/products/photon-1[Dilithium MPPTs]
+* https://tritium.com.au/products/iq-battery-management-system/[Tritium BMS]
+* https://tritium.com.au/products/wavesculptor22-motor-inverter/[Tritium Motor Controllers]
+
+Gen5 CAN Layout
+---------------
+
+image:References/Gen5CanLayout.pdf[]
+
+
+Notes
+^^^^^
+
+The Gen 5 CAN has two separate networks that communicate to the Central Communication System (CCS).
+Network 1 is comprised of the Auxiliary Battery Monitoring System (BMS), the Tritium BMS, and the Motor Controllers. The Tritium BMS and the Motor Controllers are proprietary systems.
+Network 2 is comprised of Lights, Driver Controls, the Max Power Point Tracker (MPPT). The MPPT is a proprietary system and it optimizes the power that the solar panels ouptut to charge the battery.
+A proprietary system is a system that was bought from an outside source and contains software that we don't make changes to. The reason we have an Aux BMS is because the Tritium BMS does not give enough information to suit our needs.
+
+link:TRI67.010v2_BMS_BMU_Communications_Protocol.pdf[] - BMS Datasheet
+
+link:TRI88.004v4-Users-Manual.pdf[] - Motor Controller Datasheet
+
+link:PhotonDatasheetrev1_2.pdf[] - MPPT Datasheet
+
+link:Gen5CanLayout.jpg[] 
+
