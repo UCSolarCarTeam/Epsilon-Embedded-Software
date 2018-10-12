@@ -12,7 +12,7 @@ Proprietary Systems:
 Gen5 CAN Layout
 ---------------
 
-image:References/Gen5CanLayout.jpg[]
+image:References/Gen5CanLayout.png[]
 
 
 Notes
