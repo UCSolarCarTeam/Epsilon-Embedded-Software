@@ -1,0 +1,19 @@
+Lights Control Board Software
+-----------------------------
+
+The Lights Control Board has the following inputs:
+
+* Left signal light command via CAN
+* Right signal light command via CAN
+* Brake lights command via CAN
+* Headlights command via CAN
+* Hazard lights command via CAN
+
+
+The Lights Control Board has the following outputs:
+
+* Acknowledgements for all lights commands via CAN
+* Left signal light via Digital
+* Right signal light via Digital
+* Brake lights via Digital
+* Head lights via Digital

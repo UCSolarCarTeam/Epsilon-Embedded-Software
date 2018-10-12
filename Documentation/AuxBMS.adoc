@@ -1,0 +1,57 @@
+Aux BMS
+--------
+
+The Aux BMS supplements the Orion BMS and has 2 Main functions:
+
+    1. Monitor and Transmit the Voltage of the Auxiliary Battery
+    2. Handle Precharge. Without precharge, overcurrent will occur when the contactor closes. Precharge controls the rise of the voltage until it is safe and then lets the contactors close. The charging and discharge contactors go through the precharge process.
+
+There are 4 contactors on the battery circuit:
+
+    1. Common - This contactor is always on when the car is running. Should this be turned off, the battery will be disconnected from the rest of the circuit.
+    2. Charging - This contactor should be on to allow the car to charge. When the temperature is above a specified threshold, the charging contactor is switched off.
+    3. Discharge - This contactor should be switched on to allow the pack to power the car. When the temperature is above a specified value, the contactor is switched off. The temperature threshold for discharge is greater than the threshold for charging.
+    4. Array - The only contactor that is separate from the battery pack. This contactor opens and closes with the charging contactor, and disconnects the array from the battery pack.
+    
+    
+image:References/ContactorSetup.jpg[]
+
+For fault situations, all contactors should be switched off.
+
+What is Precharge?
+^^^^^^^^^^^^^^^^^^
+
+When initially connecting a battery to a load, there is an inrush current as the load capacitance is charged to a battery voltage. This current is very high, and will cause damage to the relay contacts and put considerable stress to the system.
+
+image:References/InRushCurrent.jpg[] image:References/PrechargeEx2.jpg[] image:References/PrechargeEx1.jpg[]
+
+To prevent this, a precharge circuit is placed to control the rise of the voltage. This allows the capacitors in the load to charge slowly before the contactor closes.
+
+image:References/PrechargeEx4.jpg[] 
+image:References/PrechargeEx3.jpg[]
+
+At around 90% to 95% capacity, the contactor is then closed. This will insure that there is less voltage across the closing contactors and that there will be little to no inrush current.
+
+image:References/PrechargeEx5.jpg[]
+
+More Reading:
+
+https://en.wikipedia.org/wiki/Inrush_current
+
+https://en.wikipedia.org/wiki/Pre-charge
+
+http://liionbms.com/php/precharge.php
+
+
+Precharge Workflow
+^^^^^^^^^^^^^^^^^^
+
+1. The Orion BMS sends signals to close the Contactor
+2.Aux BMS receives it and closes the PC Relay
+3. AUx BMS Monitors the Main Battery Voltage
+4. At a safe voltage, Aux BMS closes the contactors
+5. Aux BMS then opens the PC Relay
+
+Note: It's important to ensure that the Contactor and the Relay are not closed at the same time, otherwise a fuse will blow.
+
+
