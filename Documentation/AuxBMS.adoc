@@ -47,8 +47,8 @@ Precharge Workflow
 ^^^^^^^^^^^^^^^^^^
 
 1. The Orion BMS sends signals to close the Contactor
-2.Aux BMS receives it and closes the PC Relay
-3. AUx BMS Monitors the Main Battery Voltage
+2. Aux BMS receives it and closes the PC Relay
+3. Aux BMS Monitors the Main Battery Voltage
 4. At a safe voltage, Aux BMS closes the contactors
 5. Aux BMS then opens the PC Relay
 
