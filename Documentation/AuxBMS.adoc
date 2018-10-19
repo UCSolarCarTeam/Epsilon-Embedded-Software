@@ -23,7 +23,7 @@ What is Precharge?
 
 When initially connecting a battery to a load, there is an inrush current as the load capacitance is charged to a battery voltage. This current is very high, and will cause damage to the relay contacts and put considerable stress to the system.
 
-image:References/InRushCurrent.jpg[] image:References/PrechargeEx2.jpg[] image:References/PrechargeEx1.jpg[]
+image:References/InrushCurrent.jpg[] image:References/PrechargeEx2.jpg[] image:References/PrechargeEx1.jpg[]
 
 To prevent this, a precharge circuit is placed to control the rise of the voltage. This allows the capacitors in the load to charge slowly before the contactor closes.
 
