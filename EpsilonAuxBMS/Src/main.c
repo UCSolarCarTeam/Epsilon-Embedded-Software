@@ -97,7 +97,7 @@ static void MX_CAN1_UserInit(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-static const uint32_t ORION_MAX_MIN_VOLTAGES_STDID  = 0x30A;
+static const uint32_t ORION_MAX_MIN_VOLTAGES_STDID  = 0x305;
 static const uint32_t DRIVERS_INPUTS_STDID  = 0x703;
 // Assuming extra bit is placed at the end (DDDDDDDDX)
 static const uint8_t DRIVERS_INPUTS_AUX_BIT_POSITION = 6;
@@ -144,6 +144,10 @@ int main(void)
 
     // Start with orionBatteryVoltagesOk set to 1 to allow contactor setting
     orionStatus.batteryVoltagesInRange = 1;
+
+    // Start with canMsgReceived set to 0 to prevent minCellVoltage causing
+    // contactor setting problems
+    orionStatus.canMsgReceived = 0;
 
     // Setup for next CAN Receive Interrupt
     if (HAL_CAN_Receive_IT(&hcan1, CAN_FIFO0) != HAL_OK)
@@ -501,8 +505,9 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     if (msg->StdId == ORION_MAX_MIN_VOLTAGES_STDID && msg->DLC == 8)
     {
         // Voltages are 2 bytes each, and memory is stored in little endian format
-        orionStatus.maxCellVoltage = (uint16_t)msg->Data[0] << 8 | msg->Data[1]; // Max Cell voltage
-        orionStatus.minCellVoltage = (uint16_t)msg->Data[2] << 8 | msg->Data[3]; // Min Cell Voltage
+        orionStatus.minCellVoltage = (uint16_t)msg->Data[0] | msg->Data[1] << 8; // Min Cell voltage
+        orionStatus.maxCellVoltage = (uint16_t)msg->Data[3] | msg->Data[4] << 8; // Max Cell Voltage
+        orionStatus.canMsgReceived = 1;
     }
     else if (msg->StdId == DRIVERS_INPUTS_STDID && msg->DLC == 4)
     {
