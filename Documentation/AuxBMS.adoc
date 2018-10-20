@@ -44,6 +44,8 @@ https://en.wikipedia.org/wiki/Pre-charge
 
 http://liionbms.com/php/precharge.php
 
+https://docs.google.com/document/d/1nIhDM4bE6hG3EAUMPlWgmF01TrC3XhC8S5vXUH4yx7w/mobilebasic?fbclid=IwAR1DrjbJ1w0A6Zo8h5Hx7N7Vd01yUadBAWVDdVAqYjIz0Y17WJwh9uOi4PU[Aux Bms Requirements]
+
 
 Precharge Workflow
 ^^^^^^^^^^^^^^^^^^
