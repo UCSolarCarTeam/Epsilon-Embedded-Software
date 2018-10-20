@@ -18,6 +18,7 @@ typedef struct OrionStatus
     unsigned allowCharge : 1;
     unsigned allowDischarge : 1;
     unsigned shutOff : 1;
+    unsigned canMsgReceived : 1;
     uint16_t maxCellVoltage;
     uint16_t minCellVoltage;
     osMutexId orionStatusMutex;
