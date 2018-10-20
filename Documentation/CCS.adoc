@@ -1,10 +1,10 @@
 CCS Software
 -------------
 
-The CCS board will be connected to both CAN busses as well as outputting the telemetry stream to the Primary Pi. CCS will act as the bridge between the two CAN networks.
+The CCS board will be connected to the CAN bus as well as output the telemetry stream to the Primary Pi. 
 
-CCS has two responsibilities, the first is to pass information from the CAN networks into the telemetry stream to be forwarded out. The second is to relay driver controls to the motor controllers.
+The responsibility of CCS is to pass information from the CAN network into the telemetry stream to be forwarded out. 
 
-The packet format for Schulich Delta: https://docs.google.com/spreadsheets/d/1gtCKN7LzG7e8XRzbGrN5uUiLGr7miS0QCEm0QNylUyM/edit#gid=0
+The packet format for Schulich Elysia: https://docs.google.com/spreadsheets/d/1gtCKN7LzG7e8XRzbGrN5uUiLGr7miS0QCEm0QNylUyM/edit#gid=0
 
 

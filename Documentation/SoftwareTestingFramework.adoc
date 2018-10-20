@@ -1,6 +1,0 @@
-Solar Car Software Testing Framework
-------------------------------------
-
-The Solar Car Software Testing Framework is intended to be hooked up to various embedded systems in the car, inputs will be mocked in and outputs will be captured to test the embedded systems. The testing framework is intended to be run on an https://os.mbed.com/platforms/mbed-LPC1768/[mbed LPC1768].
-
-To compile, GCC ARM for embedded systems is required. Installation can be acquired from https://github.com/adamgreen/gcc4mbed. Instructions are within the repository.

@@ -16,4 +16,4 @@ The Lights Control Board has the following outputs:
 * Left signal light via Digital
 * Right signal light via Digital
 * Brake lights via Digital
-* Head lights via Digital
+* Headlights via Digital

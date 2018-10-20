@@ -23,14 +23,16 @@ What is Precharge?
 
 When initially connecting a battery to a load, there is an inrush current as the load capacitance is charged to a battery voltage. This current is very high, and will cause damage to the relay contacts and put considerable stress to the system.
 
-image:References/InRushCurrent.jpg[] image:References/PrechargeEx2.jpg[] image:References/PrechargeEx1.jpg[]
+image:References/InrushCurrent.jpg[] image:References/PrechargeEx2.jpg[] image:References/PrechargeEx1.jpg[]
 
-To prevent this, a precharge circuit is placed to control the rise of the voltage. This allows the capacitors in the load to charge slowly before the contactor closes.
+To prevent this, a precharge circuit is placed to control the rise of the voltage. 
+This allows the capacitors in the load to charge slowly before the contactor closes.
 
 image:References/PrechargeEx4.jpg[] 
 image:References/PrechargeEx3.jpg[]
 
-At around 90% to 95% capacity, the contactor is then closed. This will insure that there is less voltage across the closing contactors and that there will be little to no inrush current.
+At around 90% to 95% capacity, the contactor is then closed. 
+This will insure that there is less voltage across the closing contactors and that there will be little to no inrush current.
 
 image:References/PrechargeEx5.jpg[]
 
@@ -47,8 +49,8 @@ Precharge Workflow
 ^^^^^^^^^^^^^^^^^^
 
 1. The Orion BMS sends signals to close the Contactor
-2.Aux BMS receives it and closes the PC Relay
-3. AUx BMS Monitors the Main Battery Voltage
+2. Aux BMS receives it and closes the PC Relay
+3. Aux BMS Monitors the Main Battery Voltage
 4. At a safe voltage, Aux BMS closes the contactors
 5. Aux BMS then opens the PC Relay
 
