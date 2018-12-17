@@ -25,7 +25,7 @@ link:References/TRI67.010v2_BMS_BMU_Communications_Protocol.pdf[TRI67.010v2_BMS_
 
 link:References/TRI88.004v4-Users-Manual.pdf[TRI88.004v4-Users-Manual.pdf] - Motor Controller Datasheet
 
-link:https://www.dilithiumpower.com/ - MPPT Datasheet
+https://www.dilithiumpower.com/ - MPPT Datasheet
 
 link:References/Gen5CanLayout.png[Gen5CanLayout.png] 
 
