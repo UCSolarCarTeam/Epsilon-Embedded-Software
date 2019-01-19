@@ -5,11 +5,20 @@ if [ $# -ne 2 ]; then
     exit 1
 fi
 
-if [ -d $1 ]; then
-   	cd $1/build
+
+project=$1
+port=$2
+
+if [ -d $project ]; then
+	if [ ${project: -1} == '/' ]; then 
+		project=${project::-1}
+		cd $project/build
+	else
+		cd $project/build
+	fi
 else
-   echo "$1 is not a valid project"
+   echo "$project is not a valid project"
    exit 1
 fi
 
-arm-none-eabi-gdb $1.elf -ex "target extended-remote /dev/ttyACM$2" -ex 'monitor tpwr enable' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'load'
+arm-none-eabi-gdb $project.elf -ex "target extended-remote /dev/ttyACM$port" -ex 'monitor tpwr enable' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'load'
