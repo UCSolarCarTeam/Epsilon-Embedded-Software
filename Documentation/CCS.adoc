@@ -1,0 +1,10 @@
+CCS Software
+-------------
+
+The CCS board will be connected to the CAN bus as well as output the telemetry stream to the Primary Pi. 
+
+The responsibility of CCS is to pass information from the CAN network into the telemetry stream to be forwarded out. 
+
+The packet format for Schulich Elysia: https://docs.google.com/spreadsheets/d/1gtCKN7LzG7e8XRzbGrN5uUiLGr7miS0QCEm0QNylUyM/edit#gid=0
+
+
