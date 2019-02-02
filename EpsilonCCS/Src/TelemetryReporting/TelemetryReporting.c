@@ -114,17 +114,16 @@ void sendMotorDetails(int n)
             writeFloatIntoArray(packetPayload, 13, motor0DetailsData.motorVoltageImaginary);
             writeFloatIntoArray(packetPayload, 17, motor0DetailsData.motorCurrentReal);
             writeFloatIntoArray(packetPayload, 21, motor0DetailsData.motorCurrentImaginary);
-            writeFloatIntoArray(packetPayload, 25, motor0DetailsData.backEmfReal);
-            writeFloatIntoArray(packetPayload, 29, motor0DetailsData.backEmfImaginary);
-            writeFloatIntoArray(packetPayload, 33, motor0DetailsData.railSupply15v);
-            writeFloatIntoArray(packetPayload, 37, motor0DetailsData.railSupply3_3v);
-            writeFloatIntoArray(packetPayload, 41, motor0DetailsData.railSupply1_9v);
-            writeFloatIntoArray(packetPayload, 45, motor0DetailsData.heatSinkTemperature);
-            writeFloatIntoArray(packetPayload, 49, motor0DetailsData.motorTemperature);
-            writeFloatIntoArray(packetPayload, 53, motor0DetailsData.dspBoardTemp);
-            writeFloatIntoArray(packetPayload, 57, motor0DetailsData.dcBusAmpHours);
-            writeFloatIntoArray(packetPayload, 61, motor0DetailsData.odometer);
-            writeFloatIntoArray(packetPayload, 65, motor0DetailsData.slipSpeed);
+            writeFloatIntoArray(packetPayload, 25, motor0DetailsData.backEmfImaginary);
+            writeFloatIntoArray(packetPayload, 29, motor0DetailsData.railSupply15v);
+            writeFloatIntoArray(packetPayload, 33, motor0DetailsData.railSupply3_3v);
+            writeFloatIntoArray(packetPayload, 37, motor0DetailsData.railSupply1_9v);
+            writeFloatIntoArray(packetPayload, 41, motor0DetailsData.heatSinkTemperature);
+            writeFloatIntoArray(packetPayload, 45, motor0DetailsData.motorTemperature);
+            writeFloatIntoArray(packetPayload, 49, motor0DetailsData.dspBoardTemp);
+            writeFloatIntoArray(packetPayload, 53, motor0DetailsData.dcBusAmpHours);
+            writeFloatIntoArray(packetPayload, 57, motor0DetailsData.odometer);
+            writeFloatIntoArray(packetPayload, 61, motor0DetailsData.slipSpeed);
             break;
 
         case 1:
@@ -135,7 +134,7 @@ void sendMotorDetails(int n)
             writeFloatIntoArray(packetPayload, 13, motor1DetailsData.motorVoltageImaginary);
             writeFloatIntoArray(packetPayload, 17, motor1DetailsData.motorCurrentReal);
             writeFloatIntoArray(packetPayload, 21, motor1DetailsData.motorCurrentImaginary);
-            writeFloatIntoArray(packetPayload, 25, motor1DetailsData.backEmfReal);
+            writeFloatIntoArray(packetPayload, 25, motor1DetailsData.backEmfImaginary);
             writeFloatIntoArray(packetPayload, 29, motor1DetailsData.railSupply15v);
             writeFloatIntoArray(packetPayload, 33, motor1DetailsData.railSupply3_3v);
             writeFloatIntoArray(packetPayload, 37, motor1DetailsData.railSupply1_9v);

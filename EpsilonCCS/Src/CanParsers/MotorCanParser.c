@@ -94,7 +94,7 @@ void parseMotorCanMessage(uint32_t stdId, uint8_t* data)
 
         case M0_BACKEMF_CAN_ID:
             motor0DetailsData.backEmfImaginary = arrayToFloat(&data[0]);
-            motor0DetailsData.backEmfReal = arrayToFloat(&data[4]);
+            motor0DetailsData.backEmfReal = arrayToFloat(&data[4]); //this will always be 0 so we do not use or display it
             break;
 
         case M0_15V_VOLTAGE_RAIL_CAN_ID:
@@ -121,7 +121,7 @@ void parseMotorCanMessage(uint32_t stdId, uint8_t* data)
             break;
 
         case M0_SLIP_SPEED_CAN_ID:
-            motor0DetailsData.slipSpeed = arrayToFloat(&data[4]);
+            motor0DetailsData.slipSpeed = arrayToFloat(&data[0]);
             break;
 
         case M1_BASE_CAN_ID:
@@ -133,8 +133,8 @@ void parseMotorCanMessage(uint32_t stdId, uint8_t* data)
             break;
 
         case M1_BUS_CAN_ID:
-            keyMotorData.m1BusCurrent = arrayToFloat(&data[0]);
-            keyMotorData.m1BusVoltage = arrayToFloat(&data[4]);
+            keyMotorData.m1BusVoltage = arrayToFloat(&data[0]);
+            keyMotorData.m1BusCurrent = arrayToFloat(&data[4]);
             break;
 
         case M1_VELOCITY_CAN_ID:
@@ -158,7 +158,7 @@ void parseMotorCanMessage(uint32_t stdId, uint8_t* data)
 
         case M1_BACKEMF_CAN_ID:
             motor1DetailsData.backEmfImaginary = arrayToFloat(&data[0]);
-            motor1DetailsData.backEmfReal = arrayToFloat(&data[4]);
+            motor1DetailsData.backEmfReal = arrayToFloat(&data[4]); //this will always be 0 so we do not use or display it
             break;
 
         case M1_15V_VOLTAGE_RAIL_CAN_ID:
@@ -185,7 +185,7 @@ void parseMotorCanMessage(uint32_t stdId, uint8_t* data)
             break;
 
         case M1_SLIP_SPEED_CAN_ID:
-            motor1DetailsData.slipSpeed = arrayToFloat(&data[4]);
+            motor1DetailsData.slipSpeed = arrayToFloat(&data[0]);
             break;
     }
 }
