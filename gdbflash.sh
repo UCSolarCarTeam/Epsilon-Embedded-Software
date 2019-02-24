@@ -7,7 +7,7 @@ do
             project=$OPTARG
             ;;
         b) # str2
-            blackmagicpath=$OPTARG
+            blackMagicPath=$OPTARG
             ;;
         \?)
           echo "Invalid option: -$OPTARG" >&2
@@ -37,4 +37,4 @@ else
    exit 1
 fi
 
-arm-none-eabi-gdb $project.elf -ex "target extended-remote $blackmagicpath" -ex 'monitor tpwr enable' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'load'
+arm-none-eabi-gdb $project.elf -ex "target extended-remote $blackMagicPath" -ex 'monitor tpwr enable' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'load'
