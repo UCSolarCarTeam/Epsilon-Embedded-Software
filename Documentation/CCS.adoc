@@ -2,7 +2,7 @@
 
 The primary responsibility of the CCS is to take all the information on the 500Khz CAN Network (CAN2), package the information into serial data, and send it to the Raspberry Pi over UART.
 
-In addition, the CCS also recieves messages from the driver controls, and will activate the horn when it is pressed.
+In addition, the CCS also receives messages from the driver controls, and will activate the horn when it is pressed.
 
 ## CAN Inputs
 |=======================
@@ -18,4 +18,4 @@ See the https://docs.google.com/spreadsheets/d/1gtCKN7LzG7e8XRzbGrN5uUiLGr7miS0Q
 
 CAN1 was originally intended to house older external systems(eg. Tritium BMS) that could only run on 250Khz networks.
 However, those have been replaced with systems that can be run on 500Khz.
-As a result, CAN1 is currently being used by the Software Team.
+As a result, CAN1 is currently unused.
