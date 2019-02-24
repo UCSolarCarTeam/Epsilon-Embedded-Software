@@ -44,10 +44,10 @@ All reported messages will go to the CCS & be seen by the Car Telemetry. See pro
 |0x702 |Music Inputs |Report Status of Music Inputs (Unused)
 |0x703 |Driver Inputs | Report Driver Inputs 
 
-Aux BMS will respond to the forward/reverse/aux messages
+Aux BMS will respond to the forward/reverse/aux messages (See the Aux BMS documentation for more info)
 
 CCS will activate the horn
-|0x501 | Motor Drive | Sends the Motor Current & Velocity control the Motor Controllers
+|0x501 | Motor Drive | Sends the Motor Current & Velocity to control the Motor Controllers
 |0x502 | Motor Power | Set the desired set point of the current from the bus by the Motor (Set to 100%)
 
 |=======================
