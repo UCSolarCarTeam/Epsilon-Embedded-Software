@@ -1,20 +1,24 @@
-Lights Control Board Software
------------------------------
+# Lights Control Board Software
 
-The Lights Control Board has the following inputs:
+## CAN Inputs
 
-* Left signal light command via CAN
-* Right signal light command via CAN
-* Brake lights command via CAN
-* Headlights command via CAN
-* Hazard lights command via CAN
-* Strobe BMS Light command via CAN
+The main functionality of the Lights Board is to receive commands from the rest of the system to activate the lights, and also report the phyical status of those lights via CAN. 
+
+The Lights Board will send and receive CAN messages according to the https://docs.google.com/spreadsheets/d/1soVLjeD9Sl7z7Z6cYMyn1fmn-cG7tx_pfFDsvgkCqMU/edit?usp=sharing[Epsilon Communications Protocol.^]
+
+
+## CAN Inputs
+|=======================
+|*CAN Address* |*Name* |*Purpose*
+|0x701 | Lights Inputs | Messages from Driver Controls about which lights need to be activated (Headlights, Turn Signals)
+|0x703 | Driver | Contains information on brakes for the brake lights
+|0x721 | Aux Status | Messages from AUX BMS to trigger the Emergency BMS Strobe Light
+|=======================
 
 
 The Lights Control Board has the following outputs:
-
-* Acknowledgements for all lights commands via CAN
-* Left signal light via Digital
-* Right signal light via Digital
-* Brake lights via Digital
-* Headlights via Digital
+|=======================
+|*CAN Address* |*Name* |*Purpose*
+|0x710 | Heartbeat | Always 1, to confirm the board is sending messages
+|0x711 | Lights Status | Information on which lights are physically on/off
+|=======================
