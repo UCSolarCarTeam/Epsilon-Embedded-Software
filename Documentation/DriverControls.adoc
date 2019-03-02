@@ -1,0 +1,20 @@
+Driver Control Board Software
+-----------------------------
+
+The Driver Control Board has the following inputs:
+
+* Push-To-Talk button via Digital
+* Horn button via Digital
+* Reset button via Digital
+* Context button via Digital
+* Mechanical Brake switch via Digital
+* Left Signal switch via Digital
+* Right Signal switch via Digital
+* Regenerative Braking Pedal via Analog
+* Acceleration Pedal via Analog
+
+The Driver Control Board has the following outputs:
+
+* All signals above translated out via CAN
+
+The Driver Control Board also has digital inputs to control media but they are currently not being used.
