@@ -205,7 +205,7 @@ void sendDriveCommandsTask(void const* arg)
         }
         else if (regenPercentage > NON_ZERO_THRESHOLD) // Regen state
         {
-            // To stop regen braking, set motorCurrentOut to desired value and zero motorVelocityOut
+            // To stop using regen braking, set motorCurrentOut to desired value and zero motorVelocityOut
             // To stop without regen braking, zero both motorCurrentOut and motorVelocityOut
             // https://tritium.com.au/includes/TRI88.004v4-Users-Manual.pdf - Section 13
 
@@ -227,23 +227,17 @@ void sendDriveCommandsTask(void const* arg)
             motorVelocityOut = 0;
             motorCurrentOut = 0;
         }
-        else if (forward) // Forward state
+        else if (forward && (accelPercentage > NON_ZERO_THRESHOLD)) // Forward state
         {
-            if (accelPercentage > NON_ZERO_THRESHOLD)
-            {
-                HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
-                motorVelocityOut = MAX_FORWARD_RPM;
-                motorCurrentOut = accelPercentage;
-            }
+            HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
+            motorVelocityOut = MAX_FORWARD_RPM;
+            motorCurrentOut = accelPercentage;
         }
-        else if (reverse) // Reverse State
-        {
-            if (accelPercentage > NON_ZERO_THRESHOLD)
-            {
-                HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
-                motorVelocityOut = MAX_REVERSE_RPM;
-                motorCurrentOut = accelPercentage;
-            }
+        else if (reverse && (accelPercentage > NON_ZERO_THRESHOLD)) // Reverse State
+        { 
+            HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
+            motorVelocityOut = MAX_REVERSE_RPM;
+            motorCurrentOut = accelPercentage;
         }
         else  // Off state
         {
