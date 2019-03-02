@@ -325,5 +325,11 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
         auxBmsInputs[1] = msg->Data[1];
     }
 
+    if (HAL_CAN_Receive_IT(hcan, CAN_FIFO0) == HAL_OK)
+        // Toggle green LED for every CAN message received
+    {
+        HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
+    }
+    
     __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
 }
