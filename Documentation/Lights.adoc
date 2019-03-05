@@ -22,3 +22,12 @@ The Lights Control Board has the following outputs:
 |0x710 | Heartbeat | Always 1, to confirm the board is sending messages
 |0x711 | Lights Status | Information on which lights are physically on/off
 |=======================
+
+## LED Output
+
+|=======================
+|*LED / Action*|  *Purpose*
+|Blue / Flashing | Sending Lights Status CAN Message
+|Green / Flashing | Sending Lights Heartbeat CAN Message 
+|Red / Flashing |  Could not receive CAN Message
+|=======================
