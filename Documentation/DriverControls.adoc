@@ -52,7 +52,7 @@ CCS will activate the horn
 
 |=======================
 
-LED Outputs
+## LED Outputs
 
 |=======================
 |*LED / Action*|  *Purpose*
