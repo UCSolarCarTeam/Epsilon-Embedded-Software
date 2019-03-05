@@ -14,6 +14,16 @@ In addition, the CCS also receives messages from the driver controls, and will a
 
 See the https://docs.google.com/spreadsheets/d/1gtCKN7LzG7e8XRzbGrN5uUiLGr7miS0QCEm0QNylUyM/edit#gid=0[Elysia Communications Protocol] for messages that the CCS forwards to the Raspberry Pi & the breakdown of the serial packets.
 
+## LED Feedback
+
+|=======================
+|*LED / Action*|  *Purpose*
+|Red / Off | Could not send message through USB connection 
+|Red / On | Could not send message through USB connection due to timeout (Usually due to Hermes not running on Pi/Computer) 
+|Red / Flashing |  CCS is sending messages 
+|Green / On | CCS is receiving CAN messages 
+|=======================
+
 ## Unused CAN Network
 
 CAN1 was originally intended to house older external systems(eg. Tritium BMS) that could only run on 250Khz networks.
