@@ -51,3 +51,12 @@ CCS will activate the horn
 |0x502 | Motor Power | Set the desired set point of the current from the bus by the Motor (Set to 100%)
 
 |=======================
+
+LED Outputs
+
+|=======================
+|*LED / Action*|  *Purpose*
+|Blue / Flashing | Messages are being sent to drive the car forward
+|Green / Flashing |  Messages are being sent to drive the car backward 
+|Red / Flashing | Driver Controls is sending CAN messages
+|=======================
