@@ -234,7 +234,7 @@ void sendDriveCommandsTask(void const* arg)
             motorCurrentOut = accelPercentage;
         }
         else if (reverse && (accelPercentage > NON_ZERO_THRESHOLD)) // Reverse State
-        { 
+        {
             HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
             motorVelocityOut = MAX_REVERSE_RPM;
             motorCurrentOut = accelPercentage;
@@ -324,6 +324,6 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     {
         HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
     }
-    
+
     __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
 }
