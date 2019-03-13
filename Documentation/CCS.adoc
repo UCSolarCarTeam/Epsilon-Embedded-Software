@@ -1,10 +1,31 @@
-CCS Software
--------------
+# CCS Software
 
-The CCS board will be connected to the CAN bus as well as output the telemetry stream to the Primary Pi. 
+The primary responsibility of the CCS is to take all the information on the 500Khz CAN Network (CAN2), package the information into serial data, and send it to the Raspberry Pi over UART.
 
-The responsibility of CCS is to pass information from the CAN network into the telemetry stream to be forwarded out. 
+In addition, the CCS also receives messages from the driver controls, and will activate the horn when it is pressed.
 
-The packet format for Schulich Elysia: https://docs.google.com/spreadsheets/d/1gtCKN7LzG7e8XRzbGrN5uUiLGr7miS0QCEm0QNylUyM/edit#gid=0
+## CAN Inputs
+|=======================
+|*CAN Address* |*Name* |*Purpose*
+|0x703 | Driver Inputs | Contains information on if the horn is pressed
+|=======================
 
+## Serial Output
 
+See the https://docs.google.com/spreadsheets/d/1gtCKN7LzG7e8XRzbGrN5uUiLGr7miS0QCEm0QNylUyM/edit#gid=0[Elysia Communications Protocol] for messages that the CCS forwards to the Raspberry Pi & the breakdown of the serial packets.
+
+## LED Feedback
+
+|=======================
+|*LED / Action*|  *Purpose*
+|Red / Off | Could not send message through USB connection 
+|Red / On | Could not send message through USB connection due to timeout (Usually due to Hermes not running on Pi/Computer) 
+|Red / Flashing |  CCS is sending messages 
+|Green / On | CCS is receiving CAN messages 
+|=======================
+
+## Unused CAN Network
+
+CAN1 was originally intended to house older external systems(eg. Tritium BMS) that could only run on 250Khz networks.
+However, those have been replaced with systems that can be run on 500Khz.
+As a result, CAN1 is currently unused.
