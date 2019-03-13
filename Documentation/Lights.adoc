@@ -2,7 +2,7 @@
 
 ## CAN Inputs
 
-The main functionality of the Lights Board is to receive commands from the rest of the system to activate the lights, and also report the phyical status of those lights via CAN. 
+The main functionality of the Lights Board is to receive commands from the rest of the system to activate the lights, and also report the physical status of those lights via CAN. 
 
 The Lights Board will send and receive CAN messages according to the https://docs.google.com/spreadsheets/d/1soVLjeD9Sl7z7Z6cYMyn1fmn-cG7tx_pfFDsvgkCqMU/edit?usp=sharing[Epsilon Communications Protocol.^]
 
