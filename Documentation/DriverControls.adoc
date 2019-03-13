@@ -1,20 +1,62 @@
-Driver Control Board Software
------------------------------
+# Driver Control Board Software
 
-The Driver Control Board has the following inputs:
+The main functionality of the Driver Control board is to forward the inputs from the various buttons & pedals of the Solar Car and forward the signals to the other systems.
 
-* Push-To-Talk button via Digital
-* Horn button via Digital
-* Reset button via Digital
-* Context button via Digital
-* Mechanical Brake switch via Digital
-* Left Signal switch via Digital
-* Right Signal switch via Digital
-* Regenerative Braking Pedal via Analog
-* Acceleration Pedal via Analog
+The Driver Controls will send CAN messages according to the https://docs.google.com/spreadsheets/d/1soVLjeD9Sl7z7Z6cYMyn1fmn-cG7tx_pfFDsvgkCqMU/edit?usp=sharing[Epsilon Communications Protocol.^]
 
-The Driver Control Board has the following outputs:
 
-* All signals above translated out via CAN
+## Physical Inputs:
 
-The Driver Control Board also has digital inputs to control media but they are currently not being used.
+### Digital Signals
+
+* Push-To-Talk Button
+* Horn Button
+* Reset Button
+* Context Button
+* Mechanical Brake Switch
+* Left Signal Switch
+* Right Signal Switch
+
+### Analog Signals
+* Regenerative Braking Pedal
+* Acceleration Pedal
+
+### Unused Signals
+* Volume Up Button
+* Volume Down Button
+* Next Song Button
+* Previous Song Buttons
+
+## CAN Inputs
+|=======================
+|*CAN Address* |*Name* |*Purpose*
+|0x721 | Aux Status | Monitor the charge contactor and disable regen braking if it is off
+|=======================
+
+## Can Outputs
+
+All reported messages will go to the CCS & be seen by the Car Telemetry. See protocol for more information.
+
+|=======================
+|*CAN Address* |*Name* |*Purpose*
+|0x700 |Heartbeat |Report that board is active
+|0x701 |Lights Input |Report Status of Lights Inputs - The Lights Board will activate the appropriate lights
+|0x702 |Music Inputs |Report Status of Music Inputs (Unused)
+|0x703 |Driver Inputs | Report Driver Inputs 
+
+Aux BMS will respond to the forward/reverse/aux messages (See the Aux BMS documentation for more info)
+
+CCS will activate the horn
+|0x501 | Motor Drive | Sends the Motor Current & Velocity to control the Motor Controllers
+|0x502 | Motor Power | Set the desired set point of the current from the bus by the Motor (Set to 100%)
+
+|=======================
+
+## LED Outputs
+
+|=======================
+|*LED / Action*|  *Purpose*
+|Blue / Flashing | Messages are being sent to drive the car forward
+|Green / Flashing |  Messages are being sent to drive the car backward 
+|Red / Flashing | Driver Controls is sending CAN messages
+|=======================
