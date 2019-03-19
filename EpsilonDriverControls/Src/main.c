@@ -52,6 +52,7 @@ osMessageQId canQueue;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
+uint8_t auxBmsInputs[2];
 static osThreadId heartbeatTaskHandle;
 static osThreadId lightsTaskHandle;
 static osThreadId musicTaskHandle;
@@ -360,7 +361,7 @@ static void MX_CAN2_UserInit(void)
     sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
     // sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
     sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
-    sFilterConfig.FilterIdHigh = 0; // Filter registers need to be shifted left 5 bits
+    sFilterConfig.FilterIdHigh = AUXBMS_INPUT_STDID << 5; // Filter registers need to be shifted left 5 bits
     sFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
     sFilterConfig.FilterMaskIdHigh = 0; // Unused
     sFilterConfig.FilterMaskIdLow = 0; // Unused
