@@ -84,7 +84,8 @@ modules you're trying to test.
         
 Compiling
 ---------
-Be sure to compile unity.c along with all other files being compiled
+Be sure to compile include the src folder and compile unity.c along with all other 
+files being compiled
 
 CMD line:
-    gcc testModuleFunctions.c main.c unity.c        
+    gcc -I UnityTestingTool/src testModuleFunctions.c main.c unity.c        
