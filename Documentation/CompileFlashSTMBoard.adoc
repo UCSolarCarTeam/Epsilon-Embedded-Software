@@ -4,8 +4,6 @@ NOTE: This has only been tested on Linux Mint, but is expected to work on other 
 
 == Setup
 
-. Go to UCSolarCarTeam repo > Recruit Resources, and clone.
-
 . Navigate to STM32F4Discovery-Resources and run the auto installer using `sudo ./install.sh`. 
 This should download STLink, gcc4mbed, and CubeMX2Makefile and add them all to the path.
 
@@ -59,6 +57,7 @@ For example, EWARM is for the IAR Embedded Workbench IDE and CubeMX2Makefile wil
 . Navigate to the build directory and there should be a `<project>.bin` & a `<project>.elf` file. Where `<project>` is the project name. 
 
 == Flashing
+
 Flashing is how the `.bin` or `.elf` that was made is put onto the board. 
 This is how the processor on the board is able to carry out the instructions that were generated from the code.
 
@@ -78,7 +77,7 @@ DATE/TIME WARN /opt/stlink/src/usb.c: Couldn't find any ST-Link/V2 devices
 
 === Black Magic Probe
 
-The Black Magic Probe is compatible both the 10-Pin & 20-Pin JTag headers. 
+The Black Magic Probe is compatible with both the 10-Pin & 20-Pin JTag headers. 
 It also allows for debugging using GDB.
 
 To load the `.elf` file onto the board, enter the `build/` directory.
