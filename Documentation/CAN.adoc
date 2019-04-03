@@ -28,21 +28,9 @@ CAN protocol is a set of rules for transmitting and receiving messages in a netw
 * A frame has a defined structure and carries a meaningful sequence of bits or bytes of data
 * There are two types of frames:
     - standard: 11 bit identifier fields (Solar Car uses this)
+image:References/11bitCAN.jpg[]
     - exetended: 29 bit identifier fields
 * All nodes on CAN receive the CAN frame and depending on the ID on the node CAN decides whether to accept it or not
 * If multiple nodes send the message at the same time then the node with the highest priority (lowest arbitration ID) will get bus access and low priroty nodes wait until the bus is available
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Note: The CAN network needs two terminating resistors in order to work
