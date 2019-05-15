@@ -1,10 +1,10 @@
-Aux BMS
---------
+# Aux BMS
 
-The Aux BMS supplements the Orion BMS and has 2 Main functions:
+The Aux BMS supplements the Orion BMS and has 3 Main functions:
 
-    1. Monitor and Transmit the Voltage of the Auxiliary Battery
-    2. Handle Precharge. Without precharge, overcurrent will occur when the contactor closes. Precharge controls the rise of the voltage until it is safe and then lets the contactors close. The charging and discharge contactors go through the precharge process.
+    1. Monitor and transmit the voltage of the auxiliary battery
+    2. Handle precharge. Without precharge, overcurrent will occur when the contactor closes. Precharge controls the rise of the voltage until it is safe and then lets the contactors close. The charging and discharge contactors go through the precharge process.
+    3. Monitor inputs from Orion BMS and open or close the contactors accordingly.
 
 There are 4 contactors on the battery circuit:
 
@@ -18,8 +18,7 @@ image:References/ContactorSetup.jpg[]
 
 For fault situations, all contactors should be switched off.
 
-What is Precharge?
-^^^^^^^^^^^^^^^^^^
+## What is Precharge?
 
 When initially connecting a battery to a load, there is an inrush current as the load capacitance is charged to a battery voltage. This current is very high, and will cause damage to the relay contacts and put considerable stress to the system.
 
@@ -36,7 +35,86 @@ This will insure that there is less voltage across the closing contactors and th
 
 image:References/PrechargeEx5.jpg[]
 
-More Reading:
+## Precharge Workflow
+
+1. The Orion BMS sends signals to close the contactor
+2. Aux BMS receives it and closes the PC Relay
+3. Aux BMS Monitors the current through the contactor
+4. At a safe current, Aux BMS attempts to close the contactor
+5. Aux BMS then opens the PC Relay
+
+Note: It's important to ensure that the Contactor and the Relay are not closed at the same time, otherwise a fuse will blow.
+
+
+## Startup Sequence
+
+1. The Common contactor goes through the precharge workflow. 
+If the Aux BMS is unable to close the contactor, an error is reported via the Aux Status CAN message and it tries again. 
+
+2. The Charge contactor goes through the precharge workflow. 
+If the Aux BMS is unable to close the contactor, an error is reported via the Aux Status CAN message. 
+If the Discharge contactor has already been closed, it tries to close the Charge contactor again, otherwise it tries to close the Discharge contactor. and it moves on to try and close the Discharge contactor. 
+If it detects that the Common contactor or Discharge contactor (if it was previously closed) has somehow been disconnected, it closes all contactors and reports an error via the Aux Status CAN message and does not try to close the contactors anymore.
+
+3. The Discharge contactor goes through the precharge workflow. 
+If the Aux BMS is unable to close the contactor, an error is reported via the Aux Status CAN message. 
+If the Charge contactor has already been closed, it tries to close the Discharge contactor again, otherwise it tries to close the Charge contactor. 
+If it detects that the Common contactor or Charge contactor (if it was previously closed) has somehow been disconnected, it closes all contactors and reports an error via the Aux Status CAN message and does not try to close the contactors anymore.
+
+4. Once all the contactors have been closed. The startup sequence is done. The Aux BMS will then monitor the contactors to ensure that they do not open.
+If the Common contactor opens, then all contactors are closed and an error is reported via CAN.
+If the Charge or Discharge contactor open, and it was not due to Orion BMS signals, then all contactors are closed and an error is reported via CAN. 
+If the Charge or Discharge contactor open, and it was due to Orion BMS signals, then the Aux BMS tries to close that contactor again.
+
+Note: At any point, the closing of contactors can be stopped and blocked due to a message (GPIO or CAN) from Orion BMS.
+
+
+## Orion BMS Interaction
+The Orion BMS supplies 3 GPIO inputs (Charge Enable, Discharge Enable, and Safety), and transmits the maximum cell voltage and minimum cell voltage via CAN.
+
+.The Safety GPIO input is not monitored by Aux BMS, but the Charge Enable and Discharge Enable are acted upon once the startup sequence has been completed in the following way:
+* If the car is driving (forward or reverse), then if either of Charge Enable or Discharge Enable goes low, then all contactors are opened and the high voltage is disabled. The Aux BMS will then send a CAN message to strobe the BMS light.
+* If the car is in Aux mode:
+  - If Charge Enable goes low, then the charge contactor is opened.
+  - If Discharge Enable goes low, then the discharge contactor is opened and the high voltage is disabled.
+
+.The maximum and minimum cell voltages are acted upon - regardless of whether precharge has been completed or not - in the following way:
+* If the maximum voltage is greater than the maximum allowable cell voltage, then the charge contactor is opened.
+* If the minimum voltage is less than the minimum allowable cell voltage, then the discharge contactor is opened and the high voltage is disabled.
+
+## Inputs/Outputs
+The Aux BMS will send and receive CAN messages according to the https://docs.google.com/spreadsheets/d/1soVLjeD9Sl7z7Z6cYMyn1fmn-cG7tx_pfFDsvgkCqMU/edit?usp=sharing[Epsilon Communications Protocol.^]
+
+
+### CAN Inputs
+|=======================
+|*CAN Address* |*Name* |*Purpose*
+|0x305 | Orion BMS | Messages about the maximum and minimum cell voltages
+|0x703 | Driver | Contains information on the car's mode (forward, reverse, aux)
+|=======================
+
+
+### CAN Outputs
+|=======================
+|*CAN Address* |*Name* |*Purpose*
+|0x720 | Heartbeat | Always 1, to confirm the board is sending messages
+|0x721 | Aux Status | Information on which contactors are closed, the auxilliary battery voltage, high voltage enable, contactor errors, allowing charge, and BMS strobe light.
+|=======================
+
+
+### GPIO
+|=======================
+|*Name*|  *Purpose* | *Direction*
+|Red LED | Toggles each time a heartbeat CAN message is sent | Output
+|Blue LED | Toggles each time an Aux Status CAN message is sent | Output
+|Contactor Enables | Is high when Aux BMS allows a contactor to close (Common, Charge, Discharge) | Output
+|Contactor Senses | Indicates if a contactor has been fully closed | Input
+|Orion BMS Charge Enable | Is high when Orion BMS allows charge | Input
+|Orion BMS Discharge Enable | Is high when Orion BMS allows discharge | Input
+|=======================
+
+
+## More Reading:
 
 https://en.wikipedia.org/wiki/Inrush_current
 
@@ -45,17 +123,4 @@ https://en.wikipedia.org/wiki/Pre-charge
 http://liionbms.com/php/precharge.php
 
 https://docs.google.com/document/d/1nIhDM4bE6hG3EAUMPlWgmF01TrC3XhC8S5vXUH4yx7w/mobilebasic?fbclid=IwAR1DrjbJ1w0A6Zo8h5Hx7N7Vd01yUadBAWVDdVAqYjIz0Y17WJwh9uOi4PU[Aux Bms Requirements]
-
-
-Precharge Workflow
-^^^^^^^^^^^^^^^^^^
-
-1. The Orion BMS sends signals to close the Contactor
-2. Aux BMS receives it and closes the PC Relay
-3. Aux BMS Monitors the Main Battery Voltage
-4. At a safe voltage, Aux BMS closes the contactors
-5. Aux BMS then opens the PC Relay
-
-Note: It's important to ensure that the Contactor and the Relay are not closed at the same time, otherwise a fuse will blow.
-
 
