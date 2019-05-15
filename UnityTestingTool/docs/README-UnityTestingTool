@@ -15,7 +15,7 @@ is all you really need to run a test. These files are:
     - unity_internals.h
     - unity .c
 
-Files containing the list of ASSERT statements  could be fined under the "docs" folder.
+Files containing the list of ASSERT statements  could be found under the "docs" folder.
 Some useful files are:
     - UnityAssertionsCheatSheetSuitableforPrintingandPossiblyFraming,pdf
     - UnityAssertionsReference.md
