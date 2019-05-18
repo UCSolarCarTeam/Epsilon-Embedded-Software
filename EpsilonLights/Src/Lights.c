@@ -15,7 +15,6 @@ void updateLightsTask(void const* arg)
     char hazards;
     char brakes;
     char bmsStrobe;
-    boolean regenBrakes;
 
     // NOTE: All Lights Out pins are active low
     for (;;)
@@ -59,9 +58,7 @@ void updateLightsTask(void const* arg)
             HAL_GPIO_WritePin(BRAKE_GPIO_Port, BRAKE_Pin, LIGHT_OFF);
         }
 
-        regenBrakes = (regenInputs[REGENBRAKE_INPUT_INDEX_P1] == 0 && regenInputs[REGENBRAKE_INPUT_INDEX_P2] != 0);
-
-        if (regenBrakes)
+        if (regenInputs[REGENBRAKE_INPUT_INDEX_P1] == 0 && regenInputs[REGENBRAKE_INPUT_INDEX_P2] != 0)
         {
             HAL_GPIO_WritePin(BRAKE_GPIO_Port, BRAKE_Pin, LIGHT_ON);
         }
