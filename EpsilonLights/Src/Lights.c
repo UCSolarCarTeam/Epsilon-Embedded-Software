@@ -305,8 +305,8 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     }
     else if (msg->StdId == MOTOR_DRIVE_STDID && msg->DLC == 2)
     {
-      regenInputs[0] = msg->Data[0];
-      regenInputs[1] = msg->Data[1];
+        regenInputs[0] = msg->Data[0];
+        regenInputs[1] = msg->Data[1];
     }
 
     __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
