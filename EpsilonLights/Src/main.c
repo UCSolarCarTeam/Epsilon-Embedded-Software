@@ -47,6 +47,7 @@ uint8_t lightsInputs; // Initialized to 0
 uint8_t batteryErrors[5]; //Initialized to {0,0,0,0,0}
 uint8_t driversInputs[4]; // Initialized to 0
 uint8_t auxBmsInputs[2];
+uint8_t regenInputs[2];
 SigLightsHandle sigLightsHandle;
 
 static osThreadId lightsTaskHandle;
