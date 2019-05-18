@@ -15,6 +15,7 @@ void updateLightsTask(void const* arg)
     char hazards;
     char brakes;
     char bmsStrobe;
+    boolean regenBrakes;
 
     // NOTE: All Lights Out pins are active low
     for (;;)
@@ -50,6 +51,17 @@ void updateLightsTask(void const* arg)
         brakes = (driversInputs[BRAKES_INPUT_INDEX_P1] >> BRAKES_INPUT_INDEX_P2) & 1;
 
         if (brakes)
+        {
+            HAL_GPIO_WritePin(BRAKE_GPIO_Port, BRAKE_Pin, LIGHT_ON);
+        }
+        else
+        {
+            HAL_GPIO_WritePin(BRAKE_GPIO_Port, BRAKE_Pin, LIGHT_OFF);
+        }
+
+        regenBrakes = (regenInputs[REGENBRAKE_INPUT_INDEX_P1] == 0 && regenInputs[REGENBRAKE_INPUT_INDEX_P2] != 0);
+
+        if (regenBrakes)
         {
             HAL_GPIO_WritePin(BRAKE_GPIO_Port, BRAKE_Pin, LIGHT_ON);
         }
@@ -293,6 +305,11 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     {
         auxBmsInputs[0] = msg->Data[0];
         auxBmsInputs[1] = msg->Data[1];
+    }
+    else if (msg->StdId == MOTOR_DRIVE_STDID && msg->DLC == 2)
+    {
+      regenInputs[0] = msg->Data[0];
+      regenInputs[1] = msg->Data[1];
     }
 
     __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);

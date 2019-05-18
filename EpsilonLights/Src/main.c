@@ -304,6 +304,17 @@ static void MX_CAN2_UserInit(void)
     batteryFilterConfig.FilterActivation = ENABLE;
     batteryFilterConfig.BankNumber = 0; // Set all filter banks for CAN2
 
+    CAN_FilterConfTypeDef regenFilterConfig;
+    regenFilterConfig.FilterNumber = 2; // Use tertiary filter bank
+    regenFilterConfig.FilterScale =  CAN_FILTERSCALE_32BIT;
+    regenFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific CAN messages
+    regenFilterConfig.FilterIdHigh = MOTOR_DRIVE_STDID << 5; // Filter registers need to be shifted left by 5 bits
+    regenFilterConfig.FilterIdLow = 0;
+    regenFilterConfig.FilterFIFOAssignment = 0;
+    regenFilterConfig.FilterActivation = ENABLE;
+    regenFilterConfig.BankNumber = 0; // Set all filter banks for CAN2
+
+
     if (HAL_CAN_ConfigFilter(&hcan2, &sFilterConfig) != HAL_OK)
     {
         /* Filter configuration Error */
@@ -311,6 +322,12 @@ static void MX_CAN2_UserInit(void)
     }
 
     if (HAL_CAN_ConfigFilter(&hcan2, &batteryFilterConfig) != HAL_OK)
+    {
+        /* Filter configuration Error */
+        Error_Handler();
+    }
+
+    if (HAL_CAN_ConfigFilter(&hcan2, &regenFilterConfig) != HAL_OK)
     {
         /* Filter configuration Error */
         Error_Handler();

@@ -36,6 +36,9 @@
 #define AUXBMS_INPUT_STDID 0x721U
 #define STROBE_FAULT_MASK 0x01
 
+#define REGENBRAKE_INPUT_INDEX_P1 0
+#define REGENBRAKE_INPUT_INDEX_P2 1
+
 typedef struct LightsStatus
 {
     unsigned int lowBeams : 1;
@@ -57,6 +60,7 @@ extern uint8_t lightsInputs;
 extern uint8_t auxBmsInputs[2];
 extern uint8_t batteryErrors[5];
 extern uint8_t driversInputs[4];
+extern uint8_t regenInputs[2];
 extern SigLightsHandle sigLightsHandle;
 
 // Task for updating GPIOs
