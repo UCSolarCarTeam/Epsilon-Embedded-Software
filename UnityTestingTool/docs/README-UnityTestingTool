@@ -1,58 +1,61 @@
-Unity Testing Tool (Mar. 23, 2019)
+= Unity Testing Tool (Mar. 23, 2019)
 
 Unity is a testing tool by Throw The Switch. More information can be found 
 at their website - http://www.throwtheswitch.org
 
 
-Files Required for Unity Tests
-------------------------------
+== Files Required for Unity Tests
+
 If you have not already downloaded the Unity source files (or if it's not already in the
 GIT repo), you can download them here: http://www.throwtheswitch.org/unity/
  
 The zip folder contains a sub folder called "src". The files contained in this folder
 is all you really need to run a test. These files are:
-    - unity.h
-    - unity_internals.h
-    - unity .c
+    * unity.h
+    * unity_internals.h
+    * unity .c
 
-Files containing the list of ASSERT statements  could be found under the "docs" folder.
+Files containing the list of ASSERT statements  can be found under the "docs" folder.
 Some useful files are:
-    - UnityAssertionsCheatSheetSuitableforPrintingandPossiblyFraming,pdf
-    - UnityAssertionsReference.md
+    * UnityAssertionsCheatSheetSuitableforPrintingandPossiblyFraming,pdf
+    * UnityAssertionsReference.md
 
 
 
         
-Writing Test Modules
---------------------
+== Writing Test Modules
+
 Ideally, your test module is entirely different and seperate from the actual 
 modules you're trying to test.
 
-    1. Including the right files
-    ----------------------------
+    === Including the right files
+
     Your program must include the "unity.h" file (i.e there must be a #include "unity.h" in
     the compiled files.
 
-    2. Test functions
-    ------------------
+    === Test functions
+
     The actual testing occurs within the test functions. Test functions accept no arguments and
     return no values. You should have a test function for each function you will be testing.
     Here's an example of what a test function might look like:
     
     prototype of function to test : int add2Integers(int a, int b);
     
-    Code listing (C):   
+    Code listing (C):
+        ----  
         void test_add2Integers(void)
         {
             TEST_ASSERT_EQUAL_Int(expectedValue, add2Integers(a, b));
             //More ASSERT statements
         }
+        ----
     
-    3. Main Test file
-    -----------------
+    === Main Test file
+
     Your main test file should look similar to this:
     
     Code listing (C):
+        ----
         //Include all files required for your functions to run
         #include <stdio.h>
         
@@ -75,17 +78,27 @@ modules you're trying to test.
            RUN_TEST(testFunctionTwo);
            RUN_TEST(testFunctionN)
            
-           retrun UNITY_END();
+           return UNITY_END();
            
          }
-  
-  
-  
+         ---- 
         
-Compiling
----------
-Be sure to compile include the src folder and compile unity.c along with all other 
-files being compiled
+== Compiling and running tests
 
-CMD line:
-    gcc -I UnityTestingTool/src testModuleFunctions.c main.c unity.c        
+After writing your test module (as described in the Writing Test module section above), be sure to include the src folder and compile unity.c along with all other files being compiled. Your command in the CMD terminal should look similar to this:
+
+    gcc -I UnityTestingTool/src testModuleFunctions.c main.c unity.c   
+    ./a.out
+    
+After the program runs, information about success and failure will be displayed in the terminal. For each test function, a "PASS" (success) or "FAIL" (failure) will be disolayed. Statistics showing number of tests and failures will also be displayed.
+    
+    === Sample Terminal output after test
+    
+    testModule.c:42:testFunction1:PASS
+    testModule.c:50:testFunction2:FAIL: Expected 0 was 1
+    
+    ------------------
+    2 Tests 1 Failure 0 Ignored
+    FAIL
+    
+  
