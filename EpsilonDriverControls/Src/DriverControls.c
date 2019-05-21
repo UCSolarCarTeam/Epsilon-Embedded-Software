@@ -38,7 +38,7 @@ float calculateMotorCurrent(float accelPercentage)
 {
     if ((accelPercentage - NON_ZERO_THRESHOLD) > 0 )
     {
-        return (accelPercentage - NON_ZERO_THRESHOLD) * 1.0 / (MAX_PEDAL_THRESHOLD - NON_ZERO_THRESHOLD);
+        return (accelPercentage - NON_ZERO_THRESHOLD) / (MAX_PEDAL_THRESHOLD - NON_ZERO_THRESHOLD);
     }
     else
     {
