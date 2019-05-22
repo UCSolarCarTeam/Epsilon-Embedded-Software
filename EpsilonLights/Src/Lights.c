@@ -57,7 +57,7 @@ void updateLightsTask(void const* arg)
         {
             HAL_GPIO_WritePin(BRAKE_GPIO_Port, BRAKE_Pin, LIGHT_OFF);
         }
-       
+
         /* UPDATE SIGNAL LIGHTS */
         // Set to enable or disable for use in blinkSignalLights
         if (hazards)
