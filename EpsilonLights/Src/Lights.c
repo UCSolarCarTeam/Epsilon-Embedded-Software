@@ -49,7 +49,7 @@ void updateLightsTask(void const* arg)
         /* UPDATE BRAKE LIGHTS */
         brakes = (driversInputs[BRAKES_INPUT_INDEX_P1] >> BRAKES_INPUT_INDEX_P2) & 1;
 
-        if (brakes)
+        if (brakes || regenInputs[SET_CURRENT_INDEX] == 0 && regenInputs[SET_VELOCITY_INDEX] != 0)
         {
             HAL_GPIO_WritePin(BRAKE_GPIO_Port, BRAKE_Pin, LIGHT_ON);
         }
@@ -57,16 +57,7 @@ void updateLightsTask(void const* arg)
         {
             HAL_GPIO_WritePin(BRAKE_GPIO_Port, BRAKE_Pin, LIGHT_OFF);
         }
-
-        if (regenInputs[REGENBRAKE_INPUT_INDEX_P1] == 0 && regenInputs[REGENBRAKE_INPUT_INDEX_P2] != 0)
-        {
-            HAL_GPIO_WritePin(BRAKE_GPIO_Port, BRAKE_Pin, LIGHT_ON);
-        }
-        else
-        {
-            HAL_GPIO_WritePin(BRAKE_GPIO_Port, BRAKE_Pin, LIGHT_OFF);
-        }
-
+       
         /* UPDATE SIGNAL LIGHTS */
         // Set to enable or disable for use in blinkSignalLights
         if (hazards)
@@ -305,8 +296,8 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     }
     else if (msg->StdId == MOTOR_DRIVE_STDID && msg->DLC == 2)
     {
-        regenInputs[0] = msg->Data[0];
-        regenInputs[1] = msg->Data[1];
+        regenInputs[SET_CURRENT_INDEX] = msg->Data[0];
+        regenInputs[SET_VELOCITY_INDEX] = msg->Data[1];
     }
 
     __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);

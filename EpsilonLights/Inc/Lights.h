@@ -37,8 +37,8 @@
 #define STROBE_FAULT_MASK 0x01
 
 #define MOTOR_DRIVE_STDID 0x501U
-#define REGENBRAKE_INPUT_INDEX_P1 0
-#define REGENBRAKE_INPUT_INDEX_P2 1
+#define SET_CURRENT_INDEX 0
+#define SET_VELOCITY_INDEX 1
 
 typedef struct LightsStatus
 {
