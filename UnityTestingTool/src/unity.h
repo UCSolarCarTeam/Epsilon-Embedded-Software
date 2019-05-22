@@ -35,21 +35,27 @@ int suiteTearDown(int num_failures);
  * to be in the same translation unit they are called from.  This can be
  * achieved by defining UNITY_INCLUDE_SETUP_STUBS before including unity.h. */
 #ifdef UNITY_INCLUDE_SETUP_STUBS
-  #ifdef UNITY_WEAK_ATTRIBUTE
-    UNITY_WEAK_ATTRIBUTE void setUp(void) { }
-    UNITY_WEAK_ATTRIBUTE void tearDown(void) { }
-    UNITY_WEAK_ATTRIBUTE void suiteSetUp(void) { }
-    UNITY_WEAK_ATTRIBUTE int suiteTearDown(int num_failures) { return num_failures; }
-  #elif defined(UNITY_WEAK_PRAGMA)
-    #pragma weak setUp
-    void setUp(void) { }
-    #pragma weak tearDown
-    void tearDown(void) { }
-    #pragma weak suiteSetUp
-    void suiteSetUp(void) { }
-    #pragma weak suiteTearDown
-    int suiteTearDown(int num_failures) { return num_failures; }
-  #endif
+#ifdef UNITY_WEAK_ATTRIBUTE
+UNITY_WEAK_ATTRIBUTE void setUp(void) { }
+UNITY_WEAK_ATTRIBUTE void tearDown(void) { }
+UNITY_WEAK_ATTRIBUTE void suiteSetUp(void) { }
+UNITY_WEAK_ATTRIBUTE int suiteTearDown(int num_failures)
+{
+    return num_failures;
+}
+#elif defined(UNITY_WEAK_PRAGMA)
+#pragma weak setUp
+void setUp(void) { }
+#pragma weak tearDown
+void tearDown(void) { }
+#pragma weak suiteSetUp
+void suiteSetUp(void) { }
+#pragma weak suiteTearDown
+int suiteTearDown(int num_failures)
+{
+    return num_failures;
+}
+#endif
 #endif
 
 /*-------------------------------------------------------
