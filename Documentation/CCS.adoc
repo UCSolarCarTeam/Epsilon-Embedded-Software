@@ -18,10 +18,10 @@ See the https://docs.google.com/spreadsheets/d/1gtCKN7LzG7e8XRzbGrN5uUiLGr7miS0Q
 
 |=======================
 |*LED / Action*|  *Purpose*
-|Red / Off | Could not send message through USB connection 
+|Red / Off | CCS is sending USB messages 
 |Red / On | Could not send message through USB connection due to timeout (Usually due to Hermes not running on Pi/Computer) 
-|Red / Flashing |  CCS is sending messages 
-|Green / On | CCS is receiving CAN messages 
+|Red / Flashing |  Could not send message through USB connection (unknown reason)
+|Blue / Flashing | CCS is receiving CAN messages 
 |=======================
 
 ## Unused CAN Network
