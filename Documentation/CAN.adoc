@@ -33,4 +33,4 @@ image:References/11bitCAN.jpg[]
 * All nodes on CAN receive the CAN frame and depending on the ID on the node CAN decides whether to accept it or not
 * If multiple nodes send the message at the same time then the node with the highest priority (lowest arbitration ID) will get bus access and low priroty nodes wait until the bus is available
 
-Note: The CAN network needs two terminating resistors in order to work - 2 120ohm resistors in parallel (A total of 60 ohms)
+Note: The CAN network needs two terminating resistors in order to work - two 120ohm resistors in parallel (A total of 60 ohms)
