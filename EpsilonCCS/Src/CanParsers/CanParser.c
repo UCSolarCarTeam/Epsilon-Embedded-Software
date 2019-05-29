@@ -91,10 +91,10 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 
     if (HAL_CAN_Receive_IT(hcan, CAN_FIFO0) == osOK)
     {
-        HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, LED_ON);
+        HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
     }
     else
     {
-        HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, LED_OFF);
+        HAL_GPIO_WritePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin, LED_OFF);
     }
 }

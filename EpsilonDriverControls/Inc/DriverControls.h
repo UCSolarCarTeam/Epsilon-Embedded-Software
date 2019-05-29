@@ -36,11 +36,14 @@
 #define MAX_ANALOG 4095 // 12bit ADC (2^12)
 #define REGEN_INPUT_SCALING 0.5f
 
+#define AUXBMS_INPUT_STDID 0x721U
+
 extern CAN_HandleTypeDef hcan2; // main.c
 extern ADC_HandleTypeDef hadc1;
 extern ADC_HandleTypeDef hadc2;
 extern osMessageQId canQueue;
 extern osPoolId canPool;
+extern uint8_t auxBmsInputs[2];
 
 typedef struct
 {
