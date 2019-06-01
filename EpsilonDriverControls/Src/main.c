@@ -329,8 +329,8 @@ static void MX_GPIO_Init(void)
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-    /*Configure GPIO pins : RSIGNAL_Pin LSIGNAL_Pin CONTEXT_Pin BRAKES_Pin */
-    GPIO_InitStruct.Pin = RSIGNAL_Pin | LSIGNAL_Pin | CONTEXT_Pin | BRAKES_Pin;
+    /*Configure GPIO pins : RSIGNAL_Pin LSIGNAL_Pin LAP_Pin BRAKES_Pin */
+    GPIO_InitStruct.Pin = RSIGNAL_Pin | LSIGNAL_Pin | LAP_Pin | BRAKES_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);

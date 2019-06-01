@@ -4,7 +4,7 @@
   * Description        : This file contains the common defines of the application
   ******************************************************************************
   *
-  * COPYRIGHT(c) 2016 STMicroelectronics
+  * COPYRIGHT(c) 2019 STMicroelectronics
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __MXCONSTANT_H
 #define __MXCONSTANT_H
-/* Includes ------------------------------------------------------------------*/
+  /* Includes ------------------------------------------------------------------*/
 
 /* USER CODE BEGIN Includes */
 
@@ -97,8 +97,8 @@
 #define HORN_GPIO_Port GPIOB
 #define RESET_Pin GPIO_PIN_9
 #define RESET_GPIO_Port GPIOB
-#define CONTEXT_Pin GPIO_PIN_0
-#define CONTEXT_GPIO_Port GPIOE
+#define LAP_Pin GPIO_PIN_0
+#define LAP_GPIO_Port GPIOE
 #define BRAKES_Pin GPIO_PIN_1
 #define BRAKES_GPIO_Port GPIOE
 /* USER CODE BEGIN Private defines */
@@ -107,11 +107,11 @@
 
 /**
   * @}
-  */
+  */ 
 
 /**
   * @}
-*/
+*/ 
 
 #endif /* __MXCONSTANT_H */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

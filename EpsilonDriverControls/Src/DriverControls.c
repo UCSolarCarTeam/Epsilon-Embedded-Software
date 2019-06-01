@@ -104,6 +104,7 @@ void sendMusicTask(void const* arg)
 void sendDriverTask(void const* arg)
 {
     uint32_t prevWakeTime = osKernelSysTick();
+    uint8_t lap = 0;
 
     for (;;)
     {
@@ -129,6 +130,10 @@ void sendDriverTask(void const* arg)
         msg->Data[3] |= 0x10 * !HAL_GPIO_ReadPin(HORN_GPIO_Port, HORN_Pin);
         msg->Data[3] |= 0x20 * !HAL_GPIO_ReadPin(RESET_GPIO_Port, RESET_Pin);
         msg->Data[3] |= 0x40 * !HAL_GPIO_ReadPin(AUX_GPIO_Port, AUX_Pin);
+        msg->Data[3] |= 0x80 * !HAL_GPIO_ReadPin(LAP_GPIO_Port, LAP_Pin);
+
+        lap = !HAL_GPIO_ReadPin(LAP_GPIO_Port, LAP_Pin);
+
         //Send CAN Message
         osMessagePut(canQueue, (uint32_t)msg, osWaitForever);
     }
@@ -151,8 +156,6 @@ void sendDriveCommandsTask(void const* arg)
 
     uint8_t regenQueueIndex = 0;
     uint8_t accelQueueIndex = 0;
-
-    char allowCharge;
 
     for (;;)
     {
@@ -194,9 +197,6 @@ void sendDriveCommandsTask(void const* arg)
         reverse = !HAL_GPIO_ReadPin(REVERSE_GPIO_Port, REVERSE_Pin);
         brake = !HAL_GPIO_ReadPin(BRAKES_GPIO_Port, BRAKES_Pin);
 
-        // Read AuxBMS messages
-        allowCharge = auxBmsInputs[1] & 0x02;
-
         // Determine data to send
         if (forward && reverse) // Error state
         {
@@ -205,39 +205,31 @@ void sendDriveCommandsTask(void const* arg)
         }
         else if (regenPercentage > NON_ZERO_THRESHOLD) // Regen state
         {
-            // To stop using regen braking, set motorCurrentOut to desired value and zero motorVelocityOut
-            // To stop without regen braking, zero both motorCurrentOut and motorVelocityOut
-            // https://tritium.com.au/includes/TRI88.004v4-Users-Manual.pdf - Section 13
-
             motorVelocityOut = 0;
-
-            // Alow regen braking based on input from AuxBMS
-            if (allowCharge)
-            {
-                motorCurrentOut = regenPercentage * REGEN_INPUT_SCALING;
-            }
-            else
-            {
-                motorCurrentOut = 0;
-            }
-
+            motorCurrentOut = regenPercentage * REGEN_INPUT_SCALING;
         }
         else if (brake) // Mechanical Brake Pressed
         {
             motorVelocityOut = 0;
             motorCurrentOut = 0;
         }
-        else if (forward && (accelPercentage > NON_ZERO_THRESHOLD)) // Forward state
+        else if (forward) // Forward state
         {
-            HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
-            motorVelocityOut = MAX_FORWARD_RPM;
-            motorCurrentOut = accelPercentage;
+            if (accelPercentage > NON_ZERO_THRESHOLD)
+            {
+                HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
+                motorVelocityOut = MAX_FORWARD_RPM;
+                motorCurrentOut = accelPercentage;
+            }
         }
-        else if (reverse && (accelPercentage > NON_ZERO_THRESHOLD)) // Reverse State
+        else if (reverse) // Reverse State
         {
-            HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
-            motorVelocityOut = MAX_REVERSE_RPM;
-            motorCurrentOut = accelPercentage;
+            if (accelPercentage > NON_ZERO_THRESHOLD)
+            {
+                HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
+                motorVelocityOut = MAX_REVERSE_RPM;
+                motorCurrentOut = accelPercentage;
+            }
         }
         else  // Off state
         {
@@ -306,24 +298,4 @@ void sendCanTask(void const* arg)
             }
         }
     }
-}
-
-// Reimplement weak definition in stm32f4xx_hal_can.c
-void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
-{
-    CanRxMsgTypeDef* msg = hcan->pRxMsg;
-
-    if (msg->StdId == AUXBMS_INPUT_STDID && msg->DLC == 2)
-    {
-        auxBmsInputs[0] = msg->Data[0];
-        auxBmsInputs[1] = msg->Data[1];
-    }
-
-    if (HAL_CAN_Receive_IT(hcan, CAN_FIFO0) == HAL_OK)
-        // Toggle green LED for every CAN message received
-    {
-        HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
-    }
-
-    __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
 }

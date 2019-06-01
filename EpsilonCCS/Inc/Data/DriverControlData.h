@@ -28,6 +28,7 @@
 #define HORN_MASK 0x10
 #define RESET_MASK 0x20
 #define AUX_MASK 0x40
+#define LAP_MASK 0x80
 
 struct LightsInputs
 {
@@ -57,6 +58,7 @@ struct DriverInputs
     unsigned char horn;
     unsigned char reset;
     unsigned char aux;
+    unsigned char lap;
 };
 
 struct DriverControlData
