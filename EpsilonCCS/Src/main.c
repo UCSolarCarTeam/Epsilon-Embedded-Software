@@ -9,7 +9,7 @@
   * inserted by the user or by software development tools
   * are owned by their respective copyright owners.
   *
-  * Copyright (c) 2018 STMicroelectronics International N.V.
+  * Copyright (c) 2019 STMicroelectronics International N.V.
   * All rights reserved.
   *
   * Redistribution and use in source and binary forms, with or without
@@ -124,7 +124,6 @@ int main(void)
     MX_GPIO_Init();
     MX_USART3_UART_Init();
     MX_CAN2_Init();
-    MX_CAN1_Init();
 
     /* USER CODE BEGIN 2 */
     MX_CAN2_UserInit();
@@ -267,30 +266,6 @@ void SystemClock_Config(void)
 
     /* SysTick_IRQn interrupt configuration */
     HAL_NVIC_SetPriority(SysTick_IRQn, 15, 0);
-}
-
-/* CAN1 init function */
-static void MX_CAN1_Init(void)
-{
-
-    hcan1.Instance = CAN1;
-    hcan1.Init.Prescaler = 4;
-    hcan1.Init.Mode = CAN_MODE_NORMAL;
-    hcan1.Init.SJW = CAN_SJW_1TQ;
-    hcan1.Init.BS1 = CAN_BS1_5TQ;
-    hcan1.Init.BS2 = CAN_BS2_4TQ;
-    hcan1.Init.TTCM = DISABLE;
-    hcan1.Init.ABOM = DISABLE;
-    hcan1.Init.AWUM = DISABLE;
-    hcan1.Init.NART = DISABLE;
-    hcan1.Init.RFLM = DISABLE;
-    hcan1.Init.TXFP = DISABLE;
-
-    if (HAL_CAN_Init(&hcan1) != HAL_OK)
-    {
-        _Error_Handler(__FILE__, __LINE__);
-    }
-
 }
 
 /* CAN2 init function */
