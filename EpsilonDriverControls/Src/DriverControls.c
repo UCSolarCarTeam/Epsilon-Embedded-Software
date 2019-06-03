@@ -42,9 +42,9 @@ float calculateMotorCurrent(float accelPercentage)
 
     if ((accelPercentage - NON_ZERO_THRESHOLD) > 0 )
     {
-        return (accelPercentage - NON_ZERO_THRESHOLD) 
-        / (MAX_PEDAL_THRESHOLD - NON_ZERO_THRESHOLD) 
-        * MOTOR_PERCENTAGE_REDUCER;
+        return (accelPercentage - NON_ZERO_THRESHOLD)
+               / (MAX_PEDAL_THRESHOLD - NON_ZERO_THRESHOLD)
+               * MOTOR_PERCENTAGE_REDUCER;
     }
     else
     {
@@ -233,7 +233,7 @@ void sendDriveCommandsTask(void const* arg)
             if (allowCharge)
             {
                 // Regen needs to be scaled more to avoid motor trips
-                
+
                 motorCurrentOut = calculateMotorCurrent(regenPercentage) * REGEN_INPUT_SCALING;
             }
             else
