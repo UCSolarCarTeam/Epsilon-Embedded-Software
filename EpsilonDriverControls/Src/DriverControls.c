@@ -36,9 +36,15 @@ uint32_t getAvgAccel()
 
 float calculateMotorCurrent(float accelPercentage)
 {
+    // To avoid a software overcurrent, our motor config
+    // is set to have 100 A max current, we scale it so we send 55 A
+    // on full pedal press
+
     if ((accelPercentage - NON_ZERO_THRESHOLD) > 0 )
     {
-        return (accelPercentage - NON_ZERO_THRESHOLD) / (MAX_PEDAL_THRESHOLD - NON_ZERO_THRESHOLD);
+        return (accelPercentage - NON_ZERO_THRESHOLD) 
+        / (MAX_PEDAL_THRESHOLD - NON_ZERO_THRESHOLD) 
+        * MOTOR_PERCENTAGE_REDUCER;
     }
     else
     {
@@ -226,7 +232,9 @@ void sendDriveCommandsTask(void const* arg)
             // Alow regen braking based on input from AuxBMS
             if (allowCharge)
             {
-                motorCurrentOut = calculateMotorCurrent(regenPercentage);
+                // Regen needs to be scaled more to avoid motor trips
+                
+                motorCurrentOut = calculateMotorCurrent(regenPercentage) * REGEN_INPUT_SCALING;
             }
             else
             {
