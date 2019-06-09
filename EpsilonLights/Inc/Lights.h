@@ -11,7 +11,7 @@
 #define LIGHTS_UPDATE_FREQ 10 // Every 10ms
 #define LIGHT_OFF 0 // Active High
 #define LIGHT_ON 1
-#define BLINKER_FREQ 600 // 1Hz
+#define BLINKER_FREQ 385 // 1.3 Hz / 2
 
 #define LIGHTS_HEARTBEAT_FREQ 1000 // 1Hz = 1000ms
 #define LIGHTS_HEARTBEAT_STDID 0x710U
