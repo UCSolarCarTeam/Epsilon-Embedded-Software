@@ -21,6 +21,9 @@ void updateLightsTask(void const* arg)
     // NOTE: All Lights Out pins are active low
     for (;;)
     {
+        regenBrakeInt = 0;
+        regenBrakeFloat = 0;
+
         osDelayUntil(&prevWakeTime, LIGHTS_UPDATE_FREQ);
         headlightsOff = (lightsInputs >> HOFF_INPUT_INDEX) & 1;
         headlightsLow = (lightsInputs >> HLOW_INPUT_INDEX) & 1;
@@ -30,7 +33,7 @@ void updateLightsTask(void const* arg)
         hazards = (lightsInputs >> HAZARDS_INPUT_INDEX) & 1;
         bmsStrobe = ((auxBmsInputs[1] >> 0) & STROBE_FAULT_MASK) & 1;
         regenBrakeInt |= (driversInputs[1] & REGEN_BRAKE_MASK_1) >> 4;
-        regenBrakeInt |= (driversInputs[2] & REGEN_BRAKE_MASK_2) >> 4;
+        regenBrakeInt |= (driversInputs[2] & REGEN_BRAKE_MASK_2) << 4;
 
         /* UPDATE HEADLIGHTS */
         if ((headlightsOff))

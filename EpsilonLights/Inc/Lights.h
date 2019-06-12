@@ -39,9 +39,6 @@
 #define AUXBMS_INPUT_STDID 0x721U
 #define STROBE_FAULT_MASK 0x01
 
-#define SET_VELOCITY_INDEX 0
-#define SET_CURRENT_INDEX 1
-
 typedef struct LightsStatus
 {
     unsigned int lowBeams : 1;
