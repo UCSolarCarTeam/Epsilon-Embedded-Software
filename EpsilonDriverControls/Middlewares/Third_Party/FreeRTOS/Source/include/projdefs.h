@@ -74,7 +74,7 @@
  * Defines the prototype to which task functions must conform.  Defined in this
  * file to ensure the type is known before portable.h is included.
  */
-typedef void (*TaskFunction_t)( void* );
+typedef void (*TaskFunction_t)( void * );
 
 /* Converts a time in milliseconds to a time in ticks. */
 #define pdMS_TO_TICKS( xTimeInMs ) ( ( TickType_t ) ( ( ( TickType_t ) ( xTimeInMs ) * ( TickType_t ) configTICK_RATE_HZ ) / ( TickType_t ) 1000 ) )
@@ -94,13 +94,13 @@ typedef void (*TaskFunction_t)( void* );
 
 /* Macros used for basic data corruption checks. */
 #ifndef configUSE_LIST_DATA_INTEGRITY_CHECK_BYTES
-#define configUSE_LIST_DATA_INTEGRITY_CHECK_BYTES 0
+	#define configUSE_LIST_DATA_INTEGRITY_CHECK_BYTES 0
 #endif
 
 #if( configUSE_16_BIT_TICKS == 1 )
-#define pdINTEGRITY_CHECK_VALUE 0x5a5a
+	#define pdINTEGRITY_CHECK_VALUE 0x5a5a
 #else
-#define pdINTEGRITY_CHECK_VALUE 0x5a5a5a5aUL
+	#define pdINTEGRITY_CHECK_VALUE 0x5a5a5a5aUL
 #endif
 
 /* The following errno values are used by FreeRTOS+ components, not FreeRTOS
