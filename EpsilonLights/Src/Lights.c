@@ -15,10 +15,15 @@ void updateLightsTask(void const* arg)
     char hazards;
     char brakes;
     char bmsStrobe;
+    uint32_t regenBrakeInt;
+    float regenBrakeFloat;
 
     // NOTE: All Lights Out pins are active low
     for (;;)
     {
+        regenBrakeInt = 0;
+        regenBrakeFloat = 0;
+
         osDelayUntil(&prevWakeTime, LIGHTS_UPDATE_FREQ);
         headlightsOff = (lightsInputs >> HOFF_INPUT_INDEX) & 1;
         headlightsLow = (lightsInputs >> HLOW_INPUT_INDEX) & 1;
@@ -27,6 +32,8 @@ void updateLightsTask(void const* arg)
         leftSignal = (lightsInputs >> LSIGNAL_INPUT_INDEX) & 1;
         hazards = (lightsInputs >> HAZARDS_INPUT_INDEX) & 1;
         bmsStrobe = ((auxBmsInputs[1] >> 0) & STROBE_FAULT_MASK) & 1;
+        regenBrakeInt |= (driversInputs[1] & REGEN_BRAKE_MASK_1) >> 4;
+        regenBrakeInt |= (driversInputs[2] & REGEN_BRAKE_MASK_2) << 4;
 
         /* UPDATE HEADLIGHTS */
         if ((headlightsOff))
@@ -48,8 +55,9 @@ void updateLightsTask(void const* arg)
 
         /* UPDATE BRAKE LIGHTS */
         brakes = (driversInputs[BRAKES_INPUT_INDEX_P1] >> BRAKES_INPUT_INDEX_P2) & 1;
+        regenBrakeFloat = (float)regenBrakeInt;
 
-        if (brakes)
+        if (brakes || regenBrakeFloat > NON_ZERO_THRESHOLD)
         {
             HAL_GPIO_WritePin(BRAKE_GPIO_Port, BRAKE_Pin, LIGHT_ON);
         }

@@ -34,6 +34,24 @@ uint32_t getAvgAccel()
     return (uint32_t)((sum / (float)ACCEL_QUEUE_SIZE));
 }
 
+float calculateMotorCurrent(float accelPercentage)
+{
+    // To avoid a software overcurrent, our motor config
+    // is set to have 100 A max current, we scale it so we send 55 A
+    // on full pedal press
+
+    if ((accelPercentage - NON_ZERO_THRESHOLD) > 0 )
+    {
+        return (accelPercentage - NON_ZERO_THRESHOLD)
+               / (MAX_PEDAL_THRESHOLD - NON_ZERO_THRESHOLD)
+               * MOTOR_PERCENTAGE_REDUCER;
+    }
+    else
+    {
+        return 0.0;
+    }
+}
+
 void sendHeartbeatTask(void const* arg)
 {
     uint32_t prevWakeTime = osKernelSysTick();
@@ -214,7 +232,9 @@ void sendDriveCommandsTask(void const* arg)
             // Alow regen braking based on input from AuxBMS
             if (allowCharge)
             {
-                motorCurrentOut = regenPercentage * REGEN_INPUT_SCALING;
+                // Regen needs to be scaled more to avoid motor trips
+
+                motorCurrentOut = calculateMotorCurrent(regenPercentage) * REGEN_INPUT_SCALING;
             }
             else
             {
@@ -231,13 +251,13 @@ void sendDriveCommandsTask(void const* arg)
         {
             HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
             motorVelocityOut = MAX_FORWARD_RPM;
-            motorCurrentOut = accelPercentage;
+            motorCurrentOut = calculateMotorCurrent(accelPercentage);
         }
         else if (reverse && (accelPercentage > NON_ZERO_THRESHOLD)) // Reverse State
         {
             HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
             motorVelocityOut = MAX_REVERSE_RPM;
-            motorCurrentOut = accelPercentage;
+            motorCurrentOut = calculateMotorCurrent(accelPercentage);
         }
         else  // Off state
         {
