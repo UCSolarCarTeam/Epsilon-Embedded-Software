@@ -71,4 +71,5 @@ void parseDriverControlsDriverInput(uint8_t* data)
     driverControlData.driverInputs.horn = data[3] & HORN_MASK;
     driverControlData.driverInputs.reset = data[3] & RESET_MASK;
     driverControlData.driverInputs.aux = data[3] & AUX_MASK;
+    driverControlData.driverInputs.lap = data[3] & LAP_MASK;
 }
