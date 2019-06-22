@@ -16,29 +16,29 @@ void parseBmsCanMessage(uint32_t stdId, uint8_t* data)
 {
     switch (stdId)
     {
-    case BMS_HEARTBEAT_ID:
-        parseBmsHeartbeat();
-        break;
+        case BMS_HEARTBEAT_ID:
+            parseBmsHeartbeat();
+            break;
 
-    case STARTUP_INFO_ID:
-        parseStartupInfo(data);
-        break;
+        case STARTUP_INFO_ID:
+            parseStartupInfo(data);
+            break;
 
-    case PACK_INFO_ID:
-        parsePackInfo(data);
-        break;
+        case PACK_INFO_ID:
+            parsePackInfo(data);
+            break;
 
-    case ERRORS_ID:
-        parseErrors(data);
-        break;
+        case ERRORS_ID:
+            parseErrors(data);
+            break;
 
-    case TEMPINFO_ID:
-        parseTempInfo(data);
-        break;
+        case TEMPINFO_ID:
+            parseTempInfo(data);
+            break;
 
-    case CELL_VOLTAGES_ID:
-        parseCellVoltages(data);
-        break;
+        case CELL_VOLTAGES_ID:
+            parseCellVoltages(data);
+            break;
     }
 }
 
