@@ -16,29 +16,29 @@ void parseBmsCanMessage(uint32_t stdId, uint8_t* data)
 {
     switch (stdId)
     {
-        case BMS_HEARTBEAT_ID:
-            parseBmsHeartbeat();
-            break;
+    case BMS_HEARTBEAT_ID:
+        parseBmsHeartbeat();
+        break;
 
-        case STARTUP_INFO_ID:
-            parseStartupInfo(data);
-            break;
+    case STARTUP_INFO_ID:
+        parseStartupInfo(data);
+        break;
 
-        case PACK_INFO_ID:
-            parsePackInfo(data);
-            break;
+    case PACK_INFO_ID:
+        parsePackInfo(data);
+        break;
 
-        case ERRORS_ID:
-            parseErrors(data);
-            break;
+    case ERRORS_ID:
+        parseErrors(data);
+        break;
 
-        case TEMPINFO_ID:
-            parseTempInfo(data);
-            break;
+    case TEMPINFO_ID:
+        parseTempInfo(data);
+        break;
 
-        case CELL_VOLTAGES_ID:
-            parseCellVoltages(data);
-            break;
+    case CELL_VOLTAGES_ID:
+        parseCellVoltages(data);
+        break;
     }
 }
 
@@ -67,7 +67,7 @@ void parseStartupInfo(uint8_t* data)
 
 void parsePackInfo(uint8_t* data)
 {
-    uint16_t packCurrentInt =  // Units 0.1 A
+    short packCurrentInt =  // Units 0.1 A
         (data[0] << 0) |
         (data[1] << 8);
     batteryData.packCurrent = (float)packCurrentInt / 10.0f;
