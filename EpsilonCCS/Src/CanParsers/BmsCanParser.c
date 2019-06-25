@@ -67,7 +67,7 @@ void parseStartupInfo(uint8_t* data)
 
 void parsePackInfo(uint8_t* data)
 {
-    uint16_t packCurrentInt =  // Units 0.1 A
+    short packCurrentInt =  // Units 0.1 A
         (data[0] << 0) |
         (data[1] << 8);
     batteryData.packCurrent = (float)packCurrentInt / 10.0f;
