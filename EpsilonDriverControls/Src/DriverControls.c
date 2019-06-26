@@ -91,6 +91,7 @@ void sendLightsTask(void const* arg)
         msg->Data[0] |= 0x10 * !HAL_GPIO_ReadPin(LSIGNAL_GPIO_Port, LSIGNAL_Pin);
         msg->Data[0] |= 0x20 * !HAL_GPIO_ReadPin(HAZARDS_GPIO_Port, HAZARDS_Pin);
         msg->Data[0] |= 0x40 * !HAL_GPIO_ReadPin(INTERIOR_GPIO_Port, INTERIOR_Pin);
+
         // Send CAN Message
         osMessagePut(canQueue, (uint32_t)msg, osWaitForever);
     }
@@ -121,6 +122,7 @@ void sendMusicTask(void const* arg)
 
 void sendDriverTask(void const* arg)
 {
+
     uint32_t prevWakeTime = osKernelSysTick();
 
     for (;;)
@@ -147,6 +149,9 @@ void sendDriverTask(void const* arg)
         msg->Data[3] |= 0x10 * !HAL_GPIO_ReadPin(HORN_GPIO_Port, HORN_Pin);
         msg->Data[3] |= 0x20 * !HAL_GPIO_ReadPin(RESET_GPIO_Port, RESET_Pin);
         msg->Data[3] |= 0x40 * !HAL_GPIO_ReadPin(AUX_GPIO_Port, AUX_Pin);
+        msg->Data[3] |= 0x80 * !HAL_GPIO_ReadPin(LAP_GPIO_PORT, LAP_PIN);
+
+
         //Send CAN Message
         osMessagePut(canQueue, (uint32_t)msg, osWaitForever);
     }
