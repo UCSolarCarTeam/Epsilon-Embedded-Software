@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V9.0.0 - Copyright (C) 2016 Real Time Engineers Ltd.
+    FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -383,7 +383,7 @@ List_t * const pxConstList = ( pxList );													\
  * \page vListInitialise vListInitialise
  * \ingroup LinkedList
  */
-PRIVILEGED_FUNCTION void vListInitialise( List_t* const pxList );
+void vListInitialise( List_t* const pxList ) PRIVILEGED_FUNCTION;
 
 /*
  * Must be called before a list item is used.  This sets the list container to
@@ -394,7 +394,7 @@ PRIVILEGED_FUNCTION void vListInitialise( List_t* const pxList );
  * \page vListInitialiseItem vListInitialiseItem
  * \ingroup LinkedList
  */
-PRIVILEGED_FUNCTION void vListInitialiseItem( ListItem_t* const pxItem );
+void vListInitialiseItem( ListItem_t* const pxItem ) PRIVILEGED_FUNCTION;
 
 /*
  * Insert a list item into a list.  The item will be inserted into the list in
@@ -407,19 +407,19 @@ PRIVILEGED_FUNCTION void vListInitialiseItem( ListItem_t* const pxItem );
  * \page vListInsert vListInsert
  * \ingroup LinkedList
  */
-PRIVILEGED_FUNCTION void vListInsert( List_t* const pxList, ListItem_t* const pxNewListItem );
+void vListInsert( List_t* const pxList, ListItem_t* const pxNewListItem ) PRIVILEGED_FUNCTION;
 
 /*
  * Insert a list item into a list.  The item will be inserted in a position
  * such that it will be the last item within the list returned by multiple
  * calls to listGET_OWNER_OF_NEXT_ENTRY.
  *
- * The list member pxIndex is used to walk through a list.  Calling
- * listGET_OWNER_OF_NEXT_ENTRY increments pxIndex to the next item in the list.
+ * The list member pvIndex is used to walk through a list.  Calling
+ * listGET_OWNER_OF_NEXT_ENTRY increments pvIndex to the next item in the list.
  * Placing an item in a list using vListInsertEnd effectively places the item
- * in the list position pointed to by pxIndex.  This means that every other
+ * in the list position pointed to by pvIndex.  This means that every other
  * item within the list will be returned by listGET_OWNER_OF_NEXT_ENTRY before
- * the pxIndex parameter again points to the item being inserted.
+ * the pvIndex parameter again points to the item being inserted.
  *
  * @param pxList The list into which the item is to be inserted.
  *
@@ -428,7 +428,7 @@ PRIVILEGED_FUNCTION void vListInsert( List_t* const pxList, ListItem_t* const px
  * \page vListInsertEnd vListInsertEnd
  * \ingroup LinkedList
  */
-PRIVILEGED_FUNCTION void vListInsertEnd( List_t* const pxList, ListItem_t* const pxNewListItem );
+void vListInsertEnd( List_t* const pxList, ListItem_t* const pxNewListItem ) PRIVILEGED_FUNCTION;
 
 /*
  * Remove an item from a list.  The list item has a pointer to the list that
@@ -443,7 +443,7 @@ PRIVILEGED_FUNCTION void vListInsertEnd( List_t* const pxList, ListItem_t* const
  * \page uxListRemove uxListRemove
  * \ingroup LinkedList
  */
-PRIVILEGED_FUNCTION UBaseType_t uxListRemove( ListItem_t* const pxItemToRemove );
+UBaseType_t uxListRemove( ListItem_t* const pxItemToRemove ) PRIVILEGED_FUNCTION;
 
 #ifdef __cplusplus
 }

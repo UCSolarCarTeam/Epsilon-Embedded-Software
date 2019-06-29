@@ -2,6 +2,8 @@
   ******************************************************************************
   * @file    stm32f4xx_hal_spi.c
   * @author  MCD Application Team
+  * @version V1.5.0
+  * @date    06-May-2016
   * @brief   SPI HAL module driver.
   *          This file provides firmware functions to manage the following
   *          functionalities of the Serial Peripheral Interface (SPI) peripheral:
@@ -57,73 +59,72 @@
           does not initiate a new transfer the following procedure has to be respected:
           (##) HAL_SPI_DeInit()
           (##) HAL_SPI_Init()
+     [..]
+       Using the HAL it is not possible to reach all supported SPI frequency with the differents SPI Modes,
+       the following table resume the max SPI frequency reached with data size 8bits/16bits,
+       according to frequency used on APBx Peripheral Clock (fPCLK) used by the SPI instance :
+
+       DataSize = SPI_DATASIZE_8BIT:
+       +----------------------------------------------------------------------------------------------+
+       |         |                | 2Lines Fullduplex   |     2Lines RxOnly    |         1Line        |
+       | Process | Tranfert mode  |---------------------|----------------------|----------------------|
+       |         |                |  Master  |  Slave   |  Master   |  Slave   |  Master   |  Slave   |
+       |==============================================================================================|
+       |    T    |     Polling    | Fpclk/2  | Fpclk/2  |    NA     |    NA    |    NA     |   NA     |
+       |    X    |----------------|----------|----------|-----------|----------|-----------|----------|
+       |    /    |     Interrupt  | Fpclk/4  | Fpclk/8  |    NA     |    NA    |    NA     |   NA     |
+       |    R    |----------------|----------|----------|-----------|----------|-----------|----------|
+       |    X    |       DMA      | Fpclk/2  | Fpclk/2  |    NA     |    NA    |    NA     |   NA     |
+       |=========|================|==========|==========|===========|==========|===========|==========|
+       |         |     Polling    | Fpclk/2  | Fpclk/2  | Fpclk/64  | Fpclk/2  | Fpclk/64  | Fpclk/2  |
+       |         |----------------|----------|----------|-----------|----------|-----------|----------|
+       |    R    |     Interrupt  | Fpclk/8  | Fpclk/8  | Fpclk/64  | Fpclk/2  | Fpclk/64  | Fpclk/2  |
+       |    X    |----------------|----------|----------|-----------|----------|-----------|----------|
+       |         |       DMA      | Fpclk/2  | Fpclk/2  | Fpclk/64  | Fpclk/2  | Fpclk/128 | Fpclk/2  |
+       |=========|================|==========|==========|===========|==========|===========|==========|
+       |         |     Polling    | Fpclk/2  | Fpclk/4  |     NA    |    NA    | Fpclk/2   | Fpclk/64 |
+       |         |----------------|----------|----------|-----------|----------|-----------|----------|
+       |    T    |     Interrupt  | Fpclk/2  | Fpclk/4  |     NA    |    NA    | Fpclk/2   | Fpclk/64 |
+       |    X    |----------------|----------|----------|-----------|----------|-----------|----------|
+       |         |       DMA      | Fpclk/2  | Fpclk/2  |     NA    |    NA    | Fpclk/2   | Fpclk/128|
+       +----------------------------------------------------------------------------------------------+
+
+       DataSize = SPI_DATASIZE_16BIT:
+       +----------------------------------------------------------------------------------------------+
+       |         |                | 2Lines Fullduplex   |     2Lines RxOnly    |         1Line        |
+       | Process | Tranfert mode  |---------------------|----------------------|----------------------|
+       |         |                |  Master  |  Slave   |  Master   |  Slave   |  Master   |  Slave   |
+       |==============================================================================================|
+       |    T    |     Polling    | Fpclk/2  | Fpclk/2  |    NA     |    NA    |    NA     |   NA     |
+       |    X    |----------------|----------|----------|-----------|----------|-----------|----------|
+       |    /    |     Interrupt  | Fpclk/4  | Fpclk/4  |    NA     |    NA    |    NA     |   NA     |
+       |    R    |----------------|----------|----------|-----------|----------|-----------|----------|
+       |    X    |       DMA      | Fpclk/2  | Fpclk/2  |    NA     |    NA    |    NA     |   NA     |
+       |=========|================|==========|==========|===========|==========|===========|==========|
+       |         |     Polling    | Fpclk/2  | Fpclk/2  | Fpclk/64  | Fpclk/2  | Fpclk/32  | Fpclk/2  |
+       |         |----------------|----------|----------|-----------|----------|-----------|----------|
+       |    R    |     Interrupt  | Fpclk/4  | Fpclk/4  | Fpclk/64  | Fpclk/2  | Fpclk/64  | Fpclk/2  |
+       |    X    |----------------|----------|----------|-----------|----------|-----------|----------|
+       |         |       DMA      | Fpclk/2  | Fpclk/2  | Fpclk/64  | Fpclk/2  | Fpclk/128 | Fpclk/2  |
+       |=========|================|==========|==========|===========|==========|===========|==========|
+       |         |     Polling    | Fpclk/2  | Fpclk/2  |     NA    |    NA    | Fpclk/2   | Fpclk/32 |
+       |         |----------------|----------|----------|-----------|----------|-----------|----------|
+       |    T    |     Interrupt  | Fpclk/2  | Fpclk/2  |     NA    |    NA    | Fpclk/2   | Fpclk/64 |
+       |    X    |----------------|----------|----------|-----------|----------|-----------|----------|
+       |         |       DMA      | Fpclk/2  | Fpclk/2  |     NA    |    NA    | Fpclk/2   | Fpclk/128|
+       +----------------------------------------------------------------------------------------------+
+       @note The max SPI frequency depend on SPI data size (8bits, 16bits),
+             SPI mode(2 Lines fullduplex, 2 lines RxOnly, 1 line TX/RX) and Process mode (Polling, IT, DMA).
+       @note
+            (#) TX/RX processes are HAL_SPI_TransmitReceive(), HAL_SPI_TransmitReceive_IT() and HAL_SPI_TransmitReceive_DMA()
+            (#) RX processes are HAL_SPI_Receive(), HAL_SPI_Receive_IT() and HAL_SPI_Receive_DMA()
+            (#) TX processes are HAL_SPI_Transmit(), HAL_SPI_Transmit_IT() and HAL_SPI_Transmit_DMA()
 
   @endverbatim
-
-    Using the HAL it is not possible to reach all supported SPI frequency with the differents SPI Modes,
-    the following tables resume the max SPI frequency reached with data size 8bits/16bits,
-    according to frequency used on APBx Peripheral Clock (fPCLK) used by the SPI instance :
-
-    DataSize = SPI_DATASIZE_8BIT:
-    +----------------------------------------------------------------------------------------------+
-    |         |                | 2Lines Fullduplex   |     2Lines RxOnly    |         1Line        |
-    | Process | Tranfert mode  |---------------------|----------------------|----------------------|
-    |         |                |  Master  |  Slave   |  Master   |  Slave   |  Master   |  Slave   |
-    |==============================================================================================|
-    |    T    |     Polling    | Fpclk/2  | Fpclk/2  |    NA     |    NA    |    NA     |   NA     |
-    |    X    |----------------|----------|----------|-----------|----------|-----------|----------|
-    |    /    |     Interrupt  | Fpclk/4  | Fpclk/8  |    NA     |    NA    |    NA     |   NA     |
-    |    R    |----------------|----------|----------|-----------|----------|-----------|----------|
-    |    X    |       DMA      | Fpclk/2  | Fpclk/2  |    NA     |    NA    |    NA     |   NA     |
-    |=========|================|==========|==========|===========|==========|===========|==========|
-    |         |     Polling    | Fpclk/2  | Fpclk/2  | Fpclk/64  | Fpclk/2  | Fpclk/64  | Fpclk/2  |
-    |         |----------------|----------|----------|-----------|----------|-----------|----------|
-    |    R    |     Interrupt  | Fpclk/8  | Fpclk/8  | Fpclk/64  | Fpclk/2  | Fpclk/64  | Fpclk/2  |
-    |    X    |----------------|----------|----------|-----------|----------|-----------|----------|
-    |         |       DMA      | Fpclk/2  | Fpclk/2  | Fpclk/64  | Fpclk/2  | Fpclk/128 | Fpclk/2  |
-    |=========|================|==========|==========|===========|==========|===========|==========|
-    |         |     Polling    | Fpclk/2  | Fpclk/4  |     NA    |    NA    | Fpclk/2   | Fpclk/64 |
-    |         |----------------|----------|----------|-----------|----------|-----------|----------|
-    |    T    |     Interrupt  | Fpclk/2  | Fpclk/4  |     NA    |    NA    | Fpclk/2   | Fpclk/64 |
-    |    X    |----------------|----------|----------|-----------|----------|-----------|----------|
-    |         |       DMA      | Fpclk/2  | Fpclk/2  |     NA    |    NA    | Fpclk/2   | Fpclk/128|
-    +----------------------------------------------------------------------------------------------+
-
-    DataSize = SPI_DATASIZE_16BIT:
-    +----------------------------------------------------------------------------------------------+
-    |         |                | 2Lines Fullduplex   |     2Lines RxOnly    |         1Line        |
-    | Process | Tranfert mode  |---------------------|----------------------|----------------------|
-    |         |                |  Master  |  Slave   |  Master   |  Slave   |  Master   |  Slave   |
-    |==============================================================================================|
-    |    T    |     Polling    | Fpclk/2  | Fpclk/2  |    NA     |    NA    |    NA     |   NA     |
-    |    X    |----------------|----------|----------|-----------|----------|-----------|----------|
-    |    /    |     Interrupt  | Fpclk/4  | Fpclk/4  |    NA     |    NA    |    NA     |   NA     |
-    |    R    |----------------|----------|----------|-----------|----------|-----------|----------|
-    |    X    |       DMA      | Fpclk/2  | Fpclk/2  |    NA     |    NA    |    NA     |   NA     |
-    |=========|================|==========|==========|===========|==========|===========|==========|
-    |         |     Polling    | Fpclk/2  | Fpclk/2  | Fpclk/64  | Fpclk/2  | Fpclk/32  | Fpclk/2  |
-    |         |----------------|----------|----------|-----------|----------|-----------|----------|
-    |    R    |     Interrupt  | Fpclk/4  | Fpclk/4  | Fpclk/64  | Fpclk/2  | Fpclk/64  | Fpclk/2  |
-    |    X    |----------------|----------|----------|-----------|----------|-----------|----------|
-    |         |       DMA      | Fpclk/2  | Fpclk/2  | Fpclk/64  | Fpclk/2  | Fpclk/128 | Fpclk/2  |
-    |=========|================|==========|==========|===========|==========|===========|==========|
-    |         |     Polling    | Fpclk/2  | Fpclk/2  |     NA    |    NA    | Fpclk/2   | Fpclk/32 |
-    |         |----------------|----------|----------|-----------|----------|-----------|----------|
-    |    T    |     Interrupt  | Fpclk/2  | Fpclk/2  |     NA    |    NA    | Fpclk/2   | Fpclk/64 |
-    |    X    |----------------|----------|----------|-----------|----------|-----------|----------|
-    |         |       DMA      | Fpclk/2  | Fpclk/2  |     NA    |    NA    | Fpclk/2   | Fpclk/128|
-    +----------------------------------------------------------------------------------------------+
-     [..]
-       (@) The max SPI frequency depend on SPI data size (8bits, 16bits),
-           SPI mode(2 Lines fullduplex, 2 lines RxOnly, 1 line TX/RX) and Process mode (Polling, IT, DMA).
-       (@)
-            (+@) TX/RX processes are HAL_SPI_TransmitReceive(), HAL_SPI_TransmitReceive_IT() and HAL_SPI_TransmitReceive_DMA()
-            (+@) RX processes are HAL_SPI_Receive(), HAL_SPI_Receive_IT() and HAL_SPI_Receive_DMA()
-            (+@) TX processes are HAL_SPI_Transmit(), HAL_SPI_Transmit_IT() and HAL_SPI_Transmit_DMA()
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT(c) 2017 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT(c) 2016 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -186,8 +187,6 @@ static void SPI_DMAHalfReceiveCplt(DMA_HandleTypeDef* hdma);
 static void SPI_DMAHalfTransmitReceiveCplt(DMA_HandleTypeDef* hdma);
 static void SPI_DMAError(DMA_HandleTypeDef* hdma);
 static void SPI_DMAAbortOnError(DMA_HandleTypeDef* hdma);
-static void SPI_DMATxAbortCallback(DMA_HandleTypeDef* hdma);
-static void SPI_DMARxAbortCallback(DMA_HandleTypeDef* hdma);
 static HAL_StatusTypeDef SPI_WaitFlagStateUntilTimeout(SPI_HandleTypeDef* hspi, uint32_t Flag, uint32_t State, uint32_t Timeout, uint32_t Tickstart);
 static void SPI_TxISR_8BIT(struct __SPI_HandleTypeDef* hspi);
 static void SPI_TxISR_16BIT(struct __SPI_HandleTypeDef* hspi);
@@ -203,8 +202,6 @@ static void SPI_RxISR_16BITCRC(struct __SPI_HandleTypeDef* hspi);
 static void SPI_2linesRxISR_8BITCRC(struct __SPI_HandleTypeDef* hspi);
 static void SPI_2linesRxISR_16BITCRC(struct __SPI_HandleTypeDef* hspi);
 #endif /* USE_SPI_CRC */
-static void SPI_AbortRx_ISR(SPI_HandleTypeDef* hspi);
-static void SPI_AbortTx_ISR(SPI_HandleTypeDef* hspi);
 static void SPI_CloseRxTx_ISR(SPI_HandleTypeDef* hspi);
 static void SPI_CloseRx_ISR(SPI_HandleTypeDef* hspi);
 static void SPI_CloseTx_ISR(SPI_HandleTypeDef* hspi);
@@ -254,7 +251,7 @@ static HAL_StatusTypeDef SPI_CheckFlag_BSY(SPI_HandleTypeDef* hspi, uint32_t Tim
 /**
   * @brief  Initialize the SPI according to the specified parameters
   *         in the SPI_InitTypeDef and initialize the associated handle.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval HAL status
   */
@@ -342,7 +339,7 @@ HAL_StatusTypeDef HAL_SPI_Init(SPI_HandleTypeDef* hspi)
 
 /**
   * @brief  De Initialize the SPI peripheral.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval HAL status
   */
@@ -376,7 +373,7 @@ HAL_StatusTypeDef HAL_SPI_DeInit(SPI_HandleTypeDef* hspi)
 
 /**
   * @brief  Initialize the SPI MSP.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval None
   */
@@ -391,7 +388,7 @@ __weak void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
 
 /**
   * @brief  De-Initialize the SPI MSP.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval None
   */
@@ -443,11 +440,11 @@ __weak void HAL_SPI_MspDeInit(SPI_HandleTypeDef* hspi)
 
 /**
   * @brief  Transmit an amount of data in blocking mode.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
-  * @param  pData pointer to data buffer
-  * @param  Size amount of data to be sent
-  * @param  Timeout Timeout duration
+  * @param  pData: pointer to data buffer
+  * @param  Size: amount of data to be sent
+  * @param  Timeout: Timeout duration
   * @retval HAL status
   */
 HAL_StatusTypeDef HAL_SPI_Transmit(SPI_HandleTypeDef* hspi, uint8_t* pData, uint16_t Size, uint32_t Timeout)
@@ -470,7 +467,7 @@ HAL_StatusTypeDef HAL_SPI_Transmit(SPI_HandleTypeDef* hspi, uint8_t* pData, uint
         goto error;
     }
 
-    if ((pData == NULL ) || (Size == 0))
+    if ((pData == NULL ) || (Size == 0U))
     {
         errorcode = HAL_ERROR;
         goto error;
@@ -620,11 +617,11 @@ error:
 
 /**
   * @brief  Receive an amount of data in blocking mode.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
-  * @param  pData pointer to data buffer
-  * @param  Size amount of data to be received
-  * @param  Timeout Timeout duration
+  * @param  pData: pointer to data buffer
+  * @param  Size: amount of data to be received
+  * @param  Timeout: Timeout duration
   * @retval HAL status
   */
 HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef* hspi, uint8_t* pData, uint16_t Size, uint32_t Timeout)
@@ -654,7 +651,7 @@ HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef* hspi, uint8_t* pData, uint1
         goto error;
     }
 
-    if ((pData == NULL ) || (Size == 0))
+    if ((pData == NULL ) || (Size == 0U))
     {
         errorcode = HAL_ERROR;
         goto error;
@@ -791,7 +788,6 @@ HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef* hspi, uint8_t* pData, uint1
 
 #endif /* USE_SPI_CRC */
 
-    /* Check the end of the transaction */
     if ((hspi->Init.Mode == SPI_MODE_MASTER) && ((hspi->Init.Direction == SPI_DIRECTION_1LINE) || (hspi->Init.Direction == SPI_DIRECTION_2LINES_RXONLY)))
     {
         /* Disable SPI peripheral */
@@ -822,12 +818,12 @@ error :
 
 /**
   * @brief  Transmit and Receive an amount of data in blocking mode.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
-  * @param  pTxData pointer to transmission data buffer
-  * @param  pRxData pointer to reception data buffer
-  * @param  Size amount of data to be sent and received
-  * @param  Timeout Timeout duration
+  * @param  pTxData: pointer to transmission data buffer
+  * @param  pRxData: pointer to reception data buffer
+  * @param  Size: amount of data to be sent and received
+  * @param  Timeout: Timeout duration
   * @retval HAL status
   */
 HAL_StatusTypeDef HAL_SPI_TransmitReceive(SPI_HandleTypeDef* hspi, uint8_t* pTxData, uint8_t* pRxData, uint16_t Size, uint32_t Timeout)
@@ -860,7 +856,7 @@ HAL_StatusTypeDef HAL_SPI_TransmitReceive(SPI_HandleTypeDef* hspi, uint8_t* pTxD
         goto error;
     }
 
-    if ((pTxData == NULL) || (pRxData == NULL) || (Size == 0))
+    if ((pTxData == NULL) || (pRxData == NULL) || (Size == 0U))
     {
         errorcode = HAL_ERROR;
         goto error;
@@ -905,7 +901,7 @@ HAL_StatusTypeDef HAL_SPI_TransmitReceive(SPI_HandleTypeDef* hspi, uint8_t* pTxD
     /* Transmit and Receive data in 16 Bit mode */
     if (hspi->Init.DataSize == SPI_DATASIZE_16BIT)
     {
-        if ((hspi->Init.Mode == SPI_MODE_SLAVE) || (hspi->TxXferCount == 0x01U))
+        if ((hspi->Init.Mode == SPI_MODE_SLAVE) || (hspi->TxXferCount == 0x01))
         {
             hspi->Instance->DR = *((uint16_t*)pTxData);
             pTxData += sizeof(uint16_t);
@@ -954,7 +950,7 @@ HAL_StatusTypeDef HAL_SPI_TransmitReceive(SPI_HandleTypeDef* hspi, uint8_t* pTxD
     /* Transmit and Receive data in 8 Bit mode */
     else
     {
-        if ((hspi->Init.Mode == SPI_MODE_SLAVE) || (hspi->TxXferCount == 0x01U))
+        if ((hspi->Init.Mode == SPI_MODE_SLAVE) || (hspi->TxXferCount == 0x01))
         {
             *((__IO uint8_t*)&hspi->Instance->DR) = (*pTxData);
             pTxData += sizeof(uint8_t);
@@ -1060,10 +1056,10 @@ error :
 
 /**
   * @brief  Transmit an amount of data in non-blocking mode with Interrupt.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
-  * @param  pData pointer to data buffer
-  * @param  Size amount of data to be sent
+  * @param  pData: pointer to data buffer
+  * @param  Size: amount of data to be sent
   * @retval HAL status
   */
 HAL_StatusTypeDef HAL_SPI_Transmit_IT(SPI_HandleTypeDef* hspi, uint8_t* pData, uint16_t Size)
@@ -1076,7 +1072,7 @@ HAL_StatusTypeDef HAL_SPI_Transmit_IT(SPI_HandleTypeDef* hspi, uint8_t* pData, u
     /* Process Locked */
     __HAL_LOCK(hspi);
 
-    if ((pData == NULL) || (Size == 0))
+    if ((pData == NULL) || (Size == 0U))
     {
         errorcode = HAL_ERROR;
         goto error;
@@ -1152,10 +1148,10 @@ error :
 
 /**
   * @brief  Receive an amount of data in non-blocking mode with Interrupt.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
-  * @param  pData pointer to data buffer
-  * @param  Size amount of data to be sent
+  * @param  pData: pointer to data buffer
+  * @param  Size: amount of data to be sent
   * @retval HAL status
   */
 HAL_StatusTypeDef HAL_SPI_Receive_IT(SPI_HandleTypeDef* hspi, uint8_t* pData, uint16_t Size)
@@ -1178,7 +1174,7 @@ HAL_StatusTypeDef HAL_SPI_Receive_IT(SPI_HandleTypeDef* hspi, uint8_t* pData, ui
         goto error;
     }
 
-    if ((pData == NULL) || (Size == 0))
+    if ((pData == NULL) || (Size == 0U))
     {
         errorcode = HAL_ERROR;
         goto error;
@@ -1245,11 +1241,11 @@ error :
 
 /**
   * @brief  Transmit and Receive an amount of data in non-blocking mode with Interrupt.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
-  * @param  pTxData pointer to transmission data buffer
-  * @param  pRxData pointer to reception data buffer
-  * @param  Size amount of data to be sent and received
+  * @param  pTxData: pointer to transmission data buffer
+  * @param  pRxData: pointer to reception data buffer
+  * @param  Size: amount of data to be sent and received
   * @retval HAL status
   */
 HAL_StatusTypeDef HAL_SPI_TransmitReceive_IT(SPI_HandleTypeDef* hspi, uint8_t* pTxData, uint8_t* pRxData, uint16_t Size)
@@ -1273,7 +1269,7 @@ HAL_StatusTypeDef HAL_SPI_TransmitReceive_IT(SPI_HandleTypeDef* hspi, uint8_t* p
         goto error;
     }
 
-    if ((pTxData == NULL ) || (pRxData == NULL ) || (Size == 0))
+    if ((pTxData == NULL ) || (pRxData == NULL ) || (Size == 0U))
     {
         errorcode = HAL_ERROR;
         goto error;
@@ -1334,10 +1330,10 @@ error :
 
 /**
   * @brief  Transmit an amount of data in non-blocking mode with DMA.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
-  * @param  pData pointer to data buffer
-  * @param  Size amount of data to be sent
+  * @param  pData: pointer to data buffer
+  * @param  Size: amount of data to be sent
   * @retval HAL status
   */
 HAL_StatusTypeDef HAL_SPI_Transmit_DMA(SPI_HandleTypeDef* hspi, uint8_t* pData, uint16_t Size)
@@ -1356,7 +1352,7 @@ HAL_StatusTypeDef HAL_SPI_Transmit_DMA(SPI_HandleTypeDef* hspi, uint8_t* pData, 
         goto error;
     }
 
-    if ((pData == NULL) || (Size == 0))
+    if ((pData == NULL) || (Size == 0U))
     {
         errorcode = HAL_ERROR;
         goto error;
@@ -1428,11 +1424,11 @@ error :
 
 /**
   * @brief  Receive an amount of data in non-blocking mode with DMA.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
-  * @param  pData pointer to data buffer
+  * @param  pData: pointer to data buffer
   * @note   When the CRC feature is enabled the pData Length must be Size + 1.
-  * @param  Size amount of data to be sent
+  * @param  Size: amount of data to be sent
   * @retval HAL status
   */
 HAL_StatusTypeDef HAL_SPI_Receive_DMA(SPI_HandleTypeDef* hspi, uint8_t* pData, uint16_t Size)
@@ -1455,7 +1451,7 @@ HAL_StatusTypeDef HAL_SPI_Receive_DMA(SPI_HandleTypeDef* hspi, uint8_t* pData, u
         goto error;
     }
 
-    if ((pData == NULL) || (Size == 0))
+    if ((pData == NULL) || (Size == 0U))
     {
         errorcode = HAL_ERROR;
         goto error;
@@ -1526,12 +1522,12 @@ error:
 
 /**
   * @brief  Transmit and Receive an amount of data in non-blocking mode with DMA.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
-  * @param  pTxData pointer to transmission data buffer
-  * @param  pRxData pointer to reception data buffer
+  * @param  pTxData: pointer to transmission data buffer
+  * @param  pRxData: pointer to reception data buffer
   * @note   When the CRC feature is enabled the pRxData Length must be Size + 1
-  * @param  Size amount of data to be sent
+  * @param  Size: amount of data to be sent
   * @retval HAL status
   */
 HAL_StatusTypeDef HAL_SPI_TransmitReceive_DMA(SPI_HandleTypeDef* hspi, uint8_t* pTxData, uint8_t* pRxData, uint16_t Size)
@@ -1555,7 +1551,7 @@ HAL_StatusTypeDef HAL_SPI_TransmitReceive_DMA(SPI_HandleTypeDef* hspi, uint8_t* 
         goto error;
     }
 
-    if ((pTxData == NULL ) || (pRxData == NULL ) || (Size == 0))
+    if ((pTxData == NULL ) || (pRxData == NULL ) || (Size == 0U))
     {
         errorcode = HAL_ERROR;
         goto error;
@@ -1646,306 +1642,8 @@ error :
 }
 
 /**
-  * @brief  Abort ongoing transfer (blocking mode).
-  * @param  hspi SPI handle.
-  * @note   This procedure could be used for aborting any ongoing transfer (Tx and Rx),
-  *         started in Interrupt or DMA mode.
-  *         This procedure performs following operations :
-  *           - Disable SPI Interrupts (depending of transfer direction)
-  *           - Disable the DMA transfer in the peripheral register (if enabled)
-  *           - Abort DMA transfer by calling HAL_DMA_Abort (in case of transfer in DMA mode)
-  *           - Set handle State to READY
-  * @note   This procedure is executed in blocking mode : when exiting function, Abort is considered as completed.
-  * @note   Once transfer is aborted, the __HAL_SPI_CLEAR_OVRFLAG() macro must be called in user application
-  *         before starting new SPI receive process.
-  * @retval HAL status
-*/
-HAL_StatusTypeDef HAL_SPI_Abort(SPI_HandleTypeDef* hspi)
-{
-    __IO uint32_t count = SPI_DEFAULT_TIMEOUT * (SystemCoreClock / 24U / 1000U);
-
-    /* Disable TXEIE, RXNEIE and ERRIE(mode fault event, overrun error, TI frame error) interrupts */
-    if (HAL_IS_BIT_SET(hspi->Instance->CR2, SPI_CR2_TXEIE))
-    {
-        hspi->TxISR = SPI_AbortTx_ISR;
-    }
-
-    if (HAL_IS_BIT_SET(hspi->Instance->CR2, SPI_CR2_RXNEIE))
-    {
-        hspi->RxISR = SPI_AbortRx_ISR;
-    }
-
-    /* Clear ERRIE interrupts in case of DMA Mode */
-    CLEAR_BIT(hspi->Instance->CR2, SPI_CR2_ERRIE);
-
-    /* Disable the SPI DMA Tx or SPI DMA Rx request if enabled */
-    if ((HAL_IS_BIT_SET(hspi->Instance->CR2, SPI_CR2_TXDMAEN)) || (HAL_IS_BIT_SET(hspi->Instance->CR2, SPI_CR2_RXDMAEN)))
-    {
-        /* Abort the SPI DMA Tx channel : use blocking DMA Abort API (no callback) */
-        if (hspi->hdmatx != NULL)
-        {
-            /* Set the SPI DMA Abort callback :
-            will lead to call HAL_SPI_AbortCpltCallback() at end of DMA abort procedure */
-            hspi->hdmatx->XferAbortCallback = NULL;
-
-            /* Abort DMA Tx Handle linked to SPI Peripheral */
-            HAL_DMA_Abort(hspi->hdmatx);
-
-            /* Disable Tx DMA Request */
-            CLEAR_BIT(hspi->Instance->CR2, (SPI_CR2_TXDMAEN));
-
-            /* Wait until TXE flag is set */
-            do
-            {
-                if (count-- == 0U)
-                {
-                    SET_BIT(hspi->ErrorCode, HAL_SPI_ERROR_FLAG);
-                    break;
-                }
-            }
-            while ((hspi->Instance->SR & SPI_FLAG_TXE) == RESET);
-        }
-
-        /* Abort the SPI DMA Rx channel : use blocking DMA Abort API (no callback) */
-        if (hspi->hdmarx != NULL)
-        {
-            /* Set the SPI DMA Abort callback :
-            will lead to call HAL_SPI_AbortCpltCallback() at end of DMA abort procedure */
-            hspi->hdmarx->XferAbortCallback = NULL;
-
-            /* Abort DMA Rx Handle linked to SPI Peripheral */
-            HAL_DMA_Abort(hspi->hdmarx);
-
-            /* Disable peripheral */
-            __HAL_SPI_DISABLE(hspi);
-
-            /* Disable Rx DMA Request */
-            CLEAR_BIT(hspi->Instance->CR2, (SPI_CR2_RXDMAEN));
-
-        }
-    }
-
-    /* Reset Tx and Rx transfer counters */
-    hspi->RxXferCount = 0U;
-    hspi->TxXferCount = 0U;
-
-    /* Reset errorCode */
-    hspi->ErrorCode = HAL_SPI_ERROR_NONE;
-
-    /* Clear the Error flags in the SR register */
-    __HAL_SPI_CLEAR_OVRFLAG(hspi);
-    __HAL_SPI_CLEAR_FREFLAG(hspi);
-
-    /* Restore hspi->state to ready */
-    hspi->State = HAL_SPI_STATE_READY;
-
-    return HAL_OK;
-}
-
-/**
-  * @brief  Abort ongoing transfer (Interrupt mode).
-  * @param  hspi SPI handle.
-  * @note   This procedure could be used for aborting any ongoing transfer (Tx and Rx),
-  *         started in Interrupt or DMA mode.
-  *         This procedure performs following operations :
-  *           - Disable SPI Interrupts (depending of transfer direction)
-  *           - Disable the DMA transfer in the peripheral register (if enabled)
-  *           - Abort DMA transfer by calling HAL_DMA_Abort_IT (in case of transfer in DMA mode)
-  *           - Set handle State to READY
-  *           - At abort completion, call user abort complete callback
-  * @note   This procedure is executed in Interrupt mode, meaning that abort procedure could be
-  *         considered as completed only when user abort complete callback is executed (not when exiting function).
-  * @note   Once transfer is aborted, the __HAL_SPI_CLEAR_OVRFLAG() macro must be called in user application
-  *         before starting new SPI receive process.
-  * @retval HAL status
-*/
-HAL_StatusTypeDef HAL_SPI_Abort_IT(SPI_HandleTypeDef* hspi)
-{
-    uint32_t abortcplt;
-
-    /* Change Rx and Tx Irq Handler to Disable TXEIE, RXNEIE and ERRIE interrupts */
-    if (HAL_IS_BIT_SET(hspi->Instance->CR2, SPI_CR2_TXEIE))
-    {
-        hspi->TxISR = SPI_AbortTx_ISR;
-    }
-
-    if (HAL_IS_BIT_SET(hspi->Instance->CR2, SPI_CR2_RXNEIE))
-    {
-        hspi->RxISR = SPI_AbortRx_ISR;
-    }
-
-    /* Clear ERRIE interrupts in case of DMA Mode */
-    CLEAR_BIT(hspi->Instance->CR2, SPI_CR2_ERRIE);
-
-    abortcplt = 1U;
-
-    /* If DMA Tx and/or DMA Rx Handles are associated to SPI Handle, DMA Abort complete callbacks should be initialised
-       before any call to DMA Abort functions */
-    /* DMA Tx Handle is valid */
-    if (hspi->hdmatx != NULL)
-    {
-        /* Set DMA Abort Complete callback if UART DMA Tx request if enabled.
-           Otherwise, set it to NULL */
-        if (HAL_IS_BIT_SET(hspi->Instance->CR2, SPI_CR2_TXDMAEN))
-        {
-            hspi->hdmatx->XferAbortCallback = SPI_DMATxAbortCallback;
-        }
-        else
-        {
-            hspi->hdmatx->XferAbortCallback = NULL;
-        }
-    }
-
-    /* DMA Rx Handle is valid */
-    if (hspi->hdmarx != NULL)
-    {
-        /* Set DMA Abort Complete callback if UART DMA Rx request if enabled.
-           Otherwise, set it to NULL */
-        if (HAL_IS_BIT_SET(hspi->Instance->CR2, SPI_CR2_RXDMAEN))
-        {
-            hspi->hdmarx->XferAbortCallback = SPI_DMARxAbortCallback;
-        }
-        else
-        {
-            hspi->hdmarx->XferAbortCallback = NULL;
-        }
-    }
-
-    /* Disable the SPI DMA Tx or the SPI Rx request if enabled */
-    if ((HAL_IS_BIT_SET(hspi->Instance->CR2, SPI_CR2_TXDMAEN)) && (HAL_IS_BIT_SET(hspi->Instance->CR2, SPI_CR2_RXDMAEN)))
-    {
-        /* Abort the SPI DMA Tx channel */
-        if (hspi->hdmatx != NULL)
-        {
-            /* Abort DMA Tx Handle linked to SPI Peripheral */
-            if (HAL_DMA_Abort_IT(hspi->hdmatx) != HAL_OK)
-            {
-                hspi->hdmatx->XferAbortCallback = NULL;
-            }
-            else
-            {
-                abortcplt = 0U;
-            }
-        }
-
-        /* Abort the SPI DMA Rx channel */
-        if (hspi->hdmarx != NULL)
-        {
-            /* Abort DMA Rx Handle linked to SPI Peripheral */
-            if (HAL_DMA_Abort_IT(hspi->hdmarx) !=  HAL_OK)
-            {
-                hspi->hdmarx->XferAbortCallback = NULL;
-                abortcplt = 1U;
-            }
-            else
-            {
-                abortcplt = 0U;
-            }
-        }
-    }
-
-    /* Disable the SPI DMA Tx or the SPI Rx request if enabled */
-    if (HAL_IS_BIT_SET(hspi->Instance->CR2, SPI_CR2_TXDMAEN))
-    {
-        /* Abort the SPI DMA Tx channel */
-        if (hspi->hdmatx != NULL)
-        {
-            /* Abort DMA Tx Handle linked to SPI Peripheral */
-            if (HAL_DMA_Abort_IT(hspi->hdmatx) != HAL_OK)
-            {
-                hspi->hdmatx->XferAbortCallback = NULL;
-            }
-            else
-            {
-                abortcplt = 0U;
-            }
-        }
-    }
-
-    /* Disable the SPI DMA Tx or the SPI Rx request if enabled */
-    if (HAL_IS_BIT_SET(hspi->Instance->CR2, SPI_CR2_RXDMAEN))
-    {
-        /* Abort the SPI DMA Rx channel */
-        if (hspi->hdmarx != NULL)
-        {
-            /* Abort DMA Rx Handle linked to SPI Peripheral */
-            if (HAL_DMA_Abort_IT(hspi->hdmarx) !=  HAL_OK)
-            {
-                hspi->hdmarx->XferAbortCallback = NULL;
-            }
-            else
-            {
-                abortcplt = 0U;
-            }
-        }
-    }
-
-    if (abortcplt == 1U)
-    {
-        /* Reset Tx and Rx transfer counters */
-        hspi->RxXferCount = 0U;
-        hspi->TxXferCount = 0U;
-
-        /* Reset errorCode */
-        hspi->ErrorCode = HAL_SPI_ERROR_NONE;
-
-        /* Clear the Error flags in the SR register */
-        __HAL_SPI_CLEAR_OVRFLAG(hspi);
-        __HAL_SPI_CLEAR_FREFLAG(hspi);
-
-        /* Restore hspi->State to Ready */
-        hspi->State = HAL_SPI_STATE_READY;
-
-        /* As no DMA to be aborted, call directly user Abort complete callback */
-        HAL_SPI_AbortCpltCallback(hspi);
-    }
-
-    return HAL_OK;
-}
-
-/**
-  * @brief  Pause the DMA Transfer.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
-  *               the configuration information for the specified SPI module.
-  * @retval HAL status
-  */
-HAL_StatusTypeDef HAL_SPI_DMAPause(SPI_HandleTypeDef* hspi)
-{
-    /* Process Locked */
-    __HAL_LOCK(hspi);
-
-    /* Disable the SPI DMA Tx & Rx requests */
-    CLEAR_BIT(hspi->Instance->CR2, SPI_CR2_TXDMAEN | SPI_CR2_RXDMAEN);
-
-    /* Process Unlocked */
-    __HAL_UNLOCK(hspi);
-
-    return HAL_OK;
-}
-
-/**
-  * @brief  Resume the DMA Transfer.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
-  *               the configuration information for the specified SPI module.
-  * @retval HAL status
-  */
-HAL_StatusTypeDef HAL_SPI_DMAResume(SPI_HandleTypeDef* hspi)
-{
-    /* Process Locked */
-    __HAL_LOCK(hspi);
-
-    /* Enable the SPI DMA Tx & Rx requests */
-    SET_BIT(hspi->Instance->CR2, SPI_CR2_TXDMAEN | SPI_CR2_RXDMAEN);
-
-    /* Process Unlocked */
-    __HAL_UNLOCK(hspi);
-
-    return HAL_OK;
-}
-
-/**
   * @brief Stop the DMA Transfer.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for the specified SPI module.
   * @retval HAL status
   */
@@ -1977,7 +1675,7 @@ HAL_StatusTypeDef HAL_SPI_DMAStop(SPI_HandleTypeDef* hspi)
 
 /**
   * @brief  Handle SPI interrupt request.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for the specified SPI module.
   * @retval None
   */
@@ -2076,7 +1774,7 @@ void HAL_SPI_IRQHandler(SPI_HandleTypeDef* hspi)
 
 /**
   * @brief Tx Transfer completed callback.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval None
   */
@@ -2091,7 +1789,7 @@ __weak void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef* hspi)
 
 /**
   * @brief Rx Transfer completed callback.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval None
   */
@@ -2106,7 +1804,7 @@ __weak void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef* hspi)
 
 /**
   * @brief Tx and Rx Transfer completed callback.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval None
   */
@@ -2121,7 +1819,7 @@ __weak void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef* hspi)
 
 /**
   * @brief Tx Half Transfer completed callback.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval None
   */
@@ -2136,7 +1834,7 @@ __weak void HAL_SPI_TxHalfCpltCallback(SPI_HandleTypeDef* hspi)
 
 /**
   * @brief Rx Half Transfer completed callback.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval None
   */
@@ -2151,7 +1849,7 @@ __weak void HAL_SPI_RxHalfCpltCallback(SPI_HandleTypeDef* hspi)
 
 /**
   * @brief Tx and Rx Half Transfer callback.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval None
   */
@@ -2166,7 +1864,7 @@ __weak void HAL_SPI_TxRxHalfCpltCallback(SPI_HandleTypeDef* hspi)
 
 /**
   * @brief SPI error callback.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval None
   */
@@ -2180,21 +1878,6 @@ __weak void HAL_SPI_ErrorCallback(SPI_HandleTypeDef* hspi)
     /* NOTE : The ErrorCode parameter in the hspi handle is updated by the SPI processes
               and user can use HAL_SPI_GetError() API to check the latest error occurred
     */
-}
-
-/**
-  * @brief  SPI Abort Complete callback.
-  * @param  hspi SPI handle.
-  * @retval None
-  */
-__weak void HAL_SPI_AbortCpltCallback(SPI_HandleTypeDef* hspi)
-{
-    /* Prevent unused argument(s) compilation warning */
-    UNUSED(hspi);
-
-    /* NOTE : This function should not be modified, when the callback is needed,
-              the HAL_SPI_AbortCpltCallback can be implemented in the user file.
-     */
 }
 
 /**
@@ -2218,7 +1901,7 @@ __weak void HAL_SPI_AbortCpltCallback(SPI_HandleTypeDef* hspi)
 
 /**
   * @brief  Return the SPI handle state.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval SPI state
   */
@@ -2230,7 +1913,7 @@ HAL_SPI_StateTypeDef HAL_SPI_GetState(SPI_HandleTypeDef* hspi)
 
 /**
   * @brief  Return the SPI error code.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval SPI error code in bitmap format
   */
@@ -2255,7 +1938,7 @@ uint32_t HAL_SPI_GetError(SPI_HandleTypeDef* hspi)
 
 /**
   * @brief DMA SPI transmit process complete callback.
-  * @param  hdma pointer to a DMA_HandleTypeDef structure that contains
+  * @param  hdma: pointer to a DMA_HandleTypeDef structure that contains
   *               the configuration information for the specified DMA module.
   * @retval None
   */
@@ -2300,7 +1983,7 @@ static void SPI_DMATransmitCplt(DMA_HandleTypeDef* hdma)
 
 /**
   * @brief DMA SPI receive process complete callback.
-  * @param  hdma pointer to a DMA_HandleTypeDef structure that contains
+  * @param  hdma: pointer to a DMA_HandleTypeDef structure that contains
   *               the configuration information for the specified DMA module.
   * @retval None
   */
@@ -2340,7 +2023,6 @@ static void SPI_DMAReceiveCplt(DMA_HandleTypeDef* hdma)
         /* Disable Rx/Tx DMA Request (done by default to handle the case master rx direction 2 lines) */
         CLEAR_BIT(hspi->Instance->CR2, SPI_CR2_TXDMAEN | SPI_CR2_RXDMAEN);
 
-        /* Check the end of the transaction */
         if ((hspi->Init.Mode == SPI_MODE_MASTER) && ((hspi->Init.Direction == SPI_DIRECTION_1LINE) || (hspi->Init.Direction == SPI_DIRECTION_2LINES_RXONLY)))
         {
             /* Disable SPI peripheral */
@@ -2373,7 +2055,7 @@ static void SPI_DMAReceiveCplt(DMA_HandleTypeDef* hdma)
 
 /**
   * @brief  DMA SPI transmit receive process complete callback.
-  * @param  hdma pointer to a DMA_HandleTypeDef structure that contains
+  * @param  hdma: pointer to a DMA_HandleTypeDef structure that contains
   *               the configuration information for the specified DMA module.
   * @retval None
   */
@@ -2444,7 +2126,7 @@ static void SPI_DMATransmitReceiveCplt(DMA_HandleTypeDef* hdma)
 
 /**
   * @brief  DMA SPI half transmit process complete callback.
-  * @param  hdma pointer to a DMA_HandleTypeDef structure that contains
+  * @param  hdma: pointer to a DMA_HandleTypeDef structure that contains
   *               the configuration information for the specified DMA module.
   * @retval None
   */
@@ -2457,7 +2139,7 @@ static void SPI_DMAHalfTransmitCplt(DMA_HandleTypeDef* hdma)
 
 /**
   * @brief  DMA SPI half receive process complete callback
-  * @param  hdma pointer to a DMA_HandleTypeDef structure that contains
+  * @param  hdma: pointer to a DMA_HandleTypeDef structure that contains
   *               the configuration information for the specified DMA module.
   * @retval None
   */
@@ -2470,7 +2152,7 @@ static void SPI_DMAHalfReceiveCplt(DMA_HandleTypeDef* hdma)
 
 /**
   * @brief  DMA SPI half transmit receive process complete callback.
-  * @param  hdma pointer to a DMA_HandleTypeDef structure that contains
+  * @param  hdma: pointer to a DMA_HandleTypeDef structure that contains
   *               the configuration information for the specified DMA module.
   * @retval None
   */
@@ -2483,7 +2165,7 @@ static void SPI_DMAHalfTransmitReceiveCplt(DMA_HandleTypeDef* hdma)
 
 /**
   * @brief  DMA SPI communication error callback.
-  * @param  hdma pointer to a DMA_HandleTypeDef structure that contains
+  * @param  hdma: pointer to a DMA_HandleTypeDef structure that contains
   *               the configuration information for the specified DMA module.
   * @retval None
   */
@@ -2508,117 +2190,15 @@ static void SPI_DMAError(DMA_HandleTypeDef* hdma)
 static void SPI_DMAAbortOnError(DMA_HandleTypeDef* hdma)
 {
     SPI_HandleTypeDef* hspi = ( SPI_HandleTypeDef* )((DMA_HandleTypeDef* )hdma)->Parent;
-    hspi->RxXferCount = 0U;
-    hspi->TxXferCount = 0U;
+    hspi->RxXferCount = 0;
+    hspi->TxXferCount = 0;
 
     HAL_SPI_ErrorCallback(hspi);
 }
 
 /**
-  * @brief  DMA SPI Tx communication abort callback, when initiated by user
-  *         (To be called at end of DMA Tx Abort procedure following user abort request).
-  * @note   When this callback is executed, User Abort complete call back is called only if no
-  *         Abort still ongoing for Rx DMA Handle.
-  * @param  hdma DMA handle.
-  * @retval None
-  */
-static void SPI_DMATxAbortCallback(DMA_HandleTypeDef* hdma)
-{
-    __IO uint32_t count = SPI_DEFAULT_TIMEOUT * (SystemCoreClock / 24U / 1000U);
-    SPI_HandleTypeDef* hspi = ( SPI_HandleTypeDef* )((DMA_HandleTypeDef* )hdma)->Parent;
-
-    hspi->hdmatx->XferAbortCallback = NULL;
-
-    /* Disable Tx DMA Request */
-    CLEAR_BIT(hspi->Instance->CR2, SPI_CR2_TXDMAEN );
-
-    /* Wait until TXE flag is set */
-    do
-    {
-        if (count-- == 0U)
-        {
-            SET_BIT(hspi->ErrorCode, HAL_SPI_ERROR_FLAG);
-            break;
-        }
-    }
-    while ((hspi->Instance->SR & SPI_FLAG_TXE) == RESET);
-
-    /* Check if an Abort process is still ongoing */
-    if (hspi->hdmarx != NULL)
-    {
-        if (hspi->hdmarx->XferAbortCallback != NULL)
-        {
-            return;
-        }
-    }
-
-    /* No Abort process still ongoing : All DMA channels are aborted, call user Abort Complete callback */
-    hspi->RxXferCount = 0U;
-    hspi->TxXferCount = 0U;
-
-    /* Reset errorCode */
-    hspi->ErrorCode = HAL_SPI_ERROR_NONE;
-
-    /* Clear the Error flags in the SR register */
-    __HAL_SPI_CLEAR_FREFLAG(hspi);
-
-    /* Restore hspi->State to Ready */
-    hspi->State  = HAL_SPI_STATE_READY;
-
-    /* Call user Abort complete callback */
-    HAL_SPI_AbortCpltCallback(hspi);
-}
-
-/**
-  * @brief  DMA SPI Rx communication abort callback, when initiated by user
-  *         (To be called at end of DMA Rx Abort procedure following user abort request).
-  * @note   When this callback is executed, User Abort complete call back is called only if no
-  *         Abort still ongoing for Tx DMA Handle.
-  * @param  hdma DMA handle.
-  * @retval None
-  */
-static void SPI_DMARxAbortCallback(DMA_HandleTypeDef* hdma)
-{
-    SPI_HandleTypeDef* hspi = ( SPI_HandleTypeDef* )((DMA_HandleTypeDef* )hdma)->Parent;
-
-    /* Disable SPI Peripheral */
-    __HAL_SPI_DISABLE(hspi);
-
-    hspi->hdmarx->XferAbortCallback = NULL;
-
-    /* Disable Rx DMA Request */
-    CLEAR_BIT(hspi->Instance->CR2, SPI_CR2_RXDMAEN);
-
-    /* Check if an Abort process is still ongoing */
-    if (hspi->hdmatx != NULL)
-    {
-        if (hspi->hdmatx->XferAbortCallback != NULL)
-        {
-            return;
-        }
-    }
-
-    /* No Abort process still ongoing : All DMA channels are aborted, call user Abort Complete callback */
-    hspi->RxXferCount = 0U;
-    hspi->TxXferCount = 0U;
-
-    /* Reset errorCode */
-    hspi->ErrorCode = HAL_SPI_ERROR_NONE;
-
-    /* Clear the Error flags in the SR register */
-    __HAL_SPI_CLEAR_OVRFLAG(hspi);
-    __HAL_SPI_CLEAR_FREFLAG(hspi);
-
-    /* Restore hspi->State to Ready */
-    hspi->State  = HAL_SPI_STATE_READY;
-
-    /* Call user Abort complete callback */
-    HAL_SPI_AbortCpltCallback(hspi);
-}
-
-/**
   * @brief  Rx 8-bit handler for Transmit and Receive in Interrupt mode.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval None
   */
@@ -2654,7 +2234,7 @@ static void SPI_2linesRxISR_8BIT(struct __SPI_HandleTypeDef* hspi)
 #if (USE_SPI_CRC != 0U)
 /**
   * @brief  Rx 8-bit handler for Transmit and Receive in Interrupt mode.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval None
   */
@@ -2681,7 +2261,7 @@ static void SPI_2linesRxISR_8BITCRC(struct __SPI_HandleTypeDef* hspi)
 
 /**
   * @brief  Tx 8-bit handler for Transmit and Receive in Interrupt mode.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval None
   */
@@ -2716,7 +2296,7 @@ static void SPI_2linesTxISR_8BIT(struct __SPI_HandleTypeDef* hspi)
 
 /**
   * @brief  Rx 16-bit handler for Transmit and Receive in Interrupt mode.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval None
   */
@@ -2752,7 +2332,7 @@ static void SPI_2linesRxISR_16BIT(struct __SPI_HandleTypeDef* hspi)
 #if (USE_SPI_CRC != 0U)
 /**
   * @brief  Manage the CRC 16-bit receive for Transmit and Receive in Interrupt mode.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval None
   */
@@ -2776,7 +2356,7 @@ static void SPI_2linesRxISR_16BITCRC(struct __SPI_HandleTypeDef* hspi)
 
 /**
   * @brief  Tx 16-bit handler for Transmit and Receive in Interrupt mode.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval None
   */
@@ -2814,7 +2394,7 @@ static void SPI_2linesTxISR_16BIT(struct __SPI_HandleTypeDef* hspi)
 #if (USE_SPI_CRC != 0U)
 /**
   * @brief  Manage the CRC 8-bit receive in Interrupt context.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval None
   */
@@ -2834,7 +2414,7 @@ static void SPI_RxISR_8BITCRC(struct __SPI_HandleTypeDef* hspi)
 
 /**
   * @brief  Manage the receive 8-bit in Interrupt context.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval None
   */
@@ -2871,7 +2451,7 @@ static void SPI_RxISR_8BIT(struct __SPI_HandleTypeDef* hspi)
 #if (USE_SPI_CRC != 0U)
 /**
   * @brief  Manage the CRC 16-bit receive in Interrupt context.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval None
   */
@@ -2894,7 +2474,7 @@ static void SPI_RxISR_16BITCRC(struct __SPI_HandleTypeDef* hspi)
 
 /**
   * @brief  Manage the 16-bit receive in Interrupt context.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval None
   */
@@ -2931,7 +2511,7 @@ static void SPI_RxISR_16BIT(struct __SPI_HandleTypeDef* hspi)
 
 /**
   * @brief  Handle the data 8-bit transmit in Interrupt mode.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval None
   */
@@ -2957,7 +2537,7 @@ static void SPI_TxISR_8BIT(struct __SPI_HandleTypeDef* hspi)
 
 /**
   * @brief  Handle the data 16-bit transmit in Interrupt mode.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval None
   */
@@ -2985,12 +2565,12 @@ static void SPI_TxISR_16BIT(struct __SPI_HandleTypeDef* hspi)
 
 /**
   * @brief Handle SPI Communication Timeout.
-  * @param hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param hspi: pointer to a SPI_HandleTypeDef structure that contains
   *              the configuration information for SPI module.
-  * @param Flag SPI flag to check
-  * @param State flag state to check
-  * @param Timeout Timeout duration
-  * @param Tickstart tick start value
+  * @param Flag: SPI flag to check
+  * @param State: flag state to check
+  * @param Timeout: Timeout duration
+  * @param Tickstart: tick start value
   * @retval HAL status
   */
 static HAL_StatusTypeDef SPI_WaitFlagStateUntilTimeout(SPI_HandleTypeDef* hspi, uint32_t Flag, uint32_t State, uint32_t Timeout, uint32_t Tickstart)
@@ -3034,10 +2614,10 @@ static HAL_StatusTypeDef SPI_WaitFlagStateUntilTimeout(SPI_HandleTypeDef* hspi, 
 }
 /**
   * @brief Handle to check BSY flag before start a new transaction.
-  * @param hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param hspi: pointer to a SPI_HandleTypeDef structure that contains
   *              the configuration information for SPI module.
-  * @param Timeout Timeout duration
-  * @param Tickstart tick start value
+  * @param Timeout: Timeout duration
+  * @param Tickstart: tick start value
   * @retval HAL status
   */
 static HAL_StatusTypeDef SPI_CheckFlag_BSY(SPI_HandleTypeDef* hspi, uint32_t Timeout, uint32_t Tickstart)
@@ -3054,14 +2634,14 @@ static HAL_StatusTypeDef SPI_CheckFlag_BSY(SPI_HandleTypeDef* hspi, uint32_t Tim
 
 /**
   * @brief  Handle the end of the RXTX transaction.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval None
   */
 static void SPI_CloseRxTx_ISR(SPI_HandleTypeDef* hspi)
 {
     uint32_t tickstart = 0U;
-    __IO uint32_t count = SPI_DEFAULT_TIMEOUT * (SystemCoreClock / 24U / 1000U);
+    __IO uint32_t count = SPI_DEFAULT_TIMEOUT * (SystemCoreClock / 24 / 1000);
     /* Init tickstart for timeout managment*/
     tickstart = HAL_GetTick();
 
@@ -3071,7 +2651,7 @@ static void SPI_CloseRxTx_ISR(SPI_HandleTypeDef* hspi)
     /* Wait until TXE flag is set */
     do
     {
-        if (count-- == 0U)
+        if (count-- == 0)
         {
             SET_BIT(hspi->ErrorCode, HAL_SPI_ERROR_FLAG);
             break;
@@ -3132,7 +2712,7 @@ static void SPI_CloseRxTx_ISR(SPI_HandleTypeDef* hspi)
 
 /**
   * @brief  Handle the end of the RX transaction.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval None
   */
@@ -3186,14 +2766,14 @@ static void SPI_CloseRx_ISR(SPI_HandleTypeDef* hspi)
 
 /**
   * @brief  Handle the end of the TX transaction.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
   * @retval None
   */
 static void SPI_CloseTx_ISR(SPI_HandleTypeDef* hspi)
 {
     uint32_t tickstart = 0U;
-    __IO uint32_t count = SPI_DEFAULT_TIMEOUT * (SystemCoreClock / 24U / 1000U);
+    __IO uint32_t count = SPI_DEFAULT_TIMEOUT * (SystemCoreClock / 24 / 1000);
 
     /* Init tickstart for timeout management*/
     tickstart = HAL_GetTick();
@@ -3201,7 +2781,7 @@ static void SPI_CloseTx_ISR(SPI_HandleTypeDef* hspi)
     /* Wait until TXE flag is set */
     do
     {
-        if (count-- == 0U)
+        if (count-- == 0)
         {
             SET_BIT(hspi->ErrorCode, HAL_SPI_ERROR_FLAG);
             break;
@@ -3240,58 +2820,6 @@ static void SPI_CloseTx_ISR(SPI_HandleTypeDef* hspi)
   * @}
   */
 
-/**
-  * @brief  Handle abort a Tx or Rx transaction.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
-  *               the configuration information for SPI module.
-  * @retval None
-  */
-static void SPI_AbortRx_ISR(SPI_HandleTypeDef* hspi)
-{
-    __IO uint32_t tmpreg = 0U;
-    __IO uint32_t count = SPI_DEFAULT_TIMEOUT * (SystemCoreClock / 24U / 1000U);
-
-    /* Wait until TXE flag is set */
-    do
-    {
-        if (count-- == 0U)
-        {
-            SET_BIT(hspi->ErrorCode, HAL_SPI_ERROR_FLAG);
-            break;
-        }
-    }
-    while ((hspi->Instance->SR & SPI_FLAG_TXE) == RESET);
-
-    /* Disable SPI Peripheral */
-    __HAL_SPI_DISABLE(hspi);
-
-    /* Disable TXEIE, RXNEIE and ERRIE(mode fault event, overrun error, TI frame error) interrupts */
-    CLEAR_BIT(hspi->Instance->CR2, (SPI_CR2_TXEIE | SPI_CR2_RXNEIE | SPI_CR2_ERRIE));
-
-    /* Flush DR Register */
-    tmpreg = (*(__IO uint32_t*)&hspi->Instance->DR);
-
-    /* To avoid GCC warning */
-    UNUSED(tmpreg);
-}
-
-/**
-  * @brief  Handle abort a Tx or Rx transaction.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
-  *               the configuration information for SPI module.
-  * @retval None
-  */
-static void SPI_AbortTx_ISR(SPI_HandleTypeDef* hspi)
-{
-    /* Disable TXEIE, RXNEIE and ERRIE(mode fault event, overrun error, TI frame error) interrupts */
-    CLEAR_BIT(hspi->Instance->CR2, (SPI_CR2_TXEIE | SPI_CR2_RXNEIE | SPI_CR2_ERRIE));
-
-    /* Disable SPI Peripheral */
-    __HAL_SPI_DISABLE(hspi);
-}
-/**
-  * @}
-  */
 #endif /* HAL_SPI_MODULE_ENABLED */
 
 /**
