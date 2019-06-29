@@ -2,6 +2,8 @@
   ******************************************************************************
   * @file    stm32f4xx_hal_adc_ex.c
   * @author  MCD Application Team
+  * @version V1.5.0
+  * @date    06-May-2016
   * @brief   This file provides firmware functions to manage the following
   *          functionalities of the ADC extension peripheral:
   *           + Extended features functions
@@ -84,7 +86,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT(c) 2017 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT(c) 2016 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -168,7 +170,7 @@ static void ADC_MultiModeDMAHalfConvCplt(DMA_HandleTypeDef* hdma);
 
 /**
   * @brief  Enables the selected ADC software start conversion of the injected channels.
-  * @param  hadc pointer to a ADC_HandleTypeDef structure that contains
+  * @param  hadc: pointer to a ADC_HandleTypeDef structure that contains
   *         the configuration information for the specified ADC.
   * @retval HAL status
   */
@@ -176,7 +178,6 @@ HAL_StatusTypeDef HAL_ADCEx_InjectedStart(ADC_HandleTypeDef* hadc)
 {
     __IO uint32_t counter = 0U;
     uint32_t tmp1 = 0U, tmp2 = 0U;
-    ADC_Common_TypeDef* tmpADC_Common;
 
     /* Process locked */
     __HAL_LOCK(hadc);
@@ -229,13 +230,8 @@ HAL_StatusTypeDef HAL_ADCEx_InjectedStart(ADC_HandleTypeDef* hadc)
         /* (To ensure of no unknown state from potential previous ADC operations) */
         __HAL_ADC_CLEAR_FLAG(hadc, ADC_FLAG_JEOC);
 
-        /* Pointer to the common control register to which is belonging hadc    */
-        /* (Depending on STM32F4 product, there may be up to 3 ADC and 1 common */
-        /* control register)                                                    */
-        tmpADC_Common = ADC_COMMON_REGISTER(hadc);
-
         /* Check if Multimode enabled */
-        if (HAL_IS_BIT_CLR(tmpADC_Common->CCR, ADC_CCR_MULTI))
+        if (HAL_IS_BIT_CLR(ADC->CCR, ADC_CCR_MULTI))
         {
             tmp1 = HAL_IS_BIT_CLR(hadc->Instance->CR2, ADC_CR2_JEXTEN);
             tmp2 = HAL_IS_BIT_CLR(hadc->Instance->CR1, ADC_CR1_JAUTO);
@@ -265,7 +261,7 @@ HAL_StatusTypeDef HAL_ADCEx_InjectedStart(ADC_HandleTypeDef* hadc)
 
 /**
   * @brief  Enables the interrupt and starts ADC conversion of injected channels.
-  * @param  hadc pointer to a ADC_HandleTypeDef structure that contains
+  * @param  hadc: pointer to a ADC_HandleTypeDef structure that contains
   *         the configuration information for the specified ADC.
   *
   * @retval HAL status.
@@ -274,7 +270,6 @@ HAL_StatusTypeDef HAL_ADCEx_InjectedStart_IT(ADC_HandleTypeDef* hadc)
 {
     __IO uint32_t counter = 0U;
     uint32_t tmp1 = 0U, tmp2 = 0U;
-    ADC_Common_TypeDef* tmpADC_Common;
 
     /* Process locked */
     __HAL_LOCK(hadc);
@@ -330,13 +325,8 @@ HAL_StatusTypeDef HAL_ADCEx_InjectedStart_IT(ADC_HandleTypeDef* hadc)
         /* Enable end of conversion interrupt for injected channels */
         __HAL_ADC_ENABLE_IT(hadc, ADC_IT_JEOC);
 
-        /* Pointer to the common control register to which is belonging hadc    */
-        /* (Depending on STM32F4 product, there may be up to 3 ADC and 1 common */
-        /* control register)                                                    */
-        tmpADC_Common = ADC_COMMON_REGISTER(hadc);
-
         /* Check if Multimode enabled */
-        if (HAL_IS_BIT_CLR(tmpADC_Common->CCR, ADC_CCR_MULTI))
+        if (HAL_IS_BIT_CLR(ADC->CCR, ADC_CCR_MULTI))
         {
             tmp1 = HAL_IS_BIT_CLR(hadc->Instance->CR2, ADC_CR2_JEXTEN);
             tmp2 = HAL_IS_BIT_CLR(hadc->Instance->CR1, ADC_CR1_JAUTO);
@@ -373,7 +363,7 @@ HAL_StatusTypeDef HAL_ADCEx_InjectedStart_IT(ADC_HandleTypeDef* hadc)
   * @note   If injected group mode auto-injection is enabled,
   *         function HAL_ADC_Stop must be used.
   * @note   In case of auto-injection mode, HAL_ADC_Stop must be used.
-  * @param  hadc ADC handle
+  * @param  hadc: ADC handle
   * @retval None
   */
 HAL_StatusTypeDef HAL_ADCEx_InjectedStop(ADC_HandleTypeDef* hadc)
@@ -425,9 +415,9 @@ HAL_StatusTypeDef HAL_ADCEx_InjectedStop(ADC_HandleTypeDef* hadc)
 
 /**
   * @brief  Poll for injected conversion complete
-  * @param  hadc pointer to a ADC_HandleTypeDef structure that contains
+  * @param  hadc: pointer to a ADC_HandleTypeDef structure that contains
   *         the configuration information for the specified ADC.
-  * @param  Timeout Timeout value in millisecond.
+  * @param  Timeout: Timeout value in millisecond.
   * @retval HAL status
   */
 HAL_StatusTypeDef HAL_ADCEx_InjectedPollForConversion(ADC_HandleTypeDef* hadc, uint32_t Timeout)
@@ -494,7 +484,7 @@ HAL_StatusTypeDef HAL_ADCEx_InjectedPollForConversion(ADC_HandleTypeDef* hadc, u
   *         injected and regular groups, and disable the ADC.
   * @note   If injected group mode auto-injection is enabled,
   *         function HAL_ADC_Stop must be used.
-  * @param  hadc ADC handle
+  * @param  hadc: ADC handle
   * @retval None
   */
 HAL_StatusTypeDef HAL_ADCEx_InjectedStop_IT(ADC_HandleTypeDef* hadc)
@@ -549,9 +539,9 @@ HAL_StatusTypeDef HAL_ADCEx_InjectedStop_IT(ADC_HandleTypeDef* hadc)
 
 /**
   * @brief  Gets the converted value from data register of injected channel.
-  * @param  hadc pointer to a ADC_HandleTypeDef structure that contains
+  * @param  hadc: pointer to a ADC_HandleTypeDef structure that contains
   *         the configuration information for the specified ADC.
-  * @param  InjectedRank the ADC injected rank.
+  * @param  InjectedRank: the ADC injected rank.
   *          This parameter can be one of the following values:
   *            @arg ADC_INJECTED_RANK_1: Injected Channel1 selected
   *            @arg ADC_INJECTED_RANK_2: Injected Channel2 selected
@@ -609,16 +599,15 @@ uint32_t HAL_ADCEx_InjectedGetValue(ADC_HandleTypeDef* hadc, uint32_t InjectedRa
   *
   * @note   Caution: This function must be used only with the ADC master.
   *
-  * @param  hadc pointer to a ADC_HandleTypeDef structure that contains
+  * @param  hadc: pointer to a ADC_HandleTypeDef structure that contains
   *         the configuration information for the specified ADC.
-  * @param  pData   Pointer to buffer in which transferred from ADC peripheral to memory will be stored.
-  * @param  Length  The length of data to be transferred from ADC peripheral to memory.
+  * @param  pData:   Pointer to buffer in which transferred from ADC peripheral to memory will be stored.
+  * @param  Length:  The length of data to be transferred from ADC peripheral to memory.
   * @retval HAL status
   */
 HAL_StatusTypeDef HAL_ADCEx_MultiModeStart_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length)
 {
     __IO uint32_t counter = 0U;
-    ADC_Common_TypeDef* tmpADC_Common;
 
     /* Check the parameters */
     assert_param(IS_FUNCTIONAL_STATE(hadc->Init.ContinuousConvMode));
@@ -698,24 +687,19 @@ HAL_StatusTypeDef HAL_ADCEx_MultiModeStart_DMA(ADC_HandleTypeDef* hadc, uint32_t
         /* Enable ADC overrun interrupt */
         __HAL_ADC_ENABLE_IT(hadc, ADC_IT_OVR);
 
-        /* Pointer to the common control register to which is belonging hadc    */
-        /* (Depending on STM32F4 product, there may be up to 3 ADC and 1 common */
-        /* control register)                                                    */
-        tmpADC_Common = ADC_COMMON_REGISTER(hadc);
-
         if (hadc->Init.DMAContinuousRequests != DISABLE)
         {
             /* Enable the selected ADC DMA request after last transfer */
-            tmpADC_Common->CCR |= ADC_CCR_DDS;
+            ADC->CCR |= ADC_CCR_DDS;
         }
         else
         {
             /* Disable the selected ADC EOC rising on each regular channel conversion */
-            tmpADC_Common->CCR &= ~ADC_CCR_DDS;
+            ADC->CCR &= ~ADC_CCR_DDS;
         }
 
         /* Enable the DMA Stream */
-        HAL_DMA_Start_IT(hadc->DMA_Handle, (uint32_t)&tmpADC_Common->CDR, (uint32_t)pData, Length);
+        HAL_DMA_Start_IT(hadc->DMA_Handle, (uint32_t)&ADC->CDR, (uint32_t)pData, Length);
 
         /* if no external trigger present enable software conversion of regular channels */
         if ((hadc->Instance->CR2 & ADC_CR2_EXTEN) == RESET)
@@ -731,14 +715,13 @@ HAL_StatusTypeDef HAL_ADCEx_MultiModeStart_DMA(ADC_HandleTypeDef* hadc, uint32_t
 
 /**
   * @brief  Disables ADC DMA (multi-ADC mode) and disables ADC peripheral
-  * @param  hadc pointer to a ADC_HandleTypeDef structure that contains
+  * @param  hadc: pointer to a ADC_HandleTypeDef structure that contains
   *         the configuration information for the specified ADC.
   * @retval HAL status
   */
 HAL_StatusTypeDef HAL_ADCEx_MultiModeStop_DMA(ADC_HandleTypeDef* hadc)
 {
     HAL_StatusTypeDef tmp_hal_status = HAL_OK;
-    ADC_Common_TypeDef* tmpADC_Common;
 
     /* Check the parameters */
     assert_param(IS_ADC_ALL_INSTANCE(hadc->Instance));
@@ -750,16 +733,11 @@ HAL_StatusTypeDef HAL_ADCEx_MultiModeStop_DMA(ADC_HandleTypeDef* hadc)
     /* Disable ADC peripheral */
     __HAL_ADC_DISABLE(hadc);
 
-    /* Pointer to the common control register to which is belonging hadc    */
-    /* (Depending on STM32F4 product, there may be up to 3 ADC and 1 common */
-    /* control register)                                                    */
-    tmpADC_Common = ADC_COMMON_REGISTER(hadc);
-
     /* Check if ADC is effectively disabled */
     if (HAL_IS_BIT_CLR(hadc->Instance->CR2, ADC_CR2_ADON))
     {
         /* Disable the selected ADC DMA mode for multimode */
-        tmpADC_Common->CCR &= ~ADC_CCR_DDS;
+        ADC->CCR &= ~ADC_CCR_DDS;
 
         /* Disable the DMA channel (in case of DMA in circular mode or stop while */
         /* DMA transfer is on going)                                              */
@@ -784,26 +762,19 @@ HAL_StatusTypeDef HAL_ADCEx_MultiModeStop_DMA(ADC_HandleTypeDef* hadc)
 /**
   * @brief  Returns the last ADC1, ADC2 and ADC3 regular conversions results
   *         data in the selected multi mode.
-  * @param  hadc pointer to a ADC_HandleTypeDef structure that contains
+  * @param  hadc: pointer to a ADC_HandleTypeDef structure that contains
   *         the configuration information for the specified ADC.
   * @retval The converted data value.
   */
 uint32_t HAL_ADCEx_MultiModeGetValue(ADC_HandleTypeDef* hadc)
 {
-    ADC_Common_TypeDef* tmpADC_Common;
-
-    /* Pointer to the common control register to which is belonging hadc    */
-    /* (Depending on STM32F4 product, there may be up to 3 ADC and 1 common */
-    /* control register)                                                    */
-    tmpADC_Common = ADC_COMMON_REGISTER(hadc);
-
     /* Return the multi mode conversion value */
-    return tmpADC_Common->CDR;
+    return ADC->CDR;
 }
 
 /**
   * @brief  Injected conversion complete callback in non blocking mode
-  * @param  hadc pointer to a ADC_HandleTypeDef structure that contains
+  * @param  hadc: pointer to a ADC_HandleTypeDef structure that contains
   *         the configuration information for the specified ADC.
   * @retval None
   */
@@ -819,9 +790,9 @@ __weak void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef* hadc)
 /**
   * @brief  Configures for the selected ADC injected channel its corresponding
   *         rank in the sequencer and its sample time.
-  * @param  hadc pointer to a ADC_HandleTypeDef structure that contains
+  * @param  hadc: pointer to a ADC_HandleTypeDef structure that contains
   *         the configuration information for the specified ADC.
-  * @param  sConfigInjected ADC configuration structure for injected channel.
+  * @param  sConfigInjected: ADC configuration structure for injected channel.
   * @retval None
   */
 HAL_StatusTypeDef HAL_ADCEx_InjectedConfigChannel(ADC_HandleTypeDef* hadc, ADC_InjectionConfTypeDef* sConfigInjected)
@@ -829,10 +800,7 @@ HAL_StatusTypeDef HAL_ADCEx_InjectedConfigChannel(ADC_HandleTypeDef* hadc, ADC_I
 
 #ifdef USE_FULL_ASSERT
     uint32_t tmp = 0U;
-
 #endif /* USE_FULL_ASSERT  */
-
-    ADC_Common_TypeDef* tmpADC_Common;
 
     /* Check the parameters */
     assert_param(IS_ADC_CHANNEL(sConfigInjected->InjectedChannel));
@@ -848,7 +816,7 @@ HAL_StatusTypeDef HAL_ADCEx_InjectedConfigChannel(ADC_HandleTypeDef* hadc, ADC_I
     assert_param(IS_ADC_RANGE(tmp, sConfigInjected->InjectedOffset));
 #endif /* USE_FULL_ASSERT  */
 
-    if (sConfigInjected->ExternalTrigInjecConv != ADC_INJECTED_SOFTWARE_START)
+    if (sConfigInjected->ExternalTrigInjecConvEdge != ADC_INJECTED_SOFTWARE_START)
     {
         assert_param(IS_ADC_EXT_INJEC_TRIG_EDGE(sConfigInjected->ExternalTrigInjecConvEdge));
     }
@@ -957,23 +925,18 @@ HAL_StatusTypeDef HAL_ADCEx_InjectedConfigChannel(ADC_HandleTypeDef* hadc, ADC_I
             break;
     }
 
-    /* Pointer to the common control register to which is belonging hadc    */
-    /* (Depending on STM32F4 product, there may be up to 3 ADC and 1 common */
-    /* control register)                                                    */
-    tmpADC_Common = ADC_COMMON_REGISTER(hadc);
-
     /* if ADC1 Channel_18 is selected enable VBAT Channel */
     if ((hadc->Instance == ADC1) && (sConfigInjected->InjectedChannel == ADC_CHANNEL_VBAT))
     {
         /* Enable the VBAT channel*/
-        tmpADC_Common->CCR |= ADC_CCR_VBATE;
+        ADC->CCR |= ADC_CCR_VBATE;
     }
 
     /* if ADC1 Channel_16 or Channel_17 is selected enable TSVREFE Channel(Temperature sensor and VREFINT) */
     if ((hadc->Instance == ADC1) && ((sConfigInjected->InjectedChannel == ADC_CHANNEL_TEMPSENSOR) || (sConfigInjected->InjectedChannel == ADC_CHANNEL_VREFINT)))
     {
         /* Enable the TSVREFE channel*/
-        tmpADC_Common->CCR |= ADC_CCR_TSVREFE;
+        ADC->CCR |= ADC_CCR_TSVREFE;
     }
 
     /* Process unlocked */
@@ -985,17 +948,14 @@ HAL_StatusTypeDef HAL_ADCEx_InjectedConfigChannel(ADC_HandleTypeDef* hadc, ADC_I
 
 /**
   * @brief  Configures the ADC multi-mode
-  * @param  hadc       pointer to a ADC_HandleTypeDef structure that contains
+  * @param  hadc      : pointer to a ADC_HandleTypeDef structure that contains
   *                     the configuration information for the specified ADC.
-  * @param  multimode  pointer to an ADC_MultiModeTypeDef structure that contains
+  * @param  multimode : pointer to an ADC_MultiModeTypeDef structure that contains
   *                     the configuration information for  multimode.
   * @retval HAL status
   */
 HAL_StatusTypeDef HAL_ADCEx_MultiModeConfigChannel(ADC_HandleTypeDef* hadc, ADC_MultiModeTypeDef* multimode)
 {
-
-    ADC_Common_TypeDef* tmpADC_Common;
-
     /* Check the parameters */
     assert_param(IS_ADC_MODE(multimode->Mode));
     assert_param(IS_ADC_DMA_ACCESS_MODE(multimode->DMAAccessMode));
@@ -1004,22 +964,17 @@ HAL_StatusTypeDef HAL_ADCEx_MultiModeConfigChannel(ADC_HandleTypeDef* hadc, ADC_
     /* Process locked */
     __HAL_LOCK(hadc);
 
-    /* Pointer to the common control register to which is belonging hadc    */
-    /* (Depending on STM32F4 product, there may be up to 3 ADC and 1 common */
-    /* control register)                                                    */
-    tmpADC_Common = ADC_COMMON_REGISTER(hadc);
-
     /* Set ADC mode */
-    tmpADC_Common->CCR &= ~(ADC_CCR_MULTI);
-    tmpADC_Common->CCR |= multimode->Mode;
+    ADC->CCR &= ~(ADC_CCR_MULTI);
+    ADC->CCR |= multimode->Mode;
 
     /* Set the ADC DMA access mode */
-    tmpADC_Common->CCR &= ~(ADC_CCR_DMA);
-    tmpADC_Common->CCR |= multimode->DMAAccessMode;
+    ADC->CCR &= ~(ADC_CCR_DMA);
+    ADC->CCR |= multimode->DMAAccessMode;
 
     /* Set delay between two sampling phases */
-    tmpADC_Common->CCR &= ~(ADC_CCR_DELAY);
-    tmpADC_Common->CCR |= multimode->TwoSamplingDelay;
+    ADC->CCR &= ~(ADC_CCR_DELAY);
+    ADC->CCR |= multimode->TwoSamplingDelay;
 
     /* Process unlocked */
     __HAL_UNLOCK(hadc);
@@ -1034,7 +989,7 @@ HAL_StatusTypeDef HAL_ADCEx_MultiModeConfigChannel(ADC_HandleTypeDef* hadc, ADC_
 
 /**
   * @brief  DMA transfer complete callback.
-  * @param  hdma pointer to a DMA_HandleTypeDef structure that contains
+  * @param  hdma: pointer to a DMA_HandleTypeDef structure that contains
   *                the configuration information for the specified DMA module.
   * @retval None
   */
@@ -1087,7 +1042,7 @@ static void ADC_MultiModeDMAConvCplt(DMA_HandleTypeDef* hdma)
 
 /**
   * @brief  DMA half transfer complete callback.
-  * @param  hdma pointer to a DMA_HandleTypeDef structure that contains
+  * @param  hdma: pointer to a DMA_HandleTypeDef structure that contains
   *                the configuration information for the specified DMA module.
   * @retval None
   */
@@ -1100,7 +1055,7 @@ static void ADC_MultiModeDMAHalfConvCplt(DMA_HandleTypeDef* hdma)
 
 /**
   * @brief  DMA error callback
-  * @param  hdma pointer to a DMA_HandleTypeDef structure that contains
+  * @param  hdma: pointer to a DMA_HandleTypeDef structure that contains
   *                the configuration information for the specified DMA module.
   * @retval None
   */

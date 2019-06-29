@@ -2,12 +2,14 @@
   ******************************************************************************
   * @file    stm32f4xx_hal_def.h
   * @author  MCD Application Team
+  * @version V1.5.0
+  * @date    06-May-2016
   * @brief   This file contains HAL common defines, enumeration, macros and
   *          structures definitions.
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT(c) 2017 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT(c) 2016 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -84,7 +86,7 @@ typedef enum
 #define UNUSED(x) ((void)(x))
 
 /** @brief Reset the Handle's State field.
-  * @param __HANDLE__ specifies the Peripheral Handle.
+  * @param __HANDLE__: specifies the Peripheral Handle.
   * @note  This macro can be used for the following purpose:
   *          - When the Handle is declared as local variable; before passing it as parameter
   *            to HAL_PPP_Init() for the first time, it is mandatory to use this macro
@@ -100,7 +102,7 @@ typedef enum
   */
 #define __HAL_RESET_HANDLE_STATE(__HANDLE__) ((__HANDLE__)->State = 0U)
 
-#if (USE_RTOS == 1U)
+#if (USE_RTOS == 1)
 /* Reserved for future use */
 #error "USE_RTOS should be 0 in the current HAL release"
 #else
@@ -114,15 +116,15 @@ typedef enum
                                     {                                      \
                                        (__HANDLE__)->Lock = HAL_LOCKED;    \
                                     }                                      \
-                                  }while (0U)
+                                  }while (0)
 
 #define __HAL_UNLOCK(__HANDLE__)                                          \
                                   do{                                       \
                                       (__HANDLE__)->Lock = HAL_UNLOCKED;    \
-                                    }while (0U)
+                                    }while (0)
 #endif /* USE_RTOS */
 
-#if defined ( __GNUC__ ) && !defined (__CC_ARM) /* GNU Compiler */
+#if  defined ( __GNUC__ )
 #ifndef __weak
 #define __weak   __attribute__((weak))
 #endif /* __weak */
@@ -133,7 +135,7 @@ typedef enum
 
 
 /* Macro to get variable aligned on 4-bytes, for __ICCARM__ the directive "#pragma data_alignment=4" must be used instead */
-#if defined ( __GNUC__ ) && !defined (__CC_ARM) /* GNU Compiler */
+#if defined   (__GNUC__)        /* GNU Compiler */
 #ifndef __ALIGN_END
 #define __ALIGN_END    __attribute__ ((aligned (4)))
 #endif /* __ALIGN_END */
