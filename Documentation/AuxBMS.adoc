@@ -43,7 +43,7 @@ image:References/PrechargeEx5.jpg[]
 4. At a safe current, Aux BMS attempts to close the contactor
 5. Aux BMS then opens the PC Relay
 
-Note: It's important to ensure that the Contactor and the Relay are not closed at the same time, otherwise a fuse will blow.
+Note: It's important to ensure that the Contactor and the Relay are not being closed at the same time, otherwise a fuse will blow.
 
 
 ## Startup Sequence
@@ -53,17 +53,17 @@ If the Aux BMS is unable to close the contactor, an error is reported via the Au
 
 2. The Charge contactor goes through the precharge workflow. 
 If the Aux BMS is unable to close the contactor, an error is reported via the Aux Status CAN message. 
-If the Discharge contactor has already been closed, it tries to close the Charge contactor again, otherwise it tries to close the Discharge contactor. and it moves on to try and close the Discharge contactor. 
+If the Discharge contactor has already been closed, it tries to close the Charge contactor again, otherwise it tries to close the Discharge contactor.
 If it detects that the Common contactor or Discharge contactor (if it was previously closed) has somehow been disconnected, it closes all contactors and reports an error via the Aux Status CAN message and does not try to close the contactors anymore.
 
 3. The Discharge contactor goes through the precharge workflow. 
 If the Aux BMS is unable to close the contactor, an error is reported via the Aux Status CAN message. 
 If the Charge contactor has already been closed, it tries to close the Discharge contactor again, otherwise it tries to close the Charge contactor. 
-If it detects that the Common contactor or Charge contactor (if it was previously closed) has somehow been disconnected, it closes all contactors and reports an error via the Aux Status CAN message and does not try to close the contactors anymore.
+If it detects that the Common contactor or Charge contactor (if it was previously closed) has somehow been disconnected, it opens all contactors and reports an error via the Aux Status CAN message and does not try to close the contactors anymore.
 
 4. Once all the contactors have been closed. The startup sequence is done. The Aux BMS will then monitor the contactors to ensure that they do not open.
-If the Common contactor opens, then all contactors are closed and an error is reported via CAN.
-If the Charge or Discharge contactor open, and it was not due to Orion BMS signals, then all contactors are closed and an error is reported via CAN. 
+If the Common contactor opens, then all contactors are opened and an error is reported via CAN.
+If the Charge or Discharge contactor open, and it was not due to Orion BMS signals, then all contactors are opened and an error is reported via CAN. 
 If the Charge or Discharge contactor open, and it was due to Orion BMS signals, then the Aux BMS tries to close that contactor again.
 
 Note: At any point, the closing of contactors can be stopped and blocked due to a message (GPIO or CAN) from Orion BMS.
