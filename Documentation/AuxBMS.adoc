@@ -70,17 +70,33 @@ Note: At any point, the closing of contactors can be stopped and blocked due to 
 
 
 ## Orion BMS Interaction
-The Orion BMS supplies 3 GPIO inputs (Charge Enable, Discharge Enable, and Safety), and transmits the maximum cell voltage and minimum cell voltage via CAN.
+The Orion BMS supplies 3 GPIO inputs (Charge Enable, Discharge Enable, and Safety), and transmits the maximum cell voltage, minimum cell voltage, and highest cell temperature via CAN.
 
 .The Safety GPIO input is not monitored by Aux BMS, but the Charge Enable and Discharge Enable are acted upon once the startup sequence has been completed in the following way:
-* If the car is driving (forward or reverse), then if either of Charge Enable or Discharge Enable goes low, then all contactors are opened and the high voltage is disabled. The Aux BMS will then send a CAN message to strobe the BMS light.
-* If the car is in Aux mode:
-  - If Charge Enable goes low, then the charge contactor is opened.
-  - If Discharge Enable goes low, then the discharge contactor is opened and the high voltage is disabled.
+* If both of the charge AND discharge relays are opened, the car will trip (open all contactors, disable high voltage and strobe BMS).
+* If Charge Enable goes low, then the charge contactor is opened.
+    ** Orion will tell the charge contactor to open when:
+    *** The highest cell temperature is greater than 44&#176;C - the car should not be charging to prevent damage to the battery.
 
-.The maximum and minimum cell voltages are acted upon - regardless of whether precharge has been completed or not - in the following way:
-* If the maximum voltage is greater than the maximum allowable cell voltage, then the charge contactor is opened.
-* If the minimum voltage is less than the minimum allowable cell voltage, then the discharge contactor is opened and the high voltage is disabled.
+    ** Aux BMS will tell the charge contactor to open when:
+    *** The Orion reports that the highest cell voltage is higher than 4.15 V.
+    ** The car will trip due to the charge contactor under these circumstances:
+     *** The Orion reports that the high cell voltage is greater than 4.20 V (Battery Maximum) 
+     *** The Orion reports that the highest cell temperature is greater than 44&#176;C, but Orion is reporting a negative pack current, i.e. The car is still charging.
+    *** The Orion reports that the charging current is more than 47 A.
+
+
+* If Discharge Enable goes low, then the discharge contactor is opened and the high voltage is disabled.
+    ** Orion will tell the discharge contactor to open and disable high voltage when:
+    *** The highest cell temperature is greater than 59&#176;C. The car should not be discharging to prevent damage to the battery.
+
+    ** Aux BMS will tell the discharge contactor to open and disable high voltage when:
+    *** The Orion reports that the lowest cell voltage is lower than 2.60 V.
+
+    ** The car will trip due to the discharge contactor under these circumstances:
+     *** The Orion reports that the lowest cell voltage is lower than 2.55 V (Battery Minimum) 
+     *** The Orion reports that the highest cell temperature is greater than 59&#176;C, but Orion is reporting a positive pack current, i.e. The car is still discharging.
+    *** The Orion reports that the pack current is more than 229 A.
 
 ## Inputs/Outputs
 The Aux BMS will send and receive CAN messages according to the https://docs.google.com/spreadsheets/d/1soVLjeD9Sl7z7Z6cYMyn1fmn-cG7tx_pfFDsvgkCqMU/edit?usp=sharing[Epsilon Communications Protocol.^]
@@ -89,7 +105,8 @@ The Aux BMS will send and receive CAN messages according to the https://docs.goo
 ### CAN Inputs
 |=======================
 |*CAN Address* |*Name* |*Purpose*
-|0x305 | Orion BMS | Messages about the maximum and minimum cell voltages
+|0x305 | Orion BMS Cell Voltages | Messages about the maximum and minimum cell voltages
+|0x304 | Orion BMS TempInfo | Messages about the cell temperatures
 |0x703 | Driver | Contains information on the car's mode (forward, reverse, aux)
 |=======================
 
