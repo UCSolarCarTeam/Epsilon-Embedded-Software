@@ -73,7 +73,6 @@ UART_HandleTypeDef huart3;
 /* Private variables ---------------------------------------------------------*/
 OrionStatus orionStatus;
 AuxStatus auxStatus;
-DriversInput driversInput;
 
 static osThreadId updateChargeAllowanceTaskHandle;
 static osThreadId setContactorsTaskHandle;
@@ -98,11 +97,9 @@ static void MX_CAN1_UserInit(void);
 
 /* USER CODE BEGIN 0 */
 static const uint32_t ORION_MAX_MIN_VOLTAGES_STDID  = 0x305;
-static const uint32_t DRIVERS_INPUTS_STDID  = 0x703;
-// Assuming extra bit is placed at the end (DDDDDDDDX)
-static const uint8_t DRIVERS_INPUTS_AUX_BIT_POSITION = 6;
-static const uint8_t DRIVERS_INPUTS_FORWARD_BIT_POSITION = 1;
-static const uint8_t DRIVERS_INPUTS_REVERSE_BIT_POSITION = 2;
+static const uint32_t ORION_TEMP_INFO_STDID = 0x304;
+static const uint32_t ORION_PACK_INFO_STDID = 0x302;
+
 /* USER CODE END 0 */
 
 int main(void)
@@ -507,13 +504,23 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
         // Voltages are 2 bytes each, and memory is stored in little endian format
         orionStatus.minCellVoltage = (uint16_t)msg->Data[0] | msg->Data[1] << 8; // Min Cell voltage
         orionStatus.maxCellVoltage = (uint16_t)msg->Data[3] | msg->Data[4] << 8; // Max Cell Voltage
+
         orionStatus.canMsgReceived = 1;
     }
-    else if (msg->StdId == DRIVERS_INPUTS_STDID && msg->DLC == 4)
+    else if (msg->StdId == ORION_TEMP_INFO_STDID && msg->DLC == 8)
     {
-        driversInput.aux = msg->Data[3] >> DRIVERS_INPUTS_AUX_BIT_POSITION & 1;
-        driversInput.forward = msg->Data[3] >> DRIVERS_INPUTS_FORWARD_BIT_POSITION & 1;
-        driversInput.reverse = msg->Data[3] >> DRIVERS_INPUTS_REVERSE_BIT_POSITION & 1;
+        orionStatus.highTemperature = msg->Data[0];
+        orionStatus.canMsgReceived = 1;
+
+    }
+    else if (msg->StdId == ORION_PACK_INFO_STDID && msg->DLC == 8)
+    {
+        short packCurrentInt =  // Units 0.1 A
+            (msg->Data[0] << 0) |
+            (msg->Data[1] << 8);
+        orionStatus.packCurrent = (float)packCurrentInt / 10.0f;
+        orionStatus.canMsgReceived = 1;
+
     }
 
     __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
@@ -529,19 +536,37 @@ static void MX_CAN1_UserInit(void)
 {
     HAL_GPIO_WritePin(CAN1_STBY_GPIO_Port, CAN1_STBY_Pin, GPIO_PIN_RESET);
 
-    CAN_FilterConfTypeDef sFilterConfig;
-    sFilterConfig.FilterNumber = 0; // Use first filter bank
-    sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
-    sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
-    sFilterConfig.FilterIdHigh = ORION_MAX_MIN_VOLTAGES_STDID << 5; // Filter registers need to be shifted left 5 bits
-    sFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
-    sFilterConfig.FilterMaskIdHigh = DRIVERS_INPUTS_STDID << 5;
-    sFilterConfig.FilterMaskIdLow = 0; // Unused
-    sFilterConfig.FilterFIFOAssignment = 0;
-    sFilterConfig.FilterActivation = ENABLE;
-    sFilterConfig.BankNumber = 0; // Set all filter banks for CAN1
+    CAN_FilterConfTypeDef orionVoltageTempFilterConfig;
+    orionVoltageTempFilterConfig.FilterNumber = 0; // Use first filter bank
+    orionVoltageTempFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
+    orionVoltageTempFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+    orionVoltageTempFilterConfig.FilterIdHigh = ORION_MAX_MIN_VOLTAGES_STDID << 5; // Filter registers need to be shifted left 5 bits
+    orionVoltageTempFilterConfig.FilterIdLow = 0;
+    orionVoltageTempFilterConfig.FilterMaskIdHigh = ORION_TEMP_INFO_STDID << 5;
+    orionVoltageTempFilterConfig.FilterMaskIdLow = 0; // Unused
+    orionVoltageTempFilterConfig.FilterFIFOAssignment = 0;
+    orionVoltageTempFilterConfig.FilterActivation = ENABLE;
+    orionVoltageTempFilterConfig.BankNumber = 0; // Set all filter banks for CAN1
 
-    if (HAL_CAN_ConfigFilter(&hcan1, &sFilterConfig) != HAL_OK)
+    if (HAL_CAN_ConfigFilter(&hcan1, &orionVoltageTempFilterConfig) != HAL_OK)
+    {
+        /* Filter configuration Error */
+        _Error_Handler(__FILE__, __LINE__);
+    }
+
+    CAN_FilterConfTypeDef orionPackInfoFilterConfig;
+    orionPackInfoFilterConfig.FilterNumber = 1; // Use secondary filter bank
+    orionPackInfoFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+    orionPackInfoFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
+    orionPackInfoFilterConfig.FilterIdHigh = ORION_PACK_INFO_STDID << 5; // Filter registers need to be shifted left 5 bits
+    orionPackInfoFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
+    orionPackInfoFilterConfig.FilterMaskIdHigh = 0;
+    orionPackInfoFilterConfig.FilterMaskIdLow = 0; //unused
+    orionPackInfoFilterConfig.FilterFIFOAssignment = 0;
+    orionPackInfoFilterConfig.FilterActivation = ENABLE;
+    orionPackInfoFilterConfig.BankNumber = 0; // Set all filter banks for CAN2
+
+    if (HAL_CAN_ConfigFilter(&hcan1, &orionPackInfoFilterConfig) != HAL_OK)
     {
         /* Filter configuration Error */
         _Error_Handler(__FILE__, __LINE__);

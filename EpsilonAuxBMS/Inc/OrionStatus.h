@@ -21,6 +21,8 @@ typedef struct OrionStatus
     unsigned canMsgReceived : 1;
     uint16_t maxCellVoltage;
     uint16_t minCellVoltage;
+    unsigned char highTemperature;
+    float packCurrent;
     osMutexId orionStatusMutex;
 } OrionStatus;
 
