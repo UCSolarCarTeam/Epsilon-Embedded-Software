@@ -12,7 +12,7 @@ The Driver Controls will send CAN messages according to the https://docs.google.
 * Push-To-Talk Button
 * Horn Button
 * Reset Button
-* Context Button
+* Lap Button
 * Mechanical Brake Switch
 * Left Signal Switch
 * Right Signal Switch
