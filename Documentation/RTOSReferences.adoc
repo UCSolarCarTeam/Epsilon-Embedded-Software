@@ -1,0 +1,4 @@
+# RTOS References
+
+* For documentation of OS functions (e.g. osDelay) https://www.keil.com/pack/doc/CMSIS/RTOS2/html/index.html[CMSIS]
+* For further reading of FreeRTOS functions https://www.freertos.org/wp-content/uploads/2018/07/FreeRTOS_Reference_Manual_V10.0.0.pdf[FreeRTOS]
