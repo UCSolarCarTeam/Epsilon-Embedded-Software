@@ -1,0 +1,35 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	0	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+hadc1	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^ADC_HandleTypeDef hadc1;$/;"	variable	line:50
+hcan1	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^CAN_HandleTypeDef hcan1;$/;"	variable	line:52
+hspi3	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^SPI_HandleTypeDef hspi3;$/;"	variable	line:54
+huart3	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^UART_HandleTypeDef huart3;$/;"	variable	line:56
+defaultTaskHandle	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^osThreadId_t defaultTaskHandle;$/;"	variable	line:58
+canTxHeader	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^CAN_TxHeaderTypeDef canTxHeader; \/\/ Header for transmitted CAN messages$/;"	variable	line:60
+orionStatus	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^OrionStatus orionStatus;$/;"	variable	line:62
+auxStatus	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^AuxStatus auxStatus;$/;"	variable	line:63
+updateChargeAllowanceTaskHandle	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^osThreadId_t updateChargeAllowanceTaskHandle;$/;"	variable	line:65
+setContactorsTaskHandle	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^osThreadId_t setContactorsTaskHandle;$/;"	variable	line:66
+readAuxVoltageTaskHandle	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^osThreadId_t readAuxVoltageTaskHandle;$/;"	variable	line:67
+reportAuxStatusToCanTaskHandle	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^osThreadId_t reportAuxStatusToCanTaskHandle;$/;"	variable	line:68
+reportHeartbeatToCanTaskHandle	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^osThreadId_t reportHeartbeatToCanTaskHandle;$/;"	variable	line:69
+ORION_MAX_MIN_VOLTAGES_STDID	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^static const uint32_t ORION_MAX_MIN_VOLTAGES_STDID  = 0x305;$/;"	variable	line:87	file:
+ORION_TEMP_INFO_STDID	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^static const uint32_t ORION_TEMP_INFO_STDID = 0x304;$/;"	variable	line:88	file:
+ORION_PACK_INFO_STDID	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^static const uint32_t ORION_PACK_INFO_STDID = 0x302;$/;"	variable	line:89	file:
+main	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^int main(void)$/;"	function	line:96	signature:(void)
+SystemClock_Config	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^void SystemClock_Config(void)$/;"	function	line:270	signature:(void)
+MX_ADC1_Init	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^static void MX_ADC1_Init(void)$/;"	function	line:313	file:	signature:(void)
+MX_CAN1_Init	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^static void MX_CAN1_Init(void)$/;"	function	line:363	file:	signature:(void)
+MX_SPI3_Init	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^static void MX_SPI3_Init(void)$/;"	function	line:400	file:	signature:(void)
+MX_USART3_UART_Init	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^static void MX_USART3_UART_Init(void)$/;"	function	line:438	file:	signature:(void)
+MX_GPIO_Init	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^static void MX_GPIO_Init(void)$/;"	function	line:471	file:	signature:(void)
+HAL_CAN_RxFifo0MsgPendingCallback	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan){$/;"	function	line:558	signature:(CAN_HandleTypeDef *hcan)
+MX_CAN1_UserInit	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^static void MX_CAN1_UserInit(void)$/;"	function	line:605	file:	signature:(void)
+StartDefaultTask	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^void StartDefaultTask(void *argument)$/;"	function	line:661	signature:(void *argument)
+HAL_TIM_PeriodElapsedCallback	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)$/;"	function	line:684	signature:(TIM_HandleTypeDef *htim)
+Error_Handler	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^void Error_Handler(void)$/;"	function	line:701	signature:(void)
+assert_failed	/Users/babaadeniran/Epsilon-Embedded-Software/EpsilonAuxBMSv2/Core/Src/main.c	/^void assert_failed(uint8_t *file, uint32_t line)$/;"	function	line:717	signature:(uint8_t *file, uint32_t line)
