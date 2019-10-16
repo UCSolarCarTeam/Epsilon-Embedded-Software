@@ -24,7 +24,11 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "UpdateChargeAllowanceTask.h"
+#include "SetContactorsTask.h"
+#include "ReadAuxVoltageTask.h"
+#include "ReportAuxStatusToCanTask.h"
+#include "ReportHeartbeatToCanTask.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -53,7 +57,16 @@ UART_HandleTypeDef huart3;
 
 osThreadId_t defaultTaskHandle;
 /* USER CODE BEGIN PV */
+CAN_TxHeaderTypeDef canTxHeader; // Header for transmitted CAN messages
 
+OrionStatus orionStatus;
+AuxStatus auxStatus;
+
+osThreadId_t updateChargeAllowanceTaskHandle;
+osThreadId_t setContactorsTaskHandle;
+osThreadId_t readAuxVoltageTaskHandle;
+osThreadId_t reportAuxStatusToCanTaskHandle;
+osThreadId_t reportHeartbeatToCanTaskHandle;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -66,12 +79,14 @@ static void MX_USART3_UART_Init(void);
 void StartDefaultTask(void* argument);
 
 /* USER CODE BEGIN PFP */
-
+static void MX_CAN1_UserInit(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+static const uint32_t ORION_MAX_MIN_VOLTAGES_STDID  = 0x305;
+static const uint32_t ORION_TEMP_INFO_STDID = 0x304;
+static const uint32_t ORION_PACK_INFO_STDID = 0x302;
 /* USER CODE END 0 */
 
 /**
@@ -108,13 +123,82 @@ int main(void)
     MX_SPI3_Init();
     MX_USART3_UART_Init();
     /* USER CODE BEGIN 2 */
+    MX_CAN1_UserInit();
+    HAL_ADC_Start(&hadc1);
+
+    // Start with not allowing charge
+    auxStatus.allowCharge = 0;
+
+    // Start with orionBatteryVoltagesOk set to 1 to allow contactor setting
+    orionStatus.batteryVoltagesInRange = 1;
+
+    // Start with canMsgReceived set to 0 to prevent minCellVoltage causing
+    // contactor setting problems
+    orionStatus.canMsgReceived = 0;
+
+    // Activate CAN Receive Interrupts
+    if (HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING |
+                                     CAN_IT_ERROR_WARNING        |
+                                     CAN_IT_ERROR_PASSIVE        |
+                                     CAN_IT_BUSOFF               |
+                                     CAN_IT_LAST_ERROR_CODE      |
+                                     CAN_IT_ERROR) != HAL_OK)
+    {
+        /* Reception Error */
+        Error_Handler();
+    }
 
     /* USER CODE END 2 */
 
     osKernelInitialize();
 
     /* USER CODE BEGIN RTOS_MUTEX */
-    /* add mutexes, ... */
+    // For concurrency between sendHeartbeat() and reportAuxToCan()
+    osMutexId_t canHandleMutex;
+    const osMutexAttr_t canMutexAttr =
+    {
+        "canMutex", // name of mutex
+        0, // TODO perhaps osMutexRecursive
+        NULL,
+        0
+    };
+    canHandleMutex = osMutexNew(&canMutexAttr);
+
+    if (canHandleMutex == NULL)
+    {
+        Error_Handler();
+    }
+
+    // For concurrency between updateChargeAllowanceTask() and setContactorsTask()
+    const osMutexAttr_t auxStatusMutexAttr =
+    {
+        "auxStatusMutex", // name of mutex
+        0, // TODO perhaps osMutexRecursive
+        NULL,
+        0
+    };
+    auxStatus.auxStatusMutex = osMutexNew(&auxStatusMutexAttr);
+
+    if (auxStatus.auxStatusMutex == NULL)
+    {
+        Error_Handler();
+    }
+
+    // For concurrency between updateChargeAllowanceTask() and setContactorsTask()
+    const osMutexAttr_t orionStatusMutexAttr =
+    {
+        "orionStatusMutex", // name of mutex
+        0, // TODO perhaps osMutexRecursive
+        NULL,
+        0
+    };
+    orionStatus.orionStatusMutex = osMutexNew(&orionStatusMutexAttr);
+
+    if (orionStatus.orionStatusMutex == NULL)
+    {
+        Error_Handler();
+    }
+
     /* USER CODE END RTOS_MUTEX */
 
     /* USER CODE BEGIN RTOS_SEMAPHORES */
@@ -140,7 +224,44 @@ int main(void)
     defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
     /* USER CODE BEGIN RTOS_THREADS */
-    /* add threads, ... */
+    // definition of task attributes
+    const osThreadAttr_t updateChargeAllowanceTask_attributes =
+    {
+        .name = "updateChargeAllowanceTask",
+        .priority = (osPriority_t) osPriorityNormal,
+        .stack_size = 128
+    };
+    const osThreadAttr_t setContactorsTask_attributes =
+    {
+        .name = "setContactorsTask",
+        .priority = (osPriority_t) osPriorityNormal,
+        .stack_size = 128
+    };
+    const osThreadAttr_t readAuxVoltageTask_attributes =
+    {
+        .name = "readAuxVoltageTask",
+        .priority = (osPriority_t) osPriorityNormal,
+        .stack_size = 128
+    };
+    const osThreadAttr_t reportAuxStatusToCanTask_attributes =
+    {
+        .name = "reportAuxStatusToCanTask",
+        .priority = (osPriority_t) osPriorityNormal,
+        .stack_size = 128
+    };
+    const osThreadAttr_t reportHeartbeatToCanTask_attributes =
+    {
+        .name = "reportHeartbeatToCanTask",
+        .priority = (osPriority_t) osPriorityNormal,
+        .stack_size = 128
+    };
+
+    // creation of threads
+    updateChargeAllowanceTaskHandle = osThreadNew((osThreadFunc_t)updateChargeAllowanceTask, NULL, &updateChargeAllowanceTask_attributes);
+    setContactorsTaskHandle         = osThreadNew((osThreadFunc_t)setContactorsTask, NULL, &setContactorsTask_attributes);
+    readAuxVoltageTaskHandle        = osThreadNew((osThreadFunc_t)readAuxVoltageTask, NULL, &readAuxVoltageTask_attributes);
+    reportAuxStatusToCanTaskHandle  = osThreadNew((osThreadFunc_t)reportAuxStatusToCanTask, &canHandleMutex, &reportAuxStatusToCanTask_attributes);
+    reportHeartbeatToCanTaskHandle  = osThreadNew((osThreadFunc_t)reportHeartbeatToCanTask, &canHandleMutex, &reportHeartbeatToCanTask_attributes);
     /* USER CODE END RTOS_THREADS */
 
     /* Start scheduler */
@@ -460,7 +581,106 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+// Reimplement weak definition in stm32f4xx_hal_can.c
+// TODO might want to have a task that processes received messages elsewhere
+//      just set a bit here, then disable the notification. If bit is set, task
+//      gets CAN message and turns on notification again
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef* hcan)
+{
+    CAN_RxHeaderTypeDef hdr;
+    uint8_t             data[8] = {0};
 
+    if (HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &hdr, data) != HAL_OK)
+    {
+        return;
+    }
+
+    if (hdr.StdId == ORION_MAX_MIN_VOLTAGES_STDID && hdr.DLC == 8)
+    {
+        // Voltages are 2 bytes each, and memory is stored in little endian format
+        // TODO check that this works
+        /*
+        orionStatus.minCellVoltage = (uint16_t)data[0] | data[1] << 8; // Min Cell voltage
+        orionStatus.maxCellVoltage = (uint16_t)data[3] | data[4] << 8; // Max Cell Voltage
+        */
+        orionStatus.minCellVoltage = ((uint16_t)data[1] << 8) | (uint16_t)data[0]; // Min Cell voltage
+        orionStatus.maxCellVoltage = ((uint16_t)data[4] << 8) | (uint16_t)data[3]; // Max Cell Voltage
+
+        orionStatus.canMsgReceived = 1;
+    }
+    else if (hdr.StdId == ORION_TEMP_INFO_STDID && hdr.DLC == 8)
+    {
+        orionStatus.highTemperature = data[0];
+        orionStatus.canMsgReceived = 1;
+    }
+    else if (hdr.StdId == ORION_PACK_INFO_STDID && hdr.DLC == 8)
+    {
+        // TODO check that this works
+        /*
+        short packCurrentInt =  // Units 0.1 A
+            (data[0] << 0) |
+            (data[1] << 8);
+        */
+        short packCurrentInt =  // Units 0.1 A
+            ((short)data[1] << 8) |
+            ((short)data[0] << 0);
+        orionStatus.packCurrent = (float)packCurrentInt / 10.0f;
+        orionStatus.canMsgReceived = 1;
+    }
+
+    // __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0); TODO Might not need
+
+    // Toggle green LED for every CAN message received
+    HAL_GPIO_TogglePin(GRN_LED_GPIO_Port, GRN_LED_Pin);
+}
+
+static void MX_CAN1_UserInit(void)
+{
+    HAL_GPIO_WritePin(CAN1_STBY_GPIO_Port, CAN1_STBY_Pin, GPIO_PIN_RESET);
+
+    CAN_FilterTypeDef orionVoltageTempFilterConfig;
+    orionVoltageTempFilterConfig.FilterBank = 0; // Use first filter bank
+    orionVoltageTempFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
+    orionVoltageTempFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+    orionVoltageTempFilterConfig.FilterIdHigh = ORION_MAX_MIN_VOLTAGES_STDID << 5; // Filter registers need to be shifted left 5 bits
+    orionVoltageTempFilterConfig.FilterIdLow = 0;
+    orionVoltageTempFilterConfig.FilterMaskIdHigh = ORION_TEMP_INFO_STDID << 5;
+    orionVoltageTempFilterConfig.FilterMaskIdLow = 0; // Unused
+    orionVoltageTempFilterConfig.FilterFIFOAssignment = 0;
+    orionVoltageTempFilterConfig.FilterActivation = ENABLE;
+    orionVoltageTempFilterConfig.SlaveStartFilterBank = 0; // Set all filter banks for CAN1
+
+    if (HAL_CAN_ConfigFilter(&hcan1, &orionVoltageTempFilterConfig) != HAL_OK)
+    {
+        /* Filter configuration Error */
+        Error_Handler();
+    }
+
+    CAN_FilterTypeDef orionPackInfoFilterConfig;
+    orionPackInfoFilterConfig.FilterBank = 1; // Use secondary filter bank
+    orionPackInfoFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+    orionPackInfoFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
+    orionPackInfoFilterConfig.FilterIdHigh = ORION_PACK_INFO_STDID << 5; // Filter registers need to be shifted left 5 bits
+    orionPackInfoFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
+    orionPackInfoFilterConfig.FilterMaskIdHigh = 0;
+    orionPackInfoFilterConfig.FilterMaskIdLow = 0; //unused
+    orionPackInfoFilterConfig.FilterFIFOAssignment = 0;
+    orionPackInfoFilterConfig.FilterActivation = ENABLE;
+    orionPackInfoFilterConfig.SlaveStartFilterBank = 0; // Set all filter banks for CAN2
+
+    if (HAL_CAN_ConfigFilter(&hcan1, &orionPackInfoFilterConfig) != HAL_OK)
+    {
+        /* Filter configuration Error */
+        Error_Handler();
+    }
+
+    /* Configure Transmission process */
+    canTxHeader.ExtId = 0x0; // Only used if (hcan2.pTxMsg->IDE == CAN_ID_EXT)
+    canTxHeader.RTR = CAN_RTR_DATA; // Data request, not remote request
+    canTxHeader.IDE = CAN_ID_STD; // Standard CAN, not Extended
+    canTxHeader.DLC = 2; // Data size in bytes
+    canTxHeader.TransmitGlobalTime = DISABLE; // Disable transmission timestamp capture
+}
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -517,6 +737,11 @@ void Error_Handler(void)
 {
     /* USER CODE BEGIN Error_Handler_Debug */
     /* User can add his own implementation to report the HAL error return state */
+    // Would turn on an error LED and go into an infinite loop
+    while (1)
+    {
+
+    }
 
     /* USER CODE END Error_Handler_Debug */
 }
