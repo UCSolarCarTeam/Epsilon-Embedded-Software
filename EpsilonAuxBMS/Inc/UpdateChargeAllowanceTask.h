@@ -7,7 +7,3 @@
 // and discharge contactor is min cell voltage is too low
 // arg: osMutexId* auxStatusMutex
 void updateChargeAllowanceTask(void const* arg);
-
-int chargeShouldTrip();
-
-int dischargeShouldTrip();
