@@ -1,0 +1,11 @@
+void clearOrionStatus();
+void test_chargeShouldTripFromHighCellVoltage();
+void test_chargeShouldTripDuetoHighTempAndChargingCurrent();
+void test_chargeShouldNotTripDuetoOnlyHighTemp();
+void test_chargeShouldNotTripIfNoCanMsgReceived();
+void test_chargeShouldTripIfChargingCurrentIsTooHigh();
+void test_dischargeShouldNotTripIfNoCanMsgReceived();
+void test_dischargeShouldTripIfMinCellVoltageTooLow();
+void test_dischargeShouldTripIfTempTooHighAndCarIsDischarging();
+void test_dischargeShouldNotTripIfTempTooHighAndCarIsNotDischarging();
+void test_dischargeShouldTripDueToPackCurrentTooHigh();
