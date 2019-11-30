@@ -103,7 +103,7 @@ int main(void)
     /* USER CODE BEGIN 2 */
     //TODO: Call MX_CAN2_UserInit
     //Activate Can Recieve Interrupts
-    if (HAL_CAN_ActivateNotifcation(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING |
+    if (HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING |
                                     CAN_IT_ERROR_WARNING |
                                     CAN_IT_ERROR_PASSIVE |
                                     CAN_IT_BUSOFF |
@@ -295,7 +295,7 @@ static void MX_CAN2_UserInit(void)
     CAN_FilterTypeDef blueMessageFilterConfig;
     blueMessageFilterConfig.FilterBank = 0; // Use first filter bank
     blueMessageFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; //Look for specific CAN messages
-    blueMessageFilterConfig.filterScale = CAN_FILTERSCALE_32BIT;
+    blueMessageFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
     blueMessageFilterConfig.FilterIdHigh = BLUE_MESSAGE_STDID << 5; // Filter registers need to be shifted left 5 bits
     blueMessageFilterConfig.FilterIdLow = 0;
     blueMessageFilterConfig.FilterMaskIdHigh = 0;
