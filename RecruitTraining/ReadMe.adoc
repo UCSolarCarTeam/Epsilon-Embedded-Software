@@ -17,80 +17,80 @@ If there are any functions that you think you need, but aren't given, refer to D
 Start by going to Core/Src/main.c and search for “TODO” this will show you where you need to make changes
 
 . Within “USER CODE BEGIN Includes” and “USER CODE END Includes”
-.. Include all task header files, these will be found under Core/Inc and have “Task” in the filename
+** Include all task header files, these will be found under Core/Inc and have “Task” in the filename
 . Within “USER CODE BEGIN PV” and “USER CODE END PV”
-.. Add the StdId for the green led, this value will be 0XBBB, look to blue StdId for an example
-.. Add CAN Tx Header definition. The type is `CAN_TxHeaderTypeDef`
-.. Define threads for the blue and green toggle LED tasks. The type will be `osThreadId_t`
-.. Define toggle flags for blue and green LEDs. The type will be `uint8_t`
+** Add the StdId for the green led, this value will be 0XBBB, look to blue StdId for an example
+** Add CAN Tx Header definition. The type is `CAN_TxHeaderTypeDef`
+** Define threads for the blue and green toggle LED tasks. The type will be `osThreadId_t`
+** Define toggle flags for blue and green LEDs. The type will be `uint8_t`
 . Within “USER CODE BEGIN 2” and “USER CODE END 2”
-.. Call the function `MX_CAN2_UserInit`, it takes no arguments
+** Call the function `MX_CAN2_UserInit`, it takes no arguments
 . Within “USER CODE BEGIN RTOS MUTEX” and “USER CODE END RTOS MUTEX”
-.. Create mutexes for CAN transmit
-... To create a mutex:
-.... Define a mutex handle of `osMutexId_t`
-.... Define attributes of const `osMutexAttr_t`
-..... This is a struct and will be initialized with:
+** Create mutexes for CAN transmit
+*** To create a mutex:
+**** Define a mutex handle of `osMutexId_t`
+**** Define attributes of const `osMutexAttr_t`
+***** This is a struct and will be initialized with:
 * String name 
 * Zero
 * Null
-* Zero
-..... Ex:
-* `const osMutexAttr_t MutexAttr =
+* Zero 
+***** Ex:
+ `const osMutexAttr_t MutexAttr =
    {
        "MutexAttr", // name of mutex
        0, // TODO perhaps osMutexRecursive
        NULL,
        0
    };`
-.... Call `osMutexNew()`
-..... It accepts one argument of type `const osMutexAttr_t*` and its return type is `osMutexId_t`
-..... Assign the value returned to the mutex handle you defined
+**** Call `osMutexNew()`
+***** It accepts one argument of type `const osMutexAttr_t*` and its return type is `osMutexId_t`
+***** Assign the value returned to the mutex handle you defined
 . Within “USER CODE BEGIN RTOS THREADS” and “USER CODE ENDS RTOS THREADS”
-.. Create blue and green thread handles and pass CAN transmit mutex handle as an argument  (The function prototypes can be found in the task header files)
-... To create a thread:
-.... Define attributes of `const osThreadAttr_t`
-..... This is a struct and will be initialized with:
-...... String task name 
-...... Priority of type `osPriority_t`
-....... We’ll usually only user `osPriorityNormal`
-...... Stack size 
-....... We’ll usually use a value of 128
-..... Ex:
-* `const osThreadAttr_t defaultTask_attributes = {
+** Create blue and green thread handles and pass CAN transmit mutex handle as an argument  (The function prototypes can be found in the task header files)
+*** To create a thread:
+**** Define attributes of `const osThreadAttr_t`
+***** This is a struct and will be initialized with:
+****** String task name 
+****** Priority of type `osPriority_t`
+******* We’ll usually only user `osPriorityNormal`
+****** Stack size 
+******* We’ll usually use a value of 128
+***** Ex:
+ `const osThreadAttr_t defaultTask_attributes = {
    .name = "defaultTask",
    .priority = (osPriority_t) osPriorityNormal,
    .stack_size = 128
  };`
-.... Call `osThreadNew()`
-..... It accepts three arguments:
-...... Pointer to task function
-....... This will be the name of your task
-....... You will need to cast this to `osThreadFunc_t`
-...... A pointer to any arguments being passed to your function
-....... You will be passing the CAN Mutex you created earlier as an argument to both tasks
-...... Pointer to attributes of `const osThreadAttr_t`
-..... Assign the value returned to the thread handle you defined in step 2
+**** Call `osThreadNew()`
+***** It accepts three arguments:
+****** Pointer to task function
+******* This will be the name of your task
+******* You will need to cast this to `osThreadFunc_t`
+****** A pointer to any arguments being passed to your function
+******* You will be passing the CAN Mutex you created earlier as an argument to both tasks
+****** Pointer to attributes of `const osThreadAttr_t`
+***** Assign the value returned to the thread handle you defined in step 2
 . Within “USER CODE BEGIN 4” and “USER CODE END 4”
-.. Inside `HAL_CAN_RxFifo0MsgPendingCallback`
-... Match the StdId and the data length content in the header for the blue and green messages
-.... The StdId in the header can be accessed by `hdr.StdId`
-..... The StdId values were defined earlier in step 2
-.... The data length content can be accessed by `hdr.DLC`
-..... The data length content should be 1 byte
-... Check data to see if the LED should be toggled. Data can be accessed by data array (`data`). This array stores individual bytes of data received
-.... For blue LEDs if bits 0,3,7 are set (i.e. 1) then toggle 
-.... For green LED if the lower two bits are set (i.e. 1) and upper six bits are not set (i.e. 0) then toggle
-.. Inside `MX_CAN2_UserInit`
-... Create the filter configuration for green messages
-.... Follow the example given for the blue messages with the following differences:
-..... `FilterBank = 1`
-..... Use the green message StdId instead of the blue message StdId for `FilterIdHigh`
-... Set initial configurations for the CAN Tx Header you created in step 2. Note: The Tx Header is a struct, so all elements can be accessed via the member access operator (.)
-.... `ExtId = 0`
-.... `RTR = CAN_RTR_DATA`
-.... `IDE = CAN_ID_STD`
-.... `TransmitGlobalTime = DISABLE`
+** Inside `HAL_CAN_RxFifo0MsgPendingCallback`
+*** Match the StdId and the data length content in the header for the blue and green messages
+**** The StdId in the header can be accessed by `hdr.StdId`
+***** The StdId values were defined earlier in step 2
+**** The data length content can be accessed by `hdr.DLC`
+***** The data length content should be 1 byte
+*** Check data to see if the LED should be toggled. Data can be accessed by data array (`data`). This array stores individual bytes of data received
+**** For blue LEDs if bits 0,3,7 are set (i.e. 1) then toggle 
+**** For green LED if the lower two bits are set (i.e. 1) and upper six bits are not set (i.e. 0) then toggle
+** Inside `MX_CAN2_UserInit`
+*** Create the filter configuration for green messages
+**** Follow the example given for the blue messages with the following differences:
+***** `FilterBank = 1`
+***** Use the green message StdId instead of the blue message StdId for `FilterIdHigh`
+*** Set initial configurations for the CAN Tx Header you created in step 2. Note: The Tx Header is a struct, so all elements can be accessed via the member access operator (.)
+**** `ExtId = 0`
+**** `RTR = CAN_RTR_DATA`
+**** `IDE = CAN_ID_STD`
+**** `TransmitGlobalTime = DISABLE`
 
 Then go into Core/Inc/BlueLedToggleTask.h
 
@@ -105,34 +105,34 @@ Then go into Core/Inc/GreenLedToggleTask.h
 Then go into Core/Src/BlueLedToggleTask.c
 
 . Define a static constant global variable called `BLUE_LED_STATUS_STDID`
-.. Give it a value of 0xCCC
+** Give it a value of 0xCCC
 . Define a `static const` variable called `BLUE_LED_TOGGLE_FREQ`
-.. Set this value so that the task runs at a frequency of 1Hz
-... Hint: this will be used in the `osDelayUntil` function call (the argument will be in time units of ms)
+** Set this value so that the task runs at a frequency of 1Hz
+*** Hint: this will be used in the `osDelayUntil` function call (the argument will be in time units of ms)
 . In the `osDelayUntil` replace the current argument `prevWakeTime + 1` with `prevWakeTime + BLUE_LED_TOGGLE_FREQ`
-.. This will cause the task to execute every `BLUE_LED_TOGGLE_FREQ` ms. 
+** This will cause the task to execute every `BLUE_LED_TOGGLE_FREQ` ms. 
 . Check if the blue led toggle flag is set. If so, toggle the blue led. This will require a HAL GPIO function.
 . Read the value of the blue led. This will require a HAL GPIO function.
 . Send a CAN message indicating the current state of the led 
-.. First you will try to acquire the mutex. This can be done by calling `osMutexAcquire`
-... It’s arguments are `osMutexId_t*` and how long it should wait to acquire the mutex 
-... The return type of this function is `osStatus_t`, if this is != to `osOK` then the mutex has not been acquired and you cannot use the CAN transmitter
-.. If you successfully acquired the mutex, you must check if there are any free CAN mailboxes to transmit on 
-... You can check this by calling `HAL_CAN_GetTxMailboxesFreeLevel`
-.... This function accepts one argument which is of type `CAN_HandleTypeDef*`
-.... This function returns the number of available mailboxes 
-.. Next you will create a one element data array of type `uint8_t `
-.. You will then create a mailbox variable of type `uint32_t`
-.. You will then set the `StdId` of the CAN Tx Header to  `BLUE_LED_STATUS_STDID`
-.. Then you will set the `DLC` to 1, because you are sending one byte 
-.. Then you will set the only element of the data array to the current status of the LED 
-... Note: because the LED is active low, the GPIO pin will read 0 when it is on and 1 when it is off. You are trying to send a 1 when the LED is on and a 0 when it is off 
-.. You will then call `HAL_CAN_AddTxMessage` to send a message 
-... This function takes arguments of `CAN_HandleTypeDef*`, `CAN_TxHeaderTypeDef*`, and `uint8_t*` (which will be your data array) and a `uint32_t*` (which will be the address of your mailbox variable)
-... This function will return `HAL_StatusTypeDef`
-.. You will then release the mutex by calling `osMutexRelease`
-... This accepts arguments of `osMutexId_t*`
-... *Note*: You must release the mutex even if you don't send a message.
+** First you will try to acquire the mutex. This can be done by calling `osMutexAcquire`
+*** It’s arguments are `osMutexId_t*` and how long it should wait to acquire the mutex 
+*** The return type of this function is `osStatus_t`, if this is != to `osOK` then the mutex has not been acquired and you cannot use the CAN transmitter
+** If you successfully acquired the mutex, you must check if there are any free CAN mailboxes to transmit on 
+*** You can check this by calling `HAL_CAN_GetTxMailboxesFreeLevel`
+**** This function accepts one argument which is of type `CAN_HandleTypeDef*`
+**** This function returns the number of available mailboxes 
+** Next you will create a one element data array of type `uint8_t `
+** You will then create a mailbox variable of type `uint32_t`
+** You will then set the `StdId` of the CAN Tx Header to  `BLUE_LED_STATUS_STDID`
+** Then you will set the `DLC` to 1, because you are sending one byte 
+** Then you will set the only element of the data array to the current status of the LED 
+*** Note: because the LED is active low, the GPIO pin will read 0 when it is on and 1 when it is off. You are trying to send a 1 when the LED is on and a 0 when it is off 
+** You will then call `HAL_CAN_AddTxMessage` to send a message 
+*** This function takes arguments of `CAN_HandleTypeDef*`, `CAN_TxHeaderTypeDef*`, and `uint8_t*` (which will be your data array) and a `uint32_t*` (which will be the address of your mailbox variable)
+*** This function will return `HAL_StatusTypeDef`
+** You will then release the mutex by calling `osMutexRelease`
+*** This accepts arguments of `osMutexId_t*`
+*** *Note*: You must release the mutex even if you don't send a message.
 
 Then go into Core/Src/GreenLedToggleTask.c
 
