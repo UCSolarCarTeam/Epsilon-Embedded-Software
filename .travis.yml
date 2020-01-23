@@ -16,7 +16,6 @@ install:
 
 before_script:
     - source ~/.profile
-    - (cd EpsilonLights && CubeMX2Makefile .)
     - (cd EpsilonDriverControls && CubeMX2Makefile .)
     - (cd EpsilonAuxBMS && CubeMX2Makefile .)
 
