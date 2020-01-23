@@ -53,51 +53,49 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *---------------------------------------------------------------------------*/
 
-/**
- ******************************************************************************
- * @file    cmsis_os.c
- * @author  MCD Application Team
- * @date    22-January-2016
- * @brief   CMSIS-RTOS API implementation for FreeRTOS V8.2.3
- ******************************************************************************
- * @attention
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted, provided that the following conditions are met:
- *
- * 1. Redistribution of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- * 3. Neither the name of STMicroelectronics nor the names of other
- *    contributors to this software may be used to endorse or promote products
- *    derived from this software without specific written permission.
- * 4. This software, including modifications and/or derivative works of this
- *    software, must execute solely and exclusively on microcontroller or
- *    microprocessor devices manufactured by or for STMicroelectronics.
- * 5. Redistribution and use of this software other than as permitted under
- *    this license is void and will automatically terminate your rights under
- *    this license.
- *
- * THIS SOFTWARE IS PROVIDED BY STMICROELECTRONICS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS, IMPLIED OR STATUTORY WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
- * PARTICULAR PURPOSE AND NON-INFRINGEMENT OF THIRD PARTY INTELLECTUAL PROPERTY
- * RIGHTS ARE DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY LAW. IN NO EVENT
- * SHALL STMICROELECTRONICS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
- * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- ******************************************************************************
- */
-
 #include <string.h>
 #include "cmsis_os.h"
+
+/*
+ * ARM Compiler 4/5
+ */
+#if   defined ( __CC_ARM )
+
+#define __ASM            __asm
+#define __INLINE         __inline
+#define __STATIC_INLINE  static __inline
+
+#include "cmsis_armcc.h"
+
+/*
+ * GNU Compiler
+ */
+#elif defined ( __GNUC__ )
+
+#define __ASM            __asm                                      /*!< asm keyword for GNU Compiler          */
+#define __INLINE         inline                                     /*!< inline keyword for GNU Compiler       */
+#define __STATIC_INLINE  static inline
+
+#include "cmsis_gcc.h"
+
+
+/*
+ * IAR Compiler
+ */
+#elif defined ( __ICCARM__ )
+
+#ifndef   __ASM
+#define __ASM                     __asm
+#endif
+#ifndef   __INLINE
+#define __INLINE                  inline
+#endif
+#ifndef   __STATIC_INLINE
+#define __STATIC_INLINE           static inline
+#endif
+
+#include <cmsis_iar.h>
+#endif
 
 extern void xPortSysTickHandler(void);
 
@@ -154,6 +152,7 @@ osStatus osKernelInitialize (void);
 osStatus osKernelStart (void)
 {
     vTaskStartScheduler();
+
     return osOK;
 }
 
@@ -214,12 +213,39 @@ osThreadId osThreadCreate (const osThreadDef_t* thread_def, void* argument)
 {
     TaskHandle_t handle;
 
+#if( configSUPPORT_STATIC_ALLOCATION == 1 ) &&  ( configSUPPORT_DYNAMIC_ALLOCATION == 1 )
+
+    if ((thread_def->buffer != NULL) && (thread_def->controlblock != NULL))
+    {
+        handle = xTaskCreateStatic((TaskFunction_t)thread_def->pthread, (const portCHAR*)thread_def->name,
+                                   thread_def->stacksize, argument, makeFreeRtosPriority(thread_def->tpriority),
+                                   thread_def->buffer, thread_def->controlblock);
+    }
+    else
+    {
+        if (xTaskCreate((TaskFunction_t)thread_def->pthread, (const portCHAR*)thread_def->name,
+                        thread_def->stacksize, argument, makeFreeRtosPriority(thread_def->tpriority),
+                        &handle) != pdPASS)
+        {
+            return NULL;
+        }
+    }
+
+#elif( configSUPPORT_STATIC_ALLOCATION == 1 )
+
+    handle = xTaskCreateStatic((TaskFunction_t)thread_def->pthread, (const portCHAR*)thread_def->name,
+                               thread_def->stacksize, argument, makeFreeRtosPriority(thread_def->tpriority),
+                               thread_def->buffer, thread_def->controlblock);
+#else
+
     if (xTaskCreate((TaskFunction_t)thread_def->pthread, (const portCHAR*)thread_def->name,
                     thread_def->stacksize, argument, makeFreeRtosPriority(thread_def->tpriority),
                     &handle) != pdPASS)
     {
         return NULL;
     }
+
+#endif
 
     return handle;
 }
@@ -262,6 +288,7 @@ osStatus osThreadTerminate (osThreadId thread_id)
 osStatus osThreadYield (void)
 {
     taskYIELD();
+
     return osOK;
 }
 
@@ -316,10 +343,13 @@ osStatus osDelay (uint32_t millisec)
 {
 #if INCLUDE_vTaskDelay
     TickType_t ticks = millisec / portTICK_PERIOD_MS;
+
     vTaskDelay(ticks ? ticks : 1);          /* Minimum delay = 1 tick */
+
     return osOK;
 #else
     (void) millisec;
+
     return osErrorResource;
 #endif
 }
@@ -347,11 +377,42 @@ osEvent osWait (uint32_t millisec);
 osTimerId osTimerCreate (const osTimerDef_t* timer_def, os_timer_type type, void* argument)
 {
 #if (configUSE_TIMERS == 1)
+
+#if( ( configSUPPORT_STATIC_ALLOCATION == 1 ) && ( configSUPPORT_DYNAMIC_ALLOCATION == 1 ) )
+
+    if (timer_def->controlblock != NULL)
+    {
+        return xTimerCreateStatic((const char*)"",
+                                  1, // period should be filled when starting the Timer using osTimerStart
+                                  (type == osTimerPeriodic) ? pdTRUE : pdFALSE,
+                                  (void*) argument,
+                                  (TaskFunction_t)timer_def->ptimer,
+                                  (StaticTimer_t*)timer_def->controlblock);
+    }
+    else
+    {
+        return xTimerCreate((const char*)"",
+                            1, // period should be filled when starting the Timer using osTimerStart
+                            (type == osTimerPeriodic) ? pdTRUE : pdFALSE,
+                            (void*) argument,
+                            (TaskFunction_t)timer_def->ptimer);
+    }
+
+#elif( configSUPPORT_STATIC_ALLOCATION == 1 )
+    return xTimerCreateStatic((const char*)"",
+                              1, // period should be filled when starting the Timer using osTimerStart
+                              (type == osTimerPeriodic) ? pdTRUE : pdFALSE,
+                              (void*) argument,
+                              (TaskFunction_t)timer_def->ptimer,
+                              (StaticTimer_t*)timer_def->controlblock);
+#else
     return xTimerCreate((const char*)"",
                         1, // period should be filled when starting the Timer using osTimerStart
                         (type == osTimerPeriodic) ? pdTRUE : pdFALSE,
                         (void*) argument,
                         (TaskFunction_t)timer_def->ptimer);
+#endif
+
 #else
     return NULL;
 #endif
@@ -445,6 +506,7 @@ osStatus osTimerStop (osTimerId timer_id)
 osStatus osTimerDelete (osTimerId timer_id)
 {
     osStatus result = osOK;
+
 #if (configUSE_TIMERS == 1)
 
     if (inHandlerMode())
@@ -462,6 +524,7 @@ osStatus osTimerDelete (osTimerId timer_id)
 #else
     result = osErrorOS;
 #endif
+
     return result;
 }
 
@@ -470,33 +533,35 @@ osStatus osTimerDelete (osTimerId timer_id)
 * @brief  Set the specified Signal Flags of an active thread.
 * @param  thread_id     thread ID obtained by \ref osThreadCreate or \ref osThreadGetId.
 * @param  signals       specifies the signal flags of the thread that should be set.
-* @retval  osOK if successful, osErrorOS if failed .
+* @retval previous signal flags of the specified thread or 0x80000000 in case of incorrect parameters.
 * @note   MUST REMAIN UNCHANGED: \b osSignalSet shall be consistent in every CMSIS-RTOS.
 */
 int32_t osSignalSet (osThreadId thread_id, int32_t signal)
 {
 #if( configUSE_TASK_NOTIFICATIONS == 1 )
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    uint32_t ulPreviousNotificationValue = 0;
 
     if (inHandlerMode())
     {
-        if (xTaskNotifyFromISR( thread_id, (uint32_t)signal, eSetBits, &xHigherPriorityTaskWoken ) != pdPASS )
+        if (xTaskGenericNotifyFromISR( thread_id, (uint32_t)signal, eSetBits, &ulPreviousNotificationValue, &xHigherPriorityTaskWoken ) != pdPASS )
         {
-            return osErrorOS;
+            return 0x80000000;
         }
 
         portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
     }
-    else if (xTaskNotify( thread_id, (uint32_t)signal, eSetBits) != pdPASS )
+    else if (xTaskGenericNotify( thread_id, (uint32_t)signal, eSetBits, &ulPreviousNotificationValue) != pdPASS )
     {
-        return osErrorOS;
+        return 0x80000000;
     }
 
-    return osOK;
+    return ulPreviousNotificationValue;
 #else
     (void) thread_id;
     (void) signal;
-    return osErrorOS; /* Task Notification not supported */
+
+    return 0x80000000; /* Task Notification not supported */
 #endif
 }
 
@@ -519,8 +584,11 @@ int32_t osSignalClear (osThreadId thread_id, int32_t signal);
 osEvent osSignalWait (int32_t signals, uint32_t millisec)
 {
     osEvent ret;
+
 #if( configUSE_TASK_NOTIFICATIONS == 1 )
+
     TickType_t ticks;
+
     ret.value.signals = 0;
     ticks = 0;
 
@@ -568,8 +636,10 @@ osEvent osSignalWait (int32_t signals, uint32_t millisec)
 #else
     (void) signals;
     (void) millisec;
+
     ret.status =  osErrorOS;	/* Task Notification not supported */
 #endif
+
     return ret;
 }
 
@@ -583,7 +653,23 @@ osEvent osSignalWait (int32_t signals, uint32_t millisec)
 osMutexId osMutexCreate (const osMutexDef_t* mutex_def)
 {
 #if ( configUSE_MUTEXES == 1)
+
+#if( configSUPPORT_STATIC_ALLOCATION == 1 ) && ( configSUPPORT_DYNAMIC_ALLOCATION == 1 )
+
+    if (mutex_def->controlblock != NULL)
+    {
+        return xSemaphoreCreateMutexStatic( mutex_def->controlblock );
+    }
+    else
+    {
+        return xSemaphoreCreateMutex();
+    }
+
+#elif ( configSUPPORT_STATIC_ALLOCATION == 1 )
+    return xSemaphoreCreateMutexStatic( mutex_def->controlblock );
+#else
     return xSemaphoreCreateMutex();
+#endif
 #else
     return NULL;
 #endif
@@ -600,6 +686,7 @@ osStatus osMutexWait (osMutexId mutex_id, uint32_t millisec)
 {
     TickType_t ticks;
     portBASE_TYPE taskWoken = pdFALSE;
+
 
     if (mutex_id == NULL)
     {
@@ -681,6 +768,7 @@ osStatus osMutexDelete (osMutexId mutex_id)
     }
 
     vQueueDelete(mutex_id);
+
     return osOK;
 }
 
@@ -697,7 +785,58 @@ osStatus osMutexDelete (osMutexId mutex_id)
 */
 osSemaphoreId osSemaphoreCreate (const osSemaphoreDef_t* semaphore_def, int32_t count)
 {
-    (void) semaphore_def;
+#if( configSUPPORT_STATIC_ALLOCATION == 1 ) && ( configSUPPORT_DYNAMIC_ALLOCATION == 1 )
+
+    osSemaphoreId sema;
+
+    if (semaphore_def->controlblock != NULL)
+    {
+        if (count == 1)
+        {
+            return xSemaphoreCreateBinaryStatic( semaphore_def->controlblock );
+        }
+        else
+        {
+#if (configUSE_COUNTING_SEMAPHORES == 1 )
+            return xSemaphoreCreateCountingStatic( count, count, semaphore_def->controlblock );
+#else
+            return NULL;
+#endif
+        }
+    }
+    else
+    {
+        if (count == 1)
+        {
+            vSemaphoreCreateBinary(sema);
+            return sema;
+        }
+        else
+        {
+#if (configUSE_COUNTING_SEMAPHORES == 1 )
+            return xSemaphoreCreateCounting(count, count);
+#else
+            return NULL;
+#endif
+        }
+    }
+
+#elif ( configSUPPORT_STATIC_ALLOCATION == 1 ) // configSUPPORT_DYNAMIC_ALLOCATION == 0
+
+    if (count == 1)
+    {
+        return xSemaphoreCreateBinaryStatic( semaphore_def->controlblock );
+    }
+    else
+    {
+#if (configUSE_COUNTING_SEMAPHORES == 1 )
+        return xSemaphoreCreateCountingStatic( count, count, semaphore_def->controlblock );
+#else
+        return NULL;
+#endif
+    }
+
+#else  // configSUPPORT_STATIC_ALLOCATION == 0  && configSUPPORT_DYNAMIC_ALLOCATION == 1
     osSemaphoreId sema;
 
     if (count == 1)
@@ -705,11 +844,15 @@ osSemaphoreId osSemaphoreCreate (const osSemaphoreDef_t* semaphore_def, int32_t 
         vSemaphoreCreateBinary(sema);
         return sema;
     }
-
+    else
+    {
 #if (configUSE_COUNTING_SEMAPHORES == 1 )
-    return xSemaphoreCreateCounting(count, 0);
+        return xSemaphoreCreateCounting(count, count);
 #else
-    return NULL;
+        return NULL;
+#endif
+    }
+
 #endif
 }
 
@@ -724,6 +867,7 @@ int32_t osSemaphoreWait (osSemaphoreId semaphore_id, uint32_t millisec)
 {
     TickType_t ticks;
     portBASE_TYPE taskWoken = pdFALSE;
+
 
     if (semaphore_id == NULL)
     {
@@ -774,6 +918,7 @@ osStatus osSemaphoreRelease (osSemaphoreId semaphore_id)
     osStatus result = osOK;
     portBASE_TYPE taskWoken = pdFALSE;
 
+
     if (inHandlerMode())
     {
         if (xSemaphoreGiveFromISR(semaphore_id, &taskWoken) != pdTRUE)
@@ -808,6 +953,7 @@ osStatus osSemaphoreDelete (osSemaphoreId semaphore_id)
     }
 
     vSemaphoreDelete(semaphore_id);
+
     return osOK;
 }
 
@@ -840,17 +986,21 @@ typedef struct os_pool_cb
 */
 osPoolId osPoolCreate (const osPoolDef_t* pool_def)
 {
+#if (configSUPPORT_DYNAMIC_ALLOCATION == 1)
     osPoolId thePool;
     int itemSize = 4 * ((pool_def->item_sz + 3) / 4);
     uint32_t i;
+
     /* First have to allocate memory for the pool control block. */
     thePool = pvPortMalloc(sizeof(os_pool_cb_t));
+
 
     if (thePool)
     {
         thePool->pool_sz = pool_def->pool_sz;
         thePool->item_sz = itemSize;
         thePool->currentIndex = 0;
+
         /* Memory for markers */
         thePool->markers = pvPortMalloc(pool_def->pool_sz);
 
@@ -881,6 +1031,10 @@ osPoolId osPoolCreate (const osPoolDef_t* pool_def)
     }
 
     return thePool;
+
+#else
+    return NULL;
+#endif
 }
 
 /**
@@ -907,12 +1061,7 @@ void* osPoolAlloc (osPoolId pool_id)
 
     for (i = 0; i < pool_id->pool_sz; i++)
     {
-        index = pool_id->currentIndex + i;
-
-        if (index >= pool_id->pool_sz)
-        {
-            index = 0;
-        }
+        index = (pool_id->currentIndex + i) % pool_id->pool_sz;
 
         if (pool_id->markers[index] == 0)
         {
@@ -994,6 +1143,7 @@ osStatus osPoolFree (osPoolId pool_id, void* block)
     }
 
     pool_id->markers[index] = 0;
+
     return osOK;
 }
 
@@ -1014,7 +1164,23 @@ osStatus osPoolFree (osPoolId pool_id, void* block)
 osMessageQId osMessageCreate (const osMessageQDef_t* queue_def, osThreadId thread_id)
 {
     (void) thread_id;
+
+#if( configSUPPORT_STATIC_ALLOCATION == 1 ) && ( configSUPPORT_DYNAMIC_ALLOCATION == 1 )
+
+    if ((queue_def->buffer != NULL) && (queue_def->controlblock != NULL))
+    {
+        return xQueueCreateStatic(queue_def->queue_sz, queue_def->item_sz, queue_def->buffer, queue_def->controlblock);
+    }
+    else
+    {
+        return xQueueCreate(queue_def->queue_sz, queue_def->item_sz);
+    }
+
+#elif ( configSUPPORT_STATIC_ALLOCATION == 1 )
+    return xQueueCreateStatic(queue_def->queue_sz, queue_def->item_sz, queue_def->buffer, queue_def->controlblock);
+#else
     return xQueueCreate(queue_def->queue_sz, queue_def->item_sz);
+#endif
 }
 
 /**
@@ -1029,6 +1195,7 @@ osStatus osMessagePut (osMessageQId queue_id, uint32_t info, uint32_t millisec)
 {
     portBASE_TYPE taskWoken = pdFALSE;
     TickType_t ticks;
+
     ticks = millisec / portTICK_PERIOD_MS;
 
     if (ticks == 0)
@@ -1068,6 +1235,7 @@ osEvent osMessageGet (osMessageQId queue_id, uint32_t millisec)
     portBASE_TYPE taskWoken;
     TickType_t ticks;
     osEvent event;
+
     event.def.message_id = queue_id;
     event.value.v = 0;
 
@@ -1078,6 +1246,7 @@ osEvent osMessageGet (osMessageQId queue_id, uint32_t millisec)
     }
 
     taskWoken = pdFALSE;
+
     ticks = 0;
 
     if (millisec == osWaitForever)
@@ -1146,9 +1315,13 @@ typedef struct os_mailQ_cb
 */
 osMailQId osMailCreate (const osMailQDef_t* queue_def, osThreadId thread_id)
 {
+#if (configSUPPORT_DYNAMIC_ALLOCATION == 1)
     (void) thread_id;
+
     osPoolDef_t pool_def = {queue_def->queue_sz, queue_def->item_sz, NULL};
+
     /* Create a mail queue control block */
+
     *(queue_def->cb) = pvPortMalloc(sizeof(struct os_mailQ_cb));
 
     if (*(queue_def->cb) == NULL)
@@ -1157,8 +1330,10 @@ osMailQId osMailCreate (const osMailQDef_t* queue_def, osThreadId thread_id)
     }
 
     (*(queue_def->cb))->queue_def = queue_def;
+
     /* Create a queue in FreeRTOS */
     (*(queue_def->cb))->handle = xQueueCreate(queue_def->queue_sz, sizeof(void*));
+
 
     if ((*(queue_def->cb))->handle == NULL)
     {
@@ -1177,6 +1352,9 @@ osMailQId osMailCreate (const osMailQDef_t* queue_def, osThreadId thread_id)
     }
 
     return *(queue_def->cb);
+#else
+    return NULL;
+#endif
 }
 
 /**
@@ -1191,12 +1369,14 @@ void* osMailAlloc (osMailQId queue_id, uint32_t millisec)
     (void) millisec;
     void* p;
 
+
     if (queue_id == NULL)
     {
         return NULL;
     }
 
     p = osPoolAlloc(queue_id->pool);
+
     return p;
 }
 
@@ -1214,7 +1394,7 @@ void* osMailCAlloc (osMailQId queue_id, uint32_t millisec)
 
     if (p)
     {
-        for (i = 0; i < sizeof(queue_id->queue_def->item_sz); i++)
+        for (i = 0; i < queue_id->queue_def->item_sz; i++)
         {
             ((uint8_t*)p)[i] = 0;
         }
@@ -1233,6 +1413,7 @@ void* osMailCAlloc (osMailQId queue_id, uint32_t millisec)
 osStatus osMailPut (osMailQId queue_id, void* mail)
 {
     portBASE_TYPE taskWoken;
+
 
     if (queue_id == NULL)
     {
@@ -1273,6 +1454,7 @@ osEvent osMailGet (osMailQId queue_id, uint32_t millisec)
     portBASE_TYPE taskWoken;
     TickType_t ticks;
     osEvent event;
+
     event.def.mail_id = queue_id;
 
     if (queue_id == NULL)
@@ -1282,6 +1464,7 @@ osEvent osMailGet (osMailQId queue_id, uint32_t millisec)
     }
 
     taskWoken = pdFALSE;
+
     ticks = 0;
 
     if (millisec == osWaitForever)
@@ -1354,6 +1537,7 @@ osStatus osMailFree (osMailQId queue_id, void* mail)
 */
 void osSystickHandler(void)
 {
+
 #if (INCLUDE_xTaskGetSchedulerState  == 1 )
 
     if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
@@ -1376,6 +1560,7 @@ osThreadState osThreadGetState(osThreadId thread_id)
 {
     eTaskState ThreadState;
     osThreadState result;
+
     ThreadState = eTaskGetState(thread_id);
 
     switch (ThreadState)
@@ -1435,6 +1620,7 @@ osStatus osThreadSuspend (osThreadId thread_id)
 {
 #if (INCLUDE_vTaskSuspend == 1)
     vTaskSuspend(thread_id);
+
     return osOK;
 #else
     return osErrorResource;
@@ -1475,6 +1661,7 @@ osStatus osThreadResume (osThreadId thread_id)
 osStatus osThreadSuspendAll (void)
 {
     vTaskSuspendAll();
+
     return osOK;
 }
 
@@ -1492,6 +1679,7 @@ osStatus osThreadResumeAll (void)
     {
         return osErrorOS;
     }
+
 }
 
 /**
@@ -1507,10 +1695,31 @@ osStatus osDelayUntil (uint32_t* PreviousWakeTime, uint32_t millisec)
 #if INCLUDE_vTaskDelayUntil
     TickType_t ticks = (millisec / portTICK_PERIOD_MS);
     vTaskDelayUntil((TickType_t*) PreviousWakeTime, ticks ? ticks : 1);
+
     return osOK;
 #else
     (void) millisec;
     (void) PreviousWakeTime;
+
+    return osErrorResource;
+#endif
+}
+
+/**
+* @brief   Abort the delay for a specific thread
+* @param   thread_id   thread ID obtained by \ref osThreadCreate or \ref osThreadGetId
+* @retval  status code that indicates the execution status of the function.
+*/
+osStatus osAbortDelay(osThreadId thread_id)
+{
+#if INCLUDE_xTaskAbortDelay
+
+    xTaskAbortDelay(thread_id);
+
+    return osOK;
+#else
+    (void) thread_id;
+
     return osErrorResource;
 #endif
 }
@@ -1540,6 +1749,7 @@ osEvent osMessagePeek (osMessageQId queue_id, uint32_t millisec)
 {
     TickType_t ticks;
     osEvent event;
+
     event.def.message_id = queue_id;
 
     if (queue_id == NULL)
@@ -1578,15 +1788,73 @@ osEvent osMessagePeek (osMessageQId queue_id, uint32_t millisec)
 }
 
 /**
+* @brief  Get the number of messaged stored in a queue.
+* @param  queue_id  message queue ID obtained with \ref osMessageCreate.
+* @retval number of messages stored in a queue.
+*/
+uint32_t osMessageWaiting(osMessageQId queue_id)
+{
+    if (inHandlerMode())
+    {
+        return uxQueueMessagesWaitingFromISR(queue_id);
+    }
+    else
+    {
+        return uxQueueMessagesWaiting(queue_id);
+    }
+}
+
+/**
+* @brief  Get the available space in a message queue.
+* @param  queue_id  message queue ID obtained with \ref osMessageCreate.
+* @retval available space in a message queue.
+*/
+uint32_t osMessageAvailableSpace(osMessageQId queue_id)
+{
+    return uxQueueSpacesAvailable(queue_id);
+}
+
+/**
+* @brief Delete a Message Queue
+* @param  queue_id  message queue ID obtained with \ref osMessageCreate.
+* @retval  status code that indicates the execution status of the function.
+*/
+osStatus osMessageDelete (osMessageQId queue_id)
+{
+    if (inHandlerMode())
+    {
+        return osErrorISR;
+    }
+
+    vQueueDelete(queue_id);
+
+    return osOK;
+}
+
+/**
 * @brief  Create and Initialize a Recursive Mutex
 * @param  mutex_def     mutex definition referenced with \ref osMutex.
 * @retval  mutex ID for reference by other functions or NULL in case of error..
 */
 osMutexId osRecursiveMutexCreate (const osMutexDef_t* mutex_def)
 {
-    (void) mutex_def;
 #if (configUSE_RECURSIVE_MUTEXES == 1)
+#if( configSUPPORT_STATIC_ALLOCATION == 1 ) && ( configSUPPORT_DYNAMIC_ALLOCATION == 1 )
+
+    if (mutex_def->controlblock != NULL)
+    {
+        return xSemaphoreCreateRecursiveMutexStatic( mutex_def->controlblock );
+    }
+    else
+    {
+        return xSemaphoreCreateRecursiveMutex();
+    }
+
+#elif ( configSUPPORT_STATIC_ALLOCATION == 1 )
+    return xSemaphoreCreateRecursiveMutexStatic( mutex_def->controlblock );
+#else
     return xSemaphoreCreateRecursiveMutex();
+#endif
 #else
     return NULL;
 #endif
@@ -1654,4 +1922,14 @@ osStatus osRecursiveMutexWait (osMutexId mutex_id, uint32_t millisec)
 #else
     return osErrorResource;
 #endif
+}
+
+/**
+* @brief  Returns the current count value of a counting semaphore
+* @param  semaphore_id  semaphore_id ID obtained by \ref osSemaphoreCreate.
+* @retval  count value
+*/
+uint32_t osSemaphoreGetCount(osSemaphoreId semaphore_id)
+{
+    return uxSemaphoreGetCount(semaphore_id);
 }
