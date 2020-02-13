@@ -182,10 +182,10 @@ void setContactorsTask(void const* arg)
                     state = DISCHARGE_ENABLE_CHECK;
                 }
 
-                uint8_t common = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
-                uint8_t discharge = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
+                uint8_t commonSense = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
+                uint8_t dischargeSense = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
 
-                if (!common || (hasDischargeBeenSet && !discharge && !orionStatus.dischargeContactorOverriden))
+                if (!commonSense || (hasDischargeBeenSet && !dischargeSense && !orionStatus.dischargeContactorOverriden))
                 {
                     disconnectContactors(1);
                     state = CONTACTOR_DISCONNECTED;
@@ -263,10 +263,10 @@ void setContactorsTask(void const* arg)
                     state = CHARGE_ENABLE_CHECK;
                 }
 
-                uint8_t common = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
-                uint8_t charge = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
+                uint8_t commonSense = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
+                uint8_t chargeSense = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
 
-                if (!common || (hasChargeBeenSet && !charge && !orionStatus.chargeContactorOverriden))
+                if (!commonSense || (hasChargeBeenSet && !chargeSense && !orionStatus.chargeContactorOverriden))
                 {
                     disconnectContactors(1);
                     state = CONTACTOR_DISCONNECTED;
@@ -277,9 +277,9 @@ void setContactorsTask(void const* arg)
 
             case DONE:
             {
-                uint8_t common = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
-                uint8_t charge = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
-                uint8_t discharge = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
+                uint8_t commonSense = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
+                uint8_t chargeSense = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
+                uint8_t dischargeSense = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
 
                 uint8_t isChargeTurningOn = 0;
                 uint8_t isDischargeTurningOn = 0;
@@ -289,13 +289,13 @@ void setContactorsTask(void const* arg)
                     state = SHUTDOWN;
                     continue;
                 }
-                else if (!common)
+                else if (!commonSense)
                 {
                     disconnectContactors(1);
                     state = CONTACTOR_DISCONNECTED;
                 }
 
-                if (orionStatus.allowCharge && orionStatus.chargeContactorOverriden && !charge)
+                if (orionStatus.allowCharge && orionStatus.chargeContactorOverriden && !chargeSense)
                 {
                     if (osMutexWait(orionStatus.orionStatusMutex, 0) != osOK)
                     {
@@ -312,7 +312,7 @@ void setContactorsTask(void const* arg)
                     prevState = state;
                     state = CHARGE_ENABLE_CHECK;
                 }
-                else if (orionStatus.allowDischarge && orionStatus.dischargeContactorOverriden && !discharge)
+                else if (orionStatus.allowDischarge && orionStatus.dischargeContactorOverriden && !dischargeSense)
                 {
                     if (osMutexWait(orionStatus.orionStatusMutex, 0) != osOK)
                     {
@@ -332,8 +332,8 @@ void setContactorsTask(void const* arg)
 
                 // If charge contactor should be on, but isn't, disconnect
                 // or if discharge contactor should be on, but isn't, disconnect
-                if ((orionStatus.allowCharge && !charge && !isChargeTurningOn && !orionStatus.chargeContactorOverriden) ||
-                        (orionStatus.allowDischarge && !discharge && !isDischargeTurningOn && !orionStatus.dischargeContactorOverriden))
+                if ((orionStatus.allowCharge && !chargeSense && !isChargeTurningOn && !orionStatus.chargeContactorOverriden) ||
+                        (orionStatus.allowDischarge && !dischargeSense && !isDischargeTurningOn && !orionStatus.dischargeContactorOverriden))
                 {
                     disconnectContactors(1);
                     state = CONTACTOR_DISCONNECTED;
@@ -344,18 +344,17 @@ void setContactorsTask(void const* arg)
 
             case BLOCKED:
             {
-                uint8_t common = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
-                uint8_t charge = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
-                uint8_t discharge = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
+                uint8_t commonSense = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
+                uint8_t chargeSense = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
+                uint8_t dischargeSense = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
 
 
                 // If orion isn't overiding the contactors, but they are supposed to have been set, but aren't
                 // , this is an error condition and all contactors should be disconnected.
-                // Previously didn't check that orion was overiding contactors
                 if (prevState > COMMON_ENABLE_CHECK
-                        && (!common ||
-                            (!orionStatus.chargeContactorOverriden && hasChargeBeenSet && !charge) ||
-                            (!orionStatus.dischargeContactorOverriden && hasDischargeBeenSet && !discharge)))
+                        && (!commonSense ||
+                            (!orionStatus.chargeContactorOverriden && hasChargeBeenSet && !chargeSense) ||
+                            (!orionStatus.dischargeContactorOverriden && hasDischargeBeenSet && !dischargeSense)))
                 {
                     disconnectContactors(1);
                     state = CONTACTOR_DISCONNECTED;
