@@ -19,12 +19,13 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
+#include "stm32f1xx_hal.h"
 #include "main.h"
 #include "cmsis_os.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "Lights.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,19 +46,29 @@
 /* Private variables ---------------------------------------------------------*/
 CAN_HandleTypeDef hcan;
 
-osThreadId defaultTaskHandle;
 /* USER CODE BEGIN PV */
+uint8_t lightsInputs; // Initialized to 0
+uint8_t batteryErrors[5]; //Initialized to {0,0,0,0,0}
+uint8_t driversInputs[4]; // Initialized to 0
+uint8_t auxBmsInputs[2];
+uint8_t regenInputs[2];
+SigLightsHandle sigLightsHandle;
 
+static osThreadId lightsTaskHandle;
+static osThreadId lightsCanTaskHandle;
+static osThreadId heartbeatHandle;
+static osThreadId blinkLightsHandle;
+static osThreadId strobeLightHandle;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+void Error_Handler(void);
 static void MX_GPIO_Init(void);
 static void MX_CAN_Init(void);
-void StartDefaultTask(void const* argument);
 
 /* USER CODE BEGIN PFP */
-
+static void MX_CAN_UserInit(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -96,11 +107,27 @@ int main(void)
     MX_GPIO_Init();
     MX_CAN_Init();
     /* USER CODE BEGIN 2 */
+    MX_CAN_UserInit();
 
+    // Setup for next CAN Receive Interrupt
+    if (HAL_CAN_Receive_IT(&hcan2, CAN_FIFO0) != HAL_OK)
+    {
+        /* Reception Error */
+        Error_Handler();
+    }
     /* USER CODE END 2 */
 
     /* USER CODE BEGIN RTOS_MUTEX */
     /* add mutexes, ... */
+    // For concurrency between sendHeartbeat() and reportLightsToCan()
+    osMutexId canHandleMutex;
+    osMutexDef(canHandleMutex);
+    canHandleMutex = osMutexCreate(osMutex(canHandleMutex));
+
+    if (canHandleMutex == NULL)
+    {
+        Error_Handler();
+    }
     /* USER CODE END RTOS_MUTEX */
 
     /* USER CODE BEGIN RTOS_SEMAPHORES */
@@ -116,12 +143,20 @@ int main(void)
     /* USER CODE END RTOS_QUEUES */
 
     /* Create the thread(s) */
-    /* definition and creation of defaultTask */
-    osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
-    defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
-
     /* USER CODE BEGIN RTOS_THREADS */
-    /* add threads, ... */
+    // Setup task to update physical lights
+    osThreadDef(lightsTask, updateLightsTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    lightsTaskHandle = osThreadCreate(osThread(lightsTask), NULL);
+    // Setup task to report lights status to CAN
+    osThreadDef(lightsCanTask, reportLightsToCanTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    lightsCanTaskHandle = osThreadCreate(osThread(lightsCanTask), canHandleMutex);
+    // Setup task to report heartbeat to CAN
+    osThreadDef(heartbeatTask, sendHeartbeatTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    heartbeatHandle = osThreadCreate(osThread(heartbeatTask), canHandleMutex);
+    // Setup task to handle blinking left and right signal lights
+    osThreadDef(blinkLightsTask, blinkSignalLightsTask, osPriorityNormal, 1, configMINIMAL_STACK_SIZE);
+    blinkLightsHandle = osThreadCreate(osThread(blinkLightsTask), NULL);
+
     /* USER CODE END RTOS_THREADS */
 
     /* Start scheduler */
@@ -259,7 +294,60 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+static void MX_CAN_UserInit(void)
+{
+    CAN_FilterConfTypeDef sFilterConfig;
+    sFilterConfig.FilterNumber = 0; // Use first filter bank
+    sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
+    // sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
+    sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+    sFilterConfig.FilterIdHigh = LIGHTS_INPUT_STDID << 5; // Filter registers need to be shifted left 5 bits
+    sFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
+    // sFilterConfig.FilterIdHigh = 0; // Filter registers need to be shifted left 5 bits
+    // sFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
+    sFilterConfig.FilterMaskIdHigh = DRIVERS_INPUTS_STDID << 5;
+    sFilterConfig.FilterMaskIdLow = 0; // Unused
+    sFilterConfig.FilterFIFOAssignment = 0;
+    sFilterConfig.FilterActivation = ENABLE;
+    sFilterConfig.BankNumber = 0; // Set all filter banks for CAN2
 
+    CAN_FilterConfTypeDef batteryFilterConfig;
+    batteryFilterConfig.FilterNumber = 1; // Use secondary filter bank
+    batteryFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+    batteryFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
+    batteryFilterConfig.FilterIdHigh = AUXBMS_INPUT_STDID << 5; // Filter registers need to be shifted left 5 bits
+    batteryFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
+    batteryFilterConfig.FilterMaskIdHigh = DRIVERS_INPUTS_STDID << 5;
+    batteryFilterConfig.FilterMaskIdLow = 0; //unused
+    batteryFilterConfig.FilterFIFOAssignment = 0;
+    batteryFilterConfig.FilterActivation = ENABLE;
+    batteryFilterConfig.BankNumber = 0; // Set all filter banks for CAN2
+
+
+    if (HAL_CAN_ConfigFilter(&hcan2, &sFilterConfig) != HAL_OK)
+    {
+        /* Filter configuration Error */
+        Error_Handler();
+    }
+
+    if (HAL_CAN_ConfigFilter(&hcan2, &batteryFilterConfig) != HAL_OK)
+    {
+        /* Filter configuration Error */
+        Error_Handler();
+    }
+
+
+    /* Configure Transmission process */
+    static CanTxMsgTypeDef txMessage;
+    static CanRxMsgTypeDef rxMessage;
+    hcan2.pTxMsg = &txMessage;
+    hcan2.pRxMsg = &rxMessage;
+    // hcan2.pTxMsg->StdId = 0x0; // CAN message address, set in Lights.c
+    hcan2.pTxMsg->ExtId = 0x0; // Only used if (hcan2.pTxMsg->IDE == CAN_ID_EXT)
+    hcan2.pTxMsg->RTR = CAN_RTR_DATA; // Data request, not remote request
+    hcan2.pTxMsg->IDE = CAN_ID_STD; // Standard CAN, not Extended
+    hcan2.pTxMsg->DLC = 1; // Data size in bytes
+}
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
