@@ -54,8 +54,6 @@ void setContactorsTask(void const* arg)
 
     ContactorsSettingState state = FIRST_CHECK;
     ContactorsSettingState prevState = state;
-    uint8_t hasChargeBeenSet = 0;
-    uint8_t hasDischargeBeenSet = 0;
 
     for (;;)
     {
@@ -121,32 +119,25 @@ void setContactorsTask(void const* arg)
             {
                 uint8_t contactorError = 0;
 
-                if (!hasChargeBeenSet)
-                {
-                    if (hasDischargeBeenSet)
-                    {
-                        hasChargeBeenSet = isContactorSet(CHARGE_SENSE_Pin, CHARGE_SENSE_GPIO_Port, 3);
-                    }
-                    else
-                    {
-                        hasChargeBeenSet = isContactorSet(CHARGE_SENSE_Pin, CHARGE_SENSE_GPIO_Port, 2);
-                    }
+                uint8_t dischargeSense = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
+                int numContactors = dischargeSense ? 3 : 2;
+                uint8_t chargeSense = isContactorSet(CHARGE_SENSE_Pin, CHARGE_SENSE_GPIO_Port, numContactors);
 
-                    if (!hasChargeBeenSet) // Turn back off if not set
-                    {
-                        HAL_GPIO_WritePin(CHARGE_ENABLE_GPIO_Port, CHARGE_ENABLE_Pin, GPIO_PIN_RESET);
-                    }
+                if (!chargeSense) // Turn back off if not set
+                {
+                    HAL_GPIO_WritePin(CHARGE_ENABLE_GPIO_Port, CHARGE_ENABLE_Pin, GPIO_PIN_RESET);
                 }
+
 
                 switch (prevState)
                 {
                     case COMMON_ENABLE_CHECK:
                     case DONE:
-                        contactorError = !hasChargeBeenSet;
+                        contactorError = !chargeSense;
                         break;
 
                     case DISCHARGE_ENABLE_CHECK:
-                        contactorError = !(hasChargeBeenSet && hasDischargeBeenSet);
+                        contactorError = !(chargeSense && dischargeSense);
                         break;
 
                     default: // Something went really wrong in the logic, stop everything
@@ -162,30 +153,31 @@ void setContactorsTask(void const* arg)
 
                 auxStatus.contactorError = contactorError;
 
-                if (hasDischargeBeenSet && hasChargeBeenSet)
+                if (dischargeSense && chargeSense)
                 {
                     auxStatus.startUpSequenceDone = 1;
-                    state = DONE;
                 }
 
                 osMutexRelease(auxStatus.auxStatusMutex);
 
-                if (!hasDischargeBeenSet)
+                if (dischargeSense && chargeSense)
                 {
-                    HAL_GPIO_WritePin(DISCHARGE_ENABLE_GPIO_Port, DISCHARGE_ENABLE_Pin, GPIO_PIN_SET);
-                    prevState = state;
-                    state = DISCHARGE_ENABLE_CHECK;
+                    state = DONE;
                 }
-                else if (!hasChargeBeenSet)
+                else // Alternate between CHARGE_ENABLE_CHECK & DISCHARGE_ENABLE_CHECK
                 {
                     prevState = state;
                     state = DISCHARGE_ENABLE_CHECK;
+
+                    if (!dischargeSense)
+                    {
+                        HAL_GPIO_WritePin(DISCHARGE_ENABLE_GPIO_Port, DISCHARGE_ENABLE_Pin, GPIO_PIN_SET);
+                    }
                 }
 
                 uint8_t commonSense = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
-                uint8_t dischargeSense = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
 
-                if (!commonSense || (hasDischargeBeenSet && !dischargeSense && !orionStatus.dischargeContactorOverriden))
+                if (!commonSense || (!dischargeSense && !orionStatus.dischargeContactorOverriden))
                 {
                     disconnectContactors(1);
                     state = CONTACTOR_DISCONNECTED;
@@ -198,36 +190,28 @@ void setContactorsTask(void const* arg)
             {
                 uint8_t contactorError = 0;
 
-                if (!hasDischargeBeenSet)
-                {
-                    if (hasChargeBeenSet)
-                    {
-                        hasDischargeBeenSet = isContactorSet(DISCHARGE_SENSE_Pin, DISCHARGE_SENSE_GPIO_Port, 3);
-                    }
-                    else
-                    {
-                        hasDischargeBeenSet = isContactorSet(DISCHARGE_SENSE_Pin, DISCHARGE_SENSE_GPIO_Port, 2);
-                    }
+                uint8_t chargeSense = !HAL_GPIO_ReadPin(CHARGE_ENABLE_SENSE_GPIO_Port, CHARGE_ENABLE_SENSE_Pin);
+                int numContactors = chargeSense ? 3 : 2;
+                uint8_t dischargeSense  = isContactorSet(DISCHARGE_SENSE_Pin, DISCHARGE_SENSE_GPIO_Port, numContactors);
 
-                    if (hasDischargeBeenSet)
-                    {
-                        // Enable high voltage
-                        HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_SET);
-                    }
-                    else // Turn back off if not set
-                    {
-                        HAL_GPIO_WritePin(DISCHARGE_ENABLE_GPIO_Port, DISCHARGE_ENABLE_Pin, GPIO_PIN_RESET);
-                    }
+                if (dischargeSense)
+                {
+                    // Enable high voltage
+                    HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_SET);
+                }
+                else // Turn back off if not set
+                {
+                    HAL_GPIO_WritePin(DISCHARGE_ENABLE_GPIO_Port, DISCHARGE_ENABLE_Pin, GPIO_PIN_RESET);
                 }
 
                 switch (prevState)
                 {
                     case DONE:
-                        contactorError = !hasDischargeBeenSet;
+                        contactorError = !dischargeSense;
                         break;
 
                     case CHARGE_ENABLE_CHECK:
-                        contactorError = !(hasChargeBeenSet && hasDischargeBeenSet);
+                        contactorError = !(chargeSense && dischargeSense);
                         break;
 
                     default: // Something went really wrong in the logic, stop everything
@@ -243,30 +227,31 @@ void setContactorsTask(void const* arg)
 
                 auxStatus.contactorError = contactorError;
 
-                if (hasDischargeBeenSet && hasChargeBeenSet)
+                if (dischargeSense && chargeSense)
                 {
                     auxStatus.startUpSequenceDone = 1;
-                    state = DONE;
                 }
 
                 osMutexRelease(auxStatus.auxStatusMutex);
 
-                if (!hasChargeBeenSet)
+                if (chargeSense && dischargeSense)
                 {
-                    prevState = state;
-                    state = CHARGE_ENABLE_CHECK;
-                    HAL_GPIO_WritePin(CHARGE_ENABLE_GPIO_Port, CHARGE_ENABLE_Pin, GPIO_PIN_SET);
+                    state = DONE;
                 }
-                else if (!hasDischargeBeenSet)
+                else // Alternate between CHARGE_ENABLE_CHECK & DISCHARGE_ENABLE_CHECK
                 {
                     prevState = state;
                     state = CHARGE_ENABLE_CHECK;
+
+                    if (!chargeSense)
+                    {
+                        HAL_GPIO_WritePin(CHARGE_ENABLE_GPIO_Port, CHARGE_ENABLE_Pin, GPIO_PIN_SET);
+                    }
                 }
 
                 uint8_t commonSense = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
-                uint8_t chargeSense = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
 
-                if (!commonSense || (hasChargeBeenSet && !chargeSense && !orionStatus.chargeContactorOverriden))
+                if (!commonSense || (!chargeSense && !orionStatus.chargeContactorOverriden))
                 {
                     disconnectContactors(1);
                     state = CONTACTOR_DISCONNECTED;
@@ -306,7 +291,6 @@ void setContactorsTask(void const* arg)
                     osMutexRelease(orionStatus.orionStatusMutex);
 
                     isChargeTurningOn = 1;
-                    hasChargeBeenSet = 0;
                     // Turn on charge Contactor
                     HAL_GPIO_WritePin(CHARGE_ENABLE_GPIO_Port, CHARGE_ENABLE_Pin, GPIO_PIN_SET);
                     prevState = state;
@@ -323,7 +307,6 @@ void setContactorsTask(void const* arg)
                     osMutexRelease(orionStatus.orionStatusMutex);
 
                     isDischargeTurningOn = 1;
-                    hasDischargeBeenSet = 0;
                     HAL_GPIO_WritePin(DISCHARGE_ENABLE_GPIO_Port, DISCHARGE_ENABLE_Pin, GPIO_PIN_SET);
                     prevState = state;
                     state = DISCHARGE_ENABLE_CHECK;
@@ -353,24 +336,14 @@ void setContactorsTask(void const* arg)
                 // , this is an error condition and all contactors should be disconnected.
                 if (prevState > COMMON_ENABLE_CHECK
                         && (!commonSense ||
-                            (!orionStatus.chargeContactorOverriden && hasChargeBeenSet && !chargeSense) ||
-                            (!orionStatus.dischargeContactorOverriden && hasDischargeBeenSet && !dischargeSense)))
+                            (!orionStatus.chargeContactorOverriden && !chargeSense) ||
+                            (!orionStatus.dischargeContactorOverriden && !dischargeSense)))
                 {
                     disconnectContactors(1);
                     state = CONTACTOR_DISCONNECTED;
                 }
                 else if (orionStatus.batteryVoltagesInRange)
                 {
-                    if (orionStatus.chargeContactorOverriden)
-                    {
-                        hasChargeBeenSet = 0;
-                    }
-
-                    if (orionStatus.dischargeContactorOverriden)
-                    {
-                        hasDischargeBeenSet = 0;
-                    }
-
                     if (osMutexWait(orionStatus.orionStatusMutex, 0) != osOK)
                     {
                         continue;
