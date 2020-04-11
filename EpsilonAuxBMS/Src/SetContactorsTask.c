@@ -1,6 +1,6 @@
 #include "SetContactorsTask.h"
 /*
-  This task allows for the turnin on of the common, charge, and discharge contactors.
+  This task allows for the turning on of the common, charge, and discharge contactors.
   It works by checking if the current through the contactors is high for any reason and keeps
   doing so until the current is low. Once the current is low, it turns the common contactor on
   and then waits for one second. Within that second, it is expected that the current spike through
