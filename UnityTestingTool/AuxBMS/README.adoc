@@ -1,0 +1,9 @@
+= AuxBMS Unit Tests
+
+Compile & run with:
+
+```
+make -j4
+cd build
+./EpsilonAuxBMSTests
+```

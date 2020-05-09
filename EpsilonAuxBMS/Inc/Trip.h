@@ -1,0 +1,4 @@
+
+int chargeShouldTrip();
+
+int dischargeShouldTrip();

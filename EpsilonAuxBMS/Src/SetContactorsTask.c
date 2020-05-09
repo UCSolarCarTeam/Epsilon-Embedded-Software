@@ -54,10 +54,6 @@ void setContactorsTask(void const* arg)
 
     ContactorsSettingState state = FIRST_CHECK;
     ContactorsSettingState prevState = state;
-    uint8_t contactorError = 0;
-    uint8_t common;
-    uint8_t charge;
-    uint8_t discharge;
     uint8_t hasChargeBeenSet = 0;
     uint8_t hasDischargeBeenSet = 0;
 
@@ -73,9 +69,10 @@ void setContactorsTask(void const* arg)
         switch (state)
         {
             case FIRST_CHECK:
+            {
                 // Check current is low before beginning to turn on contactors
                 // If current is high for some reason, cycle again
-                contactorError = !isContactorSet(0xFF, NULL, 1); // Don't want to read an actual sense pin
+                uint8_t contactorError = !isContactorSet(0xFF, NULL, 1); // Don't want to read an actual sense pin
 
                 if (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK)
                 {
@@ -95,9 +92,11 @@ void setContactorsTask(void const* arg)
                 }
 
                 break;
+            }
 
             case COMMON_ENABLE_CHECK:
-                contactorError = !isContactorSet(COMMON_SENSE_Pin, COMMON_SENSE_GPIO_Port, 1);
+            {
+                uint8_t contactorError = !isContactorSet(COMMON_SENSE_Pin, COMMON_SENSE_GPIO_Port, 1);
 
                 if (osMutexWait(auxStatus.auxStatusMutex, 0) != osOK)
                 {
@@ -116,8 +115,12 @@ void setContactorsTask(void const* arg)
                 }
 
                 break;
+            }
 
             case CHARGE_ENABLE_CHECK:
+            {
+                uint8_t contactorError = 0;
+
                 if (!hasChargeBeenSet)
                 {
                     if (hasDischargeBeenSet)
@@ -179,18 +182,22 @@ void setContactorsTask(void const* arg)
                     state = DISCHARGE_ENABLE_CHECK;
                 }
 
-                common = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
-                discharge = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
+                uint8_t commonSense = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
+                uint8_t dischargeSense = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
 
-                if (!common || (hasDischargeBeenSet && !discharge && !orionStatus.dischargeContactorOverriden))
+                if (!commonSense || (hasDischargeBeenSet && !dischargeSense && !orionStatus.dischargeContactorOverriden))
                 {
                     disconnectContactors(1);
                     state = CONTACTOR_DISCONNECTED;
                 }
 
                 break;
+            }
 
             case DISCHARGE_ENABLE_CHECK:
+            {
+                uint8_t contactorError = 0;
+
                 if (!hasDischargeBeenSet)
                 {
                     if (hasChargeBeenSet)
@@ -256,22 +263,23 @@ void setContactorsTask(void const* arg)
                     state = CHARGE_ENABLE_CHECK;
                 }
 
-                common = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
-                charge = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
+                uint8_t commonSense = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
+                uint8_t chargeSense = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
 
-                if (!common || (hasChargeBeenSet && !charge && !orionStatus.chargeContactorOverriden))
+                if (!commonSense || (hasChargeBeenSet && !chargeSense && !orionStatus.chargeContactorOverriden))
                 {
                     disconnectContactors(1);
                     state = CONTACTOR_DISCONNECTED;
                 }
 
                 break;
+            }
 
             case DONE:
             {
-                common = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
-                charge = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
-                discharge = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
+                uint8_t commonSense = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
+                uint8_t chargeSense = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
+                uint8_t dischargeSense = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
 
                 uint8_t isChargeTurningOn = 0;
                 uint8_t isDischargeTurningOn = 0;
@@ -281,13 +289,13 @@ void setContactorsTask(void const* arg)
                     state = SHUTDOWN;
                     continue;
                 }
-                else if (!common)
+                else if (!commonSense)
                 {
                     disconnectContactors(1);
                     state = CONTACTOR_DISCONNECTED;
                 }
 
-                if (orionStatus.allowCharge && orionStatus.chargeContactorOverriden && !charge)
+                if (orionStatus.allowCharge && orionStatus.chargeContactorOverriden && !chargeSense)
                 {
                     if (osMutexWait(orionStatus.orionStatusMutex, 0) != osOK)
                     {
@@ -304,7 +312,7 @@ void setContactorsTask(void const* arg)
                     prevState = state;
                     state = CHARGE_ENABLE_CHECK;
                 }
-                else if (orionStatus.allowDischarge && orionStatus.dischargeContactorOverriden && !discharge)
+                else if (orionStatus.allowDischarge && orionStatus.dischargeContactorOverriden && !dischargeSense)
                 {
                     if (osMutexWait(orionStatus.orionStatusMutex, 0) != osOK)
                     {
@@ -321,8 +329,11 @@ void setContactorsTask(void const* arg)
                     state = DISCHARGE_ENABLE_CHECK;
                 }
 
-                if ((orionStatus.allowCharge && !charge && !isChargeTurningOn) ||
-                        (orionStatus.allowDischarge && !discharge && !isDischargeTurningOn))
+
+                // If charge contactor should be on, but isn't, disconnect
+                // or if discharge contactor should be on, but isn't, disconnect
+                if ((orionStatus.allowCharge && !chargeSense && !isChargeTurningOn && !orionStatus.chargeContactorOverriden) ||
+                        (orionStatus.allowDischarge && !dischargeSense && !isDischargeTurningOn && !orionStatus.dischargeContactorOverriden))
                 {
                     disconnectContactors(1);
                     state = CONTACTOR_DISCONNECTED;
@@ -332,12 +343,18 @@ void setContactorsTask(void const* arg)
             }
 
             case BLOCKED:
-                common = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
-                charge = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
-                discharge = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
+            {
+                uint8_t commonSense = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
+                uint8_t chargeSense = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
+                uint8_t dischargeSense = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
 
+
+                // If orion isn't overiding the contactors, but they are supposed to have been set, but aren't
+                // , this is an error condition and all contactors should be disconnected.
                 if (prevState > COMMON_ENABLE_CHECK
-                        && (!common || (hasChargeBeenSet && !charge) || (hasDischargeBeenSet && !discharge)))
+                        && (!commonSense ||
+                            (!orionStatus.chargeContactorOverriden && hasChargeBeenSet && !chargeSense) ||
+                            (!orionStatus.dischargeContactorOverriden && hasDischargeBeenSet && !dischargeSense)))
                 {
                     disconnectContactors(1);
                     state = CONTACTOR_DISCONNECTED;
@@ -367,6 +384,7 @@ void setContactorsTask(void const* arg)
                 }
 
                 break;
+            }
 
             case CONTACTOR_DISCONNECTED:
             case SHUTDOWN:
