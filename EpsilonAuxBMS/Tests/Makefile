@@ -1,6 +1,5 @@
 TESTS_DIR = ./tests
 TESTS = \
-	SetContactorsTaskTest \
 	TripTest \
 	UpdateChargeAllowanceTaskTest \
 
