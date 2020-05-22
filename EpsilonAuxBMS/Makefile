@@ -25,13 +25,21 @@ BUILD_DIR = build
 # source
 ######################################
 C_SOURCES = \
+  Src/SetContactor/States/Blocked.c \
+  Src/SetContactor/States/ChargeEnableCheck.c \
+  Src/SetContactor/States/CommonEnableCheck.c \
+  Src/SetContactor/States/DischargeEnableCheck.c \
+  Src/SetContactor/States/FirstCheck.c \
+  Src/SetContactor/States/Idle.c \
+  Src/SetContactor/CheckContactorSet.c \
+  Src/SetContactor/SetContactorsTask.c \
+  Src/SetContactor/StateFunctionsShared.c \
   Src/ReportAuxStatusToCanTask.c \
   Src/stm32f4xx_it.c \
   Src/UpdateChargeAllowanceTask.c \
   Src/main.c \
   Src/stm32f4xx_hal_msp.c \
   Src/ReportHeartbeatToCanTask.c \
-  Src/SetContactorsTask.c \
   Src/freertos.c \
   Src/ReadAuxVoltageTask.c \
   Src/system_stm32f4xx.c \
@@ -88,6 +96,8 @@ C_DEFS = -D__weak="__attribute__((weak))" -D__packed="__attribute__((__packed__)
 # includes for gcc
 AS_INCLUDES =
 C_INCLUDES = -IInc
+C_INCLUDES += -IInc/SetContactor
+C_INCLUDES += -IInc/SetContactor/States
 C_INCLUDES += -IDrivers/STM32F4xx_HAL_Driver/Inc
 C_INCLUDES += -IDrivers/STM32F4xx_HAL_Driver/Inc/Legacy
 C_INCLUDES += -IDrivers/CMSIS/Include
