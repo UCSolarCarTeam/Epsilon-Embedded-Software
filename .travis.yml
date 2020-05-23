@@ -24,6 +24,7 @@ script:
     - (cd EpsilonDriverControls && make)
     - (cd EpsilonCCS && make)
     - (cd EpsilonAuxBMS && make)
+    - (cd UnityTestingTool/AuxBMS/ && make && build/EpsilonAuxBMSTests)
     - "! (astyle *.h *.c -r --dry-run --options=astylerc | grep Formatted)"
 
 language: c
