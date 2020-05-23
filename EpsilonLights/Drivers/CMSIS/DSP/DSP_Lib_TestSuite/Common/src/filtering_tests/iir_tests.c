@@ -70,7 +70,7 @@ JTEST_DEFINE_GROUP(iir_tests)
     /*
       To skip a test, comment it out.
     */
-    JTEST_TEST_CALL(arm_iir_lattice_f32_test);
-    JTEST_TEST_CALL(arm_iir_lattice_q31_test);
-    JTEST_TEST_CALL(arm_iir_lattice_q15_test);
+   JTEST_TEST_CALL(arm_iir_lattice_f32_test);
+   JTEST_TEST_CALL(arm_iir_lattice_q31_test);
+   JTEST_TEST_CALL(arm_iir_lattice_q15_test);
 }

@@ -245,7 +245,7 @@ ARR_DESC_DEFINE(uint32_t,
                     17,
                     15,
                     CONV_MAX_INPUT_ELTS
-                ));
+                    ));
 
 ARR_DESC_DEFINE(uint32_t,
                 conv_lens_b,
@@ -256,7 +256,7 @@ ARR_DESC_DEFINE(uint32_t,
                     1,
                     CONV_MAX_INPUT_ELTS,
                     CONV_MAX_INPUT_ELTS
-                ));
+                    ));
 
 /*--------------------------------------------------------------------------------*/
 /* Partial Indexing */
@@ -270,7 +270,7 @@ ARR_DESC_DEFINE(uint32_t,
                     1,
                     CONV_MAX_INPUT_ELTS / 2,
                     CONV_MAX_INPUT_ELTS
-                ));
+                    ));
 
 ARR_DESC_DEFINE(uint32_t,
                 num_points_arr_desc,
@@ -279,7 +279,7 @@ ARR_DESC_DEFINE(uint32_t,
                     1,
                     CONV_MAX_OUTPUT_ELTS / 2,
                     CONV_MAX_OUTPUT_ELTS
-                ));
+                    ));
 
 /*--------------------------------------------------------------------------------*/
 /* Convolution Tests */
@@ -415,26 +415,26 @@ ARR_DESC_DEFINE(uint32_t,
         ) /* Note the lacking semicolon*/
 
 /* Tests on functions without partial outputs */
-CONV_DEFINE_TEST(conv, f32, float32_t, CONV_TEST_TEMPLATE);
-CONV_DEFINE_TEST(conv, q31, q31_t, CONV_TEST_TEMPLATE);
-CONV_DEFINE_TEST(conv, q15, q15_t, CONV_TEST_TEMPLATE);
-CONV_DEFINE_TEST(conv, q7, q7_t, CONV_TEST_TEMPLATE);
-CONV_DEFINE_TEST(conv_opt, q15, q15_t, CONV_TEST_TEMPLATE);
-CONV_DEFINE_TEST(conv_opt, q7, q7_t, CONV_TEST_TEMPLATE);
-CONV_DEFINE_TEST(conv_fast, q31, q31_t, CONV_TEST_TEMPLATE);
-CONV_DEFINE_TEST(conv_fast, q15, q15_t, CONV_TEST_TEMPLATE);
-CONV_DEFINE_TEST(conv_fast_opt, q15, q15_t, CONV_TEST_TEMPLATE);
+CONV_DEFINE_TEST(conv          , f32, float32_t, CONV_TEST_TEMPLATE);
+CONV_DEFINE_TEST(conv          , q31, q31_t    , CONV_TEST_TEMPLATE);
+CONV_DEFINE_TEST(conv          , q15, q15_t    , CONV_TEST_TEMPLATE);
+CONV_DEFINE_TEST(conv          , q7 , q7_t     , CONV_TEST_TEMPLATE);
+CONV_DEFINE_TEST(conv_opt      , q15, q15_t    , CONV_TEST_TEMPLATE);
+CONV_DEFINE_TEST(conv_opt      , q7 , q7_t     , CONV_TEST_TEMPLATE);
+CONV_DEFINE_TEST(conv_fast     , q31, q31_t    , CONV_TEST_TEMPLATE);
+CONV_DEFINE_TEST(conv_fast     , q15, q15_t    , CONV_TEST_TEMPLATE);
+CONV_DEFINE_TEST(conv_fast_opt , q15, q15_t    , CONV_TEST_TEMPLATE);
 
 /* Tests on functions with partial outputs  */
-CONV_DEFINE_TEST(conv_partial, f32, float32_t, CONV_PARTIAL_TEST_TEMPLATE);
-CONV_DEFINE_TEST(conv_partial, q31, q31_t, CONV_PARTIAL_TEST_TEMPLATE);
-CONV_DEFINE_TEST(conv_partial, q15, q15_t, CONV_PARTIAL_TEST_TEMPLATE);
-CONV_DEFINE_TEST(conv_partial, q7, q7_t, CONV_PARTIAL_TEST_TEMPLATE);
-CONV_DEFINE_TEST(conv_partial_fast, q31, q31_t, CONV_PARTIAL_TEST_TEMPLATE);
-CONV_DEFINE_TEST(conv_partial_fast, q15, q15_t, CONV_PARTIAL_TEST_TEMPLATE);
-CONV_DEFINE_TEST(conv_partial_fast_opt, q15, q15_t, CONV_PARTIAL_TEST_TEMPLATE);
-CONV_DEFINE_TEST(conv_partial_opt, q15, q15_t, CONV_PARTIAL_TEST_TEMPLATE);
-CONV_DEFINE_TEST(conv_partial_opt, q7, q7_t, CONV_PARTIAL_TEST_TEMPLATE);
+CONV_DEFINE_TEST(conv_partial          , f32, float32_t, CONV_PARTIAL_TEST_TEMPLATE);
+CONV_DEFINE_TEST(conv_partial          , q31, q31_t    , CONV_PARTIAL_TEST_TEMPLATE);
+CONV_DEFINE_TEST(conv_partial          , q15, q15_t    , CONV_PARTIAL_TEST_TEMPLATE);
+CONV_DEFINE_TEST(conv_partial          , q7 , q7_t     , CONV_PARTIAL_TEST_TEMPLATE);
+CONV_DEFINE_TEST(conv_partial_fast     , q31, q31_t    , CONV_PARTIAL_TEST_TEMPLATE);
+CONV_DEFINE_TEST(conv_partial_fast     , q15, q15_t    , CONV_PARTIAL_TEST_TEMPLATE);
+CONV_DEFINE_TEST(conv_partial_fast_opt , q15, q15_t    , CONV_PARTIAL_TEST_TEMPLATE);
+CONV_DEFINE_TEST(conv_partial_opt      , q15, q15_t    , CONV_PARTIAL_TEST_TEMPLATE);
+CONV_DEFINE_TEST(conv_partial_opt      , q7 , q7_t     , CONV_PARTIAL_TEST_TEMPLATE);
 
 /*--------------------------------------------------------------------------------*/
 /* Collect all tests in a group. */

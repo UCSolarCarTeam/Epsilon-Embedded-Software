@@ -32,7 +32,7 @@ JTEST_DEFINE_TEST(arm_mat_cmplx_mult_q15_test, arm_mat_cmplx_mult_q15)
     MATRIX_TEST_TEMPLATE_ELT2(
         matrix_q15_a_inputs,
         matrix_q15_b_inputs,
-        arm_matrix_instance_q15*,
+        arm_matrix_instance_q15 * ,
         arm_matrix_instance_q15,
         TYPE_FROM_ABBREV(q15),
         arm_mat_cmplx_mult_q15,

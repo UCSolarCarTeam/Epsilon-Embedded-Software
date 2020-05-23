@@ -41,7 +41,7 @@
             TRANSFORM_SNR_THRESHOLD_##output_type       \
             );                                          \
     } while (0)
-
+    
 /**
  *  Compare the outputs from the function under test and the reference
  *  function using SNR.

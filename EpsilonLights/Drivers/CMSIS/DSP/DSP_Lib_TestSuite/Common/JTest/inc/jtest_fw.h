@@ -30,14 +30,14 @@ typedef struct JTEST_FW_struct
     volatile int32_t dump_data;
     volatile int32_t exit_fw;
 
-    JTEST_GROUP_t* current_group_ptr;
+    JTEST_GROUP_t * current_group_ptr;
 
     /* Buffers: The C-code cannot send strings and data directly to the
      * debugging framework. Instead, the debugger can be told to read 128 byte
      * (by default) chunks of memory.  Data received in this manner requires
      * post-processing to be legible.*/
-    char* str_buffer;
-    char* data_buffer;
+    char * str_buffer;
+    char * data_buffer;
 
     /* Pass/Fail Data */
     JTEST_PF_MEMBERS;

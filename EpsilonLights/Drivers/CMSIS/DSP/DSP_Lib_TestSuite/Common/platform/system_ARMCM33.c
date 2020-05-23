@@ -24,23 +24,23 @@
  */
 
 #if defined (ARMCM33)
-#include "ARMCM33.h"
+  #include "ARMCM33.h"
 #elif defined (ARMCM33_TZ)
-#include "ARMCM33_TZ.h"
+  #include "ARMCM33_TZ.h"
 
-#if defined (__ARM_FEATURE_CMSE) &&  (__ARM_FEATURE_CMSE == 3U)
-#include "partition_ARMCM33.h"
-#endif
+  #if defined (__ARM_FEATURE_CMSE) &&  (__ARM_FEATURE_CMSE == 3U)
+    #include "partition_ARMCM33.h"
+  #endif
 #elif defined (ARMCM33_DSP_FP)
-#include "ARMCM33_DSP_FP.h"
+  #include "ARMCM33_DSP_FP.h"
 #elif defined (ARMCM33_DSP_FP_TZ)
-#include "ARMCM33_DSP_FP_TZ.h"
+  #include "ARMCM33_DSP_FP_TZ.h"
 
-#if defined (__ARM_FEATURE_CMSE) &&  (__ARM_FEATURE_CMSE == 3U)
-#include "partition_ARMCM33.h"
-#endif
+  #if defined (__ARM_FEATURE_CMSE) &&  (__ARM_FEATURE_CMSE == 3U)
+    #include "partition_ARMCM33.h"
+  #endif
 #else
-#error device not specified!
+  #error device not specified!
 #endif
 
 /*----------------------------------------------------------------------------
@@ -55,7 +55,7 @@
   Externals
  *----------------------------------------------------------------------------*/
 #if defined (__VTOR_PRESENT) && (__VTOR_PRESENT == 1U)
-extern uint32_t __Vectors;
+  extern uint32_t __Vectors;
 #endif
 
 /*----------------------------------------------------------------------------
@@ -69,7 +69,7 @@ uint32_t SystemCoreClock = SYSTEM_CLOCK;
  *----------------------------------------------------------------------------*/
 void SystemCoreClockUpdate (void)
 {
-    SystemCoreClock = SYSTEM_CLOCK;
+  SystemCoreClock = SYSTEM_CLOCK;
 }
 
 /*----------------------------------------------------------------------------
@@ -79,21 +79,21 @@ void SystemInit (void)
 {
 
 #if defined (__VTOR_PRESENT) && (__VTOR_PRESENT == 1U)
-    SCB->VTOR = (uint32_t) &__Vectors;
+  SCB->VTOR = (uint32_t) &__Vectors;
 #endif
 
 #if defined (__FPU_USED) && (__FPU_USED == 1U)
-    SCB->CPACR |= ((3U << 10U * 2U) |         /* set CP10 Full Access */
-                   (3U << 11U * 2U)  );       /* set CP11 Full Access */
+  SCB->CPACR |= ((3U << 10U*2U) |           /* set CP10 Full Access */
+                 (3U << 11U*2U)  );         /* set CP11 Full Access */
 #endif
 
 #ifdef UNALIGNED_SUPPORT_DISABLE
-    SCB->CCR |= SCB_CCR_UNALIGN_TRP_Msk;
+  SCB->CCR |= SCB_CCR_UNALIGN_TRP_Msk;
 #endif
 
 #if defined (__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U)
-    TZ_SAU_Setup();
+  TZ_SAU_Setup();
 #endif
 
-    SystemCoreClock = SYSTEM_CLOCK;
+  SystemCoreClock = SYSTEM_CLOCK;
 }

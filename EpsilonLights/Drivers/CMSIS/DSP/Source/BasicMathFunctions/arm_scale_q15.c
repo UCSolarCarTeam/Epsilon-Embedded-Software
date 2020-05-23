@@ -54,92 +54,92 @@
 
 
 void arm_scale_q15(
-    q15_t* pSrc,
-    q15_t scaleFract,
-    int8_t shift,
-    q15_t* pDst,
-    uint32_t blockSize)
+  q15_t * pSrc,
+  q15_t scaleFract,
+  int8_t shift,
+  q15_t * pDst,
+  uint32_t blockSize)
 {
-    int8_t kShift = 15 - shift;                    /* shift to apply after scaling */
-    uint32_t blkCnt;                               /* loop counter */
+  int8_t kShift = 15 - shift;                    /* shift to apply after scaling */
+  uint32_t blkCnt;                               /* loop counter */
 
 #if defined (ARM_MATH_DSP)
 
-    /* Run the below code for Cortex-M4 and Cortex-M3 */
-    q15_t in1, in2, in3, in4;
-    q31_t inA1, inA2;                              /* Temporary variables */
-    q31_t out1, out2, out3, out4;
+/* Run the below code for Cortex-M4 and Cortex-M3 */
+  q15_t in1, in2, in3, in4;
+  q31_t inA1, inA2;                              /* Temporary variables */
+  q31_t out1, out2, out3, out4;
 
 
-    /*loop Unrolling */
-    blkCnt = blockSize >> 2U;
+  /*loop Unrolling */
+  blkCnt = blockSize >> 2U;
 
-    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
-     ** a second loop below computes the remaining 1 to 3 samples. */
-    while (blkCnt > 0U)
-    {
-        /* Reading 2 inputs from memory */
-        inA1 = *__SIMD32(pSrc)++;
-        inA2 = *__SIMD32(pSrc)++;
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+   ** a second loop below computes the remaining 1 to 3 samples. */
+  while (blkCnt > 0U)
+  {
+    /* Reading 2 inputs from memory */
+    inA1 = *__SIMD32(pSrc)++;
+    inA2 = *__SIMD32(pSrc)++;
 
-        /* C = A * scale */
-        /* Scale the inputs and then store the 2 results in the destination buffer
-         * in single cycle by packing the outputs */
-        out1 = (q31_t) ((q15_t) (inA1 >> 16) * scaleFract);
-        out2 = (q31_t) ((q15_t) inA1 * scaleFract);
-        out3 = (q31_t) ((q15_t) (inA2 >> 16) * scaleFract);
-        out4 = (q31_t) ((q15_t) inA2 * scaleFract);
+    /* C = A * scale */
+    /* Scale the inputs and then store the 2 results in the destination buffer
+     * in single cycle by packing the outputs */
+    out1 = (q31_t) ((q15_t) (inA1 >> 16) * scaleFract);
+    out2 = (q31_t) ((q15_t) inA1 * scaleFract);
+    out3 = (q31_t) ((q15_t) (inA2 >> 16) * scaleFract);
+    out4 = (q31_t) ((q15_t) inA2 * scaleFract);
 
-        /* apply shifting */
-        out1 = out1 >> kShift;
-        out2 = out2 >> kShift;
-        out3 = out3 >> kShift;
-        out4 = out4 >> kShift;
+    /* apply shifting */
+    out1 = out1 >> kShift;
+    out2 = out2 >> kShift;
+    out3 = out3 >> kShift;
+    out4 = out4 >> kShift;
 
-        /* saturate the output */
-        in1 = (q15_t) (__SSAT(out1, 16));
-        in2 = (q15_t) (__SSAT(out2, 16));
-        in3 = (q15_t) (__SSAT(out3, 16));
-        in4 = (q15_t) (__SSAT(out4, 16));
+    /* saturate the output */
+    in1 = (q15_t) (__SSAT(out1, 16));
+    in2 = (q15_t) (__SSAT(out2, 16));
+    in3 = (q15_t) (__SSAT(out3, 16));
+    in4 = (q15_t) (__SSAT(out4, 16));
 
-        /* store the result to destination */
-        *__SIMD32(pDst)++ = __PKHBT(in2, in1, 16);
-        *__SIMD32(pDst)++ = __PKHBT(in4, in3, 16);
+    /* store the result to destination */
+    *__SIMD32(pDst)++ = __PKHBT(in2, in1, 16);
+    *__SIMD32(pDst)++ = __PKHBT(in4, in3, 16);
 
-        /* Decrement the loop counter */
-        blkCnt--;
-    }
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
 
-    /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
-     ** No loop unrolling is used. */
-    blkCnt = blockSize % 0x4U;
+  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+   ** No loop unrolling is used. */
+  blkCnt = blockSize % 0x4U;
 
-    while (blkCnt > 0U)
-    {
-        /* C = A * scale */
-        /* Scale the input and then store the result in the destination buffer. */
-        *pDst++ = (q15_t) (__SSAT(((*pSrc++) * scaleFract) >> kShift, 16));
+  while (blkCnt > 0U)
+  {
+    /* C = A * scale */
+    /* Scale the input and then store the result in the destination buffer. */
+    *pDst++ = (q15_t) (__SSAT(((*pSrc++) * scaleFract) >> kShift, 16));
 
-        /* Decrement the loop counter */
-        blkCnt--;
-    }
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
 
 #else
 
-    /* Run the below code for Cortex-M0 */
+  /* Run the below code for Cortex-M0 */
 
-    /* Initialize blkCnt with number of samples */
-    blkCnt = blockSize;
+  /* Initialize blkCnt with number of samples */
+  blkCnt = blockSize;
 
-    while (blkCnt > 0U)
-    {
-        /* C = A * scale */
-        /* Scale the input and then store the result in the destination buffer. */
-        *pDst++ = (q15_t) (__SSAT(((q31_t) * pSrc++ * scaleFract) >> kShift, 16));
+  while (blkCnt > 0U)
+  {
+    /* C = A * scale */
+    /* Scale the input and then store the result in the destination buffer. */
+    *pDst++ = (q15_t) (__SSAT(((q31_t) * pSrc++ * scaleFract) >> kShift, 16));
 
-        /* Decrement the loop counter */
-        blkCnt--;
-    }
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
 
 #endif /* #if defined (ARM_MATH_DSP) */
 

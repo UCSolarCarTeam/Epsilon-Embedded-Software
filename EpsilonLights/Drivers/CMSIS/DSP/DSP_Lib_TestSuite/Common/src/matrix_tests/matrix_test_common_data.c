@@ -6,39 +6,35 @@
 /* Input/Output Buffers */
 /*--------------------------------------------------------------------------------*/
 
-MATRIX_TEST_BIGGEST_INPUT_TYPE matrix_output_fut_data[2 * MATRIX_TEST_MAX_ELTS] = {0};
-MATRIX_TEST_BIGGEST_INPUT_TYPE matrix_output_ref_data[2 * MATRIX_TEST_MAX_ELTS] = {0};
+MATRIX_TEST_BIGGEST_INPUT_TYPE matrix_output_fut_data[2*MATRIX_TEST_MAX_ELTS] = {0};
+MATRIX_TEST_BIGGEST_INPUT_TYPE matrix_output_ref_data[2*MATRIX_TEST_MAX_ELTS] = {0};
 MATRIX_TEST_BIGGEST_INPUT_TYPE matrix_output_scratch[MATRIX_TEST_MAX_ELTS] = {0};
 
 MATRIX_TEST_BIGGEST_INPUT_TYPE matrix_output_f32_fut[MATRIX_TEST_MAX_ELTS];
 MATRIX_TEST_BIGGEST_INPUT_TYPE matrix_output_f32_ref[MATRIX_TEST_MAX_ELTS];
 
-arm_matrix_instance_f32 matrix_output_fut =
-{
+arm_matrix_instance_f32 matrix_output_fut = {
     0,
     0,
-    (float32_t*)& matrix_output_fut_data
+    (float32_t *) &matrix_output_fut_data
 };
 
-arm_matrix_instance_f32 matrix_output_ref =
-{
+arm_matrix_instance_f32 matrix_output_ref = {
     0,
     0,
-    (float32_t*)& matrix_output_ref_data
+    (float32_t *) &matrix_output_ref_data
 };
 
-arm_matrix_instance_f64 matrix_output_fut64 =
-{
+arm_matrix_instance_f64 matrix_output_fut64 = {
     0,
     0,
-    (float64_t*)& matrix_output_fut_data
+    (float64_t *) &matrix_output_fut_data
 };
 
-arm_matrix_instance_f64 matrix_output_ref64 =
-{
+arm_matrix_instance_f64 matrix_output_ref64 = {
     0,
     0,
-    (float64_t*)& matrix_output_ref_data
+    (float64_t *) &matrix_output_ref_data
 };
 
 /*--------------------------------------------------------------------------------*/
@@ -48,8 +44,7 @@ arm_matrix_instance_f64 matrix_output_ref64 =
 /**
  *  Pool of random data to base matrix inputs from.
  */
-float32_t matrix_f32_100_rand[100] =
-{
+float32_t matrix_f32_100_rand[100] = {
     -45.0345569674258,  -11.0261163038747, -14.6841428777929,
     0.0345569674258,    -11.0261163038747, -14.6841428777929,
     -20.3679194392227,  27.5712678608402,  -12.1390617339732,
@@ -86,8 +81,7 @@ float32_t matrix_f32_100_rand[100] =
     46.3088539286913
 };
 
-float64_t matrix_f64_100_rand[100] =
-{
+float64_t matrix_f64_100_rand[100] = {
     -45.0345569674258,  -11.0261163038747, -14.6841428777929,
     0.0345569674258,    -11.0261163038747, -14.6841428777929,
     -20.3679194392227,  27.5712678608402,  -12.1390617339732,
@@ -128,10 +122,10 @@ MATRIX_TEST_BIGGEST_INPUT_TYPE matrix_zeros[MATRIX_TEST_MAX_ELTS] = {0};
 
 const float32_t matrix_f32_scale_values[MATRIX_MAX_COEFFS_LEN] =
 {
-    43.0264275639, -17.0525215570, -94.8488973910, -8.1924989580,
-    7.2830326091, 66.8368719314, 33.9778190671, 117.8652289772,
-    -129.6077797465, -14.6420815368, 18.0239223278, 1.0000000000,
-    55.0375037651, 1.8674609862, 0.00000000000, -33.5750364909
+        43.0264275639  , -17.0525215570 , -94.8488973910 , -8.1924989580  ,
+        7.2830326091   , 66.8368719314  , 33.9778190671  , 117.8652289772 ,
+        -129.6077797465, -14.6420815368 , 18.0239223278  , 1.0000000000   ,
+        55.0375037651  , 1.8674609862   , 0.00000000000  , -33.5750364909
 };
 
 const q31_t matrix_q31_scale_values[MATRIX_MAX_COEFFS_LEN] =

@@ -6,6 +6,7 @@
 #include "stm32f1xx_hal_conf.h"
 #include "stm32f1xx_hal_gpio.h"
 #include "stm32f1xx_hal_can.h"
+#include "main.h"
 
 // Refer to https://docs.google.com/spreadsheets/d/1soVLjeD9Sl7z7Z6cYMyn1fmn-cG7tx_pfFDsvgkCqMU/edit?usp=sharing
 #define LIGHTS_UPDATE_FREQ 10 // Every 10ms
@@ -55,12 +56,13 @@ typedef struct SigLightsHandle
     uint8_t right;
 } SigLightsHandle;
 
-extern CAN_HandleTypeDef hcan2; // main.c
+extern CAN_HandleTypeDef hcan; // main.c
 extern uint8_t lightsInputs;
 extern uint8_t auxBmsInputs[2];
 extern uint8_t batteryErrors[5];
 extern uint8_t driversInputs[4];
 extern SigLightsHandle sigLightsHandle;
+extern CAN_TxHeaderTypeDef canTxHdr;
 
 // Task for updating GPIOs
 // arg : NULL

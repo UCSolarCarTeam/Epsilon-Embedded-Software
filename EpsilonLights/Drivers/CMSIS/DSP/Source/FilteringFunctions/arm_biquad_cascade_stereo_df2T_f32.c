@@ -140,16 +140,16 @@
 
 LOW_OPTIMIZATION_ENTER
 void arm_biquad_cascade_stereo_df2T_f32(
-    const arm_biquad_cascade_stereo_df2T_instance_f32* S,
-    float32_t* pSrc,
-    float32_t* pDst,
-    uint32_t blockSize)
+const arm_biquad_cascade_stereo_df2T_instance_f32 * S,
+float32_t * pSrc,
+float32_t * pDst,
+uint32_t blockSize)
 {
 
-    float32_t* pIn = pSrc;                         /*  source pointer            */
-    float32_t* pOut = pDst;                        /*  destination pointer       */
-    float32_t* pState = S->pState;                 /*  State pointer             */
-    float32_t* pCoeffs = S->pCoeffs;               /*  coefficient pointer       */
+    float32_t *pIn = pSrc;                         /*  source pointer            */
+    float32_t *pOut = pDst;                        /*  destination pointer       */
+    float32_t *pState = S->pState;                 /*  State pointer             */
+    float32_t *pCoeffs = S->pCoeffs;               /*  coefficient pointer       */
     float32_t acc1a, acc1b;                        /*  accumulator               */
     float32_t b0, b1, b2, a1, a2;                  /*  Filter coefficients       */
     float32_t Xn1a, Xn1b;                          /*  temporary input           */
@@ -184,8 +184,7 @@ void arm_biquad_cascade_stereo_df2T_f32(
 
         /* First part of the processing with loop unrolling.  Compute 8 outputs at a time.
         ** a second loop below computes the remaining 1 to 7 samples. */
-        while (sample > 0U)
-        {
+        while (sample > 0U) {
 
             /* y[n] = b0 * x[n] + d1 */
             /* d1 = b1 * x[n] + a1 * y[n] + d2 */
@@ -369,9 +368,7 @@ void arm_biquad_cascade_stereo_df2T_f32(
         }
 
         sample = blockSize & 0x7U;
-
-        while (sample > 0U)
-        {
+        while (sample > 0U) {
             /* Read the input */
             Xn1a = *pIn++; //Channel a
             Xn1b = *pIn++; //Channel b
@@ -412,8 +409,7 @@ void arm_biquad_cascade_stereo_df2T_f32(
         /*Reset the output working pointer */
         pOut = pDst;
 
-    }
-    while (stage > 0U);
+    } while (stage > 0U);
 
 #elif defined(ARM_MATH_CM0_FAMILY)
 
@@ -479,8 +475,7 @@ void arm_biquad_cascade_stereo_df2T_f32(
         /* decrement the loop counter */
         stage--;
 
-    }
-    while (stage > 0U);
+    } while (stage > 0U);
 
 #else
 
@@ -512,8 +507,7 @@ void arm_biquad_cascade_stereo_df2T_f32(
 
         /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
         ** a second loop below computes the remaining 1 to 3 samples. */
-        while (sample > 0U)
-        {
+        while (sample > 0U) {
 
             /* y[n] = b0 * x[n] + d1 */
             /* d1 = b1 * x[n] + a1 * y[n] + d2 */
@@ -620,9 +614,7 @@ void arm_biquad_cascade_stereo_df2T_f32(
         }
 
         sample = blockSize & 0x3U;
-
-        while (sample > 0U)
-        {
+        while (sample > 0U) {
             Xn1a = *pIn++;
             Xn1b = *pIn++;
 
@@ -666,8 +658,7 @@ void arm_biquad_cascade_stereo_df2T_f32(
         /* decrement the loop counter */
         stage--;
 
-    }
-    while (stage > 0U);
+    } while (stage > 0U);
 
 #endif
 

@@ -60,68 +60,68 @@
  */
 
 void arm_power_q31(
-    q31_t* pSrc,
-    uint32_t blockSize,
-    q63_t* pResult)
+  q31_t * pSrc,
+  uint32_t blockSize,
+  q63_t * pResult)
 {
-    q63_t sum = 0;                                 /* Temporary result storage */
-    q31_t in;
-    uint32_t blkCnt;                               /* loop counter */
+  q63_t sum = 0;                                 /* Temporary result storage */
+  q31_t in;
+  uint32_t blkCnt;                               /* loop counter */
 
 
 #if defined (ARM_MATH_DSP)
-    /* Run the below code for Cortex-M4 and Cortex-M3 */
+  /* Run the below code for Cortex-M4 and Cortex-M3 */
 
-    /*loop Unrolling */
-    blkCnt = blockSize >> 2U;
+  /*loop Unrolling */
+  blkCnt = blockSize >> 2U;
 
-    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
-     ** a second loop below computes the remaining 1 to 3 samples. */
-    while (blkCnt > 0U)
-    {
-        /* C = A[0] * A[0] + A[1] * A[1] + A[2] * A[2] + ... + A[blockSize-1] * A[blockSize-1] */
-        /* Compute Power then shift intermediate results by 14 bits to maintain 16.48 format and then store the result in a temporary variable sum, providing 15 guard bits. */
-        in = *pSrc++;
-        sum += ((q63_t) in * in) >> 14U;
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+   ** a second loop below computes the remaining 1 to 3 samples. */
+  while (blkCnt > 0U)
+  {
+    /* C = A[0] * A[0] + A[1] * A[1] + A[2] * A[2] + ... + A[blockSize-1] * A[blockSize-1] */
+    /* Compute Power then shift intermediate results by 14 bits to maintain 16.48 format and then store the result in a temporary variable sum, providing 15 guard bits. */
+    in = *pSrc++;
+    sum += ((q63_t) in * in) >> 14U;
 
-        in = *pSrc++;
-        sum += ((q63_t) in * in) >> 14U;
+    in = *pSrc++;
+    sum += ((q63_t) in * in) >> 14U;
 
-        in = *pSrc++;
-        sum += ((q63_t) in * in) >> 14U;
+    in = *pSrc++;
+    sum += ((q63_t) in * in) >> 14U;
 
-        in = *pSrc++;
-        sum += ((q63_t) in * in) >> 14U;
+    in = *pSrc++;
+    sum += ((q63_t) in * in) >> 14U;
 
-        /* Decrement the loop counter */
-        blkCnt--;
-    }
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
 
-    /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
-     ** No loop unrolling is used. */
-    blkCnt = blockSize % 0x4U;
+  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+   ** No loop unrolling is used. */
+  blkCnt = blockSize % 0x4U;
 
 #else
-    /* Run the below code for Cortex-M0 */
+  /* Run the below code for Cortex-M0 */
 
-    /* Loop over blockSize number of values */
-    blkCnt = blockSize;
+  /* Loop over blockSize number of values */
+  blkCnt = blockSize;
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
-    while (blkCnt > 0U)
-    {
-        /* C = A[0] * A[0] + A[1] * A[1] + A[2] * A[2] + ... + A[blockSize-1] * A[blockSize-1] */
-        /* Compute Power and then store the result in a temporary variable, sum. */
-        in = *pSrc++;
-        sum += ((q63_t) in * in) >> 14U;
+  while (blkCnt > 0U)
+  {
+    /* C = A[0] * A[0] + A[1] * A[1] + A[2] * A[2] + ... + A[blockSize-1] * A[blockSize-1] */
+    /* Compute Power and then store the result in a temporary variable, sum. */
+    in = *pSrc++;
+    sum += ((q63_t) in * in) >> 14U;
 
-        /* Decrement the loop counter */
-        blkCnt--;
-    }
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
 
-    /* Store the results in 16.48 format  */
-    *pResult = sum;
+  /* Store the results in 16.48 format  */
+  *pResult = sum;
 }
 
 /**

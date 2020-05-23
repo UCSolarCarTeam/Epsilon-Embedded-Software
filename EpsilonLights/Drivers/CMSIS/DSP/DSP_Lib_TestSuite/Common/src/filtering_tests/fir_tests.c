@@ -339,31 +339,31 @@
             return JTEST_TEST_PASSED;                                   \
    }
 
-FIR_DEFINE_TEST(f32,, float32_t);
-FIR_DEFINE_TEST(q31,, q31_t);
-FIR_DEFINE_TEST(q15,, q15_t);
-FIR_DEFINE_TEST(q31, _fast, q31_t);
-FIR_DEFINE_TEST(q15, _fast, q15_t);
-FIR_DEFINE_TEST(q7,, q7_t);
+FIR_DEFINE_TEST(f32,,float32_t);
+FIR_DEFINE_TEST(q31,,q31_t);
+FIR_DEFINE_TEST(q15,,q15_t);
+FIR_DEFINE_TEST(q31,_fast,q31_t);
+FIR_DEFINE_TEST(q15,_fast,q15_t);
+FIR_DEFINE_TEST(q7,,q7_t);
 
-FIR_LATTICE_DEFINE_TEST(f32, float32_t);
-FIR_LATTICE_DEFINE_TEST(q31, q31_t);
-FIR_LATTICE_DEFINE_TEST(q15, q15_t);
+FIR_LATTICE_DEFINE_TEST(f32,float32_t);
+FIR_LATTICE_DEFINE_TEST(q31,q31_t);
+FIR_LATTICE_DEFINE_TEST(q15,q15_t);
 
-FIR_INTERPOLATE_DEFINE_TEST(f32, float32_t);
-FIR_INTERPOLATE_DEFINE_TEST(q31, q31_t);
-FIR_INTERPOLATE_DEFINE_TEST(q15, q15_t);
+FIR_INTERPOLATE_DEFINE_TEST(f32,float32_t);
+FIR_INTERPOLATE_DEFINE_TEST(q31,q31_t);
+FIR_INTERPOLATE_DEFINE_TEST(q15,q15_t);
 
-FIR_DECIMATE_DEFINE_TEST(f32,, float32_t);
-FIR_DECIMATE_DEFINE_TEST(q31,, q31_t);
-FIR_DECIMATE_DEFINE_TEST(q15,, q15_t);
-FIR_DECIMATE_DEFINE_TEST(q31, _fast, q31_t);
-FIR_DECIMATE_DEFINE_TEST(q15, _fast, q15_t);
+FIR_DECIMATE_DEFINE_TEST(f32,,float32_t);
+FIR_DECIMATE_DEFINE_TEST(q31,,q31_t);
+FIR_DECIMATE_DEFINE_TEST(q15,,q15_t);
+FIR_DECIMATE_DEFINE_TEST(q31,_fast,q31_t);
+FIR_DECIMATE_DEFINE_TEST(q15,_fast,q15_t);
 
-FIR_SPARSE_DEFINE_TEST(f32, float32_t);
-FIR_SPARSE_DEFINE_TEST(q31, q31_t);
-FIR_SPARSE2_DEFINE_TEST(q15, q15_t);
-FIR_SPARSE2_DEFINE_TEST(q7, q7_t);
+FIR_SPARSE_DEFINE_TEST(f32,float32_t);
+FIR_SPARSE_DEFINE_TEST(q31,q31_t);
+FIR_SPARSE2_DEFINE_TEST(q15,q15_t);
+FIR_SPARSE2_DEFINE_TEST(q7,q7_t);
 
 /*--------------------------------------------------------------------------------*/
 /* Collect all tests in a group. */
@@ -374,29 +374,29 @@ JTEST_DEFINE_GROUP(fir_tests)
     /*
       To skip a test, comment it out.
     */
-    JTEST_TEST_CALL(arm_fir_f32_test);
-    JTEST_TEST_CALL(arm_fir_q31_test);
-    JTEST_TEST_CALL(arm_fir_q15_test);
-    JTEST_TEST_CALL(arm_fir_q7_test);
-    JTEST_TEST_CALL(arm_fir_fast_q31_test);
-    JTEST_TEST_CALL(arm_fir_fast_q15_test);
+   JTEST_TEST_CALL(arm_fir_f32_test);
+   JTEST_TEST_CALL(arm_fir_q31_test);
+   JTEST_TEST_CALL(arm_fir_q15_test);
+   JTEST_TEST_CALL(arm_fir_q7_test);
+   JTEST_TEST_CALL(arm_fir_fast_q31_test);
+   JTEST_TEST_CALL(arm_fir_fast_q15_test);
 
-    JTEST_TEST_CALL(arm_fir_lattice_f32_test);
-    JTEST_TEST_CALL(arm_fir_lattice_q31_test);
-    JTEST_TEST_CALL(arm_fir_lattice_q15_test);
+   JTEST_TEST_CALL(arm_fir_lattice_f32_test);
+   JTEST_TEST_CALL(arm_fir_lattice_q31_test);
+   JTEST_TEST_CALL(arm_fir_lattice_q15_test);
 
-    JTEST_TEST_CALL(arm_fir_interpolate_f32_test);
-    JTEST_TEST_CALL(arm_fir_interpolate_q31_test);
-    JTEST_TEST_CALL(arm_fir_interpolate_q15_test);
+   JTEST_TEST_CALL(arm_fir_interpolate_f32_test);
+   JTEST_TEST_CALL(arm_fir_interpolate_q31_test);
+   JTEST_TEST_CALL(arm_fir_interpolate_q15_test);
 
-    JTEST_TEST_CALL(arm_fir_decimate_f32_test);
-    JTEST_TEST_CALL(arm_fir_decimate_q31_test);
-    JTEST_TEST_CALL(arm_fir_decimate_q15_test);
-    JTEST_TEST_CALL(arm_fir_decimate_fast_q31_test);
-    JTEST_TEST_CALL(arm_fir_decimate_fast_q15_test);
+   JTEST_TEST_CALL(arm_fir_decimate_f32_test);
+   JTEST_TEST_CALL(arm_fir_decimate_q31_test);
+   JTEST_TEST_CALL(arm_fir_decimate_q15_test);
+   JTEST_TEST_CALL(arm_fir_decimate_fast_q31_test);
+   JTEST_TEST_CALL(arm_fir_decimate_fast_q15_test);
 
-    JTEST_TEST_CALL(arm_fir_sparse_f32_test);
-    JTEST_TEST_CALL(arm_fir_sparse_q31_test);
-    JTEST_TEST_CALL(arm_fir_sparse_q15_test);
-    JTEST_TEST_CALL(arm_fir_sparse_q7_test);
+   JTEST_TEST_CALL(arm_fir_sparse_f32_test);
+   JTEST_TEST_CALL(arm_fir_sparse_q31_test);
+   JTEST_TEST_CALL(arm_fir_sparse_q15_test);
+   JTEST_TEST_CALL(arm_fir_sparse_q7_test);
 }

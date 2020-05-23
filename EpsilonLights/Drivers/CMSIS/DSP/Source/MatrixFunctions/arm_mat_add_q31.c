@@ -52,143 +52,142 @@
  */
 
 arm_status arm_mat_add_q31(
-    const arm_matrix_instance_q31* pSrcA,
-    const arm_matrix_instance_q31* pSrcB,
-    arm_matrix_instance_q31* pDst)
+  const arm_matrix_instance_q31 * pSrcA,
+  const arm_matrix_instance_q31 * pSrcB,
+  arm_matrix_instance_q31 * pDst)
 {
-    q31_t* pIn1 = pSrcA->pData;                    /* input data matrix pointer A */
-    q31_t* pIn2 = pSrcB->pData;                    /* input data matrix pointer B */
-    q31_t* pOut = pDst->pData;                     /* output data matrix pointer */
-    q31_t inA1, inB1;                              /* temporary variables */
+  q31_t *pIn1 = pSrcA->pData;                    /* input data matrix pointer A */
+  q31_t *pIn2 = pSrcB->pData;                    /* input data matrix pointer B */
+  q31_t *pOut = pDst->pData;                     /* output data matrix pointer */
+  q31_t inA1, inB1;                              /* temporary variables */
 
 #if defined (ARM_MATH_DSP)
 
-    q31_t inA2, inB2;                              /* temporary variables */
-    q31_t out1, out2;                              /* temporary variables */
+  q31_t inA2, inB2;                              /* temporary variables */
+  q31_t out1, out2;                              /* temporary variables */
 
 #endif //      #if defined (ARM_MATH_DSP)
 
-    uint32_t numSamples;                           /* total number of elements in the matrix  */
-    uint32_t blkCnt;                               /* loop counters */
-    arm_status status;                             /* status of matrix addition */
+  uint32_t numSamples;                           /* total number of elements in the matrix  */
+  uint32_t blkCnt;                               /* loop counters */
+  arm_status status;                             /* status of matrix addition */
 
 #ifdef ARM_MATH_MATRIX_CHECK
-
-    /* Check for matrix mismatch condition */
-    if ((pSrcA->numRows != pSrcB->numRows) ||
-            (pSrcA->numCols != pSrcB->numCols) ||
-            (pSrcA->numRows != pDst->numRows) || (pSrcA->numCols != pDst->numCols))
-    {
-        /* Set status as ARM_MATH_SIZE_MISMATCH */
-        status = ARM_MATH_SIZE_MISMATCH;
-    }
-    else
+  /* Check for matrix mismatch condition */
+  if ((pSrcA->numRows != pSrcB->numRows) ||
+     (pSrcA->numCols != pSrcB->numCols) ||
+     (pSrcA->numRows != pDst->numRows) || (pSrcA->numCols != pDst->numCols))
+  {
+    /* Set status as ARM_MATH_SIZE_MISMATCH */
+    status = ARM_MATH_SIZE_MISMATCH;
+  }
+  else
 #endif
-    {
-        /* Total number of samples in the input matrix */
-        numSamples = (uint32_t) pSrcA->numRows * pSrcA->numCols;
+  {
+    /* Total number of samples in the input matrix */
+    numSamples = (uint32_t) pSrcA->numRows * pSrcA->numCols;
 
 #if defined (ARM_MATH_DSP)
 
-        /* Run the below code for Cortex-M4 and Cortex-M3 */
+    /* Run the below code for Cortex-M4 and Cortex-M3 */
 
-        /* Loop Unrolling */
-        blkCnt = numSamples >> 2U;
+    /* Loop Unrolling */
+    blkCnt = numSamples >> 2U;
 
 
-        /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
-         ** a second loop below computes the remaining 1 to 3 samples. */
-        while (blkCnt > 0U)
-        {
-            /* C(m,n) = A(m,n) + B(m,n) */
-            /* Add, saturate and then store the results in the destination buffer. */
-            /* Read values from source A */
-            inA1 = pIn1[0];
+    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+     ** a second loop below computes the remaining 1 to 3 samples. */
+    while (blkCnt > 0U)
+    {
+      /* C(m,n) = A(m,n) + B(m,n) */
+      /* Add, saturate and then store the results in the destination buffer. */
+      /* Read values from source A */
+      inA1 = pIn1[0];
 
-            /* Read values from source B */
-            inB1 = pIn2[0];
+      /* Read values from source B */
+      inB1 = pIn2[0];
 
-            /* Read values from source A */
-            inA2 = pIn1[1];
+      /* Read values from source A */
+      inA2 = pIn1[1];
 
-            /* Add and saturate */
-            out1 = __QADD(inA1, inB1);
+      /* Add and saturate */
+      out1 = __QADD(inA1, inB1);
 
-            /* Read values from source B */
-            inB2 = pIn2[1];
+      /* Read values from source B */
+      inB2 = pIn2[1];
 
-            /* Read values from source A */
-            inA1 = pIn1[2];
+      /* Read values from source A */
+      inA1 = pIn1[2];
 
-            /* Add and saturate */
-            out2 = __QADD(inA2, inB2);
+      /* Add and saturate */
+      out2 = __QADD(inA2, inB2);
 
-            /* Read values from source B */
-            inB1 = pIn2[2];
+      /* Read values from source B */
+      inB1 = pIn2[2];
 
-            /* Store result in destination */
-            pOut[0] = out1;
-            pOut[1] = out2;
+      /* Store result in destination */
+      pOut[0] = out1;
+      pOut[1] = out2;
 
-            /* Read values from source A */
-            inA2 = pIn1[3];
+      /* Read values from source A */
+      inA2 = pIn1[3];
 
-            /* Read values from source B */
-            inB2 = pIn2[3];
+      /* Read values from source B */
+      inB2 = pIn2[3];
 
-            /* Add and saturate */
-            out1 = __QADD(inA1, inB1);
-            out2 = __QADD(inA2, inB2);
+      /* Add and saturate */
+      out1 = __QADD(inA1, inB1);
+      out2 = __QADD(inA2, inB2);
 
-            /* Store result in destination */
-            pOut[2] = out1;
-            pOut[3] = out2;
+      /* Store result in destination */
+      pOut[2] = out1;
+      pOut[3] = out2;
 
-            /* update pointers to process next sampels */
-            pIn1 += 4U;
-            pIn2 += 4U;
-            pOut += 4U;
+      /* update pointers to process next sampels */
+      pIn1 += 4U;
+      pIn2 += 4U;
+      pOut += 4U;
 
-            /* Decrement the loop counter */
-            blkCnt--;
-        }
+      /* Decrement the loop counter */
+      blkCnt--;
+    }
 
-        /* If the numSamples is not a multiple of 4, compute any remaining output samples here.
-         ** No loop unrolling is used. */
-        blkCnt = numSamples % 0x4U;
+    /* If the numSamples is not a multiple of 4, compute any remaining output samples here.
+     ** No loop unrolling is used. */
+    blkCnt = numSamples % 0x4U;
 
 #else
 
-        /* Run the below code for Cortex-M0 */
+    /* Run the below code for Cortex-M0 */
 
-        /* Initialize blkCnt with number of samples */
-        blkCnt = numSamples;
+    /* Initialize blkCnt with number of samples */
+    blkCnt = numSamples;
 
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
-        while (blkCnt > 0U)
-        {
-            /* C(m,n) = A(m,n) + B(m,n) */
-            /* Add, saturate and then store the results in the destination buffer. */
-            inA1 = *pIn1++;
-            inB1 = *pIn2++;
+    while (blkCnt > 0U)
+    {
+      /* C(m,n) = A(m,n) + B(m,n) */
+      /* Add, saturate and then store the results in the destination buffer. */
+      inA1 = *pIn1++;
+      inB1 = *pIn2++;
 
-            inA1 = __QADD(inA1, inB1);
+      inA1 = __QADD(inA1, inB1);
 
-            /* Decrement the loop counter */
-            blkCnt--;
+      /* Decrement the loop counter */
+      blkCnt--;
 
-            *pOut++ = inA1;
+      *pOut++ = inA1;
 
-        }
-
-        /* set status as ARM_MATH_SUCCESS */
-        status = ARM_MATH_SUCCESS;
     }
 
-    /* Return to application */
-    return (status);
+    /* set status as ARM_MATH_SUCCESS */
+    status = ARM_MATH_SUCCESS;
+  }
+
+  /* Return to application */
+  return (status);
 }
 
 /**

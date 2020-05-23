@@ -56,79 +56,79 @@
  */
 
 void arm_rms_q15(
-    q15_t* pSrc,
-    uint32_t blockSize,
-    q15_t* pResult)
+  q15_t * pSrc,
+  uint32_t blockSize,
+  q15_t * pResult)
 {
-    q63_t sum = 0;                                 /* accumulator */
+  q63_t sum = 0;                                 /* accumulator */
 
 #if defined (ARM_MATH_DSP)
-    /* Run the below code for Cortex-M4 and Cortex-M3 */
+  /* Run the below code for Cortex-M4 and Cortex-M3 */
 
-    q31_t in;                                      /* temporary variable to store the input value */
-    q15_t in1;                                     /* temporary variable to store the input value */
-    uint32_t blkCnt;                               /* loop counter */
+  q31_t in;                                      /* temporary variable to store the input value */
+  q15_t in1;                                     /* temporary variable to store the input value */
+  uint32_t blkCnt;                               /* loop counter */
 
-    /* loop Unrolling */
-    blkCnt = blockSize >> 2U;
+  /* loop Unrolling */
+  blkCnt = blockSize >> 2U;
 
-    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
-     ** a second loop below computes the remaining 1 to 3 samples. */
-    while (blkCnt > 0U)
-    {
-        /* C = (A[0] * A[0] + A[1] * A[1] + ... + A[blockSize-1] * A[blockSize-1]) */
-        /* Compute sum of the squares and then store the results in a temporary variable, sum */
-        in = *__SIMD32(pSrc)++;
-        sum = __SMLALD(in, in, sum);
-        in = *__SIMD32(pSrc)++;
-        sum = __SMLALD(in, in, sum);
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+   ** a second loop below computes the remaining 1 to 3 samples. */
+  while (blkCnt > 0U)
+  {
+    /* C = (A[0] * A[0] + A[1] * A[1] + ... + A[blockSize-1] * A[blockSize-1]) */
+    /* Compute sum of the squares and then store the results in a temporary variable, sum */
+    in = *__SIMD32(pSrc)++;
+    sum = __SMLALD(in, in, sum);
+    in = *__SIMD32(pSrc)++;
+    sum = __SMLALD(in, in, sum);
 
-        /* Decrement the loop counter */
-        blkCnt--;
-    }
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
 
-    /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
-     ** No loop unrolling is used. */
-    blkCnt = blockSize % 0x4U;
+  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+   ** No loop unrolling is used. */
+  blkCnt = blockSize % 0x4U;
 
-    while (blkCnt > 0U)
-    {
-        /* C = (A[0] * A[0] + A[1] * A[1] + ... + A[blockSize-1] * A[blockSize-1]) */
-        /* Compute sum of the squares and then store the results in a temporary variable, sum */
-        in1 = *pSrc++;
-        sum = __SMLALD(in1, in1, sum);
+  while (blkCnt > 0U)
+  {
+    /* C = (A[0] * A[0] + A[1] * A[1] + ... + A[blockSize-1] * A[blockSize-1]) */
+    /* Compute sum of the squares and then store the results in a temporary variable, sum */
+    in1 = *pSrc++;
+    sum = __SMLALD(in1, in1, sum);
 
-        /* Decrement the loop counter */
-        blkCnt--;
-    }
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
 
-    /* Truncating and saturating the accumulator to 1.15 format */
-    /* Store the result in the destination */
-    arm_sqrt_q15(__SSAT((sum / (q63_t)blockSize) >> 15, 16), pResult);
+  /* Truncating and saturating the accumulator to 1.15 format */
+  /* Store the result in the destination */
+  arm_sqrt_q15(__SSAT((sum / (q63_t)blockSize) >> 15, 16), pResult);
 
 #else
-    /* Run the below code for Cortex-M0 */
+  /* Run the below code for Cortex-M0 */
 
-    q15_t in;                                      /* temporary variable to store the input value */
-    uint32_t blkCnt;                               /* loop counter */
+  q15_t in;                                      /* temporary variable to store the input value */
+  uint32_t blkCnt;                               /* loop counter */
 
-    /* Loop over blockSize number of values */
-    blkCnt = blockSize;
+  /* Loop over blockSize number of values */
+  blkCnt = blockSize;
 
-    while (blkCnt > 0U)
-    {
-        /* C = (A[0] * A[0] + A[1] * A[1] + ... + A[blockSize-1] * A[blockSize-1]) */
-        /* Compute sum of the squares and then store the results in a temporary variable, sum */
-        in = *pSrc++;
-        sum += ((q31_t) in * in);
+  while (blkCnt > 0U)
+  {
+    /* C = (A[0] * A[0] + A[1] * A[1] + ... + A[blockSize-1] * A[blockSize-1]) */
+    /* Compute sum of the squares and then store the results in a temporary variable, sum */
+    in = *pSrc++;
+    sum += ((q31_t) in * in);
 
-        /* Decrement the loop counter */
-        blkCnt--;
-    }
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
 
-    /* Truncating and saturating the accumulator to 1.15 format */
-    /* Store the result in the destination */
-    arm_sqrt_q15(__SSAT((sum / (q63_t)blockSize) >> 15, 16), pResult);
+  /* Truncating and saturating the accumulator to 1.15 format */
+  /* Store the result in the destination */
+  arm_sqrt_q15(__SSAT((sum / (q63_t)blockSize) >> 15, 16), pResult);
 
 #endif /* #if defined (ARM_MATH_DSP) */
 

@@ -60,9 +60,9 @@
             return JTEST_TEST_PASSED;                                   \
     }
 
-ARM_PID_TEST(f32, float32_t);
-ARM_PID_TEST(q31, q31_t);
-ARM_PID_TEST(q15, q15_t);
+ARM_PID_TEST(f32,float32_t);
+ARM_PID_TEST(q31,q31_t);
+ARM_PID_TEST(q15,q15_t);
 
 /*--------------------------------------------------------------------------------*/
 /* Collect all tests in a group */

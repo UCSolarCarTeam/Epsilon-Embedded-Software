@@ -6,4 +6,4 @@
 /*--------------------------------------------------------------------------------*/
 
 /* const char * JTEST_CYCLE_STRF = "Running: %s\nCycles: %" PRIu32 "\n"; */
-const char* JTEST_CYCLE_STRF = "Cycles: %" PRIu32 "\n";  /* function name + parameter string skipped */
+const char * JTEST_CYCLE_STRF = "Cycles: %" PRIu32 "\n"; /* function name + parameter string skipped */

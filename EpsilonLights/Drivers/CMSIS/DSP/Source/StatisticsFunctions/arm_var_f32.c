@@ -63,18 +63,18 @@
  */
 
 void arm_var_f32(
-    float32_t* pSrc,
-    uint32_t blockSize,
-    float32_t* pResult)
+                 float32_t * pSrc,
+                 uint32_t blockSize,
+                 float32_t * pResult)
 {
     float32_t fMean, fValue;
     uint32_t blkCnt;            /* loop counter */
-    float32_t* pInput = pSrc;
+    float32_t * pInput = pSrc;
     float32_t sum = 0.0f;
     float32_t fSum = 0.0f;
-#if defined(ARM_MATH_DSP)
+    #if defined(ARM_MATH_DSP)
     float32_t in1, in2, in3, in4;
-#endif
+    #endif
 
     if (blockSize <= 1U)
     {
@@ -82,42 +82,42 @@ void arm_var_f32(
         return;
     }
 
-#if defined(ARM_MATH_DSP)
-    /* Run the below code for Cortex-M4 and Cortex-M7 */
+    #if defined(ARM_MATH_DSP)
+        /* Run the below code for Cortex-M4 and Cortex-M7 */
 
-    /*loop Unrolling */
-    blkCnt = blockSize >> 2U;
+        /*loop Unrolling */
+        blkCnt = blockSize >> 2U;
 
-    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
-    ** a second loop below computes the remaining 1 to 3 samples. */
-    while (blkCnt > 0U)
-    {
-        /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) */
-        in1 = *pInput++;
-        in2 = *pInput++;
-        in3 = *pInput++;
-        in4 = *pInput++;
+        /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+        ** a second loop below computes the remaining 1 to 3 samples. */
+        while (blkCnt > 0U)
+        {
+            /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) */
+            in1 = *pInput++;
+            in2 = *pInput++;
+            in3 = *pInput++;
+            in4 = *pInput++;
 
-        sum += in1;
-        sum += in2;
-        sum += in3;
-        sum += in4;
+            sum += in1;
+            sum += in2;
+            sum += in3;
+            sum += in4;
 
-        /* Decrement the loop counter */
-        blkCnt--;
-    }
+            /* Decrement the loop counter */
+            blkCnt--;
+        }
 
-    /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
-    ** No loop unrolling is used. */
-    blkCnt = blockSize % 0x4U;
+        /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+        ** No loop unrolling is used. */
+        blkCnt = blockSize % 0x4U;
 
-#else
-    /* Run the below code for Cortex-M0 or Cortex-M3 */
+    #else
+        /* Run the below code for Cortex-M0 or Cortex-M3 */
 
-    /* Loop over blockSize number of values */
-    blkCnt = blockSize;
+        /* Loop over blockSize number of values */
+        blkCnt = blockSize;
 
-#endif
+    #endif
 
     while (blkCnt > 0U)
     {
@@ -133,35 +133,35 @@ void arm_var_f32(
 
     pInput = pSrc;
 
-#if defined(ARM_MATH_DSP)
+    #if defined(ARM_MATH_DSP)
 
-    /*loop Unrolling */
-    blkCnt = blockSize >> 2U;
+        /*loop Unrolling */
+        blkCnt = blockSize >> 2U;
 
-    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
-    ** a second loop below computes the remaining 1 to 3 samples. */
-    while (blkCnt > 0U)
-    {
-        fValue = *pInput++ - fMean;
-        fSum += fValue * fValue;
-        fValue = *pInput++ - fMean;
-        fSum += fValue * fValue;
-        fValue = *pInput++ - fMean;
-        fSum += fValue * fValue;
-        fValue = *pInput++ - fMean;
-        fSum += fValue * fValue;
+        /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+        ** a second loop below computes the remaining 1 to 3 samples. */
+        while (blkCnt > 0U)
+        {
+            fValue = *pInput++ - fMean;
+            fSum += fValue * fValue;
+            fValue = *pInput++ - fMean;
+            fSum += fValue * fValue;
+            fValue = *pInput++ - fMean;
+            fSum += fValue * fValue;
+            fValue = *pInput++ - fMean;
+            fSum += fValue * fValue;
 
-        /* Decrement the loop counter */
-        blkCnt--;
-    }
+            /* Decrement the loop counter */
+            blkCnt--;
+        }
 
-    blkCnt = blockSize % 0x4U;
-#else
-    /* Run the below code for Cortex-M0 or Cortex-M3 */
+        blkCnt = blockSize % 0x4U;
+    #else
+        /* Run the below code for Cortex-M0 or Cortex-M3 */
 
-    /* Loop over blockSize number of values */
-    blkCnt = blockSize;
-#endif
+        /* Loop over blockSize number of values */
+        blkCnt = blockSize;
+    #endif
 
     while (blkCnt > 0U)
     {

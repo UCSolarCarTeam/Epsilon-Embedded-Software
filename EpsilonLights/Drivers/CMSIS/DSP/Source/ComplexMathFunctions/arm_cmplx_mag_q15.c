@@ -51,86 +51,86 @@
  */
 
 void arm_cmplx_mag_q15(
-    q15_t* pSrc,
-    q15_t* pDst,
-    uint32_t numSamples)
+  q15_t * pSrc,
+  q15_t * pDst,
+  uint32_t numSamples)
 {
-    q31_t acc0, acc1;                              /* Accumulators */
+  q31_t acc0, acc1;                              /* Accumulators */
 
 #if defined (ARM_MATH_DSP)
 
-    /* Run the below code for Cortex-M4 and Cortex-M3 */
-    uint32_t blkCnt;                               /* loop counter */
-    q31_t in1, in2, in3, in4;
-    q31_t acc2, acc3;
+  /* Run the below code for Cortex-M4 and Cortex-M3 */
+  uint32_t blkCnt;                               /* loop counter */
+  q31_t in1, in2, in3, in4;
+  q31_t acc2, acc3;
 
 
-    /*loop Unrolling */
-    blkCnt = numSamples >> 2U;
+  /*loop Unrolling */
+  blkCnt = numSamples >> 2U;
 
-    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
-     ** a second loop below computes the remaining 1 to 3 samples. */
-    while (blkCnt > 0U)
-    {
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+   ** a second loop below computes the remaining 1 to 3 samples. */
+  while (blkCnt > 0U)
+  {
 
-        /* C[0] = sqrt(A[0] * A[0] + A[1] * A[1]) */
-        in1 = *__SIMD32(pSrc)++;
-        in2 = *__SIMD32(pSrc)++;
-        in3 = *__SIMD32(pSrc)++;
-        in4 = *__SIMD32(pSrc)++;
+    /* C[0] = sqrt(A[0] * A[0] + A[1] * A[1]) */
+    in1 = *__SIMD32(pSrc)++;
+    in2 = *__SIMD32(pSrc)++;
+    in3 = *__SIMD32(pSrc)++;
+    in4 = *__SIMD32(pSrc)++;
 
-        acc0 = __SMUAD(in1, in1);
-        acc1 = __SMUAD(in2, in2);
-        acc2 = __SMUAD(in3, in3);
-        acc3 = __SMUAD(in4, in4);
+    acc0 = __SMUAD(in1, in1);
+    acc1 = __SMUAD(in2, in2);
+    acc2 = __SMUAD(in3, in3);
+    acc3 = __SMUAD(in4, in4);
 
-        /* store the result in 2.14 format in the destination buffer. */
-        arm_sqrt_q15((q15_t) ((acc0) >> 17), pDst++);
-        arm_sqrt_q15((q15_t) ((acc1) >> 17), pDst++);
-        arm_sqrt_q15((q15_t) ((acc2) >> 17), pDst++);
-        arm_sqrt_q15((q15_t) ((acc3) >> 17), pDst++);
+    /* store the result in 2.14 format in the destination buffer. */
+    arm_sqrt_q15((q15_t) ((acc0) >> 17), pDst++);
+    arm_sqrt_q15((q15_t) ((acc1) >> 17), pDst++);
+    arm_sqrt_q15((q15_t) ((acc2) >> 17), pDst++);
+    arm_sqrt_q15((q15_t) ((acc3) >> 17), pDst++);
 
-        /* Decrement the loop counter */
-        blkCnt--;
-    }
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
 
-    /* If the numSamples is not a multiple of 4, compute any remaining output samples here.
-     ** No loop unrolling is used. */
-    blkCnt = numSamples % 0x4U;
+  /* If the numSamples is not a multiple of 4, compute any remaining output samples here.
+   ** No loop unrolling is used. */
+  blkCnt = numSamples % 0x4U;
 
-    while (blkCnt > 0U)
-    {
-        /* C[0] = sqrt(A[0] * A[0] + A[1] * A[1]) */
-        in1 = *__SIMD32(pSrc)++;
-        acc0 = __SMUAD(in1, in1);
+  while (blkCnt > 0U)
+  {
+    /* C[0] = sqrt(A[0] * A[0] + A[1] * A[1]) */
+    in1 = *__SIMD32(pSrc)++;
+    acc0 = __SMUAD(in1, in1);
 
-        /* store the result in 2.14 format in the destination buffer. */
-        arm_sqrt_q15((q15_t) (acc0 >> 17), pDst++);
+    /* store the result in 2.14 format in the destination buffer. */
+    arm_sqrt_q15((q15_t) (acc0 >> 17), pDst++);
 
-        /* Decrement the loop counter */
-        blkCnt--;
-    }
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
 
 #else
 
-    /* Run the below code for Cortex-M0 */
-    q15_t real, imag;                              /* Temporary variables to hold input values */
+  /* Run the below code for Cortex-M0 */
+  q15_t real, imag;                              /* Temporary variables to hold input values */
 
-    while (numSamples > 0U)
-    {
-        /* out = sqrt(real * real + imag * imag) */
-        real = *pSrc++;
-        imag = *pSrc++;
+  while (numSamples > 0U)
+  {
+    /* out = sqrt(real * real + imag * imag) */
+    real = *pSrc++;
+    imag = *pSrc++;
 
-        acc0 = (real * real);
-        acc1 = (imag * imag);
+    acc0 = (real * real);
+    acc1 = (imag * imag);
 
-        /* store the result in 2.14 format in the destination buffer. */
-        arm_sqrt_q15((q15_t) (((q63_t) acc0 + acc1) >> 17), pDst++);
+    /* store the result in 2.14 format in the destination buffer. */
+    arm_sqrt_q15((q15_t) (((q63_t) acc0 + acc1) >> 17), pDst++);
 
-        /* Decrement the loop counter */
-        numSamples--;
-    }
+    /* Decrement the loop counter */
+    numSamples--;
+  }
 
 #endif /* #if defined (ARM_MATH_DSP) */
 

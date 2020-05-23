@@ -71,141 +71,141 @@
  */
 
 void arm_cmplx_mult_real_f32(
-    float32_t* pSrcCmplx,
-    float32_t* pSrcReal,
-    float32_t* pCmplxDst,
-    uint32_t numSamples)
+  float32_t * pSrcCmplx,
+  float32_t * pSrcReal,
+  float32_t * pCmplxDst,
+  uint32_t numSamples)
 {
-    float32_t in;                                  /* Temporary variable to store input value */
-    uint32_t blkCnt;                               /* loop counters */
+  float32_t in;                                  /* Temporary variable to store input value */
+  uint32_t blkCnt;                               /* loop counters */
 
 #if defined (ARM_MATH_DSP)
 
-    /* Run the below code for Cortex-M4 and Cortex-M3 */
-    float32_t inA1, inA2, inA3, inA4;              /* Temporary variables to hold input data */
-    float32_t inA5, inA6, inA7, inA8;              /* Temporary variables to hold input data */
-    float32_t inB1, inB2, inB3, inB4;              /* Temporary variables to hold input data */
-    float32_t out1, out2, out3, out4;              /* Temporary variables to hold output data */
-    float32_t out5, out6, out7, out8;              /* Temporary variables to hold output data */
+  /* Run the below code for Cortex-M4 and Cortex-M3 */
+  float32_t inA1, inA2, inA3, inA4;              /* Temporary variables to hold input data */
+  float32_t inA5, inA6, inA7, inA8;              /* Temporary variables to hold input data */
+  float32_t inB1, inB2, inB3, inB4;              /* Temporary variables to hold input data */
+  float32_t out1, out2, out3, out4;              /* Temporary variables to hold output data */
+  float32_t out5, out6, out7, out8;              /* Temporary variables to hold output data */
 
-    /* loop Unrolling */
-    blkCnt = numSamples >> 2U;
+  /* loop Unrolling */
+  blkCnt = numSamples >> 2U;
 
-    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
-     ** a second loop below computes the remaining 1 to 3 samples. */
-    while (blkCnt > 0U)
-    {
-        /* C[2 * i] = A[2 * i] * B[i].            */
-        /* C[2 * i + 1] = A[2 * i + 1] * B[i].        */
-        /* read input from complex input buffer */
-        inA1 = pSrcCmplx[0];
-        inA2 = pSrcCmplx[1];
-        /* read input from real input buffer */
-        inB1 = pSrcReal[0];
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+   ** a second loop below computes the remaining 1 to 3 samples. */
+  while (blkCnt > 0U)
+  {
+    /* C[2 * i] = A[2 * i] * B[i].            */
+    /* C[2 * i + 1] = A[2 * i + 1] * B[i].        */
+    /* read input from complex input buffer */
+    inA1 = pSrcCmplx[0];
+    inA2 = pSrcCmplx[1];
+    /* read input from real input buffer */
+    inB1 = pSrcReal[0];
 
-        /* read input from complex input buffer */
-        inA3 = pSrcCmplx[2];
+    /* read input from complex input buffer */
+    inA3 = pSrcCmplx[2];
 
-        /* multiply complex buffer real input with real buffer input */
-        out1 = inA1 * inB1;
+    /* multiply complex buffer real input with real buffer input */
+    out1 = inA1 * inB1;
 
-        /* read input from complex input buffer */
-        inA4 = pSrcCmplx[3];
+    /* read input from complex input buffer */
+    inA4 = pSrcCmplx[3];
 
-        /* multiply complex buffer imaginary input with real buffer input */
-        out2 = inA2 * inB1;
+    /* multiply complex buffer imaginary input with real buffer input */
+    out2 = inA2 * inB1;
 
-        /* read input from real input buffer */
-        inB2 = pSrcReal[1];
-        /* read input from complex input buffer */
-        inA5 = pSrcCmplx[4];
+    /* read input from real input buffer */
+    inB2 = pSrcReal[1];
+    /* read input from complex input buffer */
+    inA5 = pSrcCmplx[4];
 
-        /* multiply complex buffer real input with real buffer input */
-        out3 = inA3 * inB2;
+    /* multiply complex buffer real input with real buffer input */
+    out3 = inA3 * inB2;
 
-        /* read input from complex input buffer */
-        inA6 = pSrcCmplx[5];
-        /* read input from real input buffer */
-        inB3 = pSrcReal[2];
+    /* read input from complex input buffer */
+    inA6 = pSrcCmplx[5];
+    /* read input from real input buffer */
+    inB3 = pSrcReal[2];
 
-        /* multiply complex buffer imaginary input with real buffer input */
-        out4 = inA4 * inB2;
+    /* multiply complex buffer imaginary input with real buffer input */
+    out4 = inA4 * inB2;
 
-        /* read input from complex input buffer */
-        inA7 = pSrcCmplx[6];
+    /* read input from complex input buffer */
+    inA7 = pSrcCmplx[6];
 
-        /* multiply complex buffer real input with real buffer input */
-        out5 = inA5 * inB3;
+    /* multiply complex buffer real input with real buffer input */
+    out5 = inA5 * inB3;
 
-        /* read input from complex input buffer */
-        inA8 = pSrcCmplx[7];
+    /* read input from complex input buffer */
+    inA8 = pSrcCmplx[7];
 
-        /* multiply complex buffer imaginary input with real buffer input */
-        out6 = inA6 * inB3;
+    /* multiply complex buffer imaginary input with real buffer input */
+    out6 = inA6 * inB3;
 
-        /* read input from real input buffer */
-        inB4 = pSrcReal[3];
+    /* read input from real input buffer */
+    inB4 = pSrcReal[3];
 
-        /* store result to destination bufer */
-        pCmplxDst[0] = out1;
+    /* store result to destination bufer */
+    pCmplxDst[0] = out1;
 
-        /* multiply complex buffer real input with real buffer input */
-        out7 = inA7 * inB4;
+    /* multiply complex buffer real input with real buffer input */
+    out7 = inA7 * inB4;
 
-        /* store result to destination bufer */
-        pCmplxDst[1] = out2;
+    /* store result to destination bufer */
+    pCmplxDst[1] = out2;
 
-        /* multiply complex buffer imaginary input with real buffer input */
-        out8 = inA8 * inB4;
+    /* multiply complex buffer imaginary input with real buffer input */
+    out8 = inA8 * inB4;
 
-        /* store result to destination bufer */
-        pCmplxDst[2] = out3;
-        pCmplxDst[3] = out4;
-        pCmplxDst[4] = out5;
+    /* store result to destination bufer */
+    pCmplxDst[2] = out3;
+    pCmplxDst[3] = out4;
+    pCmplxDst[4] = out5;
 
-        /* incremnet complex input buffer by 8 to process next samples */
-        pSrcCmplx += 8U;
+    /* incremnet complex input buffer by 8 to process next samples */
+    pSrcCmplx += 8U;
 
-        /* store result to destination bufer */
-        pCmplxDst[5] = out6;
+    /* store result to destination bufer */
+    pCmplxDst[5] = out6;
 
-        /* increment real input buffer by 4 to process next samples */
-        pSrcReal += 4U;
+    /* increment real input buffer by 4 to process next samples */
+    pSrcReal += 4U;
 
-        /* store result to destination bufer */
-        pCmplxDst[6] = out7;
-        pCmplxDst[7] = out8;
+    /* store result to destination bufer */
+    pCmplxDst[6] = out7;
+    pCmplxDst[7] = out8;
 
-        /* increment destination buffer by 8 to process next sampels */
-        pCmplxDst += 8U;
+    /* increment destination buffer by 8 to process next sampels */
+    pCmplxDst += 8U;
 
-        /* Decrement the numSamples loop counter */
-        blkCnt--;
-    }
+    /* Decrement the numSamples loop counter */
+    blkCnt--;
+  }
 
-    /* If the numSamples is not a multiple of 4, compute any remaining output samples here.
-     ** No loop unrolling is used. */
-    blkCnt = numSamples % 0x4U;
+  /* If the numSamples is not a multiple of 4, compute any remaining output samples here.
+   ** No loop unrolling is used. */
+  blkCnt = numSamples % 0x4U;
 
 #else
 
-    /* Run the below code for Cortex-M0 */
-    blkCnt = numSamples;
+  /* Run the below code for Cortex-M0 */
+  blkCnt = numSamples;
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
-    while (blkCnt > 0U)
-    {
-        /* C[2 * i] = A[2 * i] * B[i].            */
-        /* C[2 * i + 1] = A[2 * i + 1] * B[i].        */
-        in = *pSrcReal++;
-        /* store the result in the destination buffer. */
-        *pCmplxDst++ = (*pSrcCmplx++) * (in);
-        *pCmplxDst++ = (*pSrcCmplx++) * (in);
+  while (blkCnt > 0U)
+  {
+    /* C[2 * i] = A[2 * i] * B[i].            */
+    /* C[2 * i + 1] = A[2 * i + 1] * B[i].        */
+    in = *pSrcReal++;
+    /* store the result in the destination buffer. */
+    *pCmplxDst++ = (*pSrcCmplx++) * (in);
+    *pCmplxDst++ = (*pSrcCmplx++) * (in);
 
-        /* Decrement the numSamples loop counter */
-        blkCnt--;
-    }
+    /* Decrement the numSamples loop counter */
+    blkCnt--;
+  }
 }
 
 /**

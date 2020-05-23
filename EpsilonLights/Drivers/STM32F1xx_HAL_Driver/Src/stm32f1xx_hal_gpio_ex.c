@@ -80,12 +80,12 @@
   */
 void HAL_GPIOEx_ConfigEventout(uint32_t GPIO_PortSource, uint32_t GPIO_PinSource)
 {
-    /* Verify the parameters */
-    assert_param(IS_AFIO_EVENTOUT_PORT(GPIO_PortSource));
-    assert_param(IS_AFIO_EVENTOUT_PIN(GPIO_PinSource));
+  /* Verify the parameters */
+  assert_param(IS_AFIO_EVENTOUT_PORT(GPIO_PortSource));
+  assert_param(IS_AFIO_EVENTOUT_PIN(GPIO_PinSource));
 
-    /* Apply the new configuration */
-    MODIFY_REG(AFIO->EVCR, (AFIO_EVCR_PORT) | (AFIO_EVCR_PIN), (GPIO_PortSource) | (GPIO_PinSource));
+  /* Apply the new configuration */
+  MODIFY_REG(AFIO->EVCR, (AFIO_EVCR_PORT) | (AFIO_EVCR_PIN), (GPIO_PortSource) | (GPIO_PinSource));
 }
 
 /**
@@ -94,7 +94,7 @@ void HAL_GPIOEx_ConfigEventout(uint32_t GPIO_PortSource, uint32_t GPIO_PinSource
   */
 void HAL_GPIOEx_EnableEventout(void)
 {
-    SET_BIT(AFIO->EVCR, AFIO_EVCR_EVOE);
+  SET_BIT(AFIO->EVCR, AFIO_EVCR_EVOE);
 }
 
 /**
@@ -103,7 +103,7 @@ void HAL_GPIOEx_EnableEventout(void)
   */
 void HAL_GPIOEx_DisableEventout(void)
 {
-    CLEAR_BIT(AFIO->EVCR, AFIO_EVCR_EVOE);
+  CLEAR_BIT(AFIO->EVCR, AFIO_EVCR_EVOE);
 }
 
 /**

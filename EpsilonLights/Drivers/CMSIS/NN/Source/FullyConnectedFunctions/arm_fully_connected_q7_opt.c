@@ -40,110 +40,110 @@
  * @{
  */
 
-/**
- * @brief Q7 opt fully-connected layer function
- * @param[in]       pV          pointer to input vector
- * @param[in]       pM          pointer to matrix weights
- * @param[in]       dim_vec     length of the vector
- * @param[in]       num_of_rows number of rows in weight matrix
- * @param[in]       bias_shift  amount of left-shift for bias
- * @param[in]       out_shift   amount of right-shift for output
- * @param[in]       bias        pointer to bias
- * @param[in,out]   pOut        pointer to output vector
- * @param[in,out]   vec_buffer  pointer to buffer space for input
- * @return     The function returns <code>ARM_MATH_SUCCESS</code>
- *
- * @details
- *
- * <b>Buffer size:</b>
- *
- * vec_buffer size: dim_vec
- *
- * This opt function is designed to work with interleaved weight
- * matrix. The vector input is assumed in q7_t format, we call
- *  arm_q7_to_q15_no_shift_shuffle function to expand into
- *  q15_t format with certain weight re-ordering, refer to the function
- *  comments for more details.
- *  Here we use only one pointer to read 4 rows in the weight
- *  matrix. So if the original q7_t matrix looks like this:
- *
- *  | a11 | a12 | a13 | a14 | a15 | a16 | a17 |
- *
- *  | a21 | a22 | a23 | a24 | a25 | a26 | a27 |
- *
- *  | a31 | a32 | a33 | a34 | a35 | a36 | a37 |
- *
- *  | a41 | a42 | a43 | a44 | a45 | a46 | a47 |
- *
- *  | a51 | a52 | a53 | a54 | a55 | a56 | a57 |
- *
- *  | a61 | a62 | a63 | a64 | a65 | a66 | a67 |
- *
- *
- *  We operates on multiple-of-4 rows, so the first four rows becomes
- *
- *  | a11 | a21 | a13 | a23 | a31 | a41 | a33 | a43 |
- *
- *  | a12 | a22 | a14 | a24 | a32 | a42 | a34 | a44 |
- *
- *  | a15 | a25 | a35 | a45 | a16 | a26 | a36 | a46 |
- *
- *  So within the kernel, we first read the re-ordered vector in as:
- *
- *  | b1  | b3  | and | b2  | b4  |
- *
- *  the four q31_t weights will look like
- *
- *  | a11 | a13 |, | a21 | a23 |, | a31 | a33 |, | a41 | a43 |
- *
- *  | a12 | a14 |, | a22 | a24 |, | a32 | a34 |, | a42 | a44 |
- *
- *  The column left over will be in-order.
- *  which is:
- *
- *  | a17 | a27 | a37 | a47 |
- *
- *  For the left-over rows, we do 1x1 computation, so the data remains
- *  as its original order.
- *
- *  So the stored weight matrix looks like this:
- *
- *  | a11 | a21 | a13 | a23 | a31 | a41 |
- *
- *  | a33 | a43 | a12 | a22 | a14 | a24 |
- *
- *  | a32 | a42 | a34 | a44 | a15 | a25 |
- *
- *  | a35 | a45 | a16 | a26 | a36 | a46 |
- *
- *  | a17 | a27 | a37 | a47 | a51 | a52 |
- *
- *  | a53 | a54 | a55 | a56 | a57 | a61 |
- *
- *  | a62 | a63 | a64 | a65 | a66 | a67 |
- *
- *
- */
+  /**
+   * @brief Q7 opt fully-connected layer function
+   * @param[in]       pV          pointer to input vector
+   * @param[in]       pM          pointer to matrix weights
+   * @param[in]       dim_vec     length of the vector
+   * @param[in]       num_of_rows number of rows in weight matrix
+   * @param[in]       bias_shift  amount of left-shift for bias
+   * @param[in]       out_shift   amount of right-shift for output
+   * @param[in]       bias        pointer to bias
+   * @param[in,out]   pOut        pointer to output vector
+   * @param[in,out]   vec_buffer  pointer to buffer space for input
+   * @return     The function returns <code>ARM_MATH_SUCCESS</code>
+   *
+   * @details
+   *
+   * <b>Buffer size:</b>
+   *
+   * vec_buffer size: dim_vec
+   *
+   * This opt function is designed to work with interleaved weight
+   * matrix. The vector input is assumed in q7_t format, we call
+   *  arm_q7_to_q15_no_shift_shuffle function to expand into
+   *  q15_t format with certain weight re-ordering, refer to the function
+   *  comments for more details.
+   *  Here we use only one pointer to read 4 rows in the weight
+   *  matrix. So if the original q7_t matrix looks like this:
+   *
+   *  | a11 | a12 | a13 | a14 | a15 | a16 | a17 |
+   *
+   *  | a21 | a22 | a23 | a24 | a25 | a26 | a27 |
+   *
+   *  | a31 | a32 | a33 | a34 | a35 | a36 | a37 |
+   *
+   *  | a41 | a42 | a43 | a44 | a45 | a46 | a47 |
+   *
+   *  | a51 | a52 | a53 | a54 | a55 | a56 | a57 |
+   *
+   *  | a61 | a62 | a63 | a64 | a65 | a66 | a67 |
+   *
+   *
+   *  We operates on multiple-of-4 rows, so the first four rows becomes
+   *
+   *  | a11 | a21 | a13 | a23 | a31 | a41 | a33 | a43 |
+   *
+   *  | a12 | a22 | a14 | a24 | a32 | a42 | a34 | a44 |
+   *
+   *  | a15 | a25 | a35 | a45 | a16 | a26 | a36 | a46 |
+   *
+   *  So within the kernel, we first read the re-ordered vector in as:
+   *
+   *  | b1  | b3  | and | b2  | b4  |
+   *
+   *  the four q31_t weights will look like
+   *
+   *  | a11 | a13 |, | a21 | a23 |, | a31 | a33 |, | a41 | a43 |
+   *
+   *  | a12 | a14 |, | a22 | a24 |, | a32 | a34 |, | a42 | a44 |
+   *
+   *  The column left over will be in-order.
+   *  which is:
+   *
+   *  | a17 | a27 | a37 | a47 |
+   *
+   *  For the left-over rows, we do 1x1 computation, so the data remains
+   *  as its original order. 
+   *
+   *  So the stored weight matrix looks like this:
+   *
+   *  | a11 | a21 | a13 | a23 | a31 | a41 |
+   *
+   *  | a33 | a43 | a12 | a22 | a14 | a24 |
+   *
+   *  | a32 | a42 | a34 | a44 | a15 | a25 |
+   *
+   *  | a35 | a45 | a16 | a26 | a36 | a46 |
+   *
+   *  | a17 | a27 | a37 | a47 | a51 | a52 |
+   *
+   *  | a53 | a54 | a55 | a56 | a57 | a61 |
+   *
+   *  | a62 | a63 | a64 | a65 | a66 | a67 |
+   *
+   *
+   */
 
 arm_status
-arm_fully_connected_q7_opt(const q7_t* pV,
-                           const q7_t* pM,
+arm_fully_connected_q7_opt(const q7_t * pV,
+                           const q7_t * pM,
                            const uint16_t dim_vec,
                            const uint16_t num_of_rows,
                            const uint16_t bias_shift,
-                           const uint16_t out_shift,
-                           const q7_t* bias,
-                           q7_t* pOut,
-                           q15_t* vec_buffer)
+                           const uint16_t out_shift, 
+                           const q7_t * bias, 
+                           q7_t * pOut, 
+                           q15_t * vec_buffer)
 {
 
 #if defined (ARM_MATH_DSP)
     /* Run the following code for Cortex-M4 and Cortex-M7 */
 
-    const q7_t* pB = pM;
-    q7_t*     pO = pOut;
-    const q7_t* pBias = bias;
-    q15_t*    pA;
+    const q7_t *pB = pM;
+    q7_t     *pO = pOut;
+    const q7_t *pBias = bias;
+    q15_t    *pA;
     uint16_t  rowCnt = num_of_rows >> 2;
 
     arm_q7_to_q15_reordered_no_shift(pV, vec_buffer, dim_vec);
@@ -163,7 +163,6 @@ arm_fully_connected_q7_opt(const q7_t* pV,
 #ifdef USE_INTRINSIC
 
 #ifndef ARM_MATH_BIG_ENDIAN
-
         while (colCnt)
         {
             q31_t     inM11, inM12, inM13, inM14;
@@ -194,9 +193,7 @@ arm_fully_connected_q7_opt(const q7_t* pV,
             sum4 = __SMLAD(inM14, inV, sum4);
             colCnt--;
         }
-
 #else
-
         while (colCnt)
         {
             q31_t     inM11, inM12, inM13, inM14;
@@ -227,7 +224,6 @@ arm_fully_connected_q7_opt(const q7_t* pV,
             sum4 = __SMLAD(inM13, inV, sum4);
             colCnt--;
         }
-
 #endif                          /* ARM_MATH_BIG_ENDIAN */
 
 #else
@@ -271,8 +267,8 @@ arm_fully_connected_q7_opt(const q7_t* pV,
                       "smlad %[sum4], r4, r2, %[sum4]\n"
                       "subs %[colCnt], #1\n"
                       "bne COL_LOOP_%=\n":[sum] "+r"(sum),
-                      [sum2] "+r"(sum2), [sum3] "+r"(sum3),
-                      [sum4] "+r"(sum4), [pB] "+r"(pB), [pA] "+r"(pA):[colCnt] "r"(colCnt):"r0", "r1", "r2", "r3", "r4");
+                      [sum2] "+r"(sum2),[sum3] "+r"(sum3),
+                      [sum4] "+r"(sum4),[pB] "+r"(pB),[pA] "+r"(pA):[colCnt] "r"(colCnt):"r0", "r1", "r2", "r3", "r4");
 #else
         asm volatile ("COL_LOOP_%=:\n"
                       "ldr.w r4, [%[pA]], #8\n"
@@ -303,14 +299,13 @@ arm_fully_connected_q7_opt(const q7_t* pV,
                       "smlad %[sum4], r4, r3, %[sum4]\n"
                       "subs %[colCnt], #1\n"
                       "bne COL_LOOP_%=\n":[sum] "+r"(sum),
-                      [sum2] "+r"(sum2), [sum3] "+r"(sum3),
-                      [sum4] "+r"(sum4), [pB] "+r"(pB), [pA] "+r"(pA):[colCnt] "r"(colCnt):"r0", "r1", "r2", "r3", "r4");
+                      [sum2] "+r"(sum2),[sum3] "+r"(sum3),
+                      [sum4] "+r"(sum4),[pB] "+r"(pB),[pA] "+r"(pA):[colCnt] "r"(colCnt):"r0", "r1", "r2", "r3", "r4");
 #endif                          /* ARM_MATH_BIG_ENDIAN */
 
 #endif                          /* USE_INTRINSIC */
 
         colCnt = dim_vec & 0x3;
-
         while (colCnt)
         {
             q15_t     inV = *pA++;
@@ -325,7 +320,6 @@ arm_fully_connected_q7_opt(const q7_t* pV,
             sum4 += inV * inM4;
             colCnt--;
         }                       /* while over colCnt */
-
         *pO++ = (q7_t) (__SSAT((sum >> out_shift), 8));
         *pO++ = (q7_t) (__SSAT((sum2 >> out_shift), 8));
         *pO++ = (q7_t) (__SSAT((sum3 >> out_shift), 8));
@@ -349,7 +343,7 @@ arm_fully_connected_q7_opt(const q7_t* pV,
         {
             q31_t     inV1, inV2, inM11, inM12;
 
-            pB = (q7_t*) read_and_pad_reordered((void*)pB, &inM11, &inM12);
+            pB = (q7_t *) read_and_pad_reordered((void *)pB, &inM11, &inM12);
 
             inV1 = *__SIMD32(pA)++;
             sum = __SMLAD(inV1, inM11, sum);
@@ -362,7 +356,6 @@ arm_fully_connected_q7_opt(const q7_t* pV,
 
         /* left-over of the vector */
         colCnt = dim_vec & 0x3;
-
         while (colCnt)
         {
             q15_t     inV = *pA++;
@@ -379,10 +372,10 @@ arm_fully_connected_q7_opt(const q7_t* pV,
 #else
     /* Run the following code as reference implementation for Cortex-M0 and Cortex-M3 */
     uint16_t  rowCnt = num_of_rows >> 2;
-    const q7_t* pB = pM;
-    const q7_t* pA;
-    q7_t*     pO = pOut;
-    const q7_t* pBias = bias;
+    const q7_t *pB = pM;
+    const q7_t *pA;
+    q7_t     *pO = pOut;
+    const q7_t *pBias = bias;
 
     while (rowCnt)
     {
@@ -436,9 +429,7 @@ arm_fully_connected_q7_opt(const q7_t* pV,
 
             colCnt--;
         }
-
         colCnt = dim_vec & 0x3;
-
         while (colCnt)
         {
             q7_t      inA = *pA++;
@@ -453,7 +444,6 @@ arm_fully_connected_q7_opt(const q7_t* pV,
 
             colCnt--;
         }
-
         *pO++ = (q7_t) __SSAT((sum >> out_shift), 8);
         *pO++ = (q7_t) __SSAT((sum2 >> out_shift), 8);
         *pO++ = (q7_t) __SSAT((sum3 >> out_shift), 8);
@@ -471,14 +461,12 @@ arm_fully_connected_q7_opt(const q7_t* pV,
         int       j;
 
         pA = pV;
-
         for (j = 0; j < dim_vec; j++)
         {
             q7_t      inA = *pA++;
             q7_t      inB = *pB++;
             ip_out += inA * inB;
         }
-
         *pO++ = (q7_t) __SSAT((ip_out >> out_shift), 8);
 
         rowCnt--;

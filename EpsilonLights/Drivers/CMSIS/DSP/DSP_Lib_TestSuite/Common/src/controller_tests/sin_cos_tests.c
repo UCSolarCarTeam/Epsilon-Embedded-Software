@@ -22,7 +22,7 @@ ARR_DESC_DEFINE(float32_t,
                     362,
                     -73,
                     -191.111
-                ));
+                      ));
 
 /* The Q31 version of the function maps numbers in the range [-1, 0.9999999]
  * to degrees in the range [-180, 179]*/
@@ -37,7 +37,7 @@ ARR_DESC_DEFINE(q31_t,
                     0xf7badafa,
                     0x285954a1,
                     0xb9d09511
-                ));
+                      ));
 
 /*--------------------------------------------------------------------------------*/
 /* Output Variables */
@@ -83,13 +83,13 @@ JTEST_DEFINE_TEST(arm_sin_cos_f32_test, arm_sin_cos_f32)
         JTEST_COUNT_CYCLES(
             arm_sin_cos_f32(
                 degree,
-                (TYPE_FROM_ABBREV(f32)*) &sin_val_fut,
-                (TYPE_FROM_ABBREV(f32)*) &cos_val_fut)
+                (TYPE_FROM_ABBREV(f32) *) &sin_val_fut,
+                (TYPE_FROM_ABBREV(f32) *) &cos_val_fut)
         );
         ref_sin_cos_f32(
             degree,
-            (TYPE_FROM_ABBREV(f32)*) &sin_val_ref,
-            (TYPE_FROM_ABBREV(f32)*) &cos_val_ref);
+            (TYPE_FROM_ABBREV(f32) *) &sin_val_ref,
+            (TYPE_FROM_ABBREV(f32) *) &cos_val_ref);
 
         /* Test correctness */
         COMPARISON_INTERFACE(
@@ -115,19 +115,19 @@ JTEST_DEFINE_TEST(arm_sin_cos_q31_test,
         JTEST_COUNT_CYCLES(
             arm_sin_cos_q31(
                 degree,
-                (TYPE_FROM_ABBREV(q31)*) &sin_val_fut,
-                (TYPE_FROM_ABBREV(q31)*) &cos_val_fut)
+                (TYPE_FROM_ABBREV(q31) *) &sin_val_fut,
+                (TYPE_FROM_ABBREV(q31) *) &cos_val_fut)
         );
         ref_sin_cos_q31(
             degree,
-            (TYPE_FROM_ABBREV(q31)*) &sin_val_ref,
-            (TYPE_FROM_ABBREV(q31)*) &cos_val_ref);
+            (TYPE_FROM_ABBREV(q31) *) &sin_val_ref,
+            (TYPE_FROM_ABBREV(q31) *) &cos_val_ref);
 
         /* Convert q31 numbers to float for comparison purposes. */
-        ref_q31_t_to_float((TYPE_FROM_ABBREV(q31)*) &sin_val_fut, &sin_val_fut, 1);
-        ref_q31_t_to_float((TYPE_FROM_ABBREV(q31)*) &cos_val_fut, &cos_val_fut, 1);
-        ref_q31_t_to_float((TYPE_FROM_ABBREV(q31)*) &sin_val_ref, &sin_val_ref, 1);
-        ref_q31_t_to_float((TYPE_FROM_ABBREV(q31)*) &cos_val_ref, &cos_val_ref, 1);
+        ref_q31_t_to_float((TYPE_FROM_ABBREV(q31) *) &sin_val_fut, &sin_val_fut, 1);
+        ref_q31_t_to_float((TYPE_FROM_ABBREV(q31) *) &cos_val_fut, &cos_val_fut, 1);
+        ref_q31_t_to_float((TYPE_FROM_ABBREV(q31) *) &sin_val_ref, &sin_val_ref, 1);
+        ref_q31_t_to_float((TYPE_FROM_ABBREV(q31) *) &cos_val_ref, &cos_val_ref, 1);
 
         /* Test correctness */
         COMPARISON_INTERFACE(

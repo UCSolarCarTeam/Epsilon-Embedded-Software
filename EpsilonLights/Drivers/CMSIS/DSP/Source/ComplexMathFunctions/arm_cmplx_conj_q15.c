@@ -51,94 +51,94 @@
  */
 
 void arm_cmplx_conj_q15(
-    q15_t* pSrc,
-    q15_t* pDst,
-    uint32_t numSamples)
+  q15_t * pSrc,
+  q15_t * pDst,
+  uint32_t numSamples)
 {
 
 #if defined (ARM_MATH_DSP)
 
-    /* Run the below code for Cortex-M4 and Cortex-M3 */
-    uint32_t blkCnt;                               /* loop counter */
-    q31_t in1, in2, in3, in4;
-    q31_t zero = 0;
+  /* Run the below code for Cortex-M4 and Cortex-M3 */
+  uint32_t blkCnt;                               /* loop counter */
+  q31_t in1, in2, in3, in4;
+  q31_t zero = 0;
 
-    /*loop Unrolling */
-    blkCnt = numSamples >> 2U;
+  /*loop Unrolling */
+  blkCnt = numSamples >> 2U;
 
-    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
-     ** a second loop below computes the remaining 1 to 3 samples. */
-    while (blkCnt > 0U)
-    {
-        /* C[0]+jC[1] = A[0]+ j (-1) A[1] */
-        /* Calculate Complex Conjugate and then store the results in the destination buffer. */
-        in1 = *__SIMD32(pSrc)++;
-        in2 = *__SIMD32(pSrc)++;
-        in3 = *__SIMD32(pSrc)++;
-        in4 = *__SIMD32(pSrc)++;
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+   ** a second loop below computes the remaining 1 to 3 samples. */
+  while (blkCnt > 0U)
+  {
+    /* C[0]+jC[1] = A[0]+ j (-1) A[1] */
+    /* Calculate Complex Conjugate and then store the results in the destination buffer. */
+    in1 = *__SIMD32(pSrc)++;
+    in2 = *__SIMD32(pSrc)++;
+    in3 = *__SIMD32(pSrc)++;
+    in4 = *__SIMD32(pSrc)++;
 
 #ifndef ARM_MATH_BIG_ENDIAN
 
-        in1 = __QASX(zero, in1);
-        in2 = __QASX(zero, in2);
-        in3 = __QASX(zero, in3);
-        in4 = __QASX(zero, in4);
+    in1 = __QASX(zero, in1);
+    in2 = __QASX(zero, in2);
+    in3 = __QASX(zero, in3);
+    in4 = __QASX(zero, in4);
 
 #else
 
-        in1 = __QSAX(zero, in1);
-        in2 = __QSAX(zero, in2);
-        in3 = __QSAX(zero, in3);
-        in4 = __QSAX(zero, in4);
+    in1 = __QSAX(zero, in1);
+    in2 = __QSAX(zero, in2);
+    in3 = __QSAX(zero, in3);
+    in4 = __QSAX(zero, in4);
 
 #endif /* #ifndef ARM_MATH_BIG_ENDIAN */
 
-        in1 = ((uint32_t) in1 >> 16) | ((uint32_t) in1 << 16);
-        in2 = ((uint32_t) in2 >> 16) | ((uint32_t) in2 << 16);
-        in3 = ((uint32_t) in3 >> 16) | ((uint32_t) in3 << 16);
-        in4 = ((uint32_t) in4 >> 16) | ((uint32_t) in4 << 16);
+    in1 = ((uint32_t) in1 >> 16) | ((uint32_t) in1 << 16);
+    in2 = ((uint32_t) in2 >> 16) | ((uint32_t) in2 << 16);
+    in3 = ((uint32_t) in3 >> 16) | ((uint32_t) in3 << 16);
+    in4 = ((uint32_t) in4 >> 16) | ((uint32_t) in4 << 16);
 
-        *__SIMD32(pDst)++ = in1;
-        *__SIMD32(pDst)++ = in2;
-        *__SIMD32(pDst)++ = in3;
-        *__SIMD32(pDst)++ = in4;
+    *__SIMD32(pDst)++ = in1;
+    *__SIMD32(pDst)++ = in2;
+    *__SIMD32(pDst)++ = in3;
+    *__SIMD32(pDst)++ = in4;
 
-        /* Decrement the loop counter */
-        blkCnt--;
-    }
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
 
-    /* If the numSamples is not a multiple of 4, compute any remaining output samples here.
-     ** No loop unrolling is used. */
-    blkCnt = numSamples % 0x4U;
+  /* If the numSamples is not a multiple of 4, compute any remaining output samples here.
+   ** No loop unrolling is used. */
+  blkCnt = numSamples % 0x4U;
 
-    while (blkCnt > 0U)
-    {
-        /* C[0]+jC[1] = A[0]+ j (-1) A[1] */
-        /* Calculate Complex Conjugate and then store the results in the destination buffer. */
-        *pDst++ = *pSrc++;
-        *pDst++ = __SSAT(-*pSrc++, 16);
+  while (blkCnt > 0U)
+  {
+    /* C[0]+jC[1] = A[0]+ j (-1) A[1] */
+    /* Calculate Complex Conjugate and then store the results in the destination buffer. */
+    *pDst++ = *pSrc++;
+    *pDst++ = __SSAT(-*pSrc++, 16);
 
-        /* Decrement the loop counter */
-        blkCnt--;
-    }
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
 
 #else
 
-    q15_t in;
+  q15_t in;
 
-    /* Run the below code for Cortex-M0 */
+  /* Run the below code for Cortex-M0 */
 
-    while (numSamples > 0U)
-    {
-        /* realOut + j (imagOut) = realIn+ j (-1) imagIn */
-        /* Calculate Complex Conjugate and then store the results in the destination buffer. */
-        *pDst++ = *pSrc++;
-        in = *pSrc++;
-        *pDst++ = (in == (q15_t) 0x8000) ? 0x7fff : -in;
+  while (numSamples > 0U)
+  {
+    /* realOut + j (imagOut) = realIn+ j (-1) imagIn */
+    /* Calculate Complex Conjugate and then store the results in the destination buffer. */
+    *pDst++ = *pSrc++;
+    in = *pSrc++;
+    *pDst++ = (in == (q15_t) 0x8000) ? 0x7fff : -in;
 
-        /* Decrement the loop counter */
-        numSamples--;
-    }
+    /* Decrement the loop counter */
+    numSamples--;
+  }
 
 #endif /* #if defined (ARM_MATH_DSP) */
 

@@ -40,53 +40,53 @@
  * @{
  */
 
-/**
- * @brief Fast Q15 convolution function (non-sqaure shape)
- * @param[in]       Im_in        pointer to input tensor
- * @param[in]       dim_im_in_x  input tensor dimention x
- * @param[in]       dim_im_in_y  input tensor dimention y
- * @param[in]       ch_im_in     number of input tensor channels
- * @param[in]       wt           pointer to kernel weights
- * @param[in]       ch_im_out    number of filters, i.e., output tensor channels
- * @param[in]       dim_kernel_x filter kernel size x
- * @param[in]       dim_kernel_y filter kernel size y
- * @param[in]       padding_x    padding size x
- * @param[in]       padding_y    padding size y
- * @param[in]       stride_x     convolution stride x
- * @param[in]       stride_y     convolution stride y
- * @param[in]       bias         pointer to bias
- * @param[in]       bias_shift   amount of left-shift for bias
- * @param[in]       out_shift    amount of right-shift for output
- * @param[in,out]   Im_out       pointer to output tensor
- * @param[in]       dim_im_out_x output tensor dimension x
- * @param[in]       dim_im_out_y output tensor dimension y
- * @param[in,out]   bufferA      pointer to buffer space for input
- * @param[in,out]   bufferB      pointer to buffer space for output
- * @return     The function returns either
- * <code>ARM_MATH_SIZE_MISMATCH</code> or <code>ARM_MATH_SUCCESS</code> based on the outcome of size checking.
- *
- * @details
- *
- * <b>Buffer size:</b>
- *
- * bufferA size: 2*ch_im_in*dim_kernel*dim_kernel
- *
- * bufferB size: 0
- *
- * <b>Input dimension constraints:</b>
- *
- * ch_im_in is multiple of 2
- *
- * ch_im_out is multipe of 2
- *
- */
+  /**
+   * @brief Fast Q15 convolution function (non-sqaure shape)
+   * @param[in]       Im_in        pointer to input tensor
+   * @param[in]       dim_im_in_x  input tensor dimention x
+   * @param[in]       dim_im_in_y  input tensor dimention y
+   * @param[in]       ch_im_in     number of input tensor channels
+   * @param[in]       wt           pointer to kernel weights
+   * @param[in]       ch_im_out    number of filters, i.e., output tensor channels
+   * @param[in]       dim_kernel_x filter kernel size x
+   * @param[in]       dim_kernel_y filter kernel size y
+   * @param[in]       padding_x    padding size x
+   * @param[in]       padding_y    padding size y
+   * @param[in]       stride_x     convolution stride x
+   * @param[in]       stride_y     convolution stride y
+   * @param[in]       bias         pointer to bias
+   * @param[in]       bias_shift   amount of left-shift for bias
+   * @param[in]       out_shift    amount of right-shift for output
+   * @param[in,out]   Im_out       pointer to output tensor
+   * @param[in]       dim_im_out_x output tensor dimension x
+   * @param[in]       dim_im_out_y output tensor dimension y
+   * @param[in,out]   bufferA      pointer to buffer space for input 
+   * @param[in,out]   bufferB      pointer to buffer space for output
+   * @return     The function returns either
+   * <code>ARM_MATH_SIZE_MISMATCH</code> or <code>ARM_MATH_SUCCESS</code> based on the outcome of size checking.
+   *
+   * @details
+   *
+   * <b>Buffer size:</b>
+   *
+   * bufferA size: 2*ch_im_in*dim_kernel*dim_kernel
+   *
+   * bufferB size: 0
+   *
+   * <b>Input dimension constraints:</b>
+   *
+   * ch_im_in is multiple of 2 
+   *
+   * ch_im_out is multipe of 2
+   *
+   */
 
 arm_status
-arm_convolve_HWC_q15_fast_nonsquare(const q15_t* Im_in,
+arm_convolve_HWC_q15_fast_nonsquare(const q15_t * Im_in,
                                     const uint16_t dim_im_in_x,
                                     const uint16_t dim_im_in_y,
                                     const uint16_t ch_im_in,
-                                    const q15_t* wt,
+                                    const q15_t * wt,
                                     const uint16_t ch_im_out,
                                     const uint16_t dim_kernel_x,
                                     const uint16_t dim_kernel_y,
@@ -94,22 +94,22 @@ arm_convolve_HWC_q15_fast_nonsquare(const q15_t* Im_in,
                                     const uint16_t padding_y,
                                     const uint16_t stride_x,
                                     const uint16_t stride_y,
-                                    const q15_t* bias,
+                                    const q15_t * bias,
                                     const uint16_t bias_shift,
                                     const uint16_t out_shift,
-                                    q15_t* Im_out,
+                                    q15_t * Im_out,
                                     const uint16_t dim_im_out_x,
-                                    const uint16_t dim_im_out_y,
-                                    q15_t* bufferA,
-                                    q7_t* bufferB)
+                                    const uint16_t dim_im_out_y, 
+                                    q15_t * bufferA, 
+                                    q7_t * bufferB)
 {
 
 #if defined (ARM_MATH_DSP)
     int16_t   i_out_y, i_out_x, i_ker_y, i_ker_x;
 
-    q15_t*    pBuffer = bufferA;
-    q15_t*    im_buffer = bufferA;
-    q15_t*    pOut = Im_out;
+    q15_t    *pBuffer = bufferA;
+    q15_t    *im_buffer = bufferA;
+    q15_t    *pOut = Im_out;
 
     if (ch_im_in % 2 != 0 || ch_im_out % 2 != 0)
     {
@@ -132,13 +132,11 @@ arm_convolve_HWC_q15_fast_nonsquare(const q15_t* Im_in,
                     {
                         /* arm_fill_q15(0, pBuffer, ch_im_in); */
                         memset(pBuffer, 0, sizeof(q15_t)*ch_im_in);
-                    }
-                    else
+                    } else
                     {
                         /* arm_copy_q15((q15_t *) Im_in + (i_ker_y * dim_im_in_x + i_ker_x) * ch_im_in, pBuffer, ch_im_in); */
-                        memcpy(pBuffer, (q15_t*) Im_in + (i_ker_y * dim_im_in_x + i_ker_x) * ch_im_in, sizeof(q15_t)*ch_im_in);
+                        memcpy(pBuffer, (q15_t *) Im_in + (i_ker_y * dim_im_in_x + i_ker_x) * ch_im_in, sizeof(q15_t)*ch_im_in);
                     }
-
                     pBuffer += ch_im_in;
                 }
             }
@@ -147,20 +145,20 @@ arm_convolve_HWC_q15_fast_nonsquare(const q15_t* Im_in,
             {
                 int       i;
                 /* initialize the matrix pointers for A */
-                const q15_t* pA = wt;
+                const q15_t *pA = wt;
 
                 /* set up the second output pointers */
-                q15_t*    pOut2 = pOut + ch_im_out;
+                q15_t    *pOut2 = pOut + ch_im_out;
 
                 /* this loop over rows in A */
                 for (i = 0; i < ch_im_out; i += 2)
                 {
                     /* setup pointers for B */
-                    q15_t*    pB = im_buffer;
-                    const q15_t* pB2 = pB + ch_im_in * dim_kernel_y * dim_kernel_x;
+                    q15_t    *pB = im_buffer;
+                    const q15_t *pB2 = pB + ch_im_in * dim_kernel_y * dim_kernel_x;
 
                     /* aling the second pointer for A */
-                    const q15_t* pA2 = pA + ch_im_in * dim_kernel_y * dim_kernel_x;
+                    const q15_t *pA2 = pA + ch_im_in * dim_kernel_y * dim_kernel_x;
 
                     /* init the sum with bias */
                     q31_t     sum =  ((q31_t)bias[i] << bias_shift) + NN_ROUND(out_shift);
@@ -169,7 +167,6 @@ arm_convolve_HWC_q15_fast_nonsquare(const q15_t* Im_in,
                     q31_t     sum4 = ((q31_t)bias[i + 1] << bias_shift) + NN_ROUND(out_shift);
 
                     uint16_t  colCnt = ch_im_in * dim_kernel_y * dim_kernel_x >> 1;
-
                     /* accumulate over the vector */
                     while (colCnt)
                     {
@@ -185,9 +182,7 @@ arm_convolve_HWC_q15_fast_nonsquare(const q15_t* Im_in,
 
                         colCnt--;
                     }           /* while over colCnt */
-
                     colCnt = ch_im_in * dim_kernel_y * dim_kernel_x & 0x1;
-
                     while (colCnt)
                     {
                         q15_t     inA1 = *pA++;
@@ -201,7 +196,6 @@ arm_convolve_HWC_q15_fast_nonsquare(const q15_t* Im_in,
                         sum4 += inA2 * inB2;
                         colCnt--;
                     }           /* while over colCnt */
-
                     *pOut++ = (q15_t) __SSAT(sum >> out_shift, 16);
                     *pOut++ = (q15_t) __SSAT(sum3 >> out_shift, 16);
                     *pOut2++ = (q15_t) __SSAT(sum2 >> out_shift, 16);
@@ -237,14 +231,12 @@ arm_convolve_HWC_q15_fast_nonsquare(const q15_t* Im_in,
             for (k = 0; k < dim_im_out_x; k++)
             {
                 conv_out = ((q31_t)bias[i] << bias_shift) + NN_ROUND(out_shift);
-
                 for (m = 0; m < dim_kernel_y; m++)
                 {
                     for (n = 0; n < dim_kernel_x; n++)
                     {
                         in_row = stride_y * j + m - padding_y;
                         in_col = stride_x * k + n - padding_x;
-
                         if (in_row >= 0 && in_col >= 0 && in_row < dim_im_in_y && in_col < dim_im_in_x)
                         {
                             for (l = 0; l < ch_im_in; l++)
@@ -252,12 +244,11 @@ arm_convolve_HWC_q15_fast_nonsquare(const q15_t* Im_in,
                                 conv_out +=
                                     Im_in[(in_row * dim_im_in_x + in_col) * ch_im_in +
                                           l] * wt[i * ch_im_in * dim_kernel_x * dim_kernel_y + (m * dim_kernel_x +
-                                                  n) * ch_im_in + l];
+                                                                                            n) * ch_im_in + l];
                             }
                         }
                     }
                 }
-
                 Im_out[i + (j * dim_im_out_x + k) * ch_im_out] = (q15_t) __SSAT((conv_out >> out_shift), 16);
             }
         }

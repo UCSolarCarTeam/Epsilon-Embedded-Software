@@ -70,127 +70,118 @@
  */
 
 void arm_shift_q31(
-    q31_t* pSrc,
-    int8_t shiftBits,
-    q31_t* pDst,
-    uint32_t blockSize)
+  q31_t * pSrc,
+  int8_t shiftBits,
+  q31_t * pDst,
+  uint32_t blockSize)
 {
-    uint32_t blkCnt;                               /* loop counter */
-    uint8_t sign = (shiftBits & 0x80);             /* Sign of shiftBits */
+  uint32_t blkCnt;                               /* loop counter */
+  uint8_t sign = (shiftBits & 0x80);             /* Sign of shiftBits */
 
 #if defined (ARM_MATH_DSP)
 
-    q31_t in1, in2, in3, in4;                      /* Temporary input variables */
-    q31_t out1, out2, out3, out4;                  /* Temporary output variables */
+  q31_t in1, in2, in3, in4;                      /* Temporary input variables */
+  q31_t out1, out2, out3, out4;                  /* Temporary output variables */
 
-    /*loop Unrolling */
-    blkCnt = blockSize >> 2U;
+  /*loop Unrolling */
+  blkCnt = blockSize >> 2U;
 
 
-    if (sign == 0U)
+  if (sign == 0U)
+  {
+    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+     ** a second loop below computes the remaining 1 to 3 samples. */
+    while (blkCnt > 0U)
     {
-        /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
-         ** a second loop below computes the remaining 1 to 3 samples. */
-        while (blkCnt > 0U)
-        {
-            /* C = A  << shiftBits */
-            /* Shift the input and then store the results in the destination buffer. */
-            in1 = *pSrc;
-            in2 = *(pSrc + 1);
-            out1 = in1 << shiftBits;
-            in3 = *(pSrc + 2);
-            out2 = in2 << shiftBits;
-            in4 = *(pSrc + 3);
+      /* C = A  << shiftBits */
+      /* Shift the input and then store the results in the destination buffer. */
+      in1 = *pSrc;
+      in2 = *(pSrc + 1);
+      out1 = in1 << shiftBits;
+      in3 = *(pSrc + 2);
+      out2 = in2 << shiftBits;
+      in4 = *(pSrc + 3);
+      if (in1 != (out1 >> shiftBits))
+        out1 = 0x7FFFFFFF ^ (in1 >> 31);
 
-            if (in1 != (out1 >> shiftBits))
-            {
-                out1 = 0x7FFFFFFF ^ (in1 >> 31);
-            }
+      if (in2 != (out2 >> shiftBits))
+        out2 = 0x7FFFFFFF ^ (in2 >> 31);
 
-            if (in2 != (out2 >> shiftBits))
-            {
-                out2 = 0x7FFFFFFF ^ (in2 >> 31);
-            }
+      *pDst = out1;
+      out3 = in3 << shiftBits;
+      *(pDst + 1) = out2;
+      out4 = in4 << shiftBits;
 
-            *pDst = out1;
-            out3 = in3 << shiftBits;
-            *(pDst + 1) = out2;
-            out4 = in4 << shiftBits;
+      if (in3 != (out3 >> shiftBits))
+        out3 = 0x7FFFFFFF ^ (in3 >> 31);
 
-            if (in3 != (out3 >> shiftBits))
-            {
-                out3 = 0x7FFFFFFF ^ (in3 >> 31);
-            }
+      if (in4 != (out4 >> shiftBits))
+        out4 = 0x7FFFFFFF ^ (in4 >> 31);
 
-            if (in4 != (out4 >> shiftBits))
-            {
-                out4 = 0x7FFFFFFF ^ (in4 >> 31);
-            }
+      *(pDst + 2) = out3;
+      *(pDst + 3) = out4;
 
-            *(pDst + 2) = out3;
-            *(pDst + 3) = out4;
+      /* Update destination pointer to process next sampels */
+      pSrc += 4U;
+      pDst += 4U;
 
-            /* Update destination pointer to process next sampels */
-            pSrc += 4U;
-            pDst += 4U;
-
-            /* Decrement the loop counter */
-            blkCnt--;
-        }
+      /* Decrement the loop counter */
+      blkCnt--;
     }
-    else
+  }
+  else
+  {
+
+    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+     ** a second loop below computes the remaining 1 to 3 samples. */
+    while (blkCnt > 0U)
     {
+      /* C = A >>  shiftBits */
+      /* Shift the input and then store the results in the destination buffer. */
+      in1 = *pSrc;
+      in2 = *(pSrc + 1);
+      in3 = *(pSrc + 2);
+      in4 = *(pSrc + 3);
 
-        /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
-         ** a second loop below computes the remaining 1 to 3 samples. */
-        while (blkCnt > 0U)
-        {
-            /* C = A >>  shiftBits */
-            /* Shift the input and then store the results in the destination buffer. */
-            in1 = *pSrc;
-            in2 = *(pSrc + 1);
-            in3 = *(pSrc + 2);
-            in4 = *(pSrc + 3);
-
-            *pDst = (in1 >> -shiftBits);
-            *(pDst + 1) = (in2 >> -shiftBits);
-            *(pDst + 2) = (in3 >> -shiftBits);
-            *(pDst + 3) = (in4 >> -shiftBits);
+      *pDst = (in1 >> -shiftBits);
+      *(pDst + 1) = (in2 >> -shiftBits);
+      *(pDst + 2) = (in3 >> -shiftBits);
+      *(pDst + 3) = (in4 >> -shiftBits);
 
 
-            pSrc += 4U;
-            pDst += 4U;
+      pSrc += 4U;
+      pDst += 4U;
 
-            blkCnt--;
-        }
-
+      blkCnt--;
     }
 
-    /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
-     ** No loop unrolling is used. */
-    blkCnt = blockSize % 0x4U;
+  }
+
+  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+   ** No loop unrolling is used. */
+  blkCnt = blockSize % 0x4U;
 
 #else
 
-    /* Run the below code for Cortex-M0 */
+  /* Run the below code for Cortex-M0 */
 
 
-    /* Initialize blkCnt with number of samples */
-    blkCnt = blockSize;
+  /* Initialize blkCnt with number of samples */
+  blkCnt = blockSize;
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
 
-    while (blkCnt > 0U)
-    {
-        /* C = A (>> or <<) shiftBits */
-        /* Shift the input and then store the result in the destination buffer. */
-        *pDst++ = (sign == 0U) ? clip_q63_to_q31((q63_t) * pSrc++ << shiftBits) :
-                  (*pSrc++ >> -shiftBits);
+  while (blkCnt > 0U)
+  {
+    /* C = A (>> or <<) shiftBits */
+    /* Shift the input and then store the result in the destination buffer. */
+    *pDst++ = (sign == 0U) ? clip_q63_to_q31((q63_t) * pSrc++ << shiftBits) :
+      (*pSrc++ >> -shiftBits);
 
-        /* Decrement the loop counter */
-        blkCnt--;
-    }
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
 
 
 }

@@ -10,7 +10,7 @@ asm(" .global __ARM_use_no_argv\n");
 
 void debug_init(void)
 {
-    uint32_t* SHCSR_ptr = (uint32_t*) 0xE000ED24;   /* System Handler Control and State Register */
+    uint32_t * SHCSR_ptr = (uint32_t *) 0xE000ED24; /* System Handler Control and State Register */
     *SHCSR_ptr |= 0x70000;             /* Enable  UsageFault, BusFault, and MemManage fault*/
 }
 
@@ -23,6 +23,5 @@ int main(void)
     JTEST_GROUP_CALL(all_tests); /* Run all tests. */
 
     JTEST_ACT_EXIT_FW();        /* Exit test framework.  */
-
     while (1);                   /* Never return. */
 }

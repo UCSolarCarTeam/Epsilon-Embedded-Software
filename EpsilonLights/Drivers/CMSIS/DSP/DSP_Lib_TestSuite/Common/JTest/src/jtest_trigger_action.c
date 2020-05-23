@@ -1,44 +1,37 @@
 
 #include "jtest_fw.h"
 
-void test_start    (void)
-{
+void test_start    (void) {
 //  ;
-    JTEST_FW.test_start++;
+  JTEST_FW.test_start++;
 }
 
-void test_end      (void)
-{
+void test_end      (void) {
 //  ;
-    JTEST_FW.test_end++;
+  JTEST_FW.test_end++;
 }
 
-void group_start   (void)
-{
+void group_start   (void) {
 //  ;
-    JTEST_FW.group_start++;
+  JTEST_FW.group_start++;
 }
 
-void group_end     (void)
-{
+void group_end     (void) {
 //  ;
-    JTEST_FW.group_end++;
+  JTEST_FW.group_end++;
 }
 
-void dump_str      (void)
-{
+void dump_str      (void) {
 //  ;
-    JTEST_FW.dump_str++;
+  JTEST_FW.dump_str++;
 }
 
-void dump_data     (void)
-{
+void dump_data     (void) {
 //  ;
-    JTEST_FW.dump_data++;
+  JTEST_FW.dump_data++;
 }
 
-void exit_fw       (void)
-{
+void exit_fw       (void) {
 //  ;
-    JTEST_FW.exit_fw++;
+  JTEST_FW.exit_fw++;
 }

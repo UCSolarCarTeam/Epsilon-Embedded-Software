@@ -56,75 +56,75 @@
 
 
 void arm_q31_to_q15(
-    q31_t* pSrc,
-    q15_t* pDst,
-    uint32_t blockSize)
+  q31_t * pSrc,
+  q15_t * pDst,
+  uint32_t blockSize)
 {
-    q31_t* pIn = pSrc;                             /* Src pointer */
-    uint32_t blkCnt;                               /* loop counter */
+  q31_t *pIn = pSrc;                             /* Src pointer */
+  uint32_t blkCnt;                               /* loop counter */
 
 #if defined (ARM_MATH_DSP)
 
-    /* Run the below code for Cortex-M4 and Cortex-M3 */
-    q31_t in1, in2, in3, in4;
-    q31_t out1, out2;
+  /* Run the below code for Cortex-M4 and Cortex-M3 */
+  q31_t in1, in2, in3, in4;
+  q31_t out1, out2;
 
-    /*loop Unrolling */
-    blkCnt = blockSize >> 2U;
+  /*loop Unrolling */
+  blkCnt = blockSize >> 2U;
 
-    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
-     ** a second loop below computes the remaining 1 to 3 samples. */
-    while (blkCnt > 0U)
-    {
-        /* C = (q15_t) A >> 16 */
-        /* convert from q31 to q15 and then store the results in the destination buffer */
-        in1 = *pIn++;
-        in2 = *pIn++;
-        in3 = *pIn++;
-        in4 = *pIn++;
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+   ** a second loop below computes the remaining 1 to 3 samples. */
+  while (blkCnt > 0U)
+  {
+    /* C = (q15_t) A >> 16 */
+    /* convert from q31 to q15 and then store the results in the destination buffer */
+    in1 = *pIn++;
+    in2 = *pIn++;
+    in3 = *pIn++;
+    in4 = *pIn++;
 
-        /* pack two higher 16-bit values from two 32-bit values */
+    /* pack two higher 16-bit values from two 32-bit values */
 #ifndef ARM_MATH_BIG_ENDIAN
 
-        out1 = __PKHTB(in2, in1, 16);
-        out2 = __PKHTB(in4, in3, 16);
+    out1 = __PKHTB(in2, in1, 16);
+    out2 = __PKHTB(in4, in3, 16);
 
 #else
 
-        out1 = __PKHTB(in1, in2, 16);
-        out2 = __PKHTB(in3, in4, 16);
+    out1 = __PKHTB(in1, in2, 16);
+    out2 = __PKHTB(in3, in4, 16);
 
 #endif //      #ifdef ARM_MATH_BIG_ENDIAN
 
-        *__SIMD32(pDst)++ = out1;
-        *__SIMD32(pDst)++ = out2;
+    *__SIMD32(pDst)++ = out1;
+    *__SIMD32(pDst)++ = out2;
 
-        /* Decrement the loop counter */
-        blkCnt--;
-    }
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
 
-    /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
-     ** No loop unrolling is used. */
-    blkCnt = blockSize % 0x4U;
+  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+   ** No loop unrolling is used. */
+  blkCnt = blockSize % 0x4U;
 
 #else
 
-    /* Run the below code for Cortex-M0 */
+  /* Run the below code for Cortex-M0 */
 
-    /* Loop over blockSize number of values */
-    blkCnt = blockSize;
+  /* Loop over blockSize number of values */
+  blkCnt = blockSize;
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
-    while (blkCnt > 0U)
-    {
-        /* C = (q15_t) A >> 16 */
-        /* convert from q31 to q15 and then store the results in the destination buffer */
-        *pDst++ = (q15_t) (*pIn++ >> 16);
+  while (blkCnt > 0U)
+  {
+    /* C = (q15_t) A >> 16 */
+    /* convert from q31 to q15 and then store the results in the destination buffer */
+    *pDst++ = (q15_t) (*pIn++ >> 16);
 
-        /* Decrement the loop counter */
-        blkCnt--;
-    }
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
 
 }
 

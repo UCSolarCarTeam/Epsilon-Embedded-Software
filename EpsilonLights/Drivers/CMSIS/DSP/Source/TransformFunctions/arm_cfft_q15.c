@@ -29,31 +29,31 @@
 #include "arm_math.h"
 
 extern void arm_radix4_butterfly_q15(
-    q15_t* pSrc,
+    q15_t * pSrc,
     uint32_t fftLen,
-    q15_t* pCoef,
+    q15_t * pCoef,
     uint32_t twidCoefModifier);
 
 extern void arm_radix4_butterfly_inverse_q15(
-    q15_t* pSrc,
+    q15_t * pSrc,
     uint32_t fftLen,
-    q15_t* pCoef,
+    q15_t * pCoef,
     uint32_t twidCoefModifier);
 
 extern void arm_bitreversal_16(
-    uint16_t* pSrc,
+    uint16_t * pSrc,
     const uint16_t bitRevLen,
-    const uint16_t* pBitRevTable);
+    const uint16_t * pBitRevTable);
 
 void arm_cfft_radix4by2_q15(
-    q15_t* pSrc,
+    q15_t * pSrc,
     uint32_t fftLen,
-    const q15_t* pCoef);
+    const q15_t * pCoef);
 
 void arm_cfft_radix4by2_inverse_q15(
-    q15_t* pSrc,
+    q15_t * pSrc,
     uint32_t fftLen,
-    const q15_t* pCoef);
+    const q15_t * pCoef);
 
 /**
 * @ingroup groupTransforms
@@ -75,8 +75,8 @@ void arm_cfft_radix4by2_inverse_q15(
 */
 
 void arm_cfft_q15(
-    const arm_cfft_instance_q15* S,
-    q15_t* p1,
+    const arm_cfft_instance_q15 * S,
+    q15_t * p1,
     uint8_t ifftFlag,
     uint8_t bitReverseFlag)
 {
@@ -86,47 +86,45 @@ void arm_cfft_q15(
     {
         switch (L)
         {
-            case 16:
-            case 64:
-            case 256:
-            case 1024:
-            case 4096:
-                arm_radix4_butterfly_inverse_q15  ( p1, L, (q15_t*)S->pTwiddle, 1 );
-                break;
+        case 16:
+        case 64:
+        case 256:
+        case 1024:
+        case 4096:
+            arm_radix4_butterfly_inverse_q15  ( p1, L, (q15_t*)S->pTwiddle, 1 );
+            break;
 
-            case 32:
-            case 128:
-            case 512:
-            case 2048:
-                arm_cfft_radix4by2_inverse_q15  ( p1, L, S->pTwiddle );
-                break;
+        case 32:
+        case 128:
+        case 512:
+        case 2048:
+            arm_cfft_radix4by2_inverse_q15  ( p1, L, S->pTwiddle );
+            break;
         }
     }
     else
     {
         switch (L)
         {
-            case 16:
-            case 64:
-            case 256:
-            case 1024:
-            case 4096:
-                arm_radix4_butterfly_q15  ( p1, L, (q15_t*)S->pTwiddle, 1 );
-                break;
+        case 16:
+        case 64:
+        case 256:
+        case 1024:
+        case 4096:
+            arm_radix4_butterfly_q15  ( p1, L, (q15_t*)S->pTwiddle, 1 );
+            break;
 
-            case 32:
-            case 128:
-            case 512:
-            case 2048:
-                arm_cfft_radix4by2_q15  ( p1, L, S->pTwiddle );
-                break;
+        case 32:
+        case 128:
+        case 512:
+        case 2048:
+            arm_cfft_radix4by2_q15  ( p1, L, S->pTwiddle );
+            break;
         }
     }
 
     if ( bitReverseFlag )
-    {
-        arm_bitreversal_16((uint16_t*)p1, S->bitRevLength, S->pBitRevTable);
-    }
+        arm_bitreversal_16((uint16_t*)p1,S->bitRevLength,S->pBitRevTable);
 }
 
 /**
@@ -134,9 +132,9 @@ void arm_cfft_q15(
 */
 
 void arm_cfft_radix4by2_q15(
-    q15_t* pSrc,
+    q15_t * pSrc,
     uint32_t fftLen,
-    const q15_t* pCoef)
+    const q15_t * pCoef)
 {
     uint32_t i;
     uint32_t n2;
@@ -144,9 +142,9 @@ void arm_cfft_radix4by2_q15(
 #if defined (ARM_MATH_DSP)
     q31_t T, S, R;
     q31_t coeff, out1, out2;
-    const q15_t* pC = pCoef;
-    q15_t* pSi = pSrc;
-    q15_t* pSl = pSrc + fftLen;
+    const q15_t *pC = pCoef;
+    q15_t *pSi = pSrc;
+    q15_t *pSl = pSrc + fftLen;
 #else
     uint32_t ia, l;
     q15_t xt, yt, cosVal, sinVal;
@@ -172,27 +170,26 @@ void arm_cfft_radix4by2_q15(
         _SIMD32_OFFSET(pSi) = __SHADD16(T, S);
         pSi += 2;
 
-#ifndef ARM_MATH_BIG_ENDIAN
+    #ifndef ARM_MATH_BIG_ENDIAN
 
         out1 = __SMUAD(coeff, R) >> 16;
         out2 = __SMUSDX(coeff, R);
 
-#else
+    #else
 
         out1 = __SMUSDX(R, coeff) >> 16U;
         out2 = __SMUAD(coeff, R);
 
-#endif //     #ifndef ARM_MATH_BIG_ENDIAN
+    #endif //     #ifndef ARM_MATH_BIG_ENDIAN
 
         _SIMD32_OFFSET(pSl) =
-            (q31_t) ((out2) & 0xFFFF0000) | (out1 & 0x0000FFFF);
+        (q31_t) ((out2) & 0xFFFF0000) | (out1 & 0x0000FFFF);
         pSl += 2;
     }
 
 #else //    #if defined (ARM_MATH_DSP)
 
     ia = 0;
-
     for (i = 0; i < n2; i++)
     {
         cosVal = pCoef[ia * 2];
@@ -206,13 +203,13 @@ void arm_cfft_radix4by2_q15(
 
         yt = (pSrc[2 * i + 1] >> 1U) - (pSrc[2 * l + 1] >> 1U);
         pSrc[2 * i + 1] =
-            ((pSrc[2 * l + 1] >> 1U) + (pSrc[2 * i + 1] >> 1U)) >> 1U;
+        ((pSrc[2 * l + 1] >> 1U) + (pSrc[2 * i + 1] >> 1U)) >> 1U;
 
         pSrc[2U * l] = (((int16_t) (((q31_t) xt * cosVal) >> 16)) +
-                        ((int16_t) (((q31_t) yt * sinVal) >> 16)));
+                  ((int16_t) (((q31_t) yt * sinVal) >> 16)));
 
         pSrc[2U * l + 1U] = (((int16_t) (((q31_t) yt * cosVal) >> 16)) -
-                             ((int16_t) (((q31_t) xt * sinVal) >> 16)));
+                       ((int16_t) (((q31_t) xt * sinVal) >> 16)));
     }
 
 #endif //    #if defined (ARM_MATH_DSP)
@@ -224,27 +221,27 @@ void arm_cfft_radix4by2_q15(
 
     for (i = 0; i < fftLen >> 1; i++)
     {
-        p0 = pSrc[4 * i + 0];
-        p1 = pSrc[4 * i + 1];
-        p2 = pSrc[4 * i + 2];
-        p3 = pSrc[4 * i + 3];
+        p0 = pSrc[4*i+0];
+        p1 = pSrc[4*i+1];
+        p2 = pSrc[4*i+2];
+        p3 = pSrc[4*i+3];
 
         p0 <<= 1;
         p1 <<= 1;
         p2 <<= 1;
         p3 <<= 1;
 
-        pSrc[4 * i + 0] = p0;
-        pSrc[4 * i + 1] = p1;
-        pSrc[4 * i + 2] = p2;
-        pSrc[4 * i + 3] = p3;
+        pSrc[4*i+0] = p0;
+        pSrc[4*i+1] = p1;
+        pSrc[4*i+2] = p2;
+        pSrc[4*i+3] = p3;
     }
 }
 
 void arm_cfft_radix4by2_inverse_q15(
-    q15_t* pSrc,
+    q15_t * pSrc,
     uint32_t fftLen,
-    const q15_t* pCoef)
+    const q15_t * pCoef)
 {
     uint32_t i;
     uint32_t n2;
@@ -252,9 +249,9 @@ void arm_cfft_radix4by2_inverse_q15(
 #if defined (ARM_MATH_DSP)
     q31_t T, S, R;
     q31_t coeff, out1, out2;
-    const q15_t* pC = pCoef;
-    q15_t* pSi = pSrc;
-    q15_t* pSl = pSrc + fftLen;
+    const q15_t *pC = pCoef;
+    q15_t *pSi = pSrc;
+    q15_t *pSl = pSrc + fftLen;
 #else
     uint32_t ia, l;
     q15_t xt, yt, cosVal, sinVal;
@@ -280,26 +277,25 @@ void arm_cfft_radix4by2_inverse_q15(
         _SIMD32_OFFSET(pSi) = __SHADD16(T, S);
         pSi += 2;
 
-#ifndef ARM_MATH_BIG_ENDIAN
+    #ifndef ARM_MATH_BIG_ENDIAN
 
         out1 = __SMUSD(coeff, R) >> 16;
         out2 = __SMUADX(coeff, R);
-#else
+    #else
 
         out1 = __SMUADX(R, coeff) >> 16U;
         out2 = __SMUSD(__QSUB(0, coeff), R);
 
-#endif //     #ifndef ARM_MATH_BIG_ENDIAN
+    #endif //     #ifndef ARM_MATH_BIG_ENDIAN
 
         _SIMD32_OFFSET(pSl) =
-            (q31_t) ((out2) & 0xFFFF0000) | (out1 & 0x0000FFFF);
+        (q31_t) ((out2) & 0xFFFF0000) | (out1 & 0x0000FFFF);
         pSl += 2;
     }
 
 #else //    #if defined (ARM_MATH_DSP)
 
     ia = 0;
-
     for (i = 0; i < n2; i++)
     {
         cosVal = pCoef[ia * 2];
@@ -312,13 +308,13 @@ void arm_cfft_radix4by2_inverse_q15(
 
         yt = (pSrc[2 * i + 1] >> 1U) - (pSrc[2 * l + 1] >> 1U);
         pSrc[2 * i + 1] =
-            ((pSrc[2 * l + 1] >> 1U) + (pSrc[2 * i + 1] >> 1U)) >> 1U;
+          ((pSrc[2 * l + 1] >> 1U) + (pSrc[2 * i + 1] >> 1U)) >> 1U;
 
         pSrc[2U * l] = (((int16_t) (((q31_t) xt * cosVal) >> 16)) -
                         ((int16_t) (((q31_t) yt * sinVal) >> 16)));
 
         pSrc[2U * l + 1U] = (((int16_t) (((q31_t) yt * cosVal) >> 16)) +
-                             ((int16_t) (((q31_t) xt * sinVal) >> 16)));
+                           ((int16_t) (((q31_t) xt * sinVal) >> 16)));
     }
 
 #endif //    #if defined (ARM_MATH_DSP)
@@ -330,20 +326,20 @@ void arm_cfft_radix4by2_inverse_q15(
 
     for (i = 0; i < fftLen >> 1; i++)
     {
-        p0 = pSrc[4 * i + 0];
-        p1 = pSrc[4 * i + 1];
-        p2 = pSrc[4 * i + 2];
-        p3 = pSrc[4 * i + 3];
+        p0 = pSrc[4*i+0];
+        p1 = pSrc[4*i+1];
+        p2 = pSrc[4*i+2];
+        p3 = pSrc[4*i+3];
 
         p0 <<= 1;
         p1 <<= 1;
         p2 <<= 1;
         p3 <<= 1;
 
-        pSrc[4 * i + 0] = p0;
-        pSrc[4 * i + 1] = p1;
-        pSrc[4 * i + 2] = p2;
-        pSrc[4 * i + 3] = p3;
+        pSrc[4*i+0] = p0;
+        pSrc[4*i+1] = p1;
+        pSrc[4*i+2] = p2;
+        pSrc[4*i+3] = p3;
     }
 }
 

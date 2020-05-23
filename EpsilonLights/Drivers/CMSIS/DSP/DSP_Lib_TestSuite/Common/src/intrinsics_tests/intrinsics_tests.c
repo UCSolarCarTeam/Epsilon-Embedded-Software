@@ -37,26 +37,26 @@ JTEST_DEFINE_GROUP(intrinsics_tests)
     /*
       To skip a test, comment it out.
     */
-    JTEST_TEST_CALL(__QADD8_test);
-    JTEST_TEST_CALL(__QSUB8_test);
-    JTEST_TEST_CALL(__QADD16_test);
-    JTEST_TEST_CALL(__SHADD16_test);
-    JTEST_TEST_CALL(__QSUB16_test);
-    JTEST_TEST_CALL(__SHSUB16_test);
-    JTEST_TEST_CALL(__QASX_test);
-    JTEST_TEST_CALL(__SHASX_test);
-    JTEST_TEST_CALL(__QSAX_test);
-    JTEST_TEST_CALL(__SHSAX_test);
-    JTEST_TEST_CALL(__SMUSDX_test);
-    JTEST_TEST_CALL(__SMUADX_test);
-    JTEST_TEST_CALL(__QADD_test);
-    JTEST_TEST_CALL(__QSUB_test);
-    JTEST_TEST_CALL(__SMLAD_test);
-    JTEST_TEST_CALL(__SMLADX_test);
-    JTEST_TEST_CALL(__SMLSDX_test);
-    JTEST_TEST_CALL(__SMLALD_test);
-    JTEST_TEST_CALL(__SMLALDX_test);
-    JTEST_TEST_CALL(__SMUAD_test);
-    JTEST_TEST_CALL(__SMUSD_test);
-    JTEST_TEST_CALL(__SXTB16_test);
+   JTEST_TEST_CALL(__QADD8_test);
+   JTEST_TEST_CALL(__QSUB8_test);
+   JTEST_TEST_CALL(__QADD16_test);
+   JTEST_TEST_CALL(__SHADD16_test);
+   JTEST_TEST_CALL(__QSUB16_test);
+   JTEST_TEST_CALL(__SHSUB16_test);
+   JTEST_TEST_CALL(__QASX_test);
+   JTEST_TEST_CALL(__SHASX_test);
+   JTEST_TEST_CALL(__QSAX_test);
+   JTEST_TEST_CALL(__SHSAX_test);
+   JTEST_TEST_CALL(__SMUSDX_test);
+   JTEST_TEST_CALL(__SMUADX_test);
+   JTEST_TEST_CALL(__QADD_test);
+   JTEST_TEST_CALL(__QSUB_test);
+   JTEST_TEST_CALL(__SMLAD_test);
+   JTEST_TEST_CALL(__SMLADX_test);
+   JTEST_TEST_CALL(__SMLSDX_test);
+   JTEST_TEST_CALL(__SMLALD_test);
+   JTEST_TEST_CALL(__SMLALDX_test);
+   JTEST_TEST_CALL(__SMUAD_test);
+   JTEST_TEST_CALL(__SMUSD_test);
+   JTEST_TEST_CALL(__SXTB16_test);
 }

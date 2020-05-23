@@ -51,117 +51,117 @@
  */
 
 void arm_cmplx_conj_q31(
-    q31_t* pSrc,
-    q31_t* pDst,
-    uint32_t numSamples)
+  q31_t * pSrc,
+  q31_t * pDst,
+  uint32_t numSamples)
 {
-    uint32_t blkCnt;                               /* loop counter */
-    q31_t in;                                      /* Input value */
+  uint32_t blkCnt;                               /* loop counter */
+  q31_t in;                                      /* Input value */
 
 #if defined (ARM_MATH_DSP)
 
-    /* Run the below code for Cortex-M4 and Cortex-M3 */
-    q31_t inR1, inR2, inR3, inR4;                  /* Temporary real variables */
-    q31_t inI1, inI2, inI3, inI4;                  /* Temporary imaginary variables */
+  /* Run the below code for Cortex-M4 and Cortex-M3 */
+  q31_t inR1, inR2, inR3, inR4;                  /* Temporary real variables */
+  q31_t inI1, inI2, inI3, inI4;                  /* Temporary imaginary variables */
 
-    /*loop Unrolling */
-    blkCnt = numSamples >> 2U;
+  /*loop Unrolling */
+  blkCnt = numSamples >> 2U;
 
-    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
-     ** a second loop below computes the remaining 1 to 3 samples. */
-    while (blkCnt > 0U)
-    {
-        /* C[0]+jC[1] = A[0]+ j (-1) A[1] */
-        /* Calculate Complex Conjugate and then store the results in the destination buffer. */
-        /* Saturated to 0x7fffffff if the input is -1(0x80000000) */
-        /* read real input sample */
-        inR1 = pSrc[0];
-        /* store real input sample */
-        pDst[0] = inR1;
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+   ** a second loop below computes the remaining 1 to 3 samples. */
+  while (blkCnt > 0U)
+  {
+    /* C[0]+jC[1] = A[0]+ j (-1) A[1] */
+    /* Calculate Complex Conjugate and then store the results in the destination buffer. */
+    /* Saturated to 0x7fffffff if the input is -1(0x80000000) */
+    /* read real input sample */
+    inR1 = pSrc[0];
+    /* store real input sample */
+    pDst[0] = inR1;
 
-        /* read imaginary input sample */
-        inI1 = pSrc[1];
+    /* read imaginary input sample */
+    inI1 = pSrc[1];
 
-        /* read real input sample */
-        inR2 = pSrc[2];
-        /* store real input sample */
-        pDst[2] = inR2;
+    /* read real input sample */
+    inR2 = pSrc[2];
+    /* store real input sample */
+    pDst[2] = inR2;
 
-        /* read imaginary input sample */
-        inI2 = pSrc[3];
+    /* read imaginary input sample */
+    inI2 = pSrc[3];
 
-        /* negate imaginary input sample */
-        inI1 = __QSUB(0, inI1);
+    /* negate imaginary input sample */
+    inI1 = __QSUB(0, inI1);
 
-        /* read real input sample */
-        inR3 = pSrc[4];
-        /* store real input sample */
-        pDst[4] = inR3;
+    /* read real input sample */
+    inR3 = pSrc[4];
+    /* store real input sample */
+    pDst[4] = inR3;
 
-        /* read imaginary input sample */
-        inI3 = pSrc[5];
+    /* read imaginary input sample */
+    inI3 = pSrc[5];
 
-        /* negate imaginary input sample */
-        inI2 = __QSUB(0, inI2);
+    /* negate imaginary input sample */
+    inI2 = __QSUB(0, inI2);
 
-        /* read real input sample */
-        inR4 = pSrc[6];
-        /* store real input sample */
-        pDst[6] = inR4;
+    /* read real input sample */
+    inR4 = pSrc[6];
+    /* store real input sample */
+    pDst[6] = inR4;
 
-        /* negate imaginary input sample */
-        inI3 = __QSUB(0, inI3);
+    /* negate imaginary input sample */
+    inI3 = __QSUB(0, inI3);
 
-        /* store imaginary input sample */
-        inI4 = pSrc[7];
+    /* store imaginary input sample */
+    inI4 = pSrc[7];
 
-        /* store imaginary input samples */
-        pDst[1] = inI1;
+    /* store imaginary input samples */
+    pDst[1] = inI1;
 
-        /* negate imaginary input sample */
-        inI4 = __QSUB(0, inI4);
+    /* negate imaginary input sample */
+    inI4 = __QSUB(0, inI4);
 
-        /* store imaginary input samples */
-        pDst[3] = inI2;
+    /* store imaginary input samples */
+    pDst[3] = inI2;
 
-        /* increment source pointer by 8 to proecess next samples */
-        pSrc += 8U;
+    /* increment source pointer by 8 to proecess next samples */
+    pSrc += 8U;
 
-        /* store imaginary input samples */
-        pDst[5] = inI3;
-        pDst[7] = inI4;
+    /* store imaginary input samples */
+    pDst[5] = inI3;
+    pDst[7] = inI4;
 
-        /* increment destination pointer by 8 to process next samples */
-        pDst += 8U;
+    /* increment destination pointer by 8 to process next samples */
+    pDst += 8U;
 
-        /* Decrement the loop counter */
-        blkCnt--;
-    }
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
 
-    /* If the numSamples is not a multiple of 4, compute any remaining output samples here.
-     ** No loop unrolling is used. */
-    blkCnt = numSamples % 0x4U;
+  /* If the numSamples is not a multiple of 4, compute any remaining output samples here.
+   ** No loop unrolling is used. */
+  blkCnt = numSamples % 0x4U;
 
 #else
 
-    /* Run the below code for Cortex-M0 */
-    blkCnt = numSamples;
+  /* Run the below code for Cortex-M0 */
+  blkCnt = numSamples;
 
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
-    while (blkCnt > 0U)
-    {
-        /* C[0]+jC[1] = A[0]+ j (-1) A[1] */
-        /* Calculate Complex Conjugate and then store the results in the destination buffer. */
-        /* Saturated to 0x7fffffff if the input is -1(0x80000000) */
-        *pDst++ = *pSrc++;
-        in = *pSrc++;
-        *pDst++ = (in == INT32_MIN) ? INT32_MAX : -in;
+  while (blkCnt > 0U)
+  {
+    /* C[0]+jC[1] = A[0]+ j (-1) A[1] */
+    /* Calculate Complex Conjugate and then store the results in the destination buffer. */
+    /* Saturated to 0x7fffffff if the input is -1(0x80000000) */
+    *pDst++ = *pSrc++;
+    in = *pSrc++;
+    *pDst++ = (in == INT32_MIN) ? INT32_MAX : -in;
 
-        /* Decrement the loop counter */
-        blkCnt--;
-    }
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
 }
 
 /**

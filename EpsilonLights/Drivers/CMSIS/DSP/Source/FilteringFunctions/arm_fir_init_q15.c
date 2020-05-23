@@ -76,62 +76,62 @@
  */
 
 arm_status arm_fir_init_q15(
-    arm_fir_instance_q15* S,
-    uint16_t numTaps,
-    q15_t* pCoeffs,
-    q15_t* pState,
-    uint32_t blockSize)
+  arm_fir_instance_q15 * S,
+  uint16_t numTaps,
+  q15_t * pCoeffs,
+  q15_t * pState,
+  uint32_t blockSize)
 {
-    arm_status status;
+  arm_status status;
 
 
 #if defined (ARM_MATH_DSP)
 
-    /* Run the below code for Cortex-M4 and Cortex-M3 */
+  /* Run the below code for Cortex-M4 and Cortex-M3 */
 
-    /* The Number of filter coefficients in the filter must be even and at least 4 */
-    if (numTaps & 0x1U)
-    {
-        status = ARM_MATH_ARGUMENT_ERROR;
-    }
-    else
-    {
-        /* Assign filter taps */
-        S->numTaps = numTaps;
-
-        /* Assign coefficient pointer */
-        S->pCoeffs = pCoeffs;
-
-        /* Clear the state buffer.  The size is always (blockSize + numTaps ) */
-        memset(pState, 0, (numTaps + (blockSize)) * sizeof(q15_t));
-
-        /* Assign state pointer */
-        S->pState = pState;
-
-        status = ARM_MATH_SUCCESS;
-    }
-
-    return (status);
-
-#else
-
-    /* Run the below code for Cortex-M0 */
-
+  /* The Number of filter coefficients in the filter must be even and at least 4 */
+  if (numTaps & 0x1U)
+  {
+    status = ARM_MATH_ARGUMENT_ERROR;
+  }
+  else
+  {
     /* Assign filter taps */
     S->numTaps = numTaps;
 
     /* Assign coefficient pointer */
     S->pCoeffs = pCoeffs;
 
-    /* Clear the state buffer.  The size is always (blockSize + numTaps - 1) */
-    memset(pState, 0, (numTaps + (blockSize - 1U)) * sizeof(q15_t));
+    /* Clear the state buffer.  The size is always (blockSize + numTaps ) */
+    memset(pState, 0, (numTaps + (blockSize)) * sizeof(q15_t));
 
     /* Assign state pointer */
     S->pState = pState;
 
     status = ARM_MATH_SUCCESS;
+  }
 
-    return (status);
+  return (status);
+
+#else
+
+  /* Run the below code for Cortex-M0 */
+
+  /* Assign filter taps */
+  S->numTaps = numTaps;
+
+  /* Assign coefficient pointer */
+  S->pCoeffs = pCoeffs;
+
+  /* Clear the state buffer.  The size is always (blockSize + numTaps - 1) */
+  memset(pState, 0, (numTaps + (blockSize - 1U)) * sizeof(q15_t));
+
+  /* Assign state pointer */
+  S->pState = pState;
+
+  status = ARM_MATH_SUCCESS;
+
+  return (status);
 
 #endif /*  #if defined (ARM_MATH_DSP) */
 

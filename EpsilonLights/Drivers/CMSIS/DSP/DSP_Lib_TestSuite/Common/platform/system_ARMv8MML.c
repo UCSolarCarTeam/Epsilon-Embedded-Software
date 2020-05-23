@@ -24,23 +24,23 @@
  */
 
 #if defined (ARMv8MML)
-#include "ARMv8MML.h"
+  #include "ARMv8MML.h"
 #elif defined (ARMv8MML_DSP)
-#include "ARMv8MML_DSP.h"
+  #include "ARMv8MML_DSP.h"
 #elif defined (ARMv8MML_SP)
-#include "ARMv8MML_SP.h"
+  #include "ARMv8MML_SP.h"
 #elif defined (ARMv8MML_DSP_SP)
-#include "ARMv8MML_DSP_SP.h"
+  #include "ARMv8MML_DSP_SP.h"
 #elif defined (ARMv8MML_DP)
-#include "ARMv8MML_DP.h"
+  #include "ARMv8MML_DP.h"
 #elif defined (ARMv8MML_DSP_DP)
-#include "ARMv8MML_DSP_DP.h"
+  #include "ARMv8MML_DSP_DP.h"
 #else
-#error device not specified!
+  #error device not specified!
 #endif
 
 #if defined (__ARM_FEATURE_CMSE) &&  (__ARM_FEATURE_CMSE == 3U)
-#include "partition_ARMv8MML.h"
+  #include "partition_ARMv8MML.h"
 #endif
 
 /*----------------------------------------------------------------------------
@@ -55,7 +55,7 @@
   Externals
  *----------------------------------------------------------------------------*/
 #if defined (__VTOR_PRESENT) && (__VTOR_PRESENT == 1U)
-extern uint32_t __Vectors;
+  extern uint32_t __Vectors;
 #endif
 
 /*----------------------------------------------------------------------------
@@ -69,7 +69,7 @@ uint32_t SystemCoreClock = SYSTEM_CLOCK;
  *----------------------------------------------------------------------------*/
 void SystemCoreClockUpdate (void)
 {
-    SystemCoreClock = SYSTEM_CLOCK;
+  SystemCoreClock = SYSTEM_CLOCK;
 }
 
 /*----------------------------------------------------------------------------
@@ -79,21 +79,21 @@ void SystemInit (void)
 {
 
 #if defined (__VTOR_PRESENT) && (__VTOR_PRESENT == 1U)
-    SCB->VTOR = (uint32_t) &__Vectors;
+  SCB->VTOR = (uint32_t) &__Vectors;
 #endif
 
 #if defined (__FPU_USED) && (__FPU_USED == 1U)
-    SCB->CPACR |= ((3U << 10U * 2U) |         /* set CP10 Full Access */
-                   (3U << 11U * 2U)  );       /* set CP11 Full Access */
+  SCB->CPACR |= ((3U << 10U*2U) |           /* set CP10 Full Access */
+                 (3U << 11U*2U)  );         /* set CP11 Full Access */
 #endif
 
 #ifdef UNALIGNED_SUPPORT_DISABLE
-    SCB->CCR |= SCB_CCR_UNALIGN_TRP_Msk;
+  SCB->CCR |= SCB_CCR_UNALIGN_TRP_Msk;
 #endif
 
 #if defined (__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U)
-    TZ_SAU_Setup();
+  TZ_SAU_Setup();
 #endif
 
-    SystemCoreClock = SYSTEM_CLOCK;
+  SystemCoreClock = SYSTEM_CLOCK;
 }

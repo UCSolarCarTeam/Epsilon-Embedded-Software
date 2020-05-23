@@ -21,41 +21,32 @@
 
 
 
-struct __FILE
-{
-    int handle; /* Add whatever you need here */
-};
+struct __FILE { int handle; /* Add whatever you need here */ };
 FILE __stdout;
 FILE __stdin;
 
 
-int fputc(int c, FILE* f)
-{
-    return (SER_PutChar(c));
+int fputc(int c, FILE *f) {
+  return (SER_PutChar(c));
 }
 
 
-int fgetc(FILE* f)
-{
-    return (SER_GetChar());
+int fgetc(FILE *f) {
+  return (SER_GetChar());
 }
 
 
-int ferror(FILE* f)
-{
-    /* Your implementation of ferror */
-    return EOF;
+int ferror(FILE *f) {
+  /* Your implementation of ferror */
+  return EOF;
 }
 
 
-void _ttywrch(int c)
-{
-    SER_PutChar(c);
+void _ttywrch(int c) {
+  SER_PutChar(c);
 }
 
 
-void _sys_exit(int return_code)
-{
-label:
-    goto label;  /* endless loop */
+void _sys_exit(int return_code) {
+label:  goto label;  /* endless loop */
 }

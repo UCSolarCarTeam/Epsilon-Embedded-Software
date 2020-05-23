@@ -40,66 +40,66 @@
  * @{
  */
 
-/**
- * @brief Fast Q15 convolution function
- * @param[in]       Im_in       pointer to input tensor
- * @param[in]       dim_im_in   input tensor dimention
- * @param[in]       ch_im_in    number of input tensor channels
- * @param[in]       wt          pointer to kernel weights
- * @param[in]       ch_im_out   number of filters, i.e., output tensor channels
- * @param[in]       dim_kernel  filter kernel size
- * @param[in]       padding     padding sizes
- * @param[in]       stride      convolution stride
- * @param[in]       bias        pointer to bias
- * @param[in]       bias_shift  amount of left-shift for bias
- * @param[in]       out_shift   amount of right-shift for output
- * @param[in,out]   Im_out      pointer to output tensor
- * @param[in]       dim_im_out  output tensor dimension
- * @param[in,out]   bufferA     pointer to buffer space for input
- * @param[in,out]   bufferB     pointer to buffer space for output
- * @return     The function returns either
- * <code>ARM_MATH_SIZE_MISMATCH</code> or <code>ARM_MATH_SUCCESS</code> based on the outcome of size checking.
- *
- * @details
- *
- * <b>Buffer size:</b>
- *
- * bufferA size: 2*ch_im_in*dim_kernel*dim_kernel
- *
- * bufferB size: 0
- *
- * <b>Input dimension constraints:</b>
- *
- * ch_im_in is multiple of 2
- *
- * ch_im_out is multipe of 2
- *
- */
+  /**
+   * @brief Fast Q15 convolution function
+   * @param[in]       Im_in       pointer to input tensor
+   * @param[in]       dim_im_in   input tensor dimention
+   * @param[in]       ch_im_in    number of input tensor channels
+   * @param[in]       wt          pointer to kernel weights
+   * @param[in]       ch_im_out   number of filters, i.e., output tensor channels
+   * @param[in]       dim_kernel  filter kernel size
+   * @param[in]       padding     padding sizes
+   * @param[in]       stride      convolution stride
+   * @param[in]       bias        pointer to bias
+   * @param[in]       bias_shift  amount of left-shift for bias
+   * @param[in]       out_shift   amount of right-shift for output
+   * @param[in,out]   Im_out      pointer to output tensor
+   * @param[in]       dim_im_out  output tensor dimension
+   * @param[in,out]   bufferA     pointer to buffer space for input 
+   * @param[in,out]   bufferB     pointer to buffer space for output
+   * @return     The function returns either
+   * <code>ARM_MATH_SIZE_MISMATCH</code> or <code>ARM_MATH_SUCCESS</code> based on the outcome of size checking.
+   *
+   * @details
+   *
+   * <b>Buffer size:</b>
+   *
+   * bufferA size: 2*ch_im_in*dim_kernel*dim_kernel
+   *
+   * bufferB size: 0
+   *
+   * <b>Input dimension constraints:</b>
+   *
+   * ch_im_in is multiple of 2 
+   *
+   * ch_im_out is multipe of 2
+   *
+   */
 
 arm_status
-arm_convolve_HWC_q15_fast(const q15_t* Im_in,
+arm_convolve_HWC_q15_fast(const q15_t * Im_in,
                           const uint16_t dim_im_in,
                           const uint16_t ch_im_in,
-                          const q15_t* wt,
+                          const q15_t * wt,
                           const uint16_t ch_im_out,
                           const uint16_t dim_kernel,
                           const uint16_t padding,
                           const uint16_t stride,
-                          const q15_t* bias,
+                          const q15_t * bias,
                           const uint16_t bias_shift,
                           const uint16_t out_shift,
-                          q15_t* Im_out,
-                          const uint16_t dim_im_out,
-                          q15_t* bufferA,
-                          q7_t* bufferB)
+                          q15_t * Im_out, 
+                          const uint16_t dim_im_out, 
+                          q15_t * bufferA, 
+                          q7_t * bufferB)
 {
 
 #if defined (ARM_MATH_DSP)
     int16_t   i_out_y, i_out_x, i_ker_y, i_ker_x;
 
-    q15_t*    pBuffer = bufferA;
-    q15_t*    im_buffer = bufferA;
-    q15_t*    pOut = Im_out;
+    q15_t    *pBuffer = bufferA;
+    q15_t    *im_buffer = bufferA;
+    q15_t    *pOut = Im_out;
 
     if (ch_im_in % 2 != 0 || ch_im_out % 2 != 0)
     {
@@ -122,13 +122,11 @@ arm_convolve_HWC_q15_fast(const q15_t* Im_in,
                     {
                         /* arm_fill_q15(0, pBuffer, ch_im_in); */
                         memset(pBuffer, 0, sizeof(q15_t)*ch_im_in);
-                    }
-                    else
+                    } else
                     {
                         /* arm_copy_q15((q15_t *) Im_in + (i_ker_y * dim_im_in + i_ker_x) * ch_im_in, pBuffer, ch_im_in); */
-                        memcpy(pBuffer, (q15_t*) Im_in + (i_ker_y * dim_im_in + i_ker_x) * ch_im_in, sizeof(q15_t)*ch_im_in);
+                        memcpy(pBuffer, (q15_t *) Im_in + (i_ker_y * dim_im_in + i_ker_x) * ch_im_in, sizeof(q15_t)*ch_im_in);
                     }
-
                     pBuffer += ch_im_in;
                 }
             }
@@ -137,20 +135,20 @@ arm_convolve_HWC_q15_fast(const q15_t* Im_in,
             {
                 int       i;
                 /* initialize the matrix pointers for A */
-                const q15_t* pA = wt;
+                const q15_t *pA = wt;
 
                 /* set up the second output pointers */
-                q15_t*    pOut2 = pOut + ch_im_out;
+                q15_t    *pOut2 = pOut + ch_im_out;
 
                 /* this loop over rows in A */
                 for (i = 0; i < ch_im_out; i += 2)
                 {
                     /* setup pointers for B */
-                    q15_t*    pB = im_buffer;
-                    const q15_t* pB2 = pB + ch_im_in * dim_kernel * dim_kernel;
+                    q15_t    *pB = im_buffer;
+                    const q15_t *pB2 = pB + ch_im_in * dim_kernel * dim_kernel;
 
                     /* aling the second pointer for A */
-                    const q15_t* pA2 = pA + ch_im_in * dim_kernel * dim_kernel;
+                    const q15_t *pA2 = pA + ch_im_in * dim_kernel * dim_kernel;
 
                     /* init the sum with bias */
                     q31_t     sum =  ((q31_t)bias[i] << bias_shift) + NN_ROUND(out_shift);
@@ -159,7 +157,6 @@ arm_convolve_HWC_q15_fast(const q15_t* Im_in,
                     q31_t     sum4 = ((q31_t)bias[i + 1] << bias_shift) + NN_ROUND(out_shift);
 
                     uint16_t  colCnt = ch_im_in * dim_kernel * dim_kernel >> 1;
-
                     /* accumulate over the vector */
                     while (colCnt)
                     {
@@ -175,9 +172,7 @@ arm_convolve_HWC_q15_fast(const q15_t* Im_in,
 
                         colCnt--;
                     }           /* while over colCnt */
-
                     colCnt = ch_im_in * dim_kernel * dim_kernel & 0x1;
-
                     while (colCnt)
                     {
                         q15_t     inA1 = *pA++;
@@ -191,7 +186,6 @@ arm_convolve_HWC_q15_fast(const q15_t* Im_in,
                         sum4 += inA2 * inB2;
                         colCnt--;
                     }           /* while over colCnt */
-
                     *pOut++ = (q15_t) __SSAT(sum >> out_shift, 16);
                     *pOut++ = (q15_t) __SSAT(sum3 >> out_shift, 16);
                     *pOut2++ = (q15_t) __SSAT(sum2 >> out_shift, 16);
@@ -227,14 +221,12 @@ arm_convolve_HWC_q15_fast(const q15_t* Im_in,
             for (k = 0; k < dim_im_out; k++)
             {
                 conv_out = ((q31_t)bias[i] << bias_shift) + NN_ROUND(out_shift);
-
                 for (m = 0; m < dim_kernel; m++)
                 {
                     for (n = 0; n < dim_kernel; n++)
                     {
                         in_row = stride * j + m - padding;
                         in_col = stride * k + n - padding;
-
                         if (in_row >= 0 && in_col >= 0 && in_row < dim_im_in && in_col < dim_im_in)
                         {
                             for (l = 0; l < ch_im_in; l++)
@@ -242,12 +234,11 @@ arm_convolve_HWC_q15_fast(const q15_t* Im_in,
                                 conv_out +=
                                     Im_in[(in_row * dim_im_in + in_col) * ch_im_in +
                                           l] * wt[i * ch_im_in * dim_kernel * dim_kernel + (m * dim_kernel +
-                                                  n) * ch_im_in + l];
+                                                                                            n) * ch_im_in + l];
                             }
                         }
                     }
                 }
-
                 Im_out[i + (j * dim_im_out + k) * ch_im_out] = (q15_t) __SSAT((conv_out >> out_shift), 16);
             }
         }
