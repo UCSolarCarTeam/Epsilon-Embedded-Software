@@ -30,47 +30,47 @@
 #include "arm_nnfunctions.h"
 #include "arm_math.h"
 
-  /**
-   * @brief Matrix-multiplication function for convolution with reordered columns
-   * @param[in]       pA          pointer to operand A
-   * @param[in]       pInBuffer   pointer to operand B, always conssists of 2 vectors
-   * @param[in]       ch_im_out   numRow of A
-   * @param[in]       numCol_A    numCol of A
-   * @param[in]       bias_shift  amount of left-shift for bias
-   * @param[in]       out_shift   amount of right-shift for output
-   * @param[in]       bias        the bias
-   * @param[in,out]   pOut        pointer to output
-   * @return     The function returns the incremented output pointer
-   *
-   * @details
-   *
-   * This function assumes that data in pInBuffer are reordered
-   */
+/**
+ * @brief Matrix-multiplication function for convolution with reordered columns
+ * @param[in]       pA          pointer to operand A
+ * @param[in]       pInBuffer   pointer to operand B, always conssists of 2 vectors
+ * @param[in]       ch_im_out   numRow of A
+ * @param[in]       numCol_A    numCol of A
+ * @param[in]       bias_shift  amount of left-shift for bias
+ * @param[in]       out_shift   amount of right-shift for output
+ * @param[in]       bias        the bias
+ * @param[in,out]   pOut        pointer to output
+ * @return     The function returns the incremented output pointer
+ *
+ * @details
+ *
+ * This function assumes that data in pInBuffer are reordered
+ */
 
-q7_t     *arm_nn_mat_mult_kernel_q7_q15_reordered(const q7_t * pA,
-                                                  const q15_t * pInBuffer,
-                                                  const uint16_t ch_im_out,
-                                                  const uint16_t numCol_A,
-                                                  const uint16_t bias_shift,
-                                                  const uint16_t out_shift, 
-                                                  const q7_t * bias, 
-                                                  q7_t * pOut)
+q7_t*     arm_nn_mat_mult_kernel_q7_q15_reordered(const q7_t* pA,
+        const q15_t* pInBuffer,
+        const uint16_t ch_im_out,
+        const uint16_t numCol_A,
+        const uint16_t bias_shift,
+        const uint16_t out_shift,
+        const q7_t* bias,
+        q7_t* pOut)
 {
 
 #if defined (ARM_MATH_DSP)
     /* set up the second output pointers */
-    q7_t     *pOut2 = pOut + ch_im_out;
+    q7_t*     pOut2 = pOut + ch_im_out;
     int       i;
 
     /* this loop over rows in A */
     for (i = 0; i < ch_im_out; i += 2)
     {
         /* setup pointers for B */
-        const q15_t *pB = pInBuffer;
-        const q15_t *pB2 = pB + numCol_A;
+        const q15_t* pB = pInBuffer;
+        const q15_t* pB2 = pB + numCol_A;
 
         /* align the second pointer for A */
-        const q7_t *pA2 = pA + numCol_A;
+        const q7_t* pA2 = pA + numCol_A;
 
         /* init the sum with bias */
         q31_t     sum =  ((q31_t)(bias[i]) << bias_shift) + NN_ROUND(out_shift);
@@ -79,6 +79,7 @@ q7_t     *arm_nn_mat_mult_kernel_q7_q15_reordered(const q7_t * pA,
         q31_t     sum4 = ((q31_t)(bias[i + 1]) << bias_shift) + NN_ROUND(out_shift);
 
         uint16_t  colCnt = numCol_A >> 2;
+
         /* accumulate over the vector */
         while (colCnt)
         {
@@ -86,8 +87,8 @@ q7_t     *arm_nn_mat_mult_kernel_q7_q15_reordered(const q7_t * pA,
             q31_t     inB1 = *__SIMD32(pB)++;
             q31_t     inB2 = *__SIMD32(pB2)++;
 
-            pA = (q7_t *) read_and_pad_reordered((void *)pA, &inA11, &inA12);
-            pA2 = (q7_t *) read_and_pad_reordered((void *)pA2, &inA21, &inA22);
+            pA = (q7_t*) read_and_pad_reordered((void*)pA, &inA11, &inA12);
+            pA2 = (q7_t*) read_and_pad_reordered((void*)pA2, &inA21, &inA22);
 
             sum = __SMLAD(inA11, inB1, sum);
             sum2 = __SMLAD(inA11, inB2, sum2);
@@ -104,7 +105,9 @@ q7_t     *arm_nn_mat_mult_kernel_q7_q15_reordered(const q7_t * pA,
 
             colCnt--;
         }                       /* while over colCnt */
+
         colCnt = numCol_A & 0x3;
+
         while (colCnt)
         {
             q7_t      inA1 = *pA++;
@@ -118,6 +121,7 @@ q7_t     *arm_nn_mat_mult_kernel_q7_q15_reordered(const q7_t * pA,
             sum4 += inA2 * inB2;
             colCnt--;
         }                       /* while over colCnt */
+
         *pOut++ = (q7_t) __SSAT((sum >> out_shift), 8);
         *pOut++ = (q7_t) __SSAT((sum3 >> out_shift), 8);
         *pOut2++ = (q7_t) __SSAT((sum2 >> out_shift), 8);

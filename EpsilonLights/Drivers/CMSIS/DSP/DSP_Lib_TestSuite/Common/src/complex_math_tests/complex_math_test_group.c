@@ -9,6 +9,6 @@ JTEST_DEFINE_GROUP(complex_math_tests)
     JTEST_GROUP_CALL(cmplx_mag_squared_tests);
     JTEST_GROUP_CALL(cmplx_mult_cmplx_tests);
     JTEST_GROUP_CALL(cmplx_mult_real_tests);
-    
+
     return;
 }

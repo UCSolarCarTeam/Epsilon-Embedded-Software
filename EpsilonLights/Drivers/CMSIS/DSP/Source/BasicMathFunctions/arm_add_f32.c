@@ -59,78 +59,78 @@
  */
 
 void arm_add_f32(
-  float32_t * pSrcA,
-  float32_t * pSrcB,
-  float32_t * pDst,
-  uint32_t blockSize)
+    float32_t* pSrcA,
+    float32_t* pSrcB,
+    float32_t* pDst,
+    uint32_t blockSize)
 {
-  uint32_t blkCnt;                               /* loop counter */
+    uint32_t blkCnt;                               /* loop counter */
 
 #if defined (ARM_MATH_DSP)
 
-/* Run the below code for Cortex-M4 and Cortex-M3 */
-  float32_t inA1, inA2, inA3, inA4;              /* temporary input variabels */
-  float32_t inB1, inB2, inB3, inB4;              /* temporary input variables */
+    /* Run the below code for Cortex-M4 and Cortex-M3 */
+    float32_t inA1, inA2, inA3, inA4;              /* temporary input variabels */
+    float32_t inB1, inB2, inB3, inB4;              /* temporary input variables */
 
-  /*loop Unrolling */
-  blkCnt = blockSize >> 2U;
+    /*loop Unrolling */
+    blkCnt = blockSize >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
-   ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0U)
-  {
-    /* C = A + B */
-    /* Add and then store the results in the destination buffer. */
+    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+     ** a second loop below computes the remaining 1 to 3 samples. */
+    while (blkCnt > 0U)
+    {
+        /* C = A + B */
+        /* Add and then store the results in the destination buffer. */
 
-    /* read four inputs from sourceA and four inputs from sourceB */
-    inA1 = *pSrcA;
-    inB1 = *pSrcB;
-    inA2 = *(pSrcA + 1);
-    inB2 = *(pSrcB + 1);
-    inA3 = *(pSrcA + 2);
-    inB3 = *(pSrcB + 2);
-    inA4 = *(pSrcA + 3);
-    inB4 = *(pSrcB + 3);
+        /* read four inputs from sourceA and four inputs from sourceB */
+        inA1 = *pSrcA;
+        inB1 = *pSrcB;
+        inA2 = *(pSrcA + 1);
+        inB2 = *(pSrcB + 1);
+        inA3 = *(pSrcA + 2);
+        inB3 = *(pSrcB + 2);
+        inA4 = *(pSrcA + 3);
+        inB4 = *(pSrcB + 3);
 
-    /* C = A + B */
-    /* add and store result to destination */
-    *pDst = inA1 + inB1;
-    *(pDst + 1) = inA2 + inB2;
-    *(pDst + 2) = inA3 + inB3;
-    *(pDst + 3) = inA4 + inB4;
+        /* C = A + B */
+        /* add and store result to destination */
+        *pDst = inA1 + inB1;
+        *(pDst + 1) = inA2 + inB2;
+        *(pDst + 2) = inA3 + inB3;
+        *(pDst + 3) = inA4 + inB4;
 
-    /* update pointers to process next samples */
-    pSrcA += 4U;
-    pSrcB += 4U;
-    pDst += 4U;
+        /* update pointers to process next samples */
+        pSrcA += 4U;
+        pSrcB += 4U;
+        pDst += 4U;
 
 
-    /* Decrement the loop counter */
-    blkCnt--;
-  }
+        /* Decrement the loop counter */
+        blkCnt--;
+    }
 
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
-   ** No loop unrolling is used. */
-  blkCnt = blockSize % 0x4U;
+    /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+     ** No loop unrolling is used. */
+    blkCnt = blockSize % 0x4U;
 
 #else
 
-  /* Run the below code for Cortex-M0 */
+    /* Run the below code for Cortex-M0 */
 
-  /* Initialize blkCnt with number of samples */
-  blkCnt = blockSize;
+    /* Initialize blkCnt with number of samples */
+    blkCnt = blockSize;
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
-  while (blkCnt > 0U)
-  {
-    /* C = A + B */
-    /* Add and then store the results in the destination buffer. */
-    *pDst++ = (*pSrcA++) + (*pSrcB++);
+    while (blkCnt > 0U)
+    {
+        /* C = A + B */
+        /* Add and then store the results in the destination buffer. */
+        *pDst++ = (*pSrcA++) + (*pSrcB++);
 
-    /* Decrement the loop counter */
-    blkCnt--;
-  }
+        /* Decrement the loop counter */
+        blkCnt--;
+    }
 }
 
 /**

@@ -13,19 +13,19 @@
 extern int test_index;
 extern q7_t test_flags[50];
 
-void initialize_results_q7(q7_t * ref, q7_t * opt, int length)
+void initialize_results_q7(q7_t* ref, q7_t* opt, int length)
 {
     arm_fill_q7(0, ref, length);
     arm_fill_q7(37, opt, length);
 }
 
-void initialize_results_q15(q15_t * ref, q15_t * opt, int length)
+void initialize_results_q15(q15_t* ref, q15_t* opt, int length)
 {
     arm_fill_q15(0, ref, length);
     arm_fill_q15(0x5F5, opt, length);
 }
 
-void verify_results_q7(q7_t * ref, q7_t * opt, int length)
+void verify_results_q7(q7_t* ref, q7_t* opt, int length)
 {
 
     bool      if_match = true;
@@ -44,13 +44,15 @@ void verify_results_q7(q7_t * ref, q7_t * opt, int length)
     {
         printf("Outputs match.\r\n\r\n");
         test_flags[test_index++] = 0;
-    } else {
+    }
+    else
+    {
         test_flags[test_index++] = 1;
     }
 
 }
 
-void verify_results_q15(q15_t * ref, q15_t * opt, int length)
+void verify_results_q15(q15_t* ref, q15_t* opt, int length)
 {
 
     bool      if_match = true;
@@ -69,7 +71,9 @@ void verify_results_q15(q15_t * ref, q15_t * opt, int length)
     {
         printf("Outputs match.\r\n\r\n");
         test_flags[test_index++] = 0;
-    } else {
+    }
+    else
+    {
         test_flags[test_index++] = 1;
     }
 

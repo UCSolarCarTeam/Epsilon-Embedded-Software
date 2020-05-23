@@ -163,250 +163,252 @@
  */
 
 void arm_biquad_cascade_df1_f32(
-  const arm_biquad_casd_df1_inst_f32 * S,
-  float32_t * pSrc,
-  float32_t * pDst,
-  uint32_t blockSize)
+    const arm_biquad_casd_df1_inst_f32* S,
+    float32_t* pSrc,
+    float32_t* pDst,
+    uint32_t blockSize)
 {
-  float32_t *pIn = pSrc;                         /*  source pointer            */
-  float32_t *pOut = pDst;                        /*  destination pointer       */
-  float32_t *pState = S->pState;                 /*  pState pointer            */
-  float32_t *pCoeffs = S->pCoeffs;               /*  coefficient pointer       */
-  float32_t acc;                                 /*  Simulates the accumulator */
-  float32_t b0, b1, b2, a1, a2;                  /*  Filter coefficients       */
-  float32_t Xn1, Xn2, Yn1, Yn2;                  /*  Filter pState variables   */
-  float32_t Xn;                                  /*  temporary input           */
-  uint32_t sample, stage = S->numStages;         /*  loop counters             */
+    float32_t* pIn = pSrc;                         /*  source pointer            */
+    float32_t* pOut = pDst;                        /*  destination pointer       */
+    float32_t* pState = S->pState;                 /*  pState pointer            */
+    float32_t* pCoeffs = S->pCoeffs;               /*  coefficient pointer       */
+    float32_t acc;                                 /*  Simulates the accumulator */
+    float32_t b0, b1, b2, a1, a2;                  /*  Filter coefficients       */
+    float32_t Xn1, Xn2, Yn1, Yn2;                  /*  Filter pState variables   */
+    float32_t Xn;                                  /*  temporary input           */
+    uint32_t sample, stage = S->numStages;         /*  loop counters             */
 
 
 #if defined (ARM_MATH_DSP)
 
-  /* Run the below code for Cortex-M4 and Cortex-M3 */
+    /* Run the below code for Cortex-M4 and Cortex-M3 */
 
-  do
-  {
-    /* Reading the coefficients */
-    b0 = *pCoeffs++;
-    b1 = *pCoeffs++;
-    b2 = *pCoeffs++;
-    a1 = *pCoeffs++;
-    a2 = *pCoeffs++;
-
-    /* Reading the pState values */
-    Xn1 = pState[0];
-    Xn2 = pState[1];
-    Yn1 = pState[2];
-    Yn2 = pState[3];
-
-    /* Apply loop unrolling and compute 4 output values simultaneously. */
-    /*      The variable acc hold output values that are being computed:
-     *
-     *    acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1]   + a2 * y[n-2]
-     *    acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1]   + a2 * y[n-2]
-     *    acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1]   + a2 * y[n-2]
-     *    acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1]   + a2 * y[n-2]
-     */
-
-    sample = blockSize >> 2U;
-
-    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
-     ** a second loop below computes the remaining 1 to 3 samples. */
-    while (sample > 0U)
+    do
     {
-      /* Read the first input */
-      Xn = *pIn++;
+        /* Reading the coefficients */
+        b0 = *pCoeffs++;
+        b1 = *pCoeffs++;
+        b2 = *pCoeffs++;
+        a1 = *pCoeffs++;
+        a2 = *pCoeffs++;
 
-      /* acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2] */
-      Yn2 = (b0 * Xn) + (b1 * Xn1) + (b2 * Xn2) + (a1 * Yn1) + (a2 * Yn2);
+        /* Reading the pState values */
+        Xn1 = pState[0];
+        Xn2 = pState[1];
+        Yn1 = pState[2];
+        Yn2 = pState[3];
 
-      /* Store the result in the accumulator in the destination buffer. */
-      *pOut++ = Yn2;
+        /* Apply loop unrolling and compute 4 output values simultaneously. */
+        /*      The variable acc hold output values that are being computed:
+         *
+         *    acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1]   + a2 * y[n-2]
+         *    acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1]   + a2 * y[n-2]
+         *    acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1]   + a2 * y[n-2]
+         *    acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1]   + a2 * y[n-2]
+         */
 
-      /* Every time after the output is computed state should be updated. */
-      /* The states should be updated as:  */
-      /* Xn2 = Xn1    */
-      /* Xn1 = Xn     */
-      /* Yn2 = Yn1    */
-      /* Yn1 = acc   */
+        sample = blockSize >> 2U;
 
-      /* Read the second input */
-      Xn2 = *pIn++;
+        /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+         ** a second loop below computes the remaining 1 to 3 samples. */
+        while (sample > 0U)
+        {
+            /* Read the first input */
+            Xn = *pIn++;
 
-      /* acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2] */
-      Yn1 = (b0 * Xn2) + (b1 * Xn) + (b2 * Xn1) + (a1 * Yn2) + (a2 * Yn1);
+            /* acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2] */
+            Yn2 = (b0 * Xn) + (b1 * Xn1) + (b2 * Xn2) + (a1 * Yn1) + (a2 * Yn2);
 
-      /* Store the result in the accumulator in the destination buffer. */
-      *pOut++ = Yn1;
+            /* Store the result in the accumulator in the destination buffer. */
+            *pOut++ = Yn2;
 
-      /* Every time after the output is computed state should be updated. */
-      /* The states should be updated as:  */
-      /* Xn2 = Xn1    */
-      /* Xn1 = Xn     */
-      /* Yn2 = Yn1    */
-      /* Yn1 = acc   */
+            /* Every time after the output is computed state should be updated. */
+            /* The states should be updated as:  */
+            /* Xn2 = Xn1    */
+            /* Xn1 = Xn     */
+            /* Yn2 = Yn1    */
+            /* Yn1 = acc   */
 
-      /* Read the third input */
-      Xn1 = *pIn++;
+            /* Read the second input */
+            Xn2 = *pIn++;
 
-      /* acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2] */
-      Yn2 = (b0 * Xn1) + (b1 * Xn2) + (b2 * Xn) + (a1 * Yn1) + (a2 * Yn2);
+            /* acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2] */
+            Yn1 = (b0 * Xn2) + (b1 * Xn) + (b2 * Xn1) + (a1 * Yn2) + (a2 * Yn1);
 
-      /* Store the result in the accumulator in the destination buffer. */
-      *pOut++ = Yn2;
+            /* Store the result in the accumulator in the destination buffer. */
+            *pOut++ = Yn1;
 
-      /* Every time after the output is computed state should be updated. */
-      /* The states should be updated as: */
-      /* Xn2 = Xn1    */
-      /* Xn1 = Xn     */
-      /* Yn2 = Yn1    */
-      /* Yn1 = acc   */
+            /* Every time after the output is computed state should be updated. */
+            /* The states should be updated as:  */
+            /* Xn2 = Xn1    */
+            /* Xn1 = Xn     */
+            /* Yn2 = Yn1    */
+            /* Yn1 = acc   */
 
-      /* Read the forth input */
-      Xn = *pIn++;
+            /* Read the third input */
+            Xn1 = *pIn++;
 
-      /* acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2] */
-      Yn1 = (b0 * Xn) + (b1 * Xn1) + (b2 * Xn2) + (a1 * Yn2) + (a2 * Yn1);
+            /* acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2] */
+            Yn2 = (b0 * Xn1) + (b1 * Xn2) + (b2 * Xn) + (a1 * Yn1) + (a2 * Yn2);
 
-      /* Store the result in the accumulator in the destination buffer. */
-      *pOut++ = Yn1;
+            /* Store the result in the accumulator in the destination buffer. */
+            *pOut++ = Yn2;
 
-      /* Every time after the output is computed state should be updated. */
-      /* The states should be updated as:  */
-      /* Xn2 = Xn1    */
-      /* Xn1 = Xn     */
-      /* Yn2 = Yn1    */
-      /* Yn1 = acc   */
-      Xn2 = Xn1;
-      Xn1 = Xn;
+            /* Every time after the output is computed state should be updated. */
+            /* The states should be updated as: */
+            /* Xn2 = Xn1    */
+            /* Xn1 = Xn     */
+            /* Yn2 = Yn1    */
+            /* Yn1 = acc   */
 
-      /* decrement the loop counter */
-      sample--;
+            /* Read the forth input */
+            Xn = *pIn++;
+
+            /* acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2] */
+            Yn1 = (b0 * Xn) + (b1 * Xn1) + (b2 * Xn2) + (a1 * Yn2) + (a2 * Yn1);
+
+            /* Store the result in the accumulator in the destination buffer. */
+            *pOut++ = Yn1;
+
+            /* Every time after the output is computed state should be updated. */
+            /* The states should be updated as:  */
+            /* Xn2 = Xn1    */
+            /* Xn1 = Xn     */
+            /* Yn2 = Yn1    */
+            /* Yn1 = acc   */
+            Xn2 = Xn1;
+            Xn1 = Xn;
+
+            /* decrement the loop counter */
+            sample--;
+
+        }
+
+        /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+         ** No loop unrolling is used. */
+        sample = blockSize & 0x3U;
+
+        while (sample > 0U)
+        {
+            /* Read the input */
+            Xn = *pIn++;
+
+            /* acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2] */
+            acc = (b0 * Xn) + (b1 * Xn1) + (b2 * Xn2) + (a1 * Yn1) + (a2 * Yn2);
+
+            /* Store the result in the accumulator in the destination buffer. */
+            *pOut++ = acc;
+
+            /* Every time after the output is computed state should be updated. */
+            /* The states should be updated as:    */
+            /* Xn2 = Xn1    */
+            /* Xn1 = Xn     */
+            /* Yn2 = Yn1    */
+            /* Yn1 = acc   */
+            Xn2 = Xn1;
+            Xn1 = Xn;
+            Yn2 = Yn1;
+            Yn1 = acc;
+
+            /* decrement the loop counter */
+            sample--;
+
+        }
+
+        /*  Store the updated state variables back into the pState array */
+        *pState++ = Xn1;
+        *pState++ = Xn2;
+        *pState++ = Yn1;
+        *pState++ = Yn2;
+
+        /*  The first stage goes from the input buffer to the output buffer. */
+        /*  Subsequent numStages  occur in-place in the output buffer */
+        pIn = pDst;
+
+        /* Reset the output pointer */
+        pOut = pDst;
+
+        /* decrement the loop counter */
+        stage--;
 
     }
-
-    /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
-     ** No loop unrolling is used. */
-    sample = blockSize & 0x3U;
-
-    while (sample > 0U)
-    {
-      /* Read the input */
-      Xn = *pIn++;
-
-      /* acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2] */
-      acc = (b0 * Xn) + (b1 * Xn1) + (b2 * Xn2) + (a1 * Yn1) + (a2 * Yn2);
-
-      /* Store the result in the accumulator in the destination buffer. */
-      *pOut++ = acc;
-
-      /* Every time after the output is computed state should be updated. */
-      /* The states should be updated as:    */
-      /* Xn2 = Xn1    */
-      /* Xn1 = Xn     */
-      /* Yn2 = Yn1    */
-      /* Yn1 = acc   */
-      Xn2 = Xn1;
-      Xn1 = Xn;
-      Yn2 = Yn1;
-      Yn1 = acc;
-
-      /* decrement the loop counter */
-      sample--;
-
-    }
-
-    /*  Store the updated state variables back into the pState array */
-    *pState++ = Xn1;
-    *pState++ = Xn2;
-    *pState++ = Yn1;
-    *pState++ = Yn2;
-
-    /*  The first stage goes from the input buffer to the output buffer. */
-    /*  Subsequent numStages  occur in-place in the output buffer */
-    pIn = pDst;
-
-    /* Reset the output pointer */
-    pOut = pDst;
-
-    /* decrement the loop counter */
-    stage--;
-
-  } while (stage > 0U);
+    while (stage > 0U);
 
 #else
 
-  /* Run the below code for Cortex-M0 */
+    /* Run the below code for Cortex-M0 */
 
-  do
-  {
-    /* Reading the coefficients */
-    b0 = *pCoeffs++;
-    b1 = *pCoeffs++;
-    b2 = *pCoeffs++;
-    a1 = *pCoeffs++;
-    a2 = *pCoeffs++;
-
-    /* Reading the pState values */
-    Xn1 = pState[0];
-    Xn2 = pState[1];
-    Yn1 = pState[2];
-    Yn2 = pState[3];
-
-    /*      The variables acc holds the output value that is computed:
-     *    acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1]   + a2 * y[n-2]
-     */
-
-    sample = blockSize;
-
-    while (sample > 0U)
+    do
     {
-      /* Read the input */
-      Xn = *pIn++;
+        /* Reading the coefficients */
+        b0 = *pCoeffs++;
+        b1 = *pCoeffs++;
+        b2 = *pCoeffs++;
+        a1 = *pCoeffs++;
+        a2 = *pCoeffs++;
 
-      /* acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2] */
-      acc = (b0 * Xn) + (b1 * Xn1) + (b2 * Xn2) + (a1 * Yn1) + (a2 * Yn2);
+        /* Reading the pState values */
+        Xn1 = pState[0];
+        Xn2 = pState[1];
+        Yn1 = pState[2];
+        Yn2 = pState[3];
 
-      /* Store the result in the accumulator in the destination buffer. */
-      *pOut++ = acc;
+        /*      The variables acc holds the output value that is computed:
+         *    acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1]   + a2 * y[n-2]
+         */
 
-      /* Every time after the output is computed state should be updated. */
-      /* The states should be updated as:    */
-      /* Xn2 = Xn1    */
-      /* Xn1 = Xn     */
-      /* Yn2 = Yn1    */
-      /* Yn1 = acc   */
-      Xn2 = Xn1;
-      Xn1 = Xn;
-      Yn2 = Yn1;
-      Yn1 = acc;
+        sample = blockSize;
 
-      /* decrement the loop counter */
-      sample--;
+        while (sample > 0U)
+        {
+            /* Read the input */
+            Xn = *pIn++;
+
+            /* acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2] */
+            acc = (b0 * Xn) + (b1 * Xn1) + (b2 * Xn2) + (a1 * Yn1) + (a2 * Yn2);
+
+            /* Store the result in the accumulator in the destination buffer. */
+            *pOut++ = acc;
+
+            /* Every time after the output is computed state should be updated. */
+            /* The states should be updated as:    */
+            /* Xn2 = Xn1    */
+            /* Xn1 = Xn     */
+            /* Yn2 = Yn1    */
+            /* Yn1 = acc   */
+            Xn2 = Xn1;
+            Xn1 = Xn;
+            Yn2 = Yn1;
+            Yn1 = acc;
+
+            /* decrement the loop counter */
+            sample--;
+        }
+
+        /*  Store the updated state variables back into the pState array */
+        *pState++ = Xn1;
+        *pState++ = Xn2;
+        *pState++ = Yn1;
+        *pState++ = Yn2;
+
+        /*  The first stage goes from the input buffer to the output buffer. */
+        /*  Subsequent numStages  occur in-place in the output buffer */
+        pIn = pDst;
+
+        /* Reset the output pointer */
+        pOut = pDst;
+
+        /* decrement the loop counter */
+        stage--;
+
     }
-
-    /*  Store the updated state variables back into the pState array */
-    *pState++ = Xn1;
-    *pState++ = Xn2;
-    *pState++ = Yn1;
-    *pState++ = Yn2;
-
-    /*  The first stage goes from the input buffer to the output buffer. */
-    /*  Subsequent numStages  occur in-place in the output buffer */
-    pIn = pDst;
-
-    /* Reset the output pointer */
-    pOut = pDst;
-
-    /* decrement the loop counter */
-    stage--;
-
-  } while (stage > 0U);
+    while (stage > 0U);
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
 }
 
 
-  /**
-   * @} end of BiquadCascadeDF1 group
-   */
+/**
+ * @} end of BiquadCascadeDF1 group
+ */

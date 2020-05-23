@@ -58,64 +58,64 @@
  */
 
 void arm_mean_q31(
-  q31_t * pSrc,
-  uint32_t blockSize,
-  q31_t * pResult)
+    q31_t* pSrc,
+    uint32_t blockSize,
+    q31_t* pResult)
 {
-  q63_t sum = 0;                                 /* Temporary result storage */
-  uint32_t blkCnt;                               /* loop counter */
+    q63_t sum = 0;                                 /* Temporary result storage */
+    uint32_t blkCnt;                               /* loop counter */
 
 #if defined (ARM_MATH_DSP)
-  /* Run the below code for Cortex-M4 and Cortex-M3 */
+    /* Run the below code for Cortex-M4 and Cortex-M3 */
 
-  q31_t in1, in2, in3, in4;
+    q31_t in1, in2, in3, in4;
 
-  /*loop Unrolling */
-  blkCnt = blockSize >> 2U;
+    /*loop Unrolling */
+    blkCnt = blockSize >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
-   ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0U)
-  {
-    /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) */
-    in1 = *pSrc++;
-    in2 = *pSrc++;
-    in3 = *pSrc++;
-    in4 = *pSrc++;
+    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+     ** a second loop below computes the remaining 1 to 3 samples. */
+    while (blkCnt > 0U)
+    {
+        /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) */
+        in1 = *pSrc++;
+        in2 = *pSrc++;
+        in3 = *pSrc++;
+        in4 = *pSrc++;
 
-    sum += in1;
-    sum += in2;
-    sum += in3;
-    sum += in4;
+        sum += in1;
+        sum += in2;
+        sum += in3;
+        sum += in4;
 
-    /* Decrement the loop counter */
-    blkCnt--;
-  }
+        /* Decrement the loop counter */
+        blkCnt--;
+    }
 
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
-   ** No loop unrolling is used. */
-  blkCnt = blockSize % 0x4U;
+    /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+     ** No loop unrolling is used. */
+    blkCnt = blockSize % 0x4U;
 
 #else
-  /* Run the below code for Cortex-M0 */
+    /* Run the below code for Cortex-M0 */
 
-  /* Loop over blockSize number of values */
-  blkCnt = blockSize;
+    /* Loop over blockSize number of values */
+    blkCnt = blockSize;
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
-  while (blkCnt > 0U)
-  {
-    /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) */
-    sum += *pSrc++;
+    while (blkCnt > 0U)
+    {
+        /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) */
+        sum += *pSrc++;
 
-    /* Decrement the loop counter */
-    blkCnt--;
-  }
+        /* Decrement the loop counter */
+        blkCnt--;
+    }
 
-  /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) / blockSize  */
-  /* Store the result to the destination */
-  *pResult = (q31_t) (sum / (int32_t) blockSize);
+    /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) / blockSize  */
+    /* Store the result to the destination */
+    *pResult = (q31_t) (sum / (int32_t) blockSize);
 }
 
 /**

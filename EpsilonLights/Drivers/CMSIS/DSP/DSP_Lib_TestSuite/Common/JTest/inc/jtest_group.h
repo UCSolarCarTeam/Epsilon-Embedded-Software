@@ -19,8 +19,8 @@
 typedef struct JTEST_GROUP_struct
 {
     void (* group_fn_ptr) (void); /**< Pointer to the test group */
-    char * name_str;              /**< Name of the group */
-    
+    char* name_str;               /**< Name of the group */
+
     /* Extend the #JTEST_GROUP_t with Pass/Fail information.*/
     JTEST_PF_MEMBERS;
 } JTEST_GROUP_t;

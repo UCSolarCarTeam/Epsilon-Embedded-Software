@@ -48,13 +48,13 @@ extern "C" {
   */
 typedef struct
 {
-  uint32_t PLLState;      /*!< PLLState: The new state of the PLL.
+    uint32_t PLLState;      /*!< PLLState: The new state of the PLL.
                               This parameter can be a value of @ref RCC_PLL_Config */
 
-  uint32_t PLLSource;     /*!< PLLSource: PLL entry clock source.
+    uint32_t PLLSource;     /*!< PLLSource: PLL entry clock source.
                               This parameter must be a value of @ref RCC_PLL_Clock_Source */
 
-  uint32_t PLLMUL;        /*!< PLLMUL: Multiplication factor for PLL VCO input clock
+    uint32_t PLLMUL;        /*!< PLLMUL: Multiplication factor for PLL VCO input clock
                               This parameter must be a value of @ref RCCEx_PLL_Multiplication_Factor */
 } RCC_PLLInitTypeDef;
 
@@ -63,19 +63,19 @@ typedef struct
   */
 typedef struct
 {
-  uint32_t ClockType;             /*!< The clock to be configured.
+    uint32_t ClockType;             /*!< The clock to be configured.
                                        This parameter can be a value of @ref RCC_System_Clock_Type */
 
-  uint32_t SYSCLKSource;          /*!< The clock source (SYSCLKS) used as system clock.
+    uint32_t SYSCLKSource;          /*!< The clock source (SYSCLKS) used as system clock.
                                        This parameter can be a value of @ref RCC_System_Clock_Source */
 
-  uint32_t AHBCLKDivider;         /*!< The AHB clock (HCLK) divider. This clock is derived from the system clock (SYSCLK).
+    uint32_t AHBCLKDivider;         /*!< The AHB clock (HCLK) divider. This clock is derived from the system clock (SYSCLK).
                                        This parameter can be a value of @ref RCC_AHB_Clock_Source */
 
-  uint32_t APB1CLKDivider;        /*!< The APB1 clock (PCLK1) divider. This clock is derived from the AHB clock (HCLK).
+    uint32_t APB1CLKDivider;        /*!< The APB1 clock (PCLK1) divider. This clock is derived from the AHB clock (HCLK).
                                        This parameter can be a value of @ref RCC_APB1_APB2_Clock_Source */
 
-  uint32_t APB2CLKDivider;        /*!< The APB2 clock (PCLK2) divider. This clock is derived from the AHB clock (HCLK).
+    uint32_t APB2CLKDivider;        /*!< The APB2 clock (PCLK2) divider. This clock is derived from the AHB clock (HCLK).
                                        This parameter can be a value of @ref RCC_APB1_APB2_Clock_Source */
 } RCC_ClkInitTypeDef;
 
@@ -1154,8 +1154,8 @@ typedef struct
 
 /* Initialization and de-initialization functions  ******************************/
 HAL_StatusTypeDef HAL_RCC_DeInit(void);
-HAL_StatusTypeDef HAL_RCC_OscConfig(RCC_OscInitTypeDef  *RCC_OscInitStruct);
-HAL_StatusTypeDef HAL_RCC_ClockConfig(RCC_ClkInitTypeDef  *RCC_ClkInitStruct, uint32_t FLatency);
+HAL_StatusTypeDef HAL_RCC_OscConfig(RCC_OscInitTypeDef*  RCC_OscInitStruct);
+HAL_StatusTypeDef HAL_RCC_ClockConfig(RCC_ClkInitTypeDef*  RCC_ClkInitStruct, uint32_t FLatency);
 
 /**
   * @}
@@ -1173,8 +1173,8 @@ uint32_t          HAL_RCC_GetSysClockFreq(void);
 uint32_t          HAL_RCC_GetHCLKFreq(void);
 uint32_t          HAL_RCC_GetPCLK1Freq(void);
 uint32_t          HAL_RCC_GetPCLK2Freq(void);
-void              HAL_RCC_GetOscConfig(RCC_OscInitTypeDef  *RCC_OscInitStruct);
-void              HAL_RCC_GetClockConfig(RCC_ClkInitTypeDef  *RCC_ClkInitStruct, uint32_t *pFLatency);
+void              HAL_RCC_GetOscConfig(RCC_OscInitTypeDef*  RCC_OscInitStruct);
+void              HAL_RCC_GetClockConfig(RCC_ClkInitTypeDef*  RCC_ClkInitStruct, uint32_t* pFLatency);
 
 /* CSS NMI IRQ handler */
 void              HAL_RCC_NMI_IRQHandler(void);

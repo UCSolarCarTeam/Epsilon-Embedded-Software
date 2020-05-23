@@ -17,7 +17,7 @@
  */
 typedef struct ARR_DESC_struct
 {
-    void *  data_ptr;                /* Pointer to the array contents. */
+    void*   data_ptr;                /* Pointer to the array contents. */
     int32_t element_count;           /* Number of current elements. */
     int32_t element_size;            /* Size of current elements in bytes. */
     int32_t underlying_size;         /* Size of underlying array in bytes. */

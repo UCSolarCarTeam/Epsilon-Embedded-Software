@@ -62,7 +62,7 @@
                 0                                       \
         }                                               \
     }                                                   \
-        
+
 
 /**
  *  Initialize the contents of a #JTEST_TEST_t struct.
@@ -106,7 +106,7 @@
 #define JTEST_DEFINE_TEST_DEFAULT_FUT /* Blank */
 #define JTEST_DEFINE_TEST_DEFAULT_ENABLE                   \
     JTEST_TRUE                                 /* Tests enabled by
-                                                * default. */ 
+                                                * default. */
 
 /* Dispatch Cases*/
 #define JTEST_DEFINE_TEST_1(_1)                            \

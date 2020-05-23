@@ -40,87 +40,87 @@
  * @{
  */
 
-  /**
-   * @brief Q15 opt fully-connected layer function
-   * @param[in]       pV          pointer to input vector
-   * @param[in]       pM          pointer to matrix weights
-   * @param[in]       dim_vec     length of the vector
-   * @param[in]       num_of_rows number of rows in weight matrix
-   * @param[in]       bias_shift  amount of left-shift for bias
-   * @param[in]       out_shift   amount of right-shift for output
-   * @param[in]       bias        pointer to bias
-   * @param[in,out]   pOut        pointer to output vector
-   * @param[in,out]   vec_buffer  pointer to buffer space for input
-   * @return     The function returns <code>ARM_MATH_SUCCESS</code>
-   *
-   *
-   * @details
-   *
-   * <b>Buffer size:</b>
-   *
-   * vec_buffer size: 0
-   *
-   *  Here we use only one pointer to read 4 rows in the weight
-   *  matrix. So if the original matrix looks like this:
-   *
-   *  | a11 | a12 | a13 |
-   *
-   *  | a21 | a22 | a23 |
-   *
-   *  | a31 | a32 | a33 |
-   *
-   *  | a41 | a42 | a43 |
-   *
-   *  | a51 | a52 | a53 |
-   *
-   *  | a61 | a62 | a63 |
-   *
-   *  We operates on multiple-of-4 rows, so the first four rows becomes
-   *
-   *  | a11 | a12 | a21 | a22 | a31 | a32 | a41 | a42 |
-   *
-   *  | a13 | a23 | a33 | a43 |
-   *
-   *  Remaining rows are kept the same original order.
-   *
-   *  So the stored weight matrix looks like this:
-   *
-   *
-   *  | a11 | a12 | a21 | a22 | a31 | a32 | a41 | a42 |
-   *
-   *  | a13 | a23 | a33 | a43 | a51 | a52 | a53 | a61 |
-   *
-   *  | a62 | a63 |
-   */
+/**
+ * @brief Q15 opt fully-connected layer function
+ * @param[in]       pV          pointer to input vector
+ * @param[in]       pM          pointer to matrix weights
+ * @param[in]       dim_vec     length of the vector
+ * @param[in]       num_of_rows number of rows in weight matrix
+ * @param[in]       bias_shift  amount of left-shift for bias
+ * @param[in]       out_shift   amount of right-shift for output
+ * @param[in]       bias        pointer to bias
+ * @param[in,out]   pOut        pointer to output vector
+ * @param[in,out]   vec_buffer  pointer to buffer space for input
+ * @return     The function returns <code>ARM_MATH_SUCCESS</code>
+ *
+ *
+ * @details
+ *
+ * <b>Buffer size:</b>
+ *
+ * vec_buffer size: 0
+ *
+ *  Here we use only one pointer to read 4 rows in the weight
+ *  matrix. So if the original matrix looks like this:
+ *
+ *  | a11 | a12 | a13 |
+ *
+ *  | a21 | a22 | a23 |
+ *
+ *  | a31 | a32 | a33 |
+ *
+ *  | a41 | a42 | a43 |
+ *
+ *  | a51 | a52 | a53 |
+ *
+ *  | a61 | a62 | a63 |
+ *
+ *  We operates on multiple-of-4 rows, so the first four rows becomes
+ *
+ *  | a11 | a12 | a21 | a22 | a31 | a32 | a41 | a42 |
+ *
+ *  | a13 | a23 | a33 | a43 |
+ *
+ *  Remaining rows are kept the same original order.
+ *
+ *  So the stored weight matrix looks like this:
+ *
+ *
+ *  | a11 | a12 | a21 | a22 | a31 | a32 | a41 | a42 |
+ *
+ *  | a13 | a23 | a33 | a43 | a51 | a52 | a53 | a61 |
+ *
+ *  | a62 | a63 |
+ */
 
 arm_status
-arm_fully_connected_q15_opt(const q15_t * pV,
-                            const q15_t * pM,
+arm_fully_connected_q15_opt(const q15_t* pV,
+                            const q15_t* pM,
                             const uint16_t dim_vec,
                             const uint16_t num_of_rows,
                             const uint16_t bias_shift,
-                            const uint16_t out_shift, 
-                            const q15_t * bias, 
-                            q15_t * pOut, 
-                            q15_t * vec_buffer)
+                            const uint16_t out_shift,
+                            const q15_t* bias,
+                            q15_t* pOut,
+                            q15_t* vec_buffer)
 {
 
 #if defined (ARM_MATH_DSP)
     /* Run the following code for Cortex-M4 and Cortex-M7 */
 
-    const q15_t *pB = pM;
-    q15_t    *pO = pOut;
-    const q15_t *pBias = bias;
-    const q15_t *pA = pV;
+    const q15_t* pB = pM;
+    q15_t*    pO = pOut;
+    const q15_t* pBias = bias;
+    const q15_t* pA = pV;
 
     uint16_t  rowCnt = num_of_rows >> 2;
 
     while (rowCnt)
     {
         q31_t     sum =  ((q31_t)(*pBias++) << bias_shift) + NN_ROUND(out_shift);
-        q31_t     sum2 = ((q31_t)(*pBias++) << bias_shift) + NN_ROUND(out_shift); 
-        q31_t     sum3 = ((q31_t)(*pBias++) << bias_shift) + NN_ROUND(out_shift); 
-        q31_t     sum4 = ((q31_t)(*pBias++) << bias_shift) + NN_ROUND(out_shift); 
+        q31_t     sum2 = ((q31_t)(*pBias++) << bias_shift) + NN_ROUND(out_shift);
+        q31_t     sum3 = ((q31_t)(*pBias++) << bias_shift) + NN_ROUND(out_shift);
+        q31_t     sum4 = ((q31_t)(*pBias++) << bias_shift) + NN_ROUND(out_shift);
 
         uint16_t  colCnt = dim_vec >> 1;
 
@@ -168,12 +168,13 @@ arm_fully_connected_q15_opt(const q15_t * pV,
                       "smlad %[sum4], r4, r3, %[sum4]\n"
                       "subs %[colCnt], #1\n"
                       "bne COL_LOOP_%=\n":[sum] "+r"(sum),
-                      [sum2] "+r"(sum2),[sum3] "+r"(sum3),
-                      [sum4] "+r"(sum4),[pB] "+r"(pB),[pA] "+r"(pA):[colCnt] "r"(colCnt):"r0", "r1", "r2", "r3", "r4");
+                      [sum2] "+r"(sum2), [sum3] "+r"(sum3),
+                      [sum4] "+r"(sum4), [pB] "+r"(pB), [pA] "+r"(pA):[colCnt] "r"(colCnt):"r0", "r1", "r2", "r3", "r4");
 
 #endif                          /* USE_INTRINSIC */
 
         colCnt = dim_vec & 0x1;
+
         while (colCnt)
         {
 
@@ -189,6 +190,7 @@ arm_fully_connected_q15_opt(const q15_t * pV,
             sum4 += inV * inM4;
             colCnt--;
         }                       /* while over colCnt */
+
         *pO++ = (q15_t) (__SSAT((sum >> out_shift), 16));
         *pO++ = (q15_t) (__SSAT((sum2 >> out_shift), 16));
         *pO++ = (q15_t) (__SSAT((sum3 >> out_shift), 16));
@@ -226,6 +228,7 @@ arm_fully_connected_q15_opt(const q15_t * pV,
 
         /* left-over of the vector */
         colCnt = dim_vec & 0x3;
+
         while (colCnt)
         {
             q15_t     inV = *pA++;
@@ -242,10 +245,10 @@ arm_fully_connected_q15_opt(const q15_t * pV,
 #else
     /* Run the following code as reference implementation for Cortex-M0 and Cortex-M3 */
     uint16_t  rowCnt = num_of_rows >> 2;
-    const q15_t *pB = pM;
-    const q15_t *pA;
-    q15_t    *pO = pOut;
-    const q15_t *pBias = bias;
+    const q15_t* pB = pM;
+    const q15_t* pA;
+    q15_t*    pO = pOut;
+    const q15_t* pBias = bias;
 
     while (rowCnt)
     {
@@ -257,6 +260,7 @@ arm_fully_connected_q15_opt(const q15_t * pV,
         uint16_t  colCnt = dim_vec >> 1;
 
         pA = pV;
+
         while (colCnt)
         {
             q15_t     inA1 = *pA++;
@@ -280,7 +284,9 @@ arm_fully_connected_q15_opt(const q15_t * pV,
 
             colCnt--;
         }
+
         colCnt = dim_vec & 0x1;
+
         while (colCnt)
         {
             q15_t     inA = *pA++;
@@ -294,6 +300,7 @@ arm_fully_connected_q15_opt(const q15_t * pV,
             sum4 += inA * inB;
             colCnt--;
         }
+
         *pO++ = (q15_t) __SSAT((sum >> out_shift), 16);
         *pO++ = (q15_t) __SSAT((sum2 >> out_shift), 16);
         *pO++ = (q15_t) __SSAT((sum3 >> out_shift), 16);
@@ -301,6 +308,7 @@ arm_fully_connected_q15_opt(const q15_t * pV,
 
         rowCnt--;
     }
+
     rowCnt = num_of_rows & 0x3;
 
     while (rowCnt)
@@ -309,12 +317,14 @@ arm_fully_connected_q15_opt(const q15_t * pV,
         int       j;
 
         pA = pV;
+
         for (j = 0; j < dim_vec; j++)
         {
             q15_t     inA = *pA++;
             q15_t     inB = *pB++;
             ip_out += inA * inB;
         }
+
         *pO++ = (q15_t) __SSAT((ip_out >> out_shift), 16);
 
         rowCnt--;

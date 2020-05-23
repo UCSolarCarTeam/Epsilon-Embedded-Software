@@ -24,13 +24,13 @@
  */
 
 #if defined (ARMCM7)
-  #include "ARMCM7.h"
+#include "ARMCM7.h"
 #elif defined (ARMCM7_SP)
-  #include "ARMCM7_SP.h"
+#include "ARMCM7_SP.h"
 #elif defined (ARMCM7_DP)
-  #include "ARMCM7_DP.h"
+#include "ARMCM7_DP.h"
 #else
-  #error device not specified!
+#error device not specified!
 #endif
 
 /*----------------------------------------------------------------------------
@@ -45,7 +45,7 @@
   Externals
  *----------------------------------------------------------------------------*/
 #if defined (__VTOR_PRESENT) && (__VTOR_PRESENT == 1U)
-  extern uint32_t __Vectors;
+extern uint32_t __Vectors;
 #endif
 
 /*----------------------------------------------------------------------------
@@ -59,7 +59,7 @@ uint32_t SystemCoreClock = SYSTEM_CLOCK;
  *----------------------------------------------------------------------------*/
 void SystemCoreClockUpdate (void)
 {
-  SystemCoreClock = SYSTEM_CLOCK;
+    SystemCoreClock = SYSTEM_CLOCK;
 }
 
 /*----------------------------------------------------------------------------
@@ -69,17 +69,17 @@ void SystemInit (void)
 {
 
 #if defined (__VTOR_PRESENT) && (__VTOR_PRESENT == 1U)
-  SCB->VTOR = (uint32_t) &__Vectors;
+    SCB->VTOR = (uint32_t) &__Vectors;
 #endif
 
 #if defined (__FPU_USED) && (__FPU_USED == 1U)
-  SCB->CPACR |= ((3U << 10U*2U) |           /* set CP10 Full Access */
-                 (3U << 11U*2U)  );         /* set CP11 Full Access */
+    SCB->CPACR |= ((3U << 10U * 2U) |         /* set CP10 Full Access */
+                   (3U << 11U * 2U)  );       /* set CP11 Full Access */
 #endif
 
 #ifdef UNALIGNED_SUPPORT_DISABLE
-  SCB->CCR |= SCB_CCR_UNALIGN_TRP_Msk;
+    SCB->CCR |= SCB_CCR_UNALIGN_TRP_Msk;
 #endif
 
-  SystemCoreClock = SYSTEM_CLOCK;
+    SystemCoreClock = SYSTEM_CLOCK;
 }

@@ -56,74 +56,74 @@
  */
 
 void arm_dot_prod_q31(
-  q31_t * pSrcA,
-  q31_t * pSrcB,
-  uint32_t blockSize,
-  q63_t * result)
+    q31_t* pSrcA,
+    q31_t* pSrcB,
+    uint32_t blockSize,
+    q63_t* result)
 {
-  q63_t sum = 0;                                 /* Temporary result storage */
-  uint32_t blkCnt;                               /* loop counter */
+    q63_t sum = 0;                                 /* Temporary result storage */
+    uint32_t blkCnt;                               /* loop counter */
 
 
 #if defined (ARM_MATH_DSP)
 
-/* Run the below code for Cortex-M4 and Cortex-M3 */
-  q31_t inA1, inA2, inA3, inA4;
-  q31_t inB1, inB2, inB3, inB4;
+    /* Run the below code for Cortex-M4 and Cortex-M3 */
+    q31_t inA1, inA2, inA3, inA4;
+    q31_t inB1, inB2, inB3, inB4;
 
-  /*loop Unrolling */
-  blkCnt = blockSize >> 2U;
+    /*loop Unrolling */
+    blkCnt = blockSize >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
-   ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0U)
-  {
-    /* C = A[0]* B[0] + A[1]* B[1] + A[2]* B[2] + .....+ A[blockSize-1]* B[blockSize-1] */
-    /* Calculate dot product and then store the result in a temporary buffer. */
-    inA1 = *pSrcA++;
-    inA2 = *pSrcA++;
-    inA3 = *pSrcA++;
-    inA4 = *pSrcA++;
-    inB1 = *pSrcB++;
-    inB2 = *pSrcB++;
-    inB3 = *pSrcB++;
-    inB4 = *pSrcB++;
+    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+     ** a second loop below computes the remaining 1 to 3 samples. */
+    while (blkCnt > 0U)
+    {
+        /* C = A[0]* B[0] + A[1]* B[1] + A[2]* B[2] + .....+ A[blockSize-1]* B[blockSize-1] */
+        /* Calculate dot product and then store the result in a temporary buffer. */
+        inA1 = *pSrcA++;
+        inA2 = *pSrcA++;
+        inA3 = *pSrcA++;
+        inA4 = *pSrcA++;
+        inB1 = *pSrcB++;
+        inB2 = *pSrcB++;
+        inB3 = *pSrcB++;
+        inB4 = *pSrcB++;
 
-    sum += ((q63_t) inA1 * inB1) >> 14U;
-    sum += ((q63_t) inA2 * inB2) >> 14U;
-    sum += ((q63_t) inA3 * inB3) >> 14U;
-    sum += ((q63_t) inA4 * inB4) >> 14U;
+        sum += ((q63_t) inA1 * inB1) >> 14U;
+        sum += ((q63_t) inA2 * inB2) >> 14U;
+        sum += ((q63_t) inA3 * inB3) >> 14U;
+        sum += ((q63_t) inA4 * inB4) >> 14U;
 
-    /* Decrement the loop counter */
-    blkCnt--;
-  }
+        /* Decrement the loop counter */
+        blkCnt--;
+    }
 
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
-   ** No loop unrolling is used. */
-  blkCnt = blockSize % 0x4U;
+    /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+     ** No loop unrolling is used. */
+    blkCnt = blockSize % 0x4U;
 
 #else
 
-  /* Run the below code for Cortex-M0 */
+    /* Run the below code for Cortex-M0 */
 
-  /* Initialize blkCnt with number of samples */
-  blkCnt = blockSize;
+    /* Initialize blkCnt with number of samples */
+    blkCnt = blockSize;
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
 
-  while (blkCnt > 0U)
-  {
-    /* C = A[0]* B[0] + A[1]* B[1] + A[2]* B[2] + .....+ A[blockSize-1]* B[blockSize-1] */
-    /* Calculate dot product and then store the result in a temporary buffer. */
-    sum += ((q63_t) * pSrcA++ * *pSrcB++) >> 14U;
+    while (blkCnt > 0U)
+    {
+        /* C = A[0]* B[0] + A[1]* B[1] + A[2]* B[2] + .....+ A[blockSize-1]* B[blockSize-1] */
+        /* Calculate dot product and then store the result in a temporary buffer. */
+        sum += ((q63_t) * pSrcA++ * *pSrcB++) >> 14U;
 
-    /* Decrement the loop counter */
-    blkCnt--;
-  }
+        /* Decrement the loop counter */
+        blkCnt--;
+    }
 
-  /* Store the result in the destination buffer in 16.48 format */
-  *result = sum;
+    /* Store the result in the destination buffer in 16.48 format */
+    *result = sum;
 }
 
 /**

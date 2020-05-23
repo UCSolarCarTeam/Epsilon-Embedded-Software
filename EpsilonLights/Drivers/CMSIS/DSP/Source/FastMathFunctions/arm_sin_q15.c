@@ -33,10 +33,10 @@
  * @ingroup groupFastMath
  */
 
- /**
- * @addtogroup sin
- * @{
- */
+/**
+* @addtogroup sin
+* @{
+*/
 
 /**
  * @brief Fast approximation to the trigonometric sine function for Q15 data.
@@ -47,28 +47,28 @@
  */
 
 q15_t arm_sin_q15(
-  q15_t x)
+    q15_t x)
 {
-  q15_t sinVal;                                  /* Temporary variables for input, output */
-  int32_t index;                                 /* Index variables */
-  q15_t a, b;                                    /* Four nearest output values */
-  q15_t fract;                                   /* Temporary values for fractional values */
+    q15_t sinVal;                                  /* Temporary variables for input, output */
+    int32_t index;                                 /* Index variables */
+    q15_t a, b;                                    /* Four nearest output values */
+    q15_t fract;                                   /* Temporary values for fractional values */
 
-  /* Calculate the nearest index */
-  index = (uint32_t)x >> FAST_MATH_Q15_SHIFT;
+    /* Calculate the nearest index */
+    index = (uint32_t)x >> FAST_MATH_Q15_SHIFT;
 
-  /* Calculation of fractional value */
-  fract = (x - (index << FAST_MATH_Q15_SHIFT)) << 9;
+    /* Calculation of fractional value */
+    fract = (x - (index << FAST_MATH_Q15_SHIFT)) << 9;
 
-  /* Read two nearest values of input value from the sin table */
-  a = sinTable_q15[index];
-  b = sinTable_q15[index+1];
+    /* Read two nearest values of input value from the sin table */
+    a = sinTable_q15[index];
+    b = sinTable_q15[index + 1];
 
-  /* Linear interpolation process */
-  sinVal = (q31_t)(0x8000-fract)*a >> 16;
-  sinVal = (q15_t)((((q31_t)sinVal << 16) + ((q31_t)fract*b)) >> 16);
+    /* Linear interpolation process */
+    sinVal = (q31_t)(0x8000 - fract) * a >> 16;
+    sinVal = (q15_t)((((q31_t)sinVal << 16) + ((q31_t)fract * b)) >> 16);
 
-  return sinVal << 1;
+    return sinVal << 1;
 }
 
 /**

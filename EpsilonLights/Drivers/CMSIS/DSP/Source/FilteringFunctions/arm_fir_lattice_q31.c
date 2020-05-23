@@ -53,199 +53,199 @@
 
 #if defined (ARM_MATH_DSP)
 
-  /* Run the below code for Cortex-M4 and Cortex-M3 */
+/* Run the below code for Cortex-M4 and Cortex-M3 */
 
 void arm_fir_lattice_q31(
-  const arm_fir_lattice_instance_q31 * S,
-  q31_t * pSrc,
-  q31_t * pDst,
-  uint32_t blockSize)
+    const arm_fir_lattice_instance_q31* S,
+    q31_t* pSrc,
+    q31_t* pDst,
+    uint32_t blockSize)
 {
-  q31_t *pState;                                 /* State pointer */
-  q31_t *pCoeffs = S->pCoeffs;                   /* Coefficient pointer */
-  q31_t *px;                                     /* temporary state pointer */
-  q31_t *pk;                                     /* temporary coefficient pointer */
-  q31_t fcurr1, fnext1, gcurr1 = 0, gnext1;      /* temporary variables for first sample in loop unrolling */
-  q31_t fcurr2, fnext2, gnext2;                  /* temporary variables for second sample in loop unrolling */
-  uint32_t numStages = S->numStages;             /* Length of the filter */
-  uint32_t blkCnt, stageCnt;                     /* temporary variables for counts */
-  q31_t k;
+    q31_t* pState;                                 /* State pointer */
+    q31_t* pCoeffs = S->pCoeffs;                   /* Coefficient pointer */
+    q31_t* px;                                     /* temporary state pointer */
+    q31_t* pk;                                     /* temporary coefficient pointer */
+    q31_t fcurr1, fnext1, gcurr1 = 0, gnext1;      /* temporary variables for first sample in loop unrolling */
+    q31_t fcurr2, fnext2, gnext2;                  /* temporary variables for second sample in loop unrolling */
+    uint32_t numStages = S->numStages;             /* Length of the filter */
+    uint32_t blkCnt, stageCnt;                     /* temporary variables for counts */
+    q31_t k;
 
-  pState = &S->pState[0];
+    pState = &S->pState[0];
 
-  blkCnt = blockSize >> 1U;
+    blkCnt = blockSize >> 1U;
 
-  /* First part of the processing with loop unrolling.  Compute 2 outputs at a time.
-     a second loop below computes the remaining 1 sample. */
-  while (blkCnt > 0U)
-  {
-    /* f0(n) = x(n) */
-    fcurr1 = *pSrc++;
-
-    /* f0(n) = x(n) */
-    fcurr2 = *pSrc++;
-
-    /* Initialize coeff pointer */
-    pk = (pCoeffs);
-
-    /* Initialize state pointer */
-    px = pState;
-
-    /* read g0(n - 1) from state buffer */
-    gcurr1 = *px;
-
-    /* Read the reflection coefficient */
-    k = *pk++;
-
-    /* for sample 1 processing */
-    /* f1(n) = f0(n) +  K1 * g0(n-1) */
-    fnext1 = (q31_t) (((q63_t) gcurr1 * k) >> 32);
-
-    /* g1(n) = f0(n) * K1  +  g0(n-1) */
-    gnext1 = (q31_t) (((q63_t) fcurr1 * (k)) >> 32);
-    fnext1 = fcurr1 + (fnext1 << 1U);
-    gnext1 = gcurr1 + (gnext1 << 1U);
-
-    /* for sample 1 processing */
-    /* f1(n) = f0(n) +  K1 * g0(n-1) */
-    fnext2 = (q31_t) (((q63_t) fcurr1 * k) >> 32);
-
-    /* g1(n) = f0(n) * K1  +  g0(n-1) */
-    gnext2 = (q31_t) (((q63_t) fcurr2 * (k)) >> 32);
-    fnext2 = fcurr2 + (fnext2 << 1U);
-    gnext2 = fcurr1 + (gnext2 << 1U);
-
-    /* save g1(n) in state buffer */
-    *px++ = fcurr2;
-
-    /* f1(n) is saved in fcurr1
-       for next stage processing */
-    fcurr1 = fnext1;
-    fcurr2 = fnext2;
-
-    stageCnt = (numStages - 1U);
-
-    /* stage loop */
-    while (stageCnt > 0U)
+    /* First part of the processing with loop unrolling.  Compute 2 outputs at a time.
+       a second loop below computes the remaining 1 sample. */
+    while (blkCnt > 0U)
     {
+        /* f0(n) = x(n) */
+        fcurr1 = *pSrc++;
 
-      /* Read the reflection coefficient */
-      k = *pk++;
+        /* f0(n) = x(n) */
+        fcurr2 = *pSrc++;
 
-      /* read g2(n) from state buffer */
-      gcurr1 = *px;
+        /* Initialize coeff pointer */
+        pk = (pCoeffs);
 
-      /* save g1(n) in state buffer */
-      *px++ = gnext2;
+        /* Initialize state pointer */
+        px = pState;
 
-      /* Sample processing for K2, K3.... */
-      /* f2(n) = f1(n) +  K2 * g1(n-1) */
-      fnext1 = (q31_t) (((q63_t) gcurr1 * k) >> 32);
-      fnext2 = (q31_t) (((q63_t) gnext1 * k) >> 32);
+        /* read g0(n - 1) from state buffer */
+        gcurr1 = *px;
 
-      fnext1 = fcurr1 + (fnext1 << 1U);
-      fnext2 = fcurr2 + (fnext2 << 1U);
+        /* Read the reflection coefficient */
+        k = *pk++;
 
-      /* g2(n) = f1(n) * K2  +  g1(n-1) */
-      gnext2 = (q31_t) (((q63_t) fcurr2 * (k)) >> 32);
-      gnext2 = gnext1 + (gnext2 << 1U);
+        /* for sample 1 processing */
+        /* f1(n) = f0(n) +  K1 * g0(n-1) */
+        fnext1 = (q31_t) (((q63_t) gcurr1 * k) >> 32);
 
-      /* g2(n) = f1(n) * K2  +  g1(n-1) */
-      gnext1 = (q31_t) (((q63_t) fcurr1 * (k)) >> 32);
-      gnext1 = gcurr1 + (gnext1 << 1U);
+        /* g1(n) = f0(n) * K1  +  g0(n-1) */
+        gnext1 = (q31_t) (((q63_t) fcurr1 * (k)) >> 32);
+        fnext1 = fcurr1 + (fnext1 << 1U);
+        gnext1 = gcurr1 + (gnext1 << 1U);
 
-      /* f1(n) is saved in fcurr1
-         for next stage processing */
-      fcurr1 = fnext1;
-      fcurr2 = fnext2;
+        /* for sample 1 processing */
+        /* f1(n) = f0(n) +  K1 * g0(n-1) */
+        fnext2 = (q31_t) (((q63_t) fcurr1 * k) >> 32);
 
-      stageCnt--;
+        /* g1(n) = f0(n) * K1  +  g0(n-1) */
+        gnext2 = (q31_t) (((q63_t) fcurr2 * (k)) >> 32);
+        fnext2 = fcurr2 + (fnext2 << 1U);
+        gnext2 = fcurr1 + (gnext2 << 1U);
+
+        /* save g1(n) in state buffer */
+        *px++ = fcurr2;
+
+        /* f1(n) is saved in fcurr1
+           for next stage processing */
+        fcurr1 = fnext1;
+        fcurr2 = fnext2;
+
+        stageCnt = (numStages - 1U);
+
+        /* stage loop */
+        while (stageCnt > 0U)
+        {
+
+            /* Read the reflection coefficient */
+            k = *pk++;
+
+            /* read g2(n) from state buffer */
+            gcurr1 = *px;
+
+            /* save g1(n) in state buffer */
+            *px++ = gnext2;
+
+            /* Sample processing for K2, K3.... */
+            /* f2(n) = f1(n) +  K2 * g1(n-1) */
+            fnext1 = (q31_t) (((q63_t) gcurr1 * k) >> 32);
+            fnext2 = (q31_t) (((q63_t) gnext1 * k) >> 32);
+
+            fnext1 = fcurr1 + (fnext1 << 1U);
+            fnext2 = fcurr2 + (fnext2 << 1U);
+
+            /* g2(n) = f1(n) * K2  +  g1(n-1) */
+            gnext2 = (q31_t) (((q63_t) fcurr2 * (k)) >> 32);
+            gnext2 = gnext1 + (gnext2 << 1U);
+
+            /* g2(n) = f1(n) * K2  +  g1(n-1) */
+            gnext1 = (q31_t) (((q63_t) fcurr1 * (k)) >> 32);
+            gnext1 = gcurr1 + (gnext1 << 1U);
+
+            /* f1(n) is saved in fcurr1
+               for next stage processing */
+            fcurr1 = fnext1;
+            fcurr2 = fnext2;
+
+            stageCnt--;
+
+        }
+
+        /* y(n) = fN(n) */
+        *pDst++ = fcurr1;
+        *pDst++ = fcurr2;
+
+        blkCnt--;
 
     }
 
-    /* y(n) = fN(n) */
-    *pDst++ = fcurr1;
-    *pDst++ = fcurr2;
+    /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+     ** No loop unrolling is used. */
+    blkCnt = blockSize % 0x2U;
 
-    blkCnt--;
-
-  }
-
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
-   ** No loop unrolling is used. */
-  blkCnt = blockSize % 0x2U;
-
-  while (blkCnt > 0U)
-  {
-    /* f0(n) = x(n) */
-    fcurr1 = *pSrc++;
-
-    /* Initialize coeff pointer */
-    pk = (pCoeffs);
-
-    /* Initialize state pointer */
-    px = pState;
-
-    /* read g0(n - 1) from state buffer */
-    gcurr1 = *px;
-
-    /* Read the reflection coefficient */
-    k = *pk++;
-
-    /* for sample 1 processing */
-    /* f1(n) = f0(n) +  K1 * g0(n-1) */
-    fnext1 = (q31_t) (((q63_t) gcurr1 * k) >> 32);
-    fnext1 = fcurr1 + (fnext1 << 1U);
-
-    /* g1(n) = f0(n) * K1  +  g0(n-1) */
-    gnext1 = (q31_t) (((q63_t) fcurr1 * (k)) >> 32);
-    gnext1 = gcurr1 + (gnext1 << 1U);
-
-    /* save g1(n) in state buffer */
-    *px++ = fcurr1;
-
-    /* f1(n) is saved in fcurr1
-       for next stage processing */
-    fcurr1 = fnext1;
-
-    stageCnt = (numStages - 1U);
-
-    /* stage loop */
-    while (stageCnt > 0U)
+    while (blkCnt > 0U)
     {
-      /* Read the reflection coefficient */
-      k = *pk++;
+        /* f0(n) = x(n) */
+        fcurr1 = *pSrc++;
 
-      /* read g2(n) from state buffer */
-      gcurr1 = *px;
+        /* Initialize coeff pointer */
+        pk = (pCoeffs);
 
-      /* save g1(n) in state buffer */
-      *px++ = gnext1;
+        /* Initialize state pointer */
+        px = pState;
 
-      /* Sample processing for K2, K3.... */
-      /* f2(n) = f1(n) +  K2 * g1(n-1) */
-      fnext1 = (q31_t) (((q63_t) gcurr1 * k) >> 32);
-      fnext1 = fcurr1 + (fnext1 << 1U);
+        /* read g0(n - 1) from state buffer */
+        gcurr1 = *px;
 
-      /* g2(n) = f1(n) * K2  +  g1(n-1) */
-      gnext1 = (q31_t) (((q63_t) fcurr1 * (k)) >> 32);
-      gnext1 = gcurr1 + (gnext1 << 1U);
+        /* Read the reflection coefficient */
+        k = *pk++;
 
-      /* f1(n) is saved in fcurr1
-         for next stage processing */
-      fcurr1 = fnext1;
+        /* for sample 1 processing */
+        /* f1(n) = f0(n) +  K1 * g0(n-1) */
+        fnext1 = (q31_t) (((q63_t) gcurr1 * k) >> 32);
+        fnext1 = fcurr1 + (fnext1 << 1U);
 
-      stageCnt--;
+        /* g1(n) = f0(n) * K1  +  g0(n-1) */
+        gnext1 = (q31_t) (((q63_t) fcurr1 * (k)) >> 32);
+        gnext1 = gcurr1 + (gnext1 << 1U);
+
+        /* save g1(n) in state buffer */
+        *px++ = fcurr1;
+
+        /* f1(n) is saved in fcurr1
+           for next stage processing */
+        fcurr1 = fnext1;
+
+        stageCnt = (numStages - 1U);
+
+        /* stage loop */
+        while (stageCnt > 0U)
+        {
+            /* Read the reflection coefficient */
+            k = *pk++;
+
+            /* read g2(n) from state buffer */
+            gcurr1 = *px;
+
+            /* save g1(n) in state buffer */
+            *px++ = gnext1;
+
+            /* Sample processing for K2, K3.... */
+            /* f2(n) = f1(n) +  K2 * g1(n-1) */
+            fnext1 = (q31_t) (((q63_t) gcurr1 * k) >> 32);
+            fnext1 = fcurr1 + (fnext1 << 1U);
+
+            /* g2(n) = f1(n) * K2  +  g1(n-1) */
+            gnext1 = (q31_t) (((q63_t) fcurr1 * (k)) >> 32);
+            gnext1 = gcurr1 + (gnext1 << 1U);
+
+            /* f1(n) is saved in fcurr1
+               for next stage processing */
+            fcurr1 = fnext1;
+
+            stageCnt--;
+
+        }
+
+
+        /* y(n) = fN(n) */
+        *pDst++ = fcurr1;
+
+        blkCnt--;
 
     }
-
-
-    /* y(n) = fN(n) */
-    *pDst++ = fcurr1;
-
-    blkCnt--;
-
-  }
 
 
 }
@@ -256,80 +256,80 @@ void arm_fir_lattice_q31(
 /* Run the below code for Cortex-M0 */
 
 void arm_fir_lattice_q31(
-  const arm_fir_lattice_instance_q31 * S,
-  q31_t * pSrc,
-  q31_t * pDst,
-  uint32_t blockSize)
+    const arm_fir_lattice_instance_q31* S,
+    q31_t* pSrc,
+    q31_t* pDst,
+    uint32_t blockSize)
 {
-  q31_t *pState;                                 /* State pointer */
-  q31_t *pCoeffs = S->pCoeffs;                   /* Coefficient pointer */
-  q31_t *px;                                     /* temporary state pointer */
-  q31_t *pk;                                     /* temporary coefficient pointer */
-  q31_t fcurr, fnext, gcurr, gnext;              /* temporary variables */
-  uint32_t numStages = S->numStages;             /* Length of the filter */
-  uint32_t blkCnt, stageCnt;                     /* temporary variables for counts */
+    q31_t* pState;                                 /* State pointer */
+    q31_t* pCoeffs = S->pCoeffs;                   /* Coefficient pointer */
+    q31_t* px;                                     /* temporary state pointer */
+    q31_t* pk;                                     /* temporary coefficient pointer */
+    q31_t fcurr, fnext, gcurr, gnext;              /* temporary variables */
+    uint32_t numStages = S->numStages;             /* Length of the filter */
+    uint32_t blkCnt, stageCnt;                     /* temporary variables for counts */
 
-  pState = &S->pState[0];
+    pState = &S->pState[0];
 
-  blkCnt = blockSize;
+    blkCnt = blockSize;
 
-  while (blkCnt > 0U)
-  {
-    /* f0(n) = x(n) */
-    fcurr = *pSrc++;
-
-    /* Initialize coeff pointer */
-    pk = (pCoeffs);
-
-    /* Initialize state pointer */
-    px = pState;
-
-    /* read g0(n-1) from state buffer */
-    gcurr = *px;
-
-    /* for sample 1 processing */
-    /* f1(n) = f0(n) +  K1 * g0(n-1) */
-    fnext = (q31_t) (((q63_t) gcurr * (*pk)) >> 31) + fcurr;
-    /* g1(n) = f0(n) * K1  +  g0(n-1) */
-    gnext = (q31_t) (((q63_t) fcurr * (*pk++)) >> 31) + gcurr;
-    /* save g1(n) in state buffer */
-    *px++ = fcurr;
-
-    /* f1(n) is saved in fcurr1
-       for next stage processing */
-    fcurr = fnext;
-
-    stageCnt = (numStages - 1U);
-
-    /* stage loop */
-    while (stageCnt > 0U)
+    while (blkCnt > 0U)
     {
-      /* read g2(n) from state buffer */
-      gcurr = *px;
+        /* f0(n) = x(n) */
+        fcurr = *pSrc++;
 
-      /* save g1(n) in state buffer */
-      *px++ = gnext;
+        /* Initialize coeff pointer */
+        pk = (pCoeffs);
 
-      /* Sample processing for K2, K3.... */
-      /* f2(n) = f1(n) +  K2 * g1(n-1) */
-      fnext = (q31_t) (((q63_t) gcurr * (*pk)) >> 31) + fcurr;
-      /* g2(n) = f1(n) * K2  +  g1(n-1) */
-      gnext = (q31_t) (((q63_t) fcurr * (*pk++)) >> 31) + gcurr;
+        /* Initialize state pointer */
+        px = pState;
 
-      /* f1(n) is saved in fcurr1
-         for next stage processing */
-      fcurr = fnext;
+        /* read g0(n-1) from state buffer */
+        gcurr = *px;
 
-      stageCnt--;
+        /* for sample 1 processing */
+        /* f1(n) = f0(n) +  K1 * g0(n-1) */
+        fnext = (q31_t) (((q63_t) gcurr * (*pk)) >> 31) + fcurr;
+        /* g1(n) = f0(n) * K1  +  g0(n-1) */
+        gnext = (q31_t) (((q63_t) fcurr * (*pk++)) >> 31) + gcurr;
+        /* save g1(n) in state buffer */
+        *px++ = fcurr;
+
+        /* f1(n) is saved in fcurr1
+           for next stage processing */
+        fcurr = fnext;
+
+        stageCnt = (numStages - 1U);
+
+        /* stage loop */
+        while (stageCnt > 0U)
+        {
+            /* read g2(n) from state buffer */
+            gcurr = *px;
+
+            /* save g1(n) in state buffer */
+            *px++ = gnext;
+
+            /* Sample processing for K2, K3.... */
+            /* f2(n) = f1(n) +  K2 * g1(n-1) */
+            fnext = (q31_t) (((q63_t) gcurr * (*pk)) >> 31) + fcurr;
+            /* g2(n) = f1(n) * K2  +  g1(n-1) */
+            gnext = (q31_t) (((q63_t) fcurr * (*pk++)) >> 31) + gcurr;
+
+            /* f1(n) is saved in fcurr1
+               for next stage processing */
+            fcurr = fnext;
+
+            stageCnt--;
+
+        }
+
+        /* y(n) = fN(n) */
+        *pDst++ = fcurr;
+
+        blkCnt--;
 
     }
-
-    /* y(n) = fN(n) */
-    *pDst++ = fcurr;
-
-    blkCnt--;
-
-  }
 
 }
 

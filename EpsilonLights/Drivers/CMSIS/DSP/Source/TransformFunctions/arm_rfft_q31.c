@@ -33,19 +33,19 @@
  * -------------------------------------------------------------------- */
 
 void arm_split_rfft_q31(
-    q31_t * pSrc,
+    q31_t* pSrc,
     uint32_t fftLen,
-    q31_t * pATable,
-    q31_t * pBTable,
-    q31_t * pDst,
+    q31_t* pATable,
+    q31_t* pBTable,
+    q31_t* pDst,
     uint32_t modifier);
 
 void arm_split_rifft_q31(
-    q31_t * pSrc,
+    q31_t* pSrc,
     uint32_t fftLen,
-    q31_t * pATable,
-    q31_t * pBTable,
-    q31_t * pDst,
+    q31_t* pATable,
+    q31_t* pBTable,
+    q31_t* pDst,
     uint32_t modifier);
 
 /**
@@ -72,11 +72,11 @@ void arm_split_rifft_q31(
 * \image html RIFFTQ31.gif "Input and Output Formats for Q31 RIFFT"
 */
 void arm_rfft_q31(
-    const arm_rfft_instance_q31 * S,
-    q31_t * pSrc,
-    q31_t * pDst)
+    const arm_rfft_instance_q31* S,
+    q31_t* pSrc,
+    q31_t* pDst)
 {
-    const arm_cfft_instance_q31 *S_CFFT = S->pCfft;
+    const arm_cfft_instance_q31* S_CFFT = S->pCfft;
     uint32_t i;
     uint32_t L2 = S->fftLenReal >> 1;
 
@@ -90,7 +90,7 @@ void arm_rfft_q31(
         /* Complex IFFT process */
         arm_cfft_q31(S_CFFT, pDst, S->ifftFlagR, S->bitReverseFlagR);
 
-        for(i=0;i<S->fftLenReal;i++)
+        for (i = 0; i < S->fftLenReal; i++)
         {
             pDst[i] = pDst[i] << 1;
         }
@@ -104,7 +104,7 @@ void arm_rfft_q31(
 
         /*  Real FFT core process */
         arm_split_rfft_q31(pSrc, L2, S->pTwiddleAReal,
-                            S->pTwiddleBReal, pDst, S->twidCoefRModifier);
+                           S->pTwiddleBReal, pDst, S->twidCoefRModifier);
     }
 }
 
@@ -123,19 +123,19 @@ void arm_rfft_q31(
 * @return none.
 */
 void arm_split_rfft_q31(
-    q31_t * pSrc,
+    q31_t* pSrc,
     uint32_t fftLen,
-    q31_t * pATable,
-    q31_t * pBTable,
-    q31_t * pDst,
+    q31_t* pATable,
+    q31_t* pBTable,
+    q31_t* pDst,
     uint32_t modifier)
 {
     uint32_t i;                                    /* Loop Counter */
     q31_t outR, outI;                              /* Temporary variables for output */
-    q31_t *pCoefA, *pCoefB;                        /* Temporary pointers for twiddle factors */
+    q31_t* pCoefA, *pCoefB;                        /* Temporary pointers for twiddle factors */
     q31_t CoefA1, CoefA2, CoefB1;                  /* Temporary variables for twiddle coefficients */
-    q31_t *pOut1 = &pDst[2], *pOut2 = &pDst[(4U * fftLen) - 1U];
-    q31_t *pIn1 = &pSrc[2], *pIn2 = &pSrc[(2U * fftLen) - 1U];
+    q31_t* pOut1 = &pDst[2], *pOut2 = &pDst[(4U * fftLen) - 1U];
+    q31_t* pIn1 = &pSrc[2], *pIn2 = &pSrc[(2U * fftLen) - 1U];
 
     /* Init coefficient pointers */
     pCoefA = &pATable[modifier * 2U];
@@ -197,6 +197,7 @@ void arm_split_rfft_q31(
 
         i--;
     }
+
     pDst[2U * fftLen] = (pSrc[0] - pSrc[1]) >> 1;
     pDst[(2U * fftLen) + 1U] = 0;
 
@@ -215,17 +216,17 @@ void arm_split_rfft_q31(
 * @return none.
 */
 void arm_split_rifft_q31(
-    q31_t * pSrc,
+    q31_t* pSrc,
     uint32_t fftLen,
-    q31_t * pATable,
-    q31_t * pBTable,
-    q31_t * pDst,
+    q31_t* pATable,
+    q31_t* pBTable,
+    q31_t* pDst,
     uint32_t modifier)
 {
     q31_t outR, outI;                              /* Temporary variables for output */
-    q31_t *pCoefA, *pCoefB;                        /* Temporary pointers for twiddle factors */
+    q31_t* pCoefA, *pCoefB;                        /* Temporary pointers for twiddle factors */
     q31_t CoefA1, CoefA2, CoefB1;                  /* Temporary variables for twiddle coefficients */
-    q31_t *pIn1 = &pSrc[0], *pIn2 = &pSrc[(2U * fftLen) + 1U];
+    q31_t* pIn1 = &pSrc[0], *pIn2 = &pSrc[(2U * fftLen) + 1U];
 
     pCoefA = &pATable[0];
     pCoefB = &pBTable[0];

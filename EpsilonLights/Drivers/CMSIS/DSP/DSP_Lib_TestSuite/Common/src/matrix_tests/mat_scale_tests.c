@@ -52,28 +52,28 @@ JTEST_DEFINE_TEST(arm_mat_scale_f32_test, arm_mat_scale_f32)
     uint32_t i;
 
     TEMPLATE_DO_ARR_DESC(
-        mat_idx, arm_matrix_instance_f32 *, mat_ptr, matrix_f32_b_inputs
+        mat_idx, arm_matrix_instance_f32*, mat_ptr, matrix_f32_b_inputs
         ,
-        MATRIX_TEST_CONFIG_SAMESIZE_OUTPUT(arm_matrix_instance_f32 *, mat_ptr);
+        MATRIX_TEST_CONFIG_SAMESIZE_OUTPUT(arm_matrix_instance_f32*, mat_ptr);
 
-        for(i=0;i<MATRIX_MAX_COEFFS_LEN;i++)
-        {
-            JTEST_DUMP_STRF("Matrix Dimensions: %dx%d\n",                
-                         (int)mat_ptr->numRows,                         
-                         (int)mat_ptr->numCols);                        
-            JTEST_COUNT_CYCLES(arm_mat_scale_f32(mat_ptr, matrix_f32_scale_values[i], &matrix_output_fut));
+        for (i = 0; i < MATRIX_MAX_COEFFS_LEN; i++)
+{
+    JTEST_DUMP_STRF("Matrix Dimensions: %dx%d\n",
+                    (int)mat_ptr->numRows,
+                    (int)mat_ptr->numCols);
+        JTEST_COUNT_CYCLES(arm_mat_scale_f32(mat_ptr, matrix_f32_scale_values[i], &matrix_output_fut));
 
-            ref_mat_scale_f32(mat_ptr, matrix_f32_scale_values[i], &matrix_output_ref);
+        ref_mat_scale_f32(mat_ptr, matrix_f32_scale_values[i], &matrix_output_ref);
 
-            MATRIX_SNR_COMPARE_INTERFACE(arm_matrix_instance_f32,
-                                         float32_t);
-        });
+        MATRIX_SNR_COMPARE_INTERFACE(arm_matrix_instance_f32,
+                                     float32_t);
+    });
 
     return JTEST_TEST_PASSED;
 }
 
-JTEST_ARM_MAT_SCALE_TEST(q31,q31_t);
-JTEST_ARM_MAT_SCALE_TEST(q15,q15_t);
+JTEST_ARM_MAT_SCALE_TEST(q31, q31_t);
+JTEST_ARM_MAT_SCALE_TEST(q15, q15_t);
 
 /*--------------------------------------------------------------------------------*/
 /* Collect all tests in a group. */

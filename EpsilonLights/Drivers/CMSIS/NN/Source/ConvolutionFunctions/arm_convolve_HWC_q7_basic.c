@@ -39,53 +39,53 @@
  * @{
  */
 
-  /**
-   * @brief Basic Q7 convolution function
-   * @param[in]       Im_in       pointer to input tensor
-   * @param[in]       dim_im_in   input tensor dimention
-   * @param[in]       ch_im_in    number of input tensor channels
-   * @param[in]       wt          pointer to kernel weights
-   * @param[in]       ch_im_out   number of filters, i.e., output tensor channels
-   * @param[in]       dim_kernel  filter kernel size
-   * @param[in]       padding     padding sizes
-   * @param[in]       stride      convolution stride
-   * @param[in]       bias        pointer to bias
-   * @param[in]       bias_shift  amount of left-shift for bias
-   * @param[in]       out_shift   amount of right-shift for output
-   * @param[in,out]   Im_out      pointer to output tensor
-   * @param[in]       dim_im_out  output tensor dimension
-   * @param[in,out]   bufferA     pointer to buffer space for input 
-   * @param[in,out]   bufferB     pointer to buffer space for output
-   * @return     The function returns <code>ARM_MATH_SUCCESS</code> 
-   *
-   * @details
-   *
-   * <b>Buffer size:</b>
-   *
-   * bufferA size: 2*ch_im_in*dim_kernel*dim_kernel
-   *
-   * bufferB size: 0
-   *
-   * This basic version is designed to work for any input tensor and weight
-   * dimension. 
-   */
+/**
+ * @brief Basic Q7 convolution function
+ * @param[in]       Im_in       pointer to input tensor
+ * @param[in]       dim_im_in   input tensor dimention
+ * @param[in]       ch_im_in    number of input tensor channels
+ * @param[in]       wt          pointer to kernel weights
+ * @param[in]       ch_im_out   number of filters, i.e., output tensor channels
+ * @param[in]       dim_kernel  filter kernel size
+ * @param[in]       padding     padding sizes
+ * @param[in]       stride      convolution stride
+ * @param[in]       bias        pointer to bias
+ * @param[in]       bias_shift  amount of left-shift for bias
+ * @param[in]       out_shift   amount of right-shift for output
+ * @param[in,out]   Im_out      pointer to output tensor
+ * @param[in]       dim_im_out  output tensor dimension
+ * @param[in,out]   bufferA     pointer to buffer space for input
+ * @param[in,out]   bufferB     pointer to buffer space for output
+ * @return     The function returns <code>ARM_MATH_SUCCESS</code>
+ *
+ * @details
+ *
+ * <b>Buffer size:</b>
+ *
+ * bufferA size: 2*ch_im_in*dim_kernel*dim_kernel
+ *
+ * bufferB size: 0
+ *
+ * This basic version is designed to work for any input tensor and weight
+ * dimension.
+ */
 
 arm_status
-arm_convolve_HWC_q7_basic(const q7_t * Im_in,
+arm_convolve_HWC_q7_basic(const q7_t* Im_in,
                           const uint16_t dim_im_in,
                           const uint16_t ch_im_in,
-                          const q7_t * wt,
+                          const q7_t* wt,
                           const uint16_t ch_im_out,
                           const uint16_t dim_kernel,
                           const uint16_t padding,
                           const uint16_t stride,
-                          const q7_t * bias,
+                          const q7_t* bias,
                           const uint16_t bias_shift,
                           const uint16_t out_shift,
-                          q7_t * Im_out, 
-                          const uint16_t dim_im_out, 
-                          q15_t * bufferA, 
-                          q7_t * bufferB)
+                          q7_t* Im_out,
+                          const uint16_t dim_im_out,
+                          q15_t* bufferA,
+                          q7_t* bufferB)
 {
 
 #if defined (ARM_MATH_DSP)
@@ -93,12 +93,12 @@ arm_convolve_HWC_q7_basic(const q7_t * Im_in,
 
     int16_t   i_out_y, i_out_x, i_ker_y, i_ker_x;
 
-    /* 
+    /*
      *  Here we use bufferA as q15_t internally as computation are done with q15_t level
      *  im2col are done to output in q15_t format from q7_t input
      */
-    q15_t    *pBuffer = bufferA;
-    q7_t     *pOut = Im_out;
+    q15_t*    pBuffer = bufferA;
+    q7_t*     pOut = Im_out;
 
     /* This part implements the im2col function */
     for (i_out_y = 0; i_out_y < dim_im_out; i_out_y++)
@@ -114,12 +114,14 @@ arm_convolve_HWC_q7_basic(const q7_t * Im_in,
                         /* Filling 0 for out-of-bound paddings */
                         /* arm_fill_q15(0, pBuffer, ch_im_in); */
                         memset(pBuffer, 0, sizeof(q15_t)*ch_im_in);
-                    } else
+                    }
+                    else
                     {
                         /* Copying the pixel data to column */
-                        arm_q7_to_q15_no_shift((q7_t *)
+                        arm_q7_to_q15_no_shift((q7_t*)
                                                Im_in + (i_ker_y * dim_im_in + i_ker_x) * ch_im_in, pBuffer, ch_im_in);
                     }
+
                     pBuffer += ch_im_in;
                 }
             }
@@ -142,7 +144,7 @@ arm_convolve_HWC_q7_basic(const q7_t * Im_in,
     /* left-over because odd number of output pixels */
     if (pBuffer != bufferA)
     {
-        const q7_t *pA = wt;
+        const q7_t* pA = wt;
         int       i;
 
         for (i = 0; i < ch_im_out; i++)
@@ -151,7 +153,7 @@ arm_convolve_HWC_q7_basic(const q7_t * Im_in,
             q31_t     sum = ((q31_t)bias[i] << bias_shift) + NN_ROUND(out_shift);
 
             /* Point to the beging of the im2col buffer */
-            q15_t    *pB = bufferA;
+            q15_t*    pB = bufferA;
 
             /* Each time it process 4 entries */
             uint16_t  colCnt = ch_im_in * dim_kernel * dim_kernel >> 2;
@@ -161,7 +163,7 @@ arm_convolve_HWC_q7_basic(const q7_t * Im_in,
                 q31_t     inA1, inA2;
                 q31_t     inB1, inB2;
 
-                pA = (q7_t *) read_and_pad((void *)pA, &inA1, &inA2);
+                pA = (q7_t*) read_and_pad((void*)pA, &inA1, &inA2);
 
                 inB1 = *__SIMD32(pB)++;
                 sum = __SMLAD(inA1, inB1, sum);
@@ -170,7 +172,9 @@ arm_convolve_HWC_q7_basic(const q7_t * Im_in,
 
                 colCnt--;
             }
+
             colCnt = ch_im_in * dim_kernel * dim_kernel & 0x3;
+
             while (colCnt)
             {
                 q7_t      inA1 = *pA++;
@@ -178,9 +182,11 @@ arm_convolve_HWC_q7_basic(const q7_t * Im_in,
                 sum += inA1 * inB1;
                 colCnt--;
             }
+
             *pOut++ = (q7_t) __SSAT((sum >> out_shift), 8);
         }
     }
+
 #else
     /* Run the following code as reference implementation for Cortex-M0 and Cortex-M3 */
 
@@ -195,6 +201,7 @@ arm_convolve_HWC_q7_basic(const q7_t * Im_in,
             for (k = 0; k < dim_im_out; k++)
             {
                 conv_out = ((q31_t)bias[i] << bias_shift) + NN_ROUND(out_shift);
+
                 for (m = 0; m < dim_kernel; m++)
                 {
                     for (n = 0; n < dim_kernel; n++)
@@ -202,6 +209,7 @@ arm_convolve_HWC_q7_basic(const q7_t * Im_in,
                         // if-for implementation
                         in_row = stride * j + m - padding;
                         in_col = stride * k + n - padding;
+
                         if (in_row >= 0 && in_col >= 0 && in_row < dim_im_in && in_col < dim_im_in)
                         {
                             for (l = 0; l < ch_im_in; l++)
@@ -209,11 +217,12 @@ arm_convolve_HWC_q7_basic(const q7_t * Im_in,
                                 conv_out +=
                                     Im_in[(in_row * dim_im_in + in_col) * ch_im_in +
                                           l] * wt[i * ch_im_in * dim_kernel * dim_kernel + (m * dim_kernel +
-                                                                                            n) * ch_im_in + l];
+                                                  n) * ch_im_in + l];
                             }
                         }
                     }
                 }
+
                 Im_out[i + (j * dim_im_out + k) * ch_im_out] = (q7_t) __SSAT((conv_out >> out_shift), 8);
             }
         }

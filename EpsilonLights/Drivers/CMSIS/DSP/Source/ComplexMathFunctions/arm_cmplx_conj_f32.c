@@ -69,101 +69,101 @@
  */
 
 void arm_cmplx_conj_f32(
-  float32_t * pSrc,
-  float32_t * pDst,
-  uint32_t numSamples)
+    float32_t* pSrc,
+    float32_t* pDst,
+    uint32_t numSamples)
 {
-  uint32_t blkCnt;                               /* loop counter */
+    uint32_t blkCnt;                               /* loop counter */
 
 #if defined (ARM_MATH_DSP)
 
-  /* Run the below code for Cortex-M4 and Cortex-M3 */
-  float32_t inR1, inR2, inR3, inR4;
-  float32_t inI1, inI2, inI3, inI4;
+    /* Run the below code for Cortex-M4 and Cortex-M3 */
+    float32_t inR1, inR2, inR3, inR4;
+    float32_t inI1, inI2, inI3, inI4;
 
-  /*loop Unrolling */
-  blkCnt = numSamples >> 2U;
+    /*loop Unrolling */
+    blkCnt = numSamples >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
-   ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0U)
-  {
-    /* C[0]+jC[1] = A[0]+ j (-1) A[1] */
-    /* Calculate Complex Conjugate and then store the results in the destination buffer. */
-    /* read real input samples */
-    inR1 = pSrc[0];
-    /* store real samples to destination */
-    pDst[0] = inR1;
-    inR2 = pSrc[2];
-    pDst[2] = inR2;
-    inR3 = pSrc[4];
-    pDst[4] = inR3;
-    inR4 = pSrc[6];
-    pDst[6] = inR4;
+    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+     ** a second loop below computes the remaining 1 to 3 samples. */
+    while (blkCnt > 0U)
+    {
+        /* C[0]+jC[1] = A[0]+ j (-1) A[1] */
+        /* Calculate Complex Conjugate and then store the results in the destination buffer. */
+        /* read real input samples */
+        inR1 = pSrc[0];
+        /* store real samples to destination */
+        pDst[0] = inR1;
+        inR2 = pSrc[2];
+        pDst[2] = inR2;
+        inR3 = pSrc[4];
+        pDst[4] = inR3;
+        inR4 = pSrc[6];
+        pDst[6] = inR4;
 
-    /* read imaginary input samples */
-    inI1 = pSrc[1];
-    inI2 = pSrc[3];
+        /* read imaginary input samples */
+        inI1 = pSrc[1];
+        inI2 = pSrc[3];
 
-    /* conjugate input */
-    inI1 = -inI1;
+        /* conjugate input */
+        inI1 = -inI1;
 
-    /* read imaginary input samples */
-    inI3 = pSrc[5];
+        /* read imaginary input samples */
+        inI3 = pSrc[5];
 
-    /* conjugate input */
-    inI2 = -inI2;
+        /* conjugate input */
+        inI2 = -inI2;
 
-    /* read imaginary input samples */
-    inI4 = pSrc[7];
+        /* read imaginary input samples */
+        inI4 = pSrc[7];
 
-    /* conjugate input */
-    inI3 = -inI3;
+        /* conjugate input */
+        inI3 = -inI3;
 
-    /* store imaginary samples to destination */
-    pDst[1] = inI1;
-    pDst[3] = inI2;
+        /* store imaginary samples to destination */
+        pDst[1] = inI1;
+        pDst[3] = inI2;
 
-    /* conjugate input */
-    inI4 = -inI4;
+        /* conjugate input */
+        inI4 = -inI4;
 
-    /* store imaginary samples to destination */
-    pDst[5] = inI3;
+        /* store imaginary samples to destination */
+        pDst[5] = inI3;
 
-    /* increment source pointer by 8 to process next sampels */
-    pSrc += 8U;
+        /* increment source pointer by 8 to process next sampels */
+        pSrc += 8U;
 
-    /* store imaginary sample to destination */
-    pDst[7] = inI4;
+        /* store imaginary sample to destination */
+        pDst[7] = inI4;
 
-    /* increment destination pointer by 8 to store next samples */
-    pDst += 8U;
+        /* increment destination pointer by 8 to store next samples */
+        pDst += 8U;
 
-    /* Decrement the loop counter */
-    blkCnt--;
-  }
+        /* Decrement the loop counter */
+        blkCnt--;
+    }
 
-  /* If the numSamples is not a multiple of 4, compute any remaining output samples here.
-   ** No loop unrolling is used. */
-  blkCnt = numSamples % 0x4U;
+    /* If the numSamples is not a multiple of 4, compute any remaining output samples here.
+     ** No loop unrolling is used. */
+    blkCnt = numSamples % 0x4U;
 
 #else
 
-  /* Run the below code for Cortex-M0 */
-  blkCnt = numSamples;
+    /* Run the below code for Cortex-M0 */
+    blkCnt = numSamples;
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
-  while (blkCnt > 0U)
-  {
-    /* realOut + j (imagOut) = realIn + j (-1) imagIn */
-    /* Calculate Complex Conjugate and then store the results in the destination buffer. */
-    *pDst++ = *pSrc++;
-    *pDst++ = -*pSrc++;
+    while (blkCnt > 0U)
+    {
+        /* realOut + j (imagOut) = realIn + j (-1) imagIn */
+        /* Calculate Complex Conjugate and then store the results in the destination buffer. */
+        *pDst++ = *pSrc++;
+        *pDst++ = -*pSrc++;
 
-    /* Decrement the loop counter */
-    blkCnt--;
-  }
+        /* Decrement the loop counter */
+        blkCnt--;
+    }
 }
 
 /**
