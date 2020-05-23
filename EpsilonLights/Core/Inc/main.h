@@ -72,8 +72,8 @@ void Error_Handler(void);
 #define RSIGNAL_GPIO_Port GPIOB
 #define LSIGNAL_Pin GPIO_PIN_11
 #define LSIGNAL_GPIO_Port GPIOB
-#define BREAK_Pin GPIO_PIN_12
-#define BREAK_GPIO_Port GPIOB
+#define BRAKE_Pin GPIO_PIN_12
+#define BRAKE_GPIO_Port GPIOB
 #define HEAD_Pin GPIO_PIN_13
 #define HEAD_GPIO_Port GPIOB
 #define STROBE_Pin GPIO_PIN_14
