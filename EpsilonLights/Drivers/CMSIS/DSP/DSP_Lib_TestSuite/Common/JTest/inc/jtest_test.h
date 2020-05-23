@@ -20,20 +20,22 @@
 typedef struct JTEST_TEST_struct
 {
     JTEST_TEST_RET_t ( * test_fn_ptr)(void); /**< Pointer to the test function. */
-    char   * test_fn_str;                    /**< Name of the test function */
-    char   * fut_str;           /**< Name of the function under test. */
+    char*    test_fn_str;                    /**< Name of the test function */
+    char*    fut_str;           /**< Name of the function under test. */
 
     /**
      *  Flags that govern how the #JTEST_TEST_t behaves.
      */
-    union {
-        struct {
+    union
+    {
+        struct
+        {
             unsigned enabled : 1;
             unsigned unused  : 7;
         } bits;
         uint8_t byte;           /* Access all flags at once. */
     } flags;
-    
+
 } JTEST_TEST_t;
 
 /*--------------------------------------------------------------------------------*/

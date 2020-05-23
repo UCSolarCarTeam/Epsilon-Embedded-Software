@@ -30,15 +30,15 @@
 #include "arm_common_tables.h"
 
 extern void arm_radix8_butterfly_f32(
-    float32_t * pSrc,
+    float32_t* pSrc,
     uint16_t fftLen,
-    const float32_t * pCoef,
+    const float32_t* pCoef,
     uint16_t twidCoefModifier);
 
 extern void arm_bitreversal_32(
-    uint32_t * pSrc,
+    uint32_t* pSrc,
     const uint16_t bitRevLen,
-    const uint16_t * pBitRevTable);
+    const uint16_t* pBitRevTable);
 
 /**
 * @ingroup groupTransforms
@@ -192,12 +192,12 @@ extern void arm_bitreversal_32(
 *
 */
 
-void arm_cfft_radix8by2_f32( arm_cfft_instance_f32 * S, float32_t * p1)
+void arm_cfft_radix8by2_f32( arm_cfft_instance_f32* S, float32_t* p1)
 {
     uint32_t    L  = S->fftLen;
-    float32_t * pCol1, * pCol2, * pMid1, * pMid2;
-    float32_t * p2 = p1 + L;
-    const float32_t * tw = (float32_t *) S->pTwiddle;
+    float32_t* pCol1, * pCol2, * pMid1, * pMid2;
+    float32_t* p2 = p1 + L;
+    const float32_t* tw = (float32_t*) S->pTwiddle;
     float32_t t1[4], t2[4], t3[4], t4[4], twR, twI;
     float32_t m0, m1, m2, m3;
     uint32_t l;
@@ -299,19 +299,19 @@ void arm_cfft_radix8by2_f32( arm_cfft_instance_f32 * S, float32_t * p1)
     }
 
     // first col
-    arm_radix8_butterfly_f32( pCol1, L, (float32_t *) S->pTwiddle, 2U);
+    arm_radix8_butterfly_f32( pCol1, L, (float32_t*) S->pTwiddle, 2U);
     // second col
-    arm_radix8_butterfly_f32( pCol2, L, (float32_t *) S->pTwiddle, 2U);
+    arm_radix8_butterfly_f32( pCol2, L, (float32_t*) S->pTwiddle, 2U);
 }
 
-void arm_cfft_radix8by4_f32( arm_cfft_instance_f32 * S, float32_t * p1)
+void arm_cfft_radix8by4_f32( arm_cfft_instance_f32* S, float32_t* p1)
 {
     uint32_t    L  = S->fftLen >> 1;
-    float32_t * pCol1, *pCol2, *pCol3, *pCol4, *pEnd1, *pEnd2, *pEnd3, *pEnd4;
-    const float32_t *tw2, *tw3, *tw4;
-    float32_t * p2 = p1 + L;
-    float32_t * p3 = p2 + L;
-    float32_t * p4 = p3 + L;
+    float32_t* pCol1, *pCol2, *pCol3, *pCol4, *pEnd1, *pEnd2, *pEnd3, *pEnd4;
+    const float32_t* tw2, *tw3, *tw4;
+    float32_t* p2 = p1 + L;
+    float32_t* p3 = p2 + L;
+    float32_t* p4 = p3 + L;
     float32_t t2[4], t3[4], t4[4], twR, twI;
     float32_t p1ap3_0, p1sp3_0, p1ap3_1, p1sp3_1;
     float32_t m0, m1, m2, m3;
@@ -326,7 +326,7 @@ void arm_cfft_radix8by4_f32( arm_cfft_instance_f32 * S, float32_t * p1)
     pEnd3 = p4 - 1;
     pEnd4 = pEnd3 + L;
 
-    tw2 = tw3 = tw4 = (float32_t *) S->pTwiddle;
+    tw2 = tw3 = tw4 = (float32_t*) S->pTwiddle;
 
     L >>= 1;
 
@@ -535,13 +535,13 @@ void arm_cfft_radix8by4_f32( arm_cfft_instance_f32 * S, float32_t * p1)
     *p4++ = m2 - m3;
 
     // first col
-    arm_radix8_butterfly_f32( pCol1, L, (float32_t *) S->pTwiddle, 4U);
+    arm_radix8_butterfly_f32( pCol1, L, (float32_t*) S->pTwiddle, 4U);
     // second col
-    arm_radix8_butterfly_f32( pCol2, L, (float32_t *) S->pTwiddle, 4U);
+    arm_radix8_butterfly_f32( pCol2, L, (float32_t*) S->pTwiddle, 4U);
     // third col
-    arm_radix8_butterfly_f32( pCol3, L, (float32_t *) S->pTwiddle, 4U);
+    arm_radix8_butterfly_f32( pCol3, L, (float32_t*) S->pTwiddle, 4U);
     // fourth col
-    arm_radix8_butterfly_f32( pCol4, L, (float32_t *) S->pTwiddle, 4U);
+    arm_radix8_butterfly_f32( pCol4, L, (float32_t*) S->pTwiddle, 4U);
 }
 
 /**
@@ -560,8 +560,8 @@ void arm_cfft_radix8by4_f32( arm_cfft_instance_f32 * S, float32_t * p1)
 */
 
 void arm_cfft_f32(
-    const arm_cfft_instance_f32 * S,
-    float32_t * p1,
+    const arm_cfft_instance_f32* S,
+    float32_t* p1,
     uint8_t ifftFlag,
     uint8_t bitReverseFlag)
 {
@@ -572,7 +572,8 @@ void arm_cfft_f32(
     {
         /*  Conjugate input data  */
         pSrc = p1 + 1;
-        for(l=0; l<L; l++)
+
+        for (l = 0; l < L; l++)
         {
             *pSrc = -*pSrc;
             pSrc += 2;
@@ -581,32 +582,37 @@ void arm_cfft_f32(
 
     switch (L)
     {
-    case 16:
-    case 128:
-    case 1024:
-        arm_cfft_radix8by2_f32  ( (arm_cfft_instance_f32 *) S, p1);
-        break;
-    case 32:
-    case 256:
-    case 2048:
-        arm_cfft_radix8by4_f32  ( (arm_cfft_instance_f32 *) S, p1);
-        break;
-    case 64:
-    case 512:
-    case 4096:
-        arm_radix8_butterfly_f32( p1, L, (float32_t *) S->pTwiddle, 1);
-        break;
+        case 16:
+        case 128:
+        case 1024:
+            arm_cfft_radix8by2_f32  ( (arm_cfft_instance_f32*) S, p1);
+            break;
+
+        case 32:
+        case 256:
+        case 2048:
+            arm_cfft_radix8by4_f32  ( (arm_cfft_instance_f32*) S, p1);
+            break;
+
+        case 64:
+        case 512:
+        case 4096:
+            arm_radix8_butterfly_f32( p1, L, (float32_t*) S->pTwiddle, 1);
+            break;
     }
 
     if ( bitReverseFlag )
-        arm_bitreversal_32((uint32_t*)p1,S->bitRevLength,S->pBitRevTable);
+    {
+        arm_bitreversal_32((uint32_t*)p1, S->bitRevLength, S->pBitRevTable);
+    }
 
     if (ifftFlag == 1U)
     {
-        invL = 1.0f/(float32_t)L;
+        invL = 1.0f / (float32_t)L;
         /*  Conjugate and scale output data */
         pSrc = p1;
-        for(l=0; l<L; l++)
+
+        for (l = 0; l < L; l++)
         {
             *pSrc++ *=   invL ;
             *pSrc  = -(*pSrc) * invL;

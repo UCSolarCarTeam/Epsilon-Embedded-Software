@@ -196,7 +196,7 @@ ARR_DESC_DEFINE(uint32_t,
                     17,
                     15,
                     CORRELATE_MAX_INPUT_ELTS
-                    ));
+                ));
 
 ARR_DESC_DEFINE(uint32_t,
                 correlate_lens_b,
@@ -207,7 +207,7 @@ ARR_DESC_DEFINE(uint32_t,
                     1,
                     CORRELATE_MAX_INPUT_ELTS,
                     CORRELATE_MAX_INPUT_ELTS
-                    ));
+                ));
 
 /*--------------------------------------------------------------------------------*/
 /* Convolution Tests */
@@ -267,24 +267,24 @@ ARR_DESC_DEFINE(uint32_t,
         ) /* Note the lacking semicolon*/
 
 /* Tests on functions without partial outputs */
-CORRELATE_DEFINE_TEST(correlate          , f32, float32_t, CORRELATE_TEST_TEMPLATE);
-CORRELATE_DEFINE_TEST(correlate          , q31, q31_t    , CORRELATE_TEST_TEMPLATE);
-CORRELATE_DEFINE_TEST(correlate          , q15, q15_t    , CORRELATE_TEST_TEMPLATE);
-CORRELATE_DEFINE_TEST(correlate          , q7 , q7_t     , CORRELATE_TEST_TEMPLATE);
-CORRELATE_DEFINE_TEST(correlate_opt      , q15, q15_t    , CORRELATE_TEST_TEMPLATE);
+CORRELATE_DEFINE_TEST(correlate, f32, float32_t, CORRELATE_TEST_TEMPLATE);
+CORRELATE_DEFINE_TEST(correlate, q31, q31_t, CORRELATE_TEST_TEMPLATE);
+CORRELATE_DEFINE_TEST(correlate, q15, q15_t, CORRELATE_TEST_TEMPLATE);
+CORRELATE_DEFINE_TEST(correlate, q7, q7_t, CORRELATE_TEST_TEMPLATE);
+CORRELATE_DEFINE_TEST(correlate_opt, q15, q15_t, CORRELATE_TEST_TEMPLATE);
 
 CORRELATE_TEST_TEMPLATE(
-   arm_correlate_opt_q7,
-   CORRELATE_arm_correlate_opt_q7_INPUT_INTERFACE,
-   ref_correlate_opt_q7,
-   CORRELATE_ref_correlate_opt_q7_INPUT_INTERFACE,
-   q7,
-   q7_t
-   );
+    arm_correlate_opt_q7,
+    CORRELATE_arm_correlate_opt_q7_INPUT_INTERFACE,
+    ref_correlate_opt_q7,
+    CORRELATE_ref_correlate_opt_q7_INPUT_INTERFACE,
+    q7,
+    q7_t
+);
 
-CORRELATE_DEFINE_TEST(correlate_fast     , q31, q31_t    , CORRELATE_TEST_TEMPLATE);
-CORRELATE_DEFINE_TEST(correlate_fast     , q15, q15_t    , CORRELATE_TEST_TEMPLATE);
-CORRELATE_DEFINE_TEST(correlate_fast_opt , q15, q15_t    , CORRELATE_TEST_TEMPLATE);
+CORRELATE_DEFINE_TEST(correlate_fast, q31, q31_t, CORRELATE_TEST_TEMPLATE);
+CORRELATE_DEFINE_TEST(correlate_fast, q15, q15_t, CORRELATE_TEST_TEMPLATE);
+CORRELATE_DEFINE_TEST(correlate_fast_opt, q15, q15_t, CORRELATE_TEST_TEMPLATE);
 
 /*--------------------------------------------------------------------------------*/
 /* Collect all tests in a group. */

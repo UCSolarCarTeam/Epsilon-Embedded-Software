@@ -137,19 +137,19 @@
                             TRANSFORM_SNR_COMPARE_CMPLX_INTERFACE,  \
                             TYPE_FROM_ABBREV(q15),                  \
                             ifft_flag)
-    /* /\* Mag tests*\/                                                  \ */
-    /* CFFT_FAMILY_DEFINE_TEST(mag, f32, config_suffix,                \ */
-    /*                         TRANSFORM_SNR_COMPARE_INTERFACE,        \ */
-    /*                         TYPE_FROM_ABBREV(f32),                  \ */
-    /*                         ifft_flag);                             \ */
-    /* CFFT_FAMILY_DEFINE_TEST(mag, q31, config_suffix,                \ */
-    /*                         TRANSFORM_SNR_COMPARE_INTERFACE,        \ */
-    /*                         TYPE_FROM_ABBREV(q31),                  \ */
-    /*                         ifft_flag);                             \ */
-    /* CFFT_FAMILY_DEFINE_TEST(mag, q15, config_suffix,                \ */
-    /*                         TRANSFORM_SNR_COMPARE_INTERFACE,        \ */
-    /*                         TYPE_FROM_ABBREV(q15),                  \ */
-    /*                         ifft_flag) */
+/* /\* Mag tests*\/                                                  \ */
+/* CFFT_FAMILY_DEFINE_TEST(mag, f32, config_suffix,                \ */
+/*                         TRANSFORM_SNR_COMPARE_INTERFACE,        \ */
+/*                         TYPE_FROM_ABBREV(f32),                  \ */
+/*                         ifft_flag);                             \ */
+/* CFFT_FAMILY_DEFINE_TEST(mag, q31, config_suffix,                \ */
+/*                         TRANSFORM_SNR_COMPARE_INTERFACE,        \ */
+/*                         TYPE_FROM_ABBREV(q31),                  \ */
+/*                         ifft_flag);                             \ */
+/* CFFT_FAMILY_DEFINE_TEST(mag, q15, config_suffix,                \ */
+/*                         TRANSFORM_SNR_COMPARE_INTERFACE,        \ */
+/*                         TYPE_FROM_ABBREV(q15),                  \ */
+/*                         ifft_flag) */
 
 CFFT_FAMILY_DEFINE_ALL_TESTS(forward, 0U);
 CFFT_FAMILY_DEFINE_ALL_TESTS(inverse, 1U);

@@ -18,21 +18,21 @@
 
 #include "ref_functions.h"
 
-void arm_fully_connected_q7_opt_ref(const q7_t * pV,    // pointer to vector
-                                    const q7_t * pM,    // pointer to matrix
+void arm_fully_connected_q7_opt_ref(const q7_t* pV,     // pointer to vector
+                                    const q7_t* pM,     // pointer to matrix
                                     const uint16_t dim_vec, // length of the vector
                                     const uint16_t num_of_rows, // numCol of A
                                     const uint16_t bias_shift,  // amount of left-shift for bias
                                     const uint16_t out_shift,   // amount of right-shift for output
-                                    const q7_t * bias, q7_t * pOut, // output operand
-                                    q15_t * vec_buffer)
+                                    const q7_t* bias, q7_t* pOut,   // output operand
+                                    q15_t* vec_buffer)
 {
 
     uint16_t  rowCnt = num_of_rows >> 2;
-    const q7_t *pB = pM;
-    const q7_t *pA;
-    q7_t     *pO = pOut;
-    const q7_t *pBias = bias;
+    const q7_t* pB = pM;
+    const q7_t* pA;
+    q7_t*     pO = pOut;
+    const q7_t* pBias = bias;
 
     while (rowCnt)
     {
@@ -92,7 +92,9 @@ void arm_fully_connected_q7_opt_ref(const q7_t * pV,    // pointer to vector
 
             colCnt--;
         }
+
         colCnt = dim_vec & 0x3;
+
         while (colCnt)
         {
             q7_t      inA = *pA++;
@@ -107,6 +109,7 @@ void arm_fully_connected_q7_opt_ref(const q7_t * pV,    // pointer to vector
 
             colCnt--;
         }
+
         *pO++ = (q7_t) __SSAT((sum >> out_shift), 8);
         *pO++ = (q7_t) __SSAT((sum2 >> out_shift), 8);
         *pO++ = (q7_t) __SSAT((sum3 >> out_shift), 8);
@@ -125,12 +128,14 @@ void arm_fully_connected_q7_opt_ref(const q7_t * pV,    // pointer to vector
 #else
         int       ip_out = *pBias++ << bias_shift;
 #endif
+
         for (int j = 0; j < dim_vec; j++)
         {
             q7_t      inA = *pA++;
             q7_t      inB = *pB++;
             ip_out += inA * inB;
         }
+
         *pO++ = (q7_t) __SSAT((ip_out >> out_shift), 8);
 
         rowCnt--;

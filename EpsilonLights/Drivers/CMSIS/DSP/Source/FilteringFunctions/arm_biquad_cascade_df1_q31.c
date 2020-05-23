@@ -59,327 +59,329 @@
  */
 
 void arm_biquad_cascade_df1_q31(
-  const arm_biquad_casd_df1_inst_q31 * S,
-  q31_t * pSrc,
-  q31_t * pDst,
-  uint32_t blockSize)
+    const arm_biquad_casd_df1_inst_q31* S,
+    q31_t* pSrc,
+    q31_t* pDst,
+    uint32_t blockSize)
 {
-  q63_t acc;                                     /*  accumulator                   */
-  uint32_t uShift = ((uint32_t) S->postShift + 1U);
-  uint32_t lShift = 32U - uShift;                /*  Shift to be applied to the output */
-  q31_t *pIn = pSrc;                             /*  input pointer initialization  */
-  q31_t *pOut = pDst;                            /*  output pointer initialization */
-  q31_t *pState = S->pState;                     /*  pState pointer initialization */
-  q31_t *pCoeffs = S->pCoeffs;                   /*  coeff pointer initialization  */
-  q31_t Xn1, Xn2, Yn1, Yn2;                      /*  Filter state variables        */
-  q31_t b0, b1, b2, a1, a2;                      /*  Filter coefficients           */
-  q31_t Xn;                                      /*  temporary input               */
-  uint32_t sample, stage = S->numStages;         /*  loop counters                     */
+    q63_t acc;                                     /*  accumulator                   */
+    uint32_t uShift = ((uint32_t) S->postShift + 1U);
+    uint32_t lShift = 32U - uShift;                /*  Shift to be applied to the output */
+    q31_t* pIn = pSrc;                             /*  input pointer initialization  */
+    q31_t* pOut = pDst;                            /*  output pointer initialization */
+    q31_t* pState = S->pState;                     /*  pState pointer initialization */
+    q31_t* pCoeffs = S->pCoeffs;                   /*  coeff pointer initialization  */
+    q31_t Xn1, Xn2, Yn1, Yn2;                      /*  Filter state variables        */
+    q31_t b0, b1, b2, a1, a2;                      /*  Filter coefficients           */
+    q31_t Xn;                                      /*  temporary input               */
+    uint32_t sample, stage = S->numStages;         /*  loop counters                     */
 
 
 #if defined (ARM_MATH_DSP)
 
-  q31_t acc_l, acc_h;                            /*  temporary output variables    */
+    q31_t acc_l, acc_h;                            /*  temporary output variables    */
 
-  /* Run the below code for Cortex-M4 and Cortex-M3 */
+    /* Run the below code for Cortex-M4 and Cortex-M3 */
 
-  do
-  {
-    /* Reading the coefficients */
-    b0 = *pCoeffs++;
-    b1 = *pCoeffs++;
-    b2 = *pCoeffs++;
-    a1 = *pCoeffs++;
-    a2 = *pCoeffs++;
-
-    /* Reading the state values */
-    Xn1 = pState[0];
-    Xn2 = pState[1];
-    Yn1 = pState[2];
-    Yn2 = pState[3];
-
-    /* Apply loop unrolling and compute 4 output values simultaneously. */
-    /*      The variable acc hold output values that are being computed:
-     *
-     *    acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2]
-     */
-
-    sample = blockSize >> 2U;
-
-    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
-     ** a second loop below computes the remaining 1 to 3 samples. */
-    while (sample > 0U)
+    do
     {
-      /* Read the input */
-      Xn = *pIn++;
+        /* Reading the coefficients */
+        b0 = *pCoeffs++;
+        b1 = *pCoeffs++;
+        b2 = *pCoeffs++;
+        a1 = *pCoeffs++;
+        a2 = *pCoeffs++;
 
-      /* acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2] */
+        /* Reading the state values */
+        Xn1 = pState[0];
+        Xn2 = pState[1];
+        Yn1 = pState[2];
+        Yn2 = pState[3];
 
-      /* acc =  b0 * x[n] */
-      acc = (q63_t) b0 *Xn;
-      /* acc +=  b1 * x[n-1] */
-      acc += (q63_t) b1 *Xn1;
-      /* acc +=  b[2] * x[n-2] */
-      acc += (q63_t) b2 *Xn2;
-      /* acc +=  a1 * y[n-1] */
-      acc += (q63_t) a1 *Yn1;
-      /* acc +=  a2 * y[n-2] */
-      acc += (q63_t) a2 *Yn2;
+        /* Apply loop unrolling and compute 4 output values simultaneously. */
+        /*      The variable acc hold output values that are being computed:
+         *
+         *    acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2]
+         */
 
-      /* The result is converted to 1.31 , Yn2 variable is reused */
+        sample = blockSize >> 2U;
 
-      /* Calc lower part of acc */
-      acc_l = acc & 0xffffffff;
+        /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+         ** a second loop below computes the remaining 1 to 3 samples. */
+        while (sample > 0U)
+        {
+            /* Read the input */
+            Xn = *pIn++;
 
-      /* Calc upper part of acc */
-      acc_h = (acc >> 32) & 0xffffffff;
+            /* acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2] */
 
-      /* Apply shift for lower part of acc and upper part of acc */
-      Yn2 = (uint32_t) acc_l >> lShift | acc_h << uShift;
+            /* acc =  b0 * x[n] */
+            acc = (q63_t) b0 * Xn;
+            /* acc +=  b1 * x[n-1] */
+            acc += (q63_t) b1 * Xn1;
+            /* acc +=  b[2] * x[n-2] */
+            acc += (q63_t) b2 * Xn2;
+            /* acc +=  a1 * y[n-1] */
+            acc += (q63_t) a1 * Yn1;
+            /* acc +=  a2 * y[n-2] */
+            acc += (q63_t) a2 * Yn2;
 
-      /* Store the output in the destination buffer. */
-      *pOut++ = Yn2;
+            /* The result is converted to 1.31 , Yn2 variable is reused */
 
-      /* Read the second input */
-      Xn2 = *pIn++;
+            /* Calc lower part of acc */
+            acc_l = acc & 0xffffffff;
 
-      /* acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2] */
+            /* Calc upper part of acc */
+            acc_h = (acc >> 32) & 0xffffffff;
 
-      /* acc =  b0 * x[n] */
-      acc = (q63_t) b0 *Xn2;
-      /* acc +=  b1 * x[n-1] */
-      acc += (q63_t) b1 *Xn;
-      /* acc +=  b[2] * x[n-2] */
-      acc += (q63_t) b2 *Xn1;
-      /* acc +=  a1 * y[n-1] */
-      acc += (q63_t) a1 *Yn2;
-      /* acc +=  a2 * y[n-2] */
-      acc += (q63_t) a2 *Yn1;
+            /* Apply shift for lower part of acc and upper part of acc */
+            Yn2 = (uint32_t) acc_l >> lShift | acc_h << uShift;
 
+            /* Store the output in the destination buffer. */
+            *pOut++ = Yn2;
 
-      /* The result is converted to 1.31, Yn1 variable is reused  */
+            /* Read the second input */
+            Xn2 = *pIn++;
 
-      /* Calc lower part of acc */
-      acc_l = acc & 0xffffffff;
+            /* acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2] */
 
-      /* Calc upper part of acc */
-      acc_h = (acc >> 32) & 0xffffffff;
-
-
-      /* Apply shift for lower part of acc and upper part of acc */
-      Yn1 = (uint32_t) acc_l >> lShift | acc_h << uShift;
-
-      /* Store the output in the destination buffer. */
-      *pOut++ = Yn1;
-
-      /* Read the third input  */
-      Xn1 = *pIn++;
-
-      /* acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2] */
-
-      /* acc =  b0 * x[n] */
-      acc = (q63_t) b0 *Xn1;
-      /* acc +=  b1 * x[n-1] */
-      acc += (q63_t) b1 *Xn2;
-      /* acc +=  b[2] * x[n-2] */
-      acc += (q63_t) b2 *Xn;
-      /* acc +=  a1 * y[n-1] */
-      acc += (q63_t) a1 *Yn1;
-      /* acc +=  a2 * y[n-2] */
-      acc += (q63_t) a2 *Yn2;
-
-      /* The result is converted to 1.31, Yn2 variable is reused  */
-      /* Calc lower part of acc */
-      acc_l = acc & 0xffffffff;
-
-      /* Calc upper part of acc */
-      acc_h = (acc >> 32) & 0xffffffff;
+            /* acc =  b0 * x[n] */
+            acc = (q63_t) b0 * Xn2;
+            /* acc +=  b1 * x[n-1] */
+            acc += (q63_t) b1 * Xn;
+            /* acc +=  b[2] * x[n-2] */
+            acc += (q63_t) b2 * Xn1;
+            /* acc +=  a1 * y[n-1] */
+            acc += (q63_t) a1 * Yn2;
+            /* acc +=  a2 * y[n-2] */
+            acc += (q63_t) a2 * Yn1;
 
 
-      /* Apply shift for lower part of acc and upper part of acc */
-      Yn2 = (uint32_t) acc_l >> lShift | acc_h << uShift;
+            /* The result is converted to 1.31, Yn1 variable is reused  */
 
-      /* Store the output in the destination buffer. */
-      *pOut++ = Yn2;
+            /* Calc lower part of acc */
+            acc_l = acc & 0xffffffff;
 
-      /* Read the forth input */
-      Xn = *pIn++;
+            /* Calc upper part of acc */
+            acc_h = (acc >> 32) & 0xffffffff;
 
-      /* acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2] */
 
-      /* acc =  b0 * x[n] */
-      acc = (q63_t) b0 *Xn;
-      /* acc +=  b1 * x[n-1] */
-      acc += (q63_t) b1 *Xn1;
-      /* acc +=  b[2] * x[n-2] */
-      acc += (q63_t) b2 *Xn2;
-      /* acc +=  a1 * y[n-1] */
-      acc += (q63_t) a1 *Yn2;
-      /* acc +=  a2 * y[n-2] */
-      acc += (q63_t) a2 *Yn1;
+            /* Apply shift for lower part of acc and upper part of acc */
+            Yn1 = (uint32_t) acc_l >> lShift | acc_h << uShift;
 
-      /* The result is converted to 1.31, Yn1 variable is reused  */
-      /* Calc lower part of acc */
-      acc_l = acc & 0xffffffff;
+            /* Store the output in the destination buffer. */
+            *pOut++ = Yn1;
 
-      /* Calc upper part of acc */
-      acc_h = (acc >> 32) & 0xffffffff;
+            /* Read the third input  */
+            Xn1 = *pIn++;
 
-      /* Apply shift for lower part of acc and upper part of acc */
-      Yn1 = (uint32_t) acc_l >> lShift | acc_h << uShift;
+            /* acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2] */
 
-      /* Every time after the output is computed state should be updated. */
-      /* The states should be updated as:  */
-      /* Xn2 = Xn1    */
-      /* Xn1 = Xn     */
-      /* Yn2 = Yn1    */
-      /* Yn1 = acc    */
-      Xn2 = Xn1;
-      Xn1 = Xn;
+            /* acc =  b0 * x[n] */
+            acc = (q63_t) b0 * Xn1;
+            /* acc +=  b1 * x[n-1] */
+            acc += (q63_t) b1 * Xn2;
+            /* acc +=  b[2] * x[n-2] */
+            acc += (q63_t) b2 * Xn;
+            /* acc +=  a1 * y[n-1] */
+            acc += (q63_t) a1 * Yn1;
+            /* acc +=  a2 * y[n-2] */
+            acc += (q63_t) a2 * Yn2;
 
-      /* Store the output in the destination buffer. */
-      *pOut++ = Yn1;
+            /* The result is converted to 1.31, Yn2 variable is reused  */
+            /* Calc lower part of acc */
+            acc_l = acc & 0xffffffff;
 
-      /* decrement the loop counter */
-      sample--;
+            /* Calc upper part of acc */
+            acc_h = (acc >> 32) & 0xffffffff;
+
+
+            /* Apply shift for lower part of acc and upper part of acc */
+            Yn2 = (uint32_t) acc_l >> lShift | acc_h << uShift;
+
+            /* Store the output in the destination buffer. */
+            *pOut++ = Yn2;
+
+            /* Read the forth input */
+            Xn = *pIn++;
+
+            /* acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2] */
+
+            /* acc =  b0 * x[n] */
+            acc = (q63_t) b0 * Xn;
+            /* acc +=  b1 * x[n-1] */
+            acc += (q63_t) b1 * Xn1;
+            /* acc +=  b[2] * x[n-2] */
+            acc += (q63_t) b2 * Xn2;
+            /* acc +=  a1 * y[n-1] */
+            acc += (q63_t) a1 * Yn2;
+            /* acc +=  a2 * y[n-2] */
+            acc += (q63_t) a2 * Yn1;
+
+            /* The result is converted to 1.31, Yn1 variable is reused  */
+            /* Calc lower part of acc */
+            acc_l = acc & 0xffffffff;
+
+            /* Calc upper part of acc */
+            acc_h = (acc >> 32) & 0xffffffff;
+
+            /* Apply shift for lower part of acc and upper part of acc */
+            Yn1 = (uint32_t) acc_l >> lShift | acc_h << uShift;
+
+            /* Every time after the output is computed state should be updated. */
+            /* The states should be updated as:  */
+            /* Xn2 = Xn1    */
+            /* Xn1 = Xn     */
+            /* Yn2 = Yn1    */
+            /* Yn1 = acc    */
+            Xn2 = Xn1;
+            Xn1 = Xn;
+
+            /* Store the output in the destination buffer. */
+            *pOut++ = Yn1;
+
+            /* decrement the loop counter */
+            sample--;
+        }
+
+        /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+         ** No loop unrolling is used. */
+        sample = (blockSize & 0x3U);
+
+        while (sample > 0U)
+        {
+            /* Read the input */
+            Xn = *pIn++;
+
+            /* acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2] */
+
+            /* acc =  b0 * x[n] */
+            acc = (q63_t) b0 * Xn;
+            /* acc +=  b1 * x[n-1] */
+            acc += (q63_t) b1 * Xn1;
+            /* acc +=  b[2] * x[n-2] */
+            acc += (q63_t) b2 * Xn2;
+            /* acc +=  a1 * y[n-1] */
+            acc += (q63_t) a1 * Yn1;
+            /* acc +=  a2 * y[n-2] */
+            acc += (q63_t) a2 * Yn2;
+
+            /* The result is converted to 1.31  */
+            acc = acc >> lShift;
+
+            /* Every time after the output is computed state should be updated. */
+            /* The states should be updated as:  */
+            /* Xn2 = Xn1    */
+            /* Xn1 = Xn     */
+            /* Yn2 = Yn1    */
+            /* Yn1 = acc    */
+            Xn2 = Xn1;
+            Xn1 = Xn;
+            Yn2 = Yn1;
+            Yn1 = (q31_t) acc;
+
+            /* Store the output in the destination buffer. */
+            *pOut++ = (q31_t) acc;
+
+            /* decrement the loop counter */
+            sample--;
+        }
+
+        /*  The first stage goes from the input buffer to the output buffer. */
+        /*  Subsequent stages occur in-place in the output buffer */
+        pIn = pDst;
+
+        /* Reset to destination pointer */
+        pOut = pDst;
+
+        /*  Store the updated state variables back into the pState array */
+        *pState++ = Xn1;
+        *pState++ = Xn2;
+        *pState++ = Yn1;
+        *pState++ = Yn2;
+
     }
-
-    /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
-     ** No loop unrolling is used. */
-    sample = (blockSize & 0x3U);
-
-    while (sample > 0U)
-    {
-      /* Read the input */
-      Xn = *pIn++;
-
-      /* acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2] */
-
-      /* acc =  b0 * x[n] */
-      acc = (q63_t) b0 *Xn;
-      /* acc +=  b1 * x[n-1] */
-      acc += (q63_t) b1 *Xn1;
-      /* acc +=  b[2] * x[n-2] */
-      acc += (q63_t) b2 *Xn2;
-      /* acc +=  a1 * y[n-1] */
-      acc += (q63_t) a1 *Yn1;
-      /* acc +=  a2 * y[n-2] */
-      acc += (q63_t) a2 *Yn2;
-
-      /* The result is converted to 1.31  */
-      acc = acc >> lShift;
-
-      /* Every time after the output is computed state should be updated. */
-      /* The states should be updated as:  */
-      /* Xn2 = Xn1    */
-      /* Xn1 = Xn     */
-      /* Yn2 = Yn1    */
-      /* Yn1 = acc    */
-      Xn2 = Xn1;
-      Xn1 = Xn;
-      Yn2 = Yn1;
-      Yn1 = (q31_t) acc;
-
-      /* Store the output in the destination buffer. */
-      *pOut++ = (q31_t) acc;
-
-      /* decrement the loop counter */
-      sample--;
-    }
-
-    /*  The first stage goes from the input buffer to the output buffer. */
-    /*  Subsequent stages occur in-place in the output buffer */
-    pIn = pDst;
-
-    /* Reset to destination pointer */
-    pOut = pDst;
-
-    /*  Store the updated state variables back into the pState array */
-    *pState++ = Xn1;
-    *pState++ = Xn2;
-    *pState++ = Yn1;
-    *pState++ = Yn2;
-
-  } while (--stage);
+    while (--stage);
 
 #else
 
-  /* Run the below code for Cortex-M0 */
+    /* Run the below code for Cortex-M0 */
 
-  do
-  {
-    /* Reading the coefficients */
-    b0 = *pCoeffs++;
-    b1 = *pCoeffs++;
-    b2 = *pCoeffs++;
-    a1 = *pCoeffs++;
-    a2 = *pCoeffs++;
-
-    /* Reading the state values */
-    Xn1 = pState[0];
-    Xn2 = pState[1];
-    Yn1 = pState[2];
-    Yn2 = pState[3];
-
-    /*      The variables acc holds the output value that is computed:
-     *    acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2]
-     */
-
-    sample = blockSize;
-
-    while (sample > 0U)
+    do
     {
-      /* Read the input */
-      Xn = *pIn++;
+        /* Reading the coefficients */
+        b0 = *pCoeffs++;
+        b1 = *pCoeffs++;
+        b2 = *pCoeffs++;
+        a1 = *pCoeffs++;
+        a2 = *pCoeffs++;
 
-      /* acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2] */
-      /* acc =  b0 * x[n] */
-      acc = (q63_t) b0 *Xn;
+        /* Reading the state values */
+        Xn1 = pState[0];
+        Xn2 = pState[1];
+        Yn1 = pState[2];
+        Yn2 = pState[3];
 
-      /* acc +=  b1 * x[n-1] */
-      acc += (q63_t) b1 *Xn1;
-      /* acc +=  b[2] * x[n-2] */
-      acc += (q63_t) b2 *Xn2;
-      /* acc +=  a1 * y[n-1] */
-      acc += (q63_t) a1 *Yn1;
-      /* acc +=  a2 * y[n-2] */
-      acc += (q63_t) a2 *Yn2;
+        /*      The variables acc holds the output value that is computed:
+         *    acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2]
+         */
 
-      /* The result is converted to 1.31  */
-      acc = acc >> lShift;
+        sample = blockSize;
 
-      /* Every time after the output is computed state should be updated. */
-      /* The states should be updated as:  */
-      /* Xn2 = Xn1    */
-      /* Xn1 = Xn     */
-      /* Yn2 = Yn1    */
-      /* Yn1 = acc    */
-      Xn2 = Xn1;
-      Xn1 = Xn;
-      Yn2 = Yn1;
-      Yn1 = (q31_t) acc;
+        while (sample > 0U)
+        {
+            /* Read the input */
+            Xn = *pIn++;
 
-      /* Store the output in the destination buffer. */
-      *pOut++ = (q31_t) acc;
+            /* acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2] */
+            /* acc =  b0 * x[n] */
+            acc = (q63_t) b0 * Xn;
 
-      /* decrement the loop counter */
-      sample--;
+            /* acc +=  b1 * x[n-1] */
+            acc += (q63_t) b1 * Xn1;
+            /* acc +=  b[2] * x[n-2] */
+            acc += (q63_t) b2 * Xn2;
+            /* acc +=  a1 * y[n-1] */
+            acc += (q63_t) a1 * Yn1;
+            /* acc +=  a2 * y[n-2] */
+            acc += (q63_t) a2 * Yn2;
+
+            /* The result is converted to 1.31  */
+            acc = acc >> lShift;
+
+            /* Every time after the output is computed state should be updated. */
+            /* The states should be updated as:  */
+            /* Xn2 = Xn1    */
+            /* Xn1 = Xn     */
+            /* Yn2 = Yn1    */
+            /* Yn1 = acc    */
+            Xn2 = Xn1;
+            Xn1 = Xn;
+            Yn2 = Yn1;
+            Yn1 = (q31_t) acc;
+
+            /* Store the output in the destination buffer. */
+            *pOut++ = (q31_t) acc;
+
+            /* decrement the loop counter */
+            sample--;
+        }
+
+        /*  The first stage goes from the input buffer to the output buffer. */
+        /*  Subsequent stages occur in-place in the output buffer */
+        pIn = pDst;
+
+        /* Reset to destination pointer */
+        pOut = pDst;
+
+        /*  Store the updated state variables back into the pState array */
+        *pState++ = Xn1;
+        *pState++ = Xn2;
+        *pState++ = Yn1;
+        *pState++ = Yn2;
+
     }
-
-    /*  The first stage goes from the input buffer to the output buffer. */
-    /*  Subsequent stages occur in-place in the output buffer */
-    pIn = pDst;
-
-    /* Reset to destination pointer */
-    pOut = pDst;
-
-    /*  Store the updated state variables back into the pState array */
-    *pState++ = Xn1;
-    *pState++ = Xn2;
-    *pState++ = Yn1;
-    *pState++ = Yn2;
-
-  } while (--stage);
+    while (--stage);
 
 #endif /*  #if defined (ARM_MATH_DSP) */
 }

@@ -47,60 +47,60 @@
  */
 
 void arm_fill_q15(
-  q15_t value,
-  q15_t * pDst,
-  uint32_t blockSize)
+    q15_t value,
+    q15_t* pDst,
+    uint32_t blockSize)
 {
-  uint32_t blkCnt;                               /* loop counter */
+    uint32_t blkCnt;                               /* loop counter */
 
 #if defined (ARM_MATH_DSP)
 
-  /* Run the below code for Cortex-M4 and Cortex-M3 */
+    /* Run the below code for Cortex-M4 and Cortex-M3 */
 
-  q31_t packedValue;                             /* value packed to 32 bits */
+    q31_t packedValue;                             /* value packed to 32 bits */
 
 
-  /*loop Unrolling */
-  blkCnt = blockSize >> 2U;
+    /*loop Unrolling */
+    blkCnt = blockSize >> 2U;
 
-  /* Packing two 16 bit values to 32 bit value in order to use SIMD */
-  packedValue = __PKHBT(value, value, 16U);
+    /* Packing two 16 bit values to 32 bit value in order to use SIMD */
+    packedValue = __PKHBT(value, value, 16U);
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
-   ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0U)
-  {
-    /* C = value */
-    /* Fill the value in the destination buffer */
-    *__SIMD32(pDst)++ = packedValue;
-    *__SIMD32(pDst)++ = packedValue;
+    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+     ** a second loop below computes the remaining 1 to 3 samples. */
+    while (blkCnt > 0U)
+    {
+        /* C = value */
+        /* Fill the value in the destination buffer */
+        *__SIMD32(pDst)++ = packedValue;
+        *__SIMD32(pDst)++ = packedValue;
 
-    /* Decrement the loop counter */
-    blkCnt--;
-  }
+        /* Decrement the loop counter */
+        blkCnt--;
+    }
 
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
-   ** No loop unrolling is used. */
-  blkCnt = blockSize % 0x4U;
+    /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+     ** No loop unrolling is used. */
+    blkCnt = blockSize % 0x4U;
 
 #else
 
-  /* Run the below code for Cortex-M0 */
+    /* Run the below code for Cortex-M0 */
 
-  /* Loop over blockSize number of values */
-  blkCnt = blockSize;
+    /* Loop over blockSize number of values */
+    blkCnt = blockSize;
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
-  while (blkCnt > 0U)
-  {
-    /* C = value */
-    /* Fill the value in the destination buffer */
-    *pDst++ = value;
+    while (blkCnt > 0U)
+    {
+        /* C = value */
+        /* Fill the value in the destination buffer */
+        *pDst++ = value;
 
-    /* Decrement the loop counter */
-    blkCnt--;
-  }
+        /* Decrement the loop counter */
+        blkCnt--;
+    }
 }
 
 /**

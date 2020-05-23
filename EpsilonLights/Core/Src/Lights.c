@@ -215,6 +215,7 @@ void reportLightsToCanTask(void const* arg)
         {
             continue;
         }
+
         if (HAL_CAN_GetTxMailboxesFreeLevel(&hcan) == 0)
         {
             osMutexRelease(canHandleMutex);
@@ -265,6 +266,7 @@ void sendHeartbeatTask(void const* arg)
         {
             continue;
         }
+
         if (HAL_CAN_GetTxMailboxesFreeLevel(&hcan) == 0)
         {
             osMutexRelease(canHandleMutex);

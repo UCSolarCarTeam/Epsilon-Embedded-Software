@@ -66,22 +66,22 @@
  */
 
 void arm_biquad_cascade_stereo_df2T_init_f32(
-  arm_biquad_cascade_stereo_df2T_instance_f32 * S,
-  uint8_t numStages,
-  float32_t * pCoeffs,
-  float32_t * pState)
+    arm_biquad_cascade_stereo_df2T_instance_f32* S,
+    uint8_t numStages,
+    float32_t* pCoeffs,
+    float32_t* pState)
 {
-  /* Assign filter stages */
-  S->numStages = numStages;
+    /* Assign filter stages */
+    S->numStages = numStages;
 
-  /* Assign coefficient pointer */
-  S->pCoeffs = pCoeffs;
+    /* Assign coefficient pointer */
+    S->pCoeffs = pCoeffs;
 
-  /* Clear state buffer and size is always 4 * numStages */
-  memset(pState, 0, (4U * (uint32_t) numStages) * sizeof(float32_t));
+    /* Clear state buffer and size is always 4 * numStages */
+    memset(pState, 0, (4U * (uint32_t) numStages) * sizeof(float32_t));
 
-  /* Assign state pointer */
-  S->pState = pState;
+    /* Assign state pointer */
+    S->pState = pState;
 }
 
 /**

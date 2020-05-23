@@ -33,10 +33,10 @@
  * @ingroup groupFastMath
  */
 
- /**
- * @addtogroup cos
- * @{
- */
+/**
+* @addtogroup cos
+* @{
+*/
 
 /**
  * @brief Fast approximation to the trigonometric cosine function for Q15 data.
@@ -48,35 +48,37 @@
  */
 
 q15_t arm_cos_q15(
-  q15_t x)
+    q15_t x)
 {
-  q15_t cosVal;                                  /* Temporary variables for input, output */
-  int32_t index;                                 /* Index variables */
-  q15_t a, b;                                    /* Four nearest output values */
-  q15_t fract;                                   /* Temporary values for fractional values */
+    q15_t cosVal;                                  /* Temporary variables for input, output */
+    int32_t index;                                 /* Index variables */
+    q15_t a, b;                                    /* Four nearest output values */
+    q15_t fract;                                   /* Temporary values for fractional values */
 
-  /* add 0.25 (pi/2) to read sine table */
-  x = (uint16_t)x + 0x2000;
-  if (x < 0)
-  {   /* convert negative numbers to corresponding positive ones */
-      x = (uint16_t)x + 0x8000;
-  }
+    /* add 0.25 (pi/2) to read sine table */
+    x = (uint16_t)x + 0x2000;
 
-  /* Calculate the nearest index */
-  index = (uint32_t)x >> FAST_MATH_Q15_SHIFT;
+    if (x < 0)
+    {
+        /* convert negative numbers to corresponding positive ones */
+        x = (uint16_t)x + 0x8000;
+    }
 
-  /* Calculation of fractional value */
-  fract = (x - (index << FAST_MATH_Q15_SHIFT)) << 9;
+    /* Calculate the nearest index */
+    index = (uint32_t)x >> FAST_MATH_Q15_SHIFT;
 
-  /* Read two nearest values of input value from the sin table */
-  a = sinTable_q15[index];
-  b = sinTable_q15[index+1];
+    /* Calculation of fractional value */
+    fract = (x - (index << FAST_MATH_Q15_SHIFT)) << 9;
 
-  /* Linear interpolation process */
-  cosVal = (q31_t)(0x8000-fract)*a >> 16;
-  cosVal = (q15_t)((((q31_t)cosVal << 16) + ((q31_t)fract*b)) >> 16);
+    /* Read two nearest values of input value from the sin table */
+    a = sinTable_q15[index];
+    b = sinTable_q15[index + 1];
 
-  return cosVal << 1;
+    /* Linear interpolation process */
+    cosVal = (q31_t)(0x8000 - fract) * a >> 16;
+    cosVal = (q15_t)((((q31_t)cosVal << 16) + ((q31_t)fract * b)) >> 16);
+
+    return cosVal << 1;
 }
 
 /**

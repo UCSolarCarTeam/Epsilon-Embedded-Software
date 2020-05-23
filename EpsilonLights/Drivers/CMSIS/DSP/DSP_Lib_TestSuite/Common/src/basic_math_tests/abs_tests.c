@@ -13,7 +13,7 @@
         suffix,                                 \
         TYPE_FROM_ABBREV(suffix),               \
         TYPE_FROM_ABBREV(suffix))
-    
+
 JTEST_ARM_ABS_TEST(f32);
 JTEST_ARM_ABS_TEST(q31);
 JTEST_ARM_ABS_TEST(q15);

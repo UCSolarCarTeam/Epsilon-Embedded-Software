@@ -24,15 +24,15 @@
  */
 
 #if defined (ARMCM23)
-  #include "ARMCM23.h"
+#include "ARMCM23.h"
 #elif defined (ARMCM23_TZ)
-  #include "ARMCM23_TZ.h"
+#include "ARMCM23_TZ.h"
 
-  #if defined (__ARM_FEATURE_CMSE) &&  (__ARM_FEATURE_CMSE == 3U)
-    #include "partition_ARMCM23.h"
-  #endif
+#if defined (__ARM_FEATURE_CMSE) &&  (__ARM_FEATURE_CMSE == 3U)
+#include "partition_ARMCM23.h"
+#endif
 #else
-  #error device not specified!
+#error device not specified!
 #endif
 
 /*----------------------------------------------------------------------------
@@ -47,7 +47,7 @@
   Externals
  *----------------------------------------------------------------------------*/
 #if defined (__VTOR_PRESENT) && (__VTOR_PRESENT == 1U)
-  extern uint32_t __Vectors;
+extern uint32_t __Vectors;
 #endif
 
 /*----------------------------------------------------------------------------
@@ -61,7 +61,7 @@ uint32_t SystemCoreClock = SYSTEM_CLOCK;
  *----------------------------------------------------------------------------*/
 void SystemCoreClockUpdate (void)
 {
-  SystemCoreClock = SYSTEM_CLOCK;
+    SystemCoreClock = SYSTEM_CLOCK;
 }
 
 /*----------------------------------------------------------------------------
@@ -71,12 +71,12 @@ void SystemInit (void)
 {
 
 #if defined (__VTOR_PRESENT) && (__VTOR_PRESENT == 1U)
-  SCB->VTOR = (uint32_t) &__Vectors;
+    SCB->VTOR = (uint32_t) &__Vectors;
 #endif
 
 #if defined (__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U)
-  TZ_SAU_Setup();
+    TZ_SAU_Setup();
 #endif
 
-  SystemCoreClock = SYSTEM_CLOCK;
+    SystemCoreClock = SYSTEM_CLOCK;
 }

@@ -44,7 +44,7 @@ uint32_t SystemCoreClock = SYSTEM_CLOCK;
  *----------------------------------------------------------------------------*/
 void SystemCoreClockUpdate (void)
 {
-  SystemCoreClock = SYSTEM_CLOCK;
+    SystemCoreClock = SYSTEM_CLOCK;
 }
 
 /*----------------------------------------------------------------------------
@@ -52,5 +52,5 @@ void SystemCoreClockUpdate (void)
  *----------------------------------------------------------------------------*/
 void SystemInit (void)
 {
-  SystemCoreClock = SYSTEM_CLOCK;
+    SystemCoreClock = SYSTEM_CLOCK;
 }

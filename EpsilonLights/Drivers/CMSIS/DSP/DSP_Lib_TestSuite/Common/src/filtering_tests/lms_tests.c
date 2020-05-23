@@ -192,13 +192,13 @@ static const q15_t mu_q15 = 0x7fff;
             return JTEST_TEST_PASSED;                                                  \
    }
 
-LMS_DEFINE_TEST(f32,,float32_t, mu_f32);
-LMS_WITH_POSTSHIFT_DEFINE_TEST(q31,,q31_t);
-LMS_WITH_POSTSHIFT_DEFINE_TEST(q15,,q15_t);
+LMS_DEFINE_TEST(f32,, float32_t, mu_f32);
+LMS_WITH_POSTSHIFT_DEFINE_TEST(q31,, q31_t);
+LMS_WITH_POSTSHIFT_DEFINE_TEST(q15,, q15_t);
 
-LMS_DEFINE_TEST(f32,_norm,float32_t, mu2_f32);
-LMS_WITH_POSTSHIFT_DEFINE_TEST(q31,_norm,q31_t);
-LMS_WITH_POSTSHIFT_DEFINE_TEST(q15,_norm,q15_t);
+LMS_DEFINE_TEST(f32, _norm, float32_t, mu2_f32);
+LMS_WITH_POSTSHIFT_DEFINE_TEST(q31, _norm, q31_t);
+LMS_WITH_POSTSHIFT_DEFINE_TEST(q15, _norm, q15_t);
 
 /*--------------------------------------------------------------------------------*/
 /* Collect all tests in a group. */
@@ -209,11 +209,11 @@ JTEST_DEFINE_GROUP(lms_tests)
     /*
       To skip a test, comment it out.
     */
-   JTEST_TEST_CALL(arm_lms_f32_test);
-   JTEST_TEST_CALL(arm_lms_q31_test);
-   JTEST_TEST_CALL(arm_lms_q15_test);
+    JTEST_TEST_CALL(arm_lms_f32_test);
+    JTEST_TEST_CALL(arm_lms_q31_test);
+    JTEST_TEST_CALL(arm_lms_q15_test);
 
-   JTEST_TEST_CALL(arm_lms_norm_f32_test);
-   JTEST_TEST_CALL(arm_lms_norm_q31_test);
-   JTEST_TEST_CALL(arm_lms_norm_q15_test);
+    JTEST_TEST_CALL(arm_lms_norm_f32_test);
+    JTEST_TEST_CALL(arm_lms_norm_q31_test);
+    JTEST_TEST_CALL(arm_lms_norm_q15_test);
 }

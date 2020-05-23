@@ -26,7 +26,7 @@
 #include "ARMv8MBL.h"
 
 #if defined (__ARM_FEATURE_CMSE) &&  (__ARM_FEATURE_CMSE == 3U)
-  #include "partition_ARMv8MBL.h"
+#include "partition_ARMv8MBL.h"
 #endif
 
 /*----------------------------------------------------------------------------
@@ -41,7 +41,7 @@
   Externals
  *----------------------------------------------------------------------------*/
 #if defined (__VTOR_PRESENT) && (__VTOR_PRESENT == 1U)
-  extern uint32_t __Vectors;
+extern uint32_t __Vectors;
 #endif
 
 /*----------------------------------------------------------------------------
@@ -55,7 +55,7 @@ uint32_t SystemCoreClock = SYSTEM_CLOCK;
  *----------------------------------------------------------------------------*/
 void SystemCoreClockUpdate (void)
 {
-  SystemCoreClock = SYSTEM_CLOCK;
+    SystemCoreClock = SYSTEM_CLOCK;
 }
 
 /*----------------------------------------------------------------------------
@@ -65,12 +65,12 @@ void SystemInit (void)
 {
 
 #if defined (__VTOR_PRESENT) && (__VTOR_PRESENT == 1U)
-  SCB->VTOR = (uint32_t) &__Vectors;
+    SCB->VTOR = (uint32_t) &__Vectors;
 #endif
 
 #if defined (__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U)
-  TZ_SAU_Setup();
+    TZ_SAU_Setup();
 #endif
 
-  SystemCoreClock = SYSTEM_CLOCK;
+    SystemCoreClock = SYSTEM_CLOCK;
 }
