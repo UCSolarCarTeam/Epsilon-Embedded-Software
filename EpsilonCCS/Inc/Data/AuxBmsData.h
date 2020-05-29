@@ -10,8 +10,25 @@
 #define AUX_VOLTAGE_MASK (0xF8) // Last 5 bits
 #define STROBE_MASK (0x01) // First bit
 #define ALLOW_CHARGE_MASK (0X02) // Second bit
-#define CONTACTOR_ERROR_MASK (0X04) // Third bit
-#define HIGH_VOLTAGE_ENABLE_MASK (0X08) //Fourth bit
+#define HIGH_VOLTAGE_ENABLE_STATE_MASK (0X04) // Third bit
+#define ALLOW_DISCHARGE_MASK (0X08) //Fourth bit
+#define ORION_CAN_RECEIVED_RECENTLY_MASK (0x10) //Fifth bit
+
+#define CHARGE_CONTACTOR_ERROR_MASK (0x10)
+#define DISCHARGE_CONTACTOR_ERROR_MASK (0x20)
+#define COMMON_CONTACTOR_ERROR_MASK (0x40)
+#define DISCHARGE_SHOULD_TRIP_MASK (0x80)
+#define CHARGE_SHOULD_TRIP_MASK (0x01)
+#define CHARGE_OPEN_BUT_SHOULD_BE_CLOSED_MASK (0x02)
+#define DISCHARGE_OPEN_BUT_SHOULD_BE_CLOSED_MASK (0x04)
+
+#define CHARGE_TRIP_DUE_TO_HIGH_CELL_VOLTAGE_MASK (0x01)
+#define CHARGE_TRIP_DUE_TO_HIGH_TEMPERATURE_AND_CURRENT_MASK (0x02)
+#define CHARGE_TRIP_DUE_TO_PACK_CURRENT_MASK (0x04)
+#define DISCHARGE_TRIP_DUE_TO_LOW_CELL_VOLTAGE_MASK (0x08)
+#define DISCHARGE_TRIP_DUE_TO_HIGH_TEMPERATURE_AND_CURRENT_MASK (0x10)
+#define DISCHARGE_TRIP_DUE_TO_PACK_CURRENT_MASK (0x20)
+#define PROTECTION_TRIP_MASK (0x40)
 
 enum BatteryPrechargeState
 {
@@ -23,14 +40,39 @@ enum BatteryPrechargeState
     INVALID_STATE = 5
 };
 
+struct AuxTrip
+{
+    unsigned char chargeTripDueToHighCellVoltage;
+    unsigned char chargeTripDueToHighTemperatureAndCurrent;
+    unsigned char chargeTripDueToPackCurrent;
+    unsigned char dischargeTripDueToLowCellVoltage;
+    unsigned char dischargeTripDueToHighTemperatureAndCurrent;
+    unsigned char dischargeTripDueToPackCurrent;
+    unsigned char protectionTrip;
+};
+
+struct ContactorDebugInfo
+{
+    unsigned char chargeContactorError;
+    unsigned char dischargeContactorError;
+    unsigned char commonContactorError;
+    unsigned char dischargeShouldTrip;
+    unsigned char chargeShouldTrip;
+    unsigned char chargeOpenButShouldBeClosed;
+    unsigned char dischargeOpenButShouldBeClosed;
+};
+
 struct AuxBmsData
 {
     unsigned char prechargeState;
     unsigned char auxVoltage;
     unsigned char strobeBmsLight;
     unsigned char allowCharge;
-    unsigned char contactorError;
-    unsigned char highVoltageEnable;
+    unsigned char highVoltageEnableState;
+    unsigned char allowDischarge;
+    unsigned char orionCanReceivedRecently;
+    struct ContactorDebugInfo contactorDebugInfo;
+    struct AuxTrip auxTrip;
     uint32_t auxBmsLastReceived;
 };
 
