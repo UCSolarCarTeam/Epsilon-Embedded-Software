@@ -72,6 +72,32 @@ float calculateRegenMotorCurrent(float regenPercentage, float prevMotorCurrent)
     return lowPassFilter(presentMotorCurrent, prevMotorCurrent);
 }
 
+uint8_t vehicleVelocitySafeToGoForward()
+{
+    return (motor0VehicleVelocityInput >= SAFE_VEHICLE_VELOCITY_TO_GO_FORWARD && motor1VehicleVelocityInput >= SAFE_VEHICLE_VELOCITY_TO_GO_FORWARD);
+}
+
+uint8_t vehicleVelocitySafeToGoReverse()
+{
+    return (motor0VehicleVelocityInput <= SAFE_VEHICLE_VELOCITY_TO_GO_REVERSE && motor1VehicleVelocityInput <= SAFE_VEHICLE_VELOCITY_TO_GO_REVERSE);
+}
+
+uint8_t isNewDirectionSafe(uint8_t forward, uint8_t reverse)
+{
+    if (forward && reverse) // Error state (can't go forward and reverse!)
+    {
+        return 0;
+    }
+    else if ((forward && vehicleVelocitySafeToGoForward()) || (reverse && vehicleVelocitySafeToGoReverse()))
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
 void sendHeartbeatTask(void const* arg)
 {
     uint32_t prevWakeTime = osKernelSysTick();
@@ -232,7 +258,7 @@ void sendDriveCommandsTask(void const* arg)
         float regenPercentage = (float)getAvgRegen() / 100.0;
         float accelPercentage = (float)getAvgAccel() / 100.0;
 
-        // Read GPIO Inputs
+        // Determine drive commands
         forward = !HAL_GPIO_ReadPin(FORWARD_GPIO_Port, FORWARD_Pin); // `!` for active low
         reverse = !HAL_GPIO_ReadPin(REVERSE_GPIO_Port, REVERSE_Pin);
         brake = !HAL_GPIO_ReadPin(BRAKES_GPIO_Port, BRAKES_Pin);
@@ -241,7 +267,7 @@ void sendDriveCommandsTask(void const* arg)
         allowCharge = auxBmsInputs[1] & 0x02;
 
         // Determine data to send
-        if (forward && reverse) // Error state
+        if (!isNewDirectionSafe(forward, reverse)) // If new direction input isn't safe, zero outputs
         {
             motorVelocityOut = 0;
             motorCurrentOut = 0;
@@ -287,6 +313,12 @@ void sendDriveCommandsTask(void const* arg)
             motorVelocityOut = 0;
             motorCurrentOut = 0;
         }
+
+        // Reset input velocities to default
+        // This is TEMPORARY. Should be a fix for this that does a better job of determining if the velocities that were received
+        // are stale values. i.e. motor controllers haven't transmitted a message in a while
+        motor0VehicleVelocityInput = 0;
+        motor1VehicleVelocityInput = 0;
 
         // Allocate CAN Message, deallocated by sender "sendCanTask()"
         CanMsg* msg = (CanMsg*)osPoolAlloc(canPool);
@@ -351,6 +383,17 @@ void sendCanTask(void const* arg)
     }
 }
 
+float arrayToFloat(uint8_t* data)
+{
+    float result = 0;
+    ((unsigned char*)&result)[0] = data[0];
+    ((unsigned char*)&result)[1] = data[1];
+    ((unsigned char*)&result)[2] = data[2];
+    ((unsigned char*)&result)[3] = data[3];
+
+    return result;
+}
+
 // Reimplement weak definition in stm32f4xx_hal_can.c
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 {
@@ -360,6 +403,16 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     {
         auxBmsInputs[0] = msg->Data[0];
         auxBmsInputs[1] = msg->Data[1];
+    }
+
+    if (msg->StdId == M0_VELOCITY_INPUT_STDID && msg->DLC == 8)
+    {
+        motor0VehicleVelocityInput = arrayToFloat(&(msg->Data[4]));
+    }
+
+    if (msg->StdId == M1_VELOCITY_INPUT_STDID && msg->DLC == 8)
+    {
+        motor1VehicleVelocityInput = arrayToFloat(&(msg->Data[4]));
     }
 
     if (HAL_CAN_Receive_IT(hcan, CAN_FIFO0) == HAL_OK)

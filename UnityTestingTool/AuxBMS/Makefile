@@ -5,6 +5,8 @@ INC_DIR = $(AUX_BMS_DIR)Inc/
 MIDDLEWARES_DIR = $(AUX_BMS_DIR)Middlewares/
 DRIVERS_PATH = $(AUX_BMS_DIR)Drivers/
 UNITY_DIR = ../src/
+CMOCK_DIR = ../CMock/src
+MOCK_DIR = ./mocks/
 
 ifeq ($(OS),Windows_NT)
   ifeq ($(shell uname -s),) # not in a bash-like shell
@@ -26,12 +28,16 @@ endif
 .PHONY: all
 
 PATHS = -I . \
+-I ./mocks \
 -I $(INC_DIR) \
 -I $(UNITY_DIR)/src \
+-I $(CMOCK_DIR) \
 -I $(MIDDLEWARES_DIR)/Third_Party/FreeRTOS/Source/CMSIS_RTOS \
--I $(DRIVERS_PATH)/CMSIS/Include \
 -I $(MIDDLEWARES_DIR)/Third_Party/FreeRTOS/Source/include \
--I $(MIDDLEWARES_DIR)/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F 
+-I $(MIDDLEWARES_DIR)/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F \
+-I $(DRIVERS_PATH)/STM32F4xx_HAL_Driver/Inc/ \
+-I $(DRIVERS_PATH)/CMSIS/Device/ST/STM32F4xx/Include/ \
+-I $(DRIVERS_PATH)/CMSIS/Include
 
 PATHT = ./
 PATHB = build/
@@ -42,17 +48,33 @@ PATHR = build/results/
 SRCT = $(wildcard $(PATHT)*.c)
 
 COMPILE=gcc
-CFLAGS=-I$(UNITY_DIR) $(PATHS)
+CFLAGS=-I$(UNITY_DIR) $(PATHS) -DSTM32F407xx
 
-AUX_BMS_SOURCES = $(SRC_DIR)Trip.c
-TEST_SOURCES = main.c TripTest.c
+AUX_BMS_SOURCES = \
+				$(SRC_DIR)Trip.c \
+				$(SRC_DIR)ReportAuxStatusToCanTask.c \
+				$(SRC_DIR)SetContactorsTask.c
+				
+TEST_SOURCES = \
+			main.c \
+			TripTest.c \
+			SetContactorsTaskTest.c \
+
 UNITY_SOURCES = $(UNITY_DIR)unity.c  
+CMOCK_SOURCES = $(CMOCK_DIR)cmock.c
+MOCK_SOURCES = \
+	$(MOCK_DIR)Mockstm32f4xx_hal_gpio.c \
+	$(MOCK_DIR)Mockcmsis_os.c \
+	$(MOCK_DIR)Mockstm32f4xx_hal_adc.c \
+	$(MOCK_DIR)Mockstm32f4xx_hal_can.c \
 
 # Get object file name of each source
 # Each object file will be compiled as a target
 AUX_BMS_OBJ = $(patsubst $(SRC_DIR)%.c, $(PATHO)%.o, $(AUX_BMS_SOURCES))
 TEST_OBJ = $(patsubst %.c, $(PATHO)%.o, $(TEST_SOURCES))
 UNITY_OBJ = $(patsubst $(UNITY_DIR)%.c, $(PATHO)%.o, $(UNITY_SOURCES))
+CMOCK_OBJ = $(patsubst $(CMOCK_DIR)%.c, $(PATHO)%.o, $(CMOCK_SOURCES))
+MOCK_OBJ = $(patsubst $(MOCK_DIR)%.c, $(PATHO)%.o, $(MOCK_SOURCES))
 
 default: mkdirs EpsilonAuxBMSTests
 
@@ -68,7 +90,15 @@ $(PATHO)%.o: $(UNITY_DIR)/%.c
 $(PATHO)%.o: $(SRC_DIR)/%.c
 	$(COMPILE) -c -o $@ $< $(CFLAGS)
 
-EpsilonAuxBMSTests: $(TEST_OBJ) $(UNITY_OBJ) $(AUX_BMS_OBJ)
+# Parse files within the cmock source
+$(PATHO)%.o: $(CMOCK_DIR)/%.c
+	$(COMPILE) -c -o $@ $< $(CFLAGS)
+
+# Parse files within the mock source
+$(PATHO)%.o: $(MOCK_DIR)/%.c
+	$(COMPILE) -c -o $@ $< $(CFLAGS)
+
+EpsilonAuxBMSTests: $(TEST_OBJ) $(UNITY_OBJ) $(AUX_BMS_OBJ) $(MOCK_OBJ) $(CMOCK_OBJ) 
 	$(COMPILE) -o $(PATHB)$@ $^ $(CFLAGS) 
 
 # Make build directories

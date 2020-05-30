@@ -1,4 +1,6 @@
+#pragma once
 void clearOrionStatus();
+void runTripTests();
 void test_chargeShouldTripFromHighCellVoltage();
 void test_chargeShouldTripDuetoHighTempAndChargingCurrent();
 void test_chargeShouldNotTripDuetoOnlyHighTemp();

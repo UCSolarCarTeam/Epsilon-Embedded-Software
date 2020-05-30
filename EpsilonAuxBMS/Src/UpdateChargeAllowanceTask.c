@@ -56,28 +56,11 @@ void updateChargeAllowanceTask(void const* arg)
 
         if (auxStatus.startUpSequenceDone)
         {
-            unsigned dischargeSense = HAL_GPIO_ReadPin(ORION_DISCHARGE_ENABLE_SENSE_GPIO_Port, ORION_DISCHARGE_ENABLE_SENSE_Pin);
-            unsigned chargeSense = HAL_GPIO_ReadPin(ORION_CHARGE_ENABLE_SENSE_GPIO_Port, ORION_CHARGE_ENABLE_SENSE_Pin);
+            unsigned orionDischargeEnableSense = HAL_GPIO_ReadPin(ORION_DISCHARGE_ENABLE_SENSE_GPIO_Port, ORION_DISCHARGE_ENABLE_SENSE_Pin);
+            unsigned orionChargeEnableSense = HAL_GPIO_ReadPin(ORION_CHARGE_ENABLE_SENSE_GPIO_Port, ORION_CHARGE_ENABLE_SENSE_Pin);
 
-            // Check if charge should trip the car
-            int chargeTrippedCar = chargeShouldTrip();
-
-            // Check if dicharge should trip the car
-            int dischargeTrippedCar = dischargeShouldTrip();
-
-            int protectionTripping = 0;
-
-            // If the charge contactor is off, but we are still charging, trip
-            if (!chargeSense && orionStatus.packCurrent < 0)
-            {
-                protectionTripping = 1;
-            }
-
-            // If both contactors should be off
-            if (chargeTrippedCar
-                    || dischargeTrippedCar
-                    || protectionTripping
-                    || (!dischargeSense && !chargeSense))
+            // If the car should trip or orion wants both contactors off
+            if (carShouldTrip() || (!orionDischargeEnableSense && !orionChargeEnableSense))
             {
                 // Trip car
                 chargeContactorOverride = 1;
@@ -91,7 +74,7 @@ void updateChargeAllowanceTask(void const* arg)
             else
             {
                 // Turn off discharge without tripping
-                if (!dischargeSense)
+                if (!orionDischargeEnableSense)
                 {
                     dischargeContactorOverride = 1;
                     allowDischarge = 0;
@@ -100,7 +83,7 @@ void updateChargeAllowanceTask(void const* arg)
                 }
 
                 // Turn off charge without tripping
-                if (!chargeSense)
+                if (!orionChargeEnableSense)
                 {
                     chargeContactorOverride = 1;
                     allowCharge = 0;

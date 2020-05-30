@@ -41,6 +41,12 @@
 
 #define AUXBMS_INPUT_STDID 0x721U
 
+#define M0_VELOCITY_INPUT_STDID 0x403U
+#define M1_VELOCITY_INPUT_STDID 0x423U
+
+#define SAFE_VEHICLE_VELOCITY_TO_GO_FORWARD -1.38f // A small negative number to have some room for things like slow turns (metres/s)
+#define SAFE_VEHICLE_VELOCITY_TO_GO_REVERSE 1.38f // A small positive number to have some room for things like slow turns (metres/s)
+
 #define LAP_PIN CONTEXT_Pin
 #define LAP_GPIO_PORT CONTEXT_GPIO_Port
 
@@ -50,6 +56,8 @@ extern ADC_HandleTypeDef hadc2;
 extern osMessageQId canQueue;
 extern osPoolId canPool;
 extern uint8_t auxBmsInputs[2];
+extern float   motor0VehicleVelocityInput;
+extern float   motor1VehicleVelocityInput;
 
 typedef struct
 {
