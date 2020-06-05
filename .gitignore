@@ -43,3 +43,4 @@ Makefile
 .tags
 *swap
 .fuse*
+*.vscode
