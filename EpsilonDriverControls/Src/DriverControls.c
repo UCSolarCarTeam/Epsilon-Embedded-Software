@@ -52,6 +52,26 @@ float calculateMotorCurrent(float accelPercentage)
     }
 }
 
+float lowPassFilter(float presentMotorCurrent, float prevMotorCurrent)
+{
+    // Essentially a simple IIR low pass filter, which is a system that resists change.
+    // The purpose is to smooth the output current so that there aren't any big jumps that could cause the motors to trip.
+    // The MOTOR_CURRENT_SMOOTHING_FACTOR determines how resistant the low pass filter is to change
+    return prevMotorCurrent + MOTOR_CURRENT_SMOOTHING_FACTOR * (presentMotorCurrent - prevMotorCurrent);
+}
+
+float calculateAccelMotorCurrent(float accelPercentage, float prevMotorCurrent)
+{
+    return lowPassFilter(calculateMotorCurrent(accelPercentage), prevMotorCurrent);
+}
+
+float calculateRegenMotorCurrent(float regenPercentage, float prevMotorCurrent)
+{
+    // Scale presentMotorCurrent by REGEN_INPUT_SCALING because regen uses less current than normal acceleration. Motors will trip if current is greater.
+    float presentMotorCurrent = calculateMotorCurrent(regenPercentage) * REGEN_INPUT_SCALING ;
+    return lowPassFilter(presentMotorCurrent, prevMotorCurrent);
+}
+
 void sendHeartbeatTask(void const* arg)
 {
     uint32_t prevWakeTime = osKernelSysTick();
@@ -237,9 +257,7 @@ void sendDriveCommandsTask(void const* arg)
             // Alow regen braking based on input from AuxBMS
             if (allowCharge)
             {
-                // Regen needs to be scaled more to avoid motor trips
-
-                motorCurrentOut = calculateMotorCurrent(regenPercentage) * REGEN_INPUT_SCALING;
+                motorCurrentOut = calculateRegenMotorCurrent(regenPercentage, motorCurrentOut);
             }
             else
             {
@@ -256,13 +274,13 @@ void sendDriveCommandsTask(void const* arg)
         {
             HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
             motorVelocityOut = MAX_FORWARD_RPM;
-            motorCurrentOut = calculateMotorCurrent(accelPercentage);
+            motorCurrentOut = calculateAccelMotorCurrent(accelPercentage, motorCurrentOut);
         }
         else if (reverse && (accelPercentage > NON_ZERO_THRESHOLD)) // Reverse State
         {
             HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
             motorVelocityOut = MAX_REVERSE_RPM;
-            motorCurrentOut = calculateMotorCurrent(accelPercentage);
+            motorCurrentOut = calculateAccelMotorCurrent(accelPercentage, motorCurrentOut);
         }
         else  // Off state
         {
