@@ -5,7 +5,7 @@ INC_DIR = $(AUX_BMS_DIR)Inc/
 MIDDLEWARES_DIR = $(AUX_BMS_DIR)Middlewares/
 DRIVERS_PATH = $(AUX_BMS_DIR)Drivers/
 UNITY_DIR = ../src/
-CMOCK_DIR = ~/cmock/src
+CMOCK_DIR = ../CMock/src
 MOCK_DIR = ./mocks/
 
 ifeq ($(OS),Windows_NT)

@@ -26,6 +26,10 @@ script:
     - (cd EpsilonCCS && make)
     - (cd EpsilonAuxBMS && make)
     - (cd UnityTestingTool/AuxBMS/ && make && build/EpsilonAuxBMSTests)
-    - "! (astyle *.h *.c -r --dry-run --options=astylerc | grep Formatted)"
+    - "! (./format.sh EpsilonCCS | grep Formatted)"
+    - "! (./format.sh EpsilonLights | grep Formatted)"
+    - "! (./format.sh EpsilonDriverControls | grep Formatted)"
+    - "! (./format.sh EpsilonCCS | grep Formatted)"
+    - "! (./format.sh UnityTestingTool/AuxBMS | grep Formatted)"
 
 language: c
