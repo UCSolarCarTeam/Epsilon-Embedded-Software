@@ -9,3 +9,5 @@ extern ADC_HandleTypeDef hadc1; // main.c
 // Task for turning on contactors
 // arg: osMutexId* auxStatusMutex
 void setContactorsTask(void const* arg);
+
+void disconnectContactors(uint8_t isContactorError);
