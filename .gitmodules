@@ -1,0 +1,3 @@
+[submodule "UnityTestingTool/CMock"]
+	path = UnityTestingTool/CMock
+	url = https://github.com/UCSolarCarTeam/CMock

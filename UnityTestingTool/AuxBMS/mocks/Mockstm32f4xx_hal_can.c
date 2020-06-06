@@ -29,879 +29,912 @@ static const char* CMockString_sFilterConfig = "sFilterConfig";
 
 typedef struct _CMOCK_HAL_CAN_Init_CALL_INSTANCE
 {
-  UNITY_LINE_TYPE LineNumber;
-  HAL_StatusTypeDef ReturnVal;
-  CAN_HandleTypeDef* Expected_hcan;
+    UNITY_LINE_TYPE LineNumber;
+    HAL_StatusTypeDef ReturnVal;
+    CAN_HandleTypeDef* Expected_hcan;
 
 } CMOCK_HAL_CAN_Init_CALL_INSTANCE;
 
 typedef struct _CMOCK_HAL_CAN_ConfigFilter_CALL_INSTANCE
 {
-  UNITY_LINE_TYPE LineNumber;
-  HAL_StatusTypeDef ReturnVal;
-  CAN_HandleTypeDef* Expected_hcan;
-  CAN_FilterConfTypeDef* Expected_sFilterConfig;
+    UNITY_LINE_TYPE LineNumber;
+    HAL_StatusTypeDef ReturnVal;
+    CAN_HandleTypeDef* Expected_hcan;
+    CAN_FilterConfTypeDef* Expected_sFilterConfig;
 
 } CMOCK_HAL_CAN_ConfigFilter_CALL_INSTANCE;
 
 typedef struct _CMOCK_HAL_CAN_DeInit_CALL_INSTANCE
 {
-  UNITY_LINE_TYPE LineNumber;
-  HAL_StatusTypeDef ReturnVal;
-  CAN_HandleTypeDef* Expected_hcan;
+    UNITY_LINE_TYPE LineNumber;
+    HAL_StatusTypeDef ReturnVal;
+    CAN_HandleTypeDef* Expected_hcan;
 
 } CMOCK_HAL_CAN_DeInit_CALL_INSTANCE;
 
 typedef struct _CMOCK_HAL_CAN_MspInit_CALL_INSTANCE
 {
-  UNITY_LINE_TYPE LineNumber;
-  CAN_HandleTypeDef* Expected_hcan;
+    UNITY_LINE_TYPE LineNumber;
+    CAN_HandleTypeDef* Expected_hcan;
 
 } CMOCK_HAL_CAN_MspInit_CALL_INSTANCE;
 
 typedef struct _CMOCK_HAL_CAN_MspDeInit_CALL_INSTANCE
 {
-  UNITY_LINE_TYPE LineNumber;
-  CAN_HandleTypeDef* Expected_hcan;
+    UNITY_LINE_TYPE LineNumber;
+    CAN_HandleTypeDef* Expected_hcan;
 
 } CMOCK_HAL_CAN_MspDeInit_CALL_INSTANCE;
 
 typedef struct _CMOCK_HAL_CAN_Transmit_CALL_INSTANCE
 {
-  UNITY_LINE_TYPE LineNumber;
-  HAL_StatusTypeDef ReturnVal;
-  CAN_HandleTypeDef* Expected_hcan;
-  uint32_t Expected_Timeout;
+    UNITY_LINE_TYPE LineNumber;
+    HAL_StatusTypeDef ReturnVal;
+    CAN_HandleTypeDef* Expected_hcan;
+    uint32_t Expected_Timeout;
 
 } CMOCK_HAL_CAN_Transmit_CALL_INSTANCE;
 
 typedef struct _CMOCK_HAL_CAN_Transmit_IT_CALL_INSTANCE
 {
-  UNITY_LINE_TYPE LineNumber;
-  HAL_StatusTypeDef ReturnVal;
-  CAN_HandleTypeDef* Expected_hcan;
+    UNITY_LINE_TYPE LineNumber;
+    HAL_StatusTypeDef ReturnVal;
+    CAN_HandleTypeDef* Expected_hcan;
 
 } CMOCK_HAL_CAN_Transmit_IT_CALL_INSTANCE;
 
 typedef struct _CMOCK_HAL_CAN_Receive_CALL_INSTANCE
 {
-  UNITY_LINE_TYPE LineNumber;
-  HAL_StatusTypeDef ReturnVal;
-  CAN_HandleTypeDef* Expected_hcan;
-  uint8_t Expected_FIFONumber;
-  uint32_t Expected_Timeout;
+    UNITY_LINE_TYPE LineNumber;
+    HAL_StatusTypeDef ReturnVal;
+    CAN_HandleTypeDef* Expected_hcan;
+    uint8_t Expected_FIFONumber;
+    uint32_t Expected_Timeout;
 
 } CMOCK_HAL_CAN_Receive_CALL_INSTANCE;
 
 typedef struct _CMOCK_HAL_CAN_Receive_IT_CALL_INSTANCE
 {
-  UNITY_LINE_TYPE LineNumber;
-  HAL_StatusTypeDef ReturnVal;
-  CAN_HandleTypeDef* Expected_hcan;
-  uint8_t Expected_FIFONumber;
+    UNITY_LINE_TYPE LineNumber;
+    HAL_StatusTypeDef ReturnVal;
+    CAN_HandleTypeDef* Expected_hcan;
+    uint8_t Expected_FIFONumber;
 
 } CMOCK_HAL_CAN_Receive_IT_CALL_INSTANCE;
 
 typedef struct _CMOCK_HAL_CAN_Sleep_CALL_INSTANCE
 {
-  UNITY_LINE_TYPE LineNumber;
-  HAL_StatusTypeDef ReturnVal;
-  CAN_HandleTypeDef* Expected_hcan;
+    UNITY_LINE_TYPE LineNumber;
+    HAL_StatusTypeDef ReturnVal;
+    CAN_HandleTypeDef* Expected_hcan;
 
 } CMOCK_HAL_CAN_Sleep_CALL_INSTANCE;
 
 typedef struct _CMOCK_HAL_CAN_WakeUp_CALL_INSTANCE
 {
-  UNITY_LINE_TYPE LineNumber;
-  HAL_StatusTypeDef ReturnVal;
-  CAN_HandleTypeDef* Expected_hcan;
+    UNITY_LINE_TYPE LineNumber;
+    HAL_StatusTypeDef ReturnVal;
+    CAN_HandleTypeDef* Expected_hcan;
 
 } CMOCK_HAL_CAN_WakeUp_CALL_INSTANCE;
 
 typedef struct _CMOCK_HAL_CAN_IRQHandler_CALL_INSTANCE
 {
-  UNITY_LINE_TYPE LineNumber;
-  CAN_HandleTypeDef* Expected_hcan;
+    UNITY_LINE_TYPE LineNumber;
+    CAN_HandleTypeDef* Expected_hcan;
 
 } CMOCK_HAL_CAN_IRQHandler_CALL_INSTANCE;
 
 typedef struct _CMOCK_HAL_CAN_TxCpltCallback_CALL_INSTANCE
 {
-  UNITY_LINE_TYPE LineNumber;
-  CAN_HandleTypeDef* Expected_hcan;
+    UNITY_LINE_TYPE LineNumber;
+    CAN_HandleTypeDef* Expected_hcan;
 
 } CMOCK_HAL_CAN_TxCpltCallback_CALL_INSTANCE;
 
 typedef struct _CMOCK_HAL_CAN_RxCpltCallback_CALL_INSTANCE
 {
-  UNITY_LINE_TYPE LineNumber;
-  CAN_HandleTypeDef* Expected_hcan;
+    UNITY_LINE_TYPE LineNumber;
+    CAN_HandleTypeDef* Expected_hcan;
 
 } CMOCK_HAL_CAN_RxCpltCallback_CALL_INSTANCE;
 
 typedef struct _CMOCK_HAL_CAN_ErrorCallback_CALL_INSTANCE
 {
-  UNITY_LINE_TYPE LineNumber;
-  CAN_HandleTypeDef* Expected_hcan;
+    UNITY_LINE_TYPE LineNumber;
+    CAN_HandleTypeDef* Expected_hcan;
 
 } CMOCK_HAL_CAN_ErrorCallback_CALL_INSTANCE;
 
 typedef struct _CMOCK_HAL_CAN_GetError_CALL_INSTANCE
 {
-  UNITY_LINE_TYPE LineNumber;
-  uint32_t ReturnVal;
-  CAN_HandleTypeDef* Expected_hcan;
+    UNITY_LINE_TYPE LineNumber;
+    uint32_t ReturnVal;
+    CAN_HandleTypeDef* Expected_hcan;
 
 } CMOCK_HAL_CAN_GetError_CALL_INSTANCE;
 
 typedef struct _CMOCK_HAL_CAN_GetState_CALL_INSTANCE
 {
-  UNITY_LINE_TYPE LineNumber;
-  HAL_CAN_StateTypeDef ReturnVal;
-  CAN_HandleTypeDef* Expected_hcan;
+    UNITY_LINE_TYPE LineNumber;
+    HAL_CAN_StateTypeDef ReturnVal;
+    CAN_HandleTypeDef* Expected_hcan;
 
 } CMOCK_HAL_CAN_GetState_CALL_INSTANCE;
 
 static struct Mockstm32f4xx_hal_canInstance
 {
-  CMOCK_MEM_INDEX_TYPE HAL_CAN_Init_CallInstance;
-  CMOCK_MEM_INDEX_TYPE HAL_CAN_ConfigFilter_CallInstance;
-  CMOCK_MEM_INDEX_TYPE HAL_CAN_DeInit_CallInstance;
-  CMOCK_MEM_INDEX_TYPE HAL_CAN_MspInit_CallInstance;
-  CMOCK_MEM_INDEX_TYPE HAL_CAN_MspDeInit_CallInstance;
-  CMOCK_MEM_INDEX_TYPE HAL_CAN_Transmit_CallInstance;
-  CMOCK_MEM_INDEX_TYPE HAL_CAN_Transmit_IT_CallInstance;
-  CMOCK_MEM_INDEX_TYPE HAL_CAN_Receive_CallInstance;
-  CMOCK_MEM_INDEX_TYPE HAL_CAN_Receive_IT_CallInstance;
-  CMOCK_MEM_INDEX_TYPE HAL_CAN_Sleep_CallInstance;
-  CMOCK_MEM_INDEX_TYPE HAL_CAN_WakeUp_CallInstance;
-  CMOCK_MEM_INDEX_TYPE HAL_CAN_IRQHandler_CallInstance;
-  CMOCK_MEM_INDEX_TYPE HAL_CAN_TxCpltCallback_CallInstance;
-  CMOCK_MEM_INDEX_TYPE HAL_CAN_RxCpltCallback_CallInstance;
-  CMOCK_MEM_INDEX_TYPE HAL_CAN_ErrorCallback_CallInstance;
-  CMOCK_MEM_INDEX_TYPE HAL_CAN_GetError_CallInstance;
-  CMOCK_MEM_INDEX_TYPE HAL_CAN_GetState_CallInstance;
+    CMOCK_MEM_INDEX_TYPE HAL_CAN_Init_CallInstance;
+    CMOCK_MEM_INDEX_TYPE HAL_CAN_ConfigFilter_CallInstance;
+    CMOCK_MEM_INDEX_TYPE HAL_CAN_DeInit_CallInstance;
+    CMOCK_MEM_INDEX_TYPE HAL_CAN_MspInit_CallInstance;
+    CMOCK_MEM_INDEX_TYPE HAL_CAN_MspDeInit_CallInstance;
+    CMOCK_MEM_INDEX_TYPE HAL_CAN_Transmit_CallInstance;
+    CMOCK_MEM_INDEX_TYPE HAL_CAN_Transmit_IT_CallInstance;
+    CMOCK_MEM_INDEX_TYPE HAL_CAN_Receive_CallInstance;
+    CMOCK_MEM_INDEX_TYPE HAL_CAN_Receive_IT_CallInstance;
+    CMOCK_MEM_INDEX_TYPE HAL_CAN_Sleep_CallInstance;
+    CMOCK_MEM_INDEX_TYPE HAL_CAN_WakeUp_CallInstance;
+    CMOCK_MEM_INDEX_TYPE HAL_CAN_IRQHandler_CallInstance;
+    CMOCK_MEM_INDEX_TYPE HAL_CAN_TxCpltCallback_CallInstance;
+    CMOCK_MEM_INDEX_TYPE HAL_CAN_RxCpltCallback_CallInstance;
+    CMOCK_MEM_INDEX_TYPE HAL_CAN_ErrorCallback_CallInstance;
+    CMOCK_MEM_INDEX_TYPE HAL_CAN_GetError_CallInstance;
+    CMOCK_MEM_INDEX_TYPE HAL_CAN_GetState_CallInstance;
 } Mock;
 
 extern jmp_buf AbortFrame;
 
 void Mockstm32f4xx_hal_can_Verify(void)
 {
-  UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
-  CMOCK_MEM_INDEX_TYPE call_instance;
-  call_instance = Mock.HAL_CAN_Init_CallInstance;
-  if (CMOCK_GUTS_NONE != call_instance)
-  {
-    UNITY_SET_DETAIL(CMockString_HAL_CAN_Init);
-    UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
-  }
-  call_instance = Mock.HAL_CAN_ConfigFilter_CallInstance;
-  if (CMOCK_GUTS_NONE != call_instance)
-  {
-    UNITY_SET_DETAIL(CMockString_HAL_CAN_ConfigFilter);
-    UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
-  }
-  call_instance = Mock.HAL_CAN_DeInit_CallInstance;
-  if (CMOCK_GUTS_NONE != call_instance)
-  {
-    UNITY_SET_DETAIL(CMockString_HAL_CAN_DeInit);
-    UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
-  }
-  call_instance = Mock.HAL_CAN_MspInit_CallInstance;
-  if (CMOCK_GUTS_NONE != call_instance)
-  {
-    UNITY_SET_DETAIL(CMockString_HAL_CAN_MspInit);
-    UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
-  }
-  call_instance = Mock.HAL_CAN_MspDeInit_CallInstance;
-  if (CMOCK_GUTS_NONE != call_instance)
-  {
-    UNITY_SET_DETAIL(CMockString_HAL_CAN_MspDeInit);
-    UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
-  }
-  call_instance = Mock.HAL_CAN_Transmit_CallInstance;
-  if (CMOCK_GUTS_NONE != call_instance)
-  {
-    UNITY_SET_DETAIL(CMockString_HAL_CAN_Transmit);
-    UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
-  }
-  call_instance = Mock.HAL_CAN_Transmit_IT_CallInstance;
-  if (CMOCK_GUTS_NONE != call_instance)
-  {
-    UNITY_SET_DETAIL(CMockString_HAL_CAN_Transmit_IT);
-    UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
-  }
-  call_instance = Mock.HAL_CAN_Receive_CallInstance;
-  if (CMOCK_GUTS_NONE != call_instance)
-  {
-    UNITY_SET_DETAIL(CMockString_HAL_CAN_Receive);
-    UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
-  }
-  call_instance = Mock.HAL_CAN_Receive_IT_CallInstance;
-  if (CMOCK_GUTS_NONE != call_instance)
-  {
-    UNITY_SET_DETAIL(CMockString_HAL_CAN_Receive_IT);
-    UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
-  }
-  call_instance = Mock.HAL_CAN_Sleep_CallInstance;
-  if (CMOCK_GUTS_NONE != call_instance)
-  {
-    UNITY_SET_DETAIL(CMockString_HAL_CAN_Sleep);
-    UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
-  }
-  call_instance = Mock.HAL_CAN_WakeUp_CallInstance;
-  if (CMOCK_GUTS_NONE != call_instance)
-  {
-    UNITY_SET_DETAIL(CMockString_HAL_CAN_WakeUp);
-    UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
-  }
-  call_instance = Mock.HAL_CAN_IRQHandler_CallInstance;
-  if (CMOCK_GUTS_NONE != call_instance)
-  {
-    UNITY_SET_DETAIL(CMockString_HAL_CAN_IRQHandler);
-    UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
-  }
-  call_instance = Mock.HAL_CAN_TxCpltCallback_CallInstance;
-  if (CMOCK_GUTS_NONE != call_instance)
-  {
-    UNITY_SET_DETAIL(CMockString_HAL_CAN_TxCpltCallback);
-    UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
-  }
-  call_instance = Mock.HAL_CAN_RxCpltCallback_CallInstance;
-  if (CMOCK_GUTS_NONE != call_instance)
-  {
-    UNITY_SET_DETAIL(CMockString_HAL_CAN_RxCpltCallback);
-    UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
-  }
-  call_instance = Mock.HAL_CAN_ErrorCallback_CallInstance;
-  if (CMOCK_GUTS_NONE != call_instance)
-  {
-    UNITY_SET_DETAIL(CMockString_HAL_CAN_ErrorCallback);
-    UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
-  }
-  call_instance = Mock.HAL_CAN_GetError_CallInstance;
-  if (CMOCK_GUTS_NONE != call_instance)
-  {
-    UNITY_SET_DETAIL(CMockString_HAL_CAN_GetError);
-    UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
-  }
-  call_instance = Mock.HAL_CAN_GetState_CallInstance;
-  if (CMOCK_GUTS_NONE != call_instance)
-  {
-    UNITY_SET_DETAIL(CMockString_HAL_CAN_GetState);
-    UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
-  }
+    UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
+    CMOCK_MEM_INDEX_TYPE call_instance;
+    call_instance = Mock.HAL_CAN_Init_CallInstance;
+
+    if (CMOCK_GUTS_NONE != call_instance)
+    {
+        UNITY_SET_DETAIL(CMockString_HAL_CAN_Init);
+        UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
+    }
+
+    call_instance = Mock.HAL_CAN_ConfigFilter_CallInstance;
+
+    if (CMOCK_GUTS_NONE != call_instance)
+    {
+        UNITY_SET_DETAIL(CMockString_HAL_CAN_ConfigFilter);
+        UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
+    }
+
+    call_instance = Mock.HAL_CAN_DeInit_CallInstance;
+
+    if (CMOCK_GUTS_NONE != call_instance)
+    {
+        UNITY_SET_DETAIL(CMockString_HAL_CAN_DeInit);
+        UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
+    }
+
+    call_instance = Mock.HAL_CAN_MspInit_CallInstance;
+
+    if (CMOCK_GUTS_NONE != call_instance)
+    {
+        UNITY_SET_DETAIL(CMockString_HAL_CAN_MspInit);
+        UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
+    }
+
+    call_instance = Mock.HAL_CAN_MspDeInit_CallInstance;
+
+    if (CMOCK_GUTS_NONE != call_instance)
+    {
+        UNITY_SET_DETAIL(CMockString_HAL_CAN_MspDeInit);
+        UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
+    }
+
+    call_instance = Mock.HAL_CAN_Transmit_CallInstance;
+
+    if (CMOCK_GUTS_NONE != call_instance)
+    {
+        UNITY_SET_DETAIL(CMockString_HAL_CAN_Transmit);
+        UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
+    }
+
+    call_instance = Mock.HAL_CAN_Transmit_IT_CallInstance;
+
+    if (CMOCK_GUTS_NONE != call_instance)
+    {
+        UNITY_SET_DETAIL(CMockString_HAL_CAN_Transmit_IT);
+        UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
+    }
+
+    call_instance = Mock.HAL_CAN_Receive_CallInstance;
+
+    if (CMOCK_GUTS_NONE != call_instance)
+    {
+        UNITY_SET_DETAIL(CMockString_HAL_CAN_Receive);
+        UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
+    }
+
+    call_instance = Mock.HAL_CAN_Receive_IT_CallInstance;
+
+    if (CMOCK_GUTS_NONE != call_instance)
+    {
+        UNITY_SET_DETAIL(CMockString_HAL_CAN_Receive_IT);
+        UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
+    }
+
+    call_instance = Mock.HAL_CAN_Sleep_CallInstance;
+
+    if (CMOCK_GUTS_NONE != call_instance)
+    {
+        UNITY_SET_DETAIL(CMockString_HAL_CAN_Sleep);
+        UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
+    }
+
+    call_instance = Mock.HAL_CAN_WakeUp_CallInstance;
+
+    if (CMOCK_GUTS_NONE != call_instance)
+    {
+        UNITY_SET_DETAIL(CMockString_HAL_CAN_WakeUp);
+        UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
+    }
+
+    call_instance = Mock.HAL_CAN_IRQHandler_CallInstance;
+
+    if (CMOCK_GUTS_NONE != call_instance)
+    {
+        UNITY_SET_DETAIL(CMockString_HAL_CAN_IRQHandler);
+        UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
+    }
+
+    call_instance = Mock.HAL_CAN_TxCpltCallback_CallInstance;
+
+    if (CMOCK_GUTS_NONE != call_instance)
+    {
+        UNITY_SET_DETAIL(CMockString_HAL_CAN_TxCpltCallback);
+        UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
+    }
+
+    call_instance = Mock.HAL_CAN_RxCpltCallback_CallInstance;
+
+    if (CMOCK_GUTS_NONE != call_instance)
+    {
+        UNITY_SET_DETAIL(CMockString_HAL_CAN_RxCpltCallback);
+        UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
+    }
+
+    call_instance = Mock.HAL_CAN_ErrorCallback_CallInstance;
+
+    if (CMOCK_GUTS_NONE != call_instance)
+    {
+        UNITY_SET_DETAIL(CMockString_HAL_CAN_ErrorCallback);
+        UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
+    }
+
+    call_instance = Mock.HAL_CAN_GetError_CallInstance;
+
+    if (CMOCK_GUTS_NONE != call_instance)
+    {
+        UNITY_SET_DETAIL(CMockString_HAL_CAN_GetError);
+        UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
+    }
+
+    call_instance = Mock.HAL_CAN_GetState_CallInstance;
+
+    if (CMOCK_GUTS_NONE != call_instance)
+    {
+        UNITY_SET_DETAIL(CMockString_HAL_CAN_GetState);
+        UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
+    }
 }
 
 void Mockstm32f4xx_hal_can_Init(void)
 {
-  Mockstm32f4xx_hal_can_Destroy();
+    Mockstm32f4xx_hal_can_Destroy();
 }
 
 void Mockstm32f4xx_hal_can_Destroy(void)
 {
-  CMock_Guts_MemFreeAll();
-  memset(&Mock, 0, sizeof(Mock));
+    CMock_Guts_MemFreeAll();
+    memset(&Mock, 0, sizeof(Mock));
 }
 
 HAL_StatusTypeDef HAL_CAN_Init(CAN_HandleTypeDef* hcan)
 {
-  UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
-  CMOCK_HAL_CAN_Init_CALL_INSTANCE* cmock_call_instance;
-  UNITY_SET_DETAIL(CMockString_HAL_CAN_Init);
-  cmock_call_instance = (CMOCK_HAL_CAN_Init_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_Init_CallInstance);
-  Mock.HAL_CAN_Init_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_Init_CallInstance);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
-  cmock_line = cmock_call_instance->LineNumber;
-  {
-    UNITY_SET_DETAILS(CMockString_HAL_CAN_Init,CMockString_hcan);
-    UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
-  }
-  UNITY_CLR_DETAILS();
-  return cmock_call_instance->ReturnVal;
+    UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
+    CMOCK_HAL_CAN_Init_CALL_INSTANCE* cmock_call_instance;
+    UNITY_SET_DETAIL(CMockString_HAL_CAN_Init);
+    cmock_call_instance = (CMOCK_HAL_CAN_Init_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_Init_CallInstance);
+    Mock.HAL_CAN_Init_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_Init_CallInstance);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
+    cmock_line = cmock_call_instance->LineNumber;
+    {
+        UNITY_SET_DETAILS(CMockString_HAL_CAN_Init, CMockString_hcan);
+        UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
+    }
+    UNITY_CLR_DETAILS();
+    return cmock_call_instance->ReturnVal;
 }
 
 void CMockExpectParameters_HAL_CAN_Init(CMOCK_HAL_CAN_Init_CALL_INSTANCE* cmock_call_instance, CAN_HandleTypeDef* hcan)
 {
-  cmock_call_instance->Expected_hcan = hcan;
+    cmock_call_instance->Expected_hcan = hcan;
 }
 
 void HAL_CAN_Init_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, CAN_HandleTypeDef* hcan, HAL_StatusTypeDef cmock_to_return)
 {
-  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_Init_CALL_INSTANCE));
-  CMOCK_HAL_CAN_Init_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_Init_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
-  memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
-  Mock.HAL_CAN_Init_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_Init_CallInstance, cmock_guts_index);
-  cmock_call_instance->LineNumber = cmock_line;
-  CMockExpectParameters_HAL_CAN_Init(cmock_call_instance, hcan);
-  memcpy((void*)(&cmock_call_instance->ReturnVal), (void*)(&cmock_to_return),
-         sizeof(HAL_StatusTypeDef[sizeof(cmock_to_return) == sizeof(HAL_StatusTypeDef) ? 1 : -1])); /* add HAL_StatusTypeDef to :treat_as_array if this causes an error */
+    CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_Init_CALL_INSTANCE));
+    CMOCK_HAL_CAN_Init_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_Init_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
+    memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
+    Mock.HAL_CAN_Init_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_Init_CallInstance, cmock_guts_index);
+    cmock_call_instance->LineNumber = cmock_line;
+    CMockExpectParameters_HAL_CAN_Init(cmock_call_instance, hcan);
+    memcpy((void*)(&cmock_call_instance->ReturnVal), (void*)(&cmock_to_return),
+           sizeof(HAL_StatusTypeDef[sizeof(cmock_to_return) == sizeof(HAL_StatusTypeDef) ? 1 : -1])); /* add HAL_StatusTypeDef to :treat_as_array if this causes an error */
 }
 
 HAL_StatusTypeDef HAL_CAN_ConfigFilter(CAN_HandleTypeDef* hcan, CAN_FilterConfTypeDef* sFilterConfig)
 {
-  UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
-  CMOCK_HAL_CAN_ConfigFilter_CALL_INSTANCE* cmock_call_instance;
-  UNITY_SET_DETAIL(CMockString_HAL_CAN_ConfigFilter);
-  cmock_call_instance = (CMOCK_HAL_CAN_ConfigFilter_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_ConfigFilter_CallInstance);
-  Mock.HAL_CAN_ConfigFilter_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_ConfigFilter_CallInstance);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
-  cmock_line = cmock_call_instance->LineNumber;
-  {
-    UNITY_SET_DETAILS(CMockString_HAL_CAN_ConfigFilter,CMockString_hcan);
-    UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
-  }
-  {
-    UNITY_SET_DETAILS(CMockString_HAL_CAN_ConfigFilter,CMockString_sFilterConfig);
-    UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_sFilterConfig), (void*)(sFilterConfig), sizeof(CAN_FilterConfTypeDef), cmock_line, CMockStringMismatch);
-  }
-  UNITY_CLR_DETAILS();
-  return cmock_call_instance->ReturnVal;
+    UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
+    CMOCK_HAL_CAN_ConfigFilter_CALL_INSTANCE* cmock_call_instance;
+    UNITY_SET_DETAIL(CMockString_HAL_CAN_ConfigFilter);
+    cmock_call_instance = (CMOCK_HAL_CAN_ConfigFilter_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_ConfigFilter_CallInstance);
+    Mock.HAL_CAN_ConfigFilter_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_ConfigFilter_CallInstance);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
+    cmock_line = cmock_call_instance->LineNumber;
+    {
+        UNITY_SET_DETAILS(CMockString_HAL_CAN_ConfigFilter, CMockString_hcan);
+        UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
+    }
+    {
+        UNITY_SET_DETAILS(CMockString_HAL_CAN_ConfigFilter, CMockString_sFilterConfig);
+        UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_sFilterConfig), (void*)(sFilterConfig), sizeof(CAN_FilterConfTypeDef), cmock_line, CMockStringMismatch);
+    }
+    UNITY_CLR_DETAILS();
+    return cmock_call_instance->ReturnVal;
 }
 
 void CMockExpectParameters_HAL_CAN_ConfigFilter(CMOCK_HAL_CAN_ConfigFilter_CALL_INSTANCE* cmock_call_instance, CAN_HandleTypeDef* hcan, CAN_FilterConfTypeDef* sFilterConfig)
 {
-  cmock_call_instance->Expected_hcan = hcan;
-  cmock_call_instance->Expected_sFilterConfig = sFilterConfig;
+    cmock_call_instance->Expected_hcan = hcan;
+    cmock_call_instance->Expected_sFilterConfig = sFilterConfig;
 }
 
 void HAL_CAN_ConfigFilter_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, CAN_HandleTypeDef* hcan, CAN_FilterConfTypeDef* sFilterConfig, HAL_StatusTypeDef cmock_to_return)
 {
-  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_ConfigFilter_CALL_INSTANCE));
-  CMOCK_HAL_CAN_ConfigFilter_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_ConfigFilter_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
-  memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
-  Mock.HAL_CAN_ConfigFilter_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_ConfigFilter_CallInstance, cmock_guts_index);
-  cmock_call_instance->LineNumber = cmock_line;
-  CMockExpectParameters_HAL_CAN_ConfigFilter(cmock_call_instance, hcan, sFilterConfig);
-  memcpy((void*)(&cmock_call_instance->ReturnVal), (void*)(&cmock_to_return),
-         sizeof(HAL_StatusTypeDef[sizeof(cmock_to_return) == sizeof(HAL_StatusTypeDef) ? 1 : -1])); /* add HAL_StatusTypeDef to :treat_as_array if this causes an error */
+    CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_ConfigFilter_CALL_INSTANCE));
+    CMOCK_HAL_CAN_ConfigFilter_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_ConfigFilter_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
+    memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
+    Mock.HAL_CAN_ConfigFilter_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_ConfigFilter_CallInstance, cmock_guts_index);
+    cmock_call_instance->LineNumber = cmock_line;
+    CMockExpectParameters_HAL_CAN_ConfigFilter(cmock_call_instance, hcan, sFilterConfig);
+    memcpy((void*)(&cmock_call_instance->ReturnVal), (void*)(&cmock_to_return),
+           sizeof(HAL_StatusTypeDef[sizeof(cmock_to_return) == sizeof(HAL_StatusTypeDef) ? 1 : -1])); /* add HAL_StatusTypeDef to :treat_as_array if this causes an error */
 }
 
 HAL_StatusTypeDef HAL_CAN_DeInit(CAN_HandleTypeDef* hcan)
 {
-  UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
-  CMOCK_HAL_CAN_DeInit_CALL_INSTANCE* cmock_call_instance;
-  UNITY_SET_DETAIL(CMockString_HAL_CAN_DeInit);
-  cmock_call_instance = (CMOCK_HAL_CAN_DeInit_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_DeInit_CallInstance);
-  Mock.HAL_CAN_DeInit_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_DeInit_CallInstance);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
-  cmock_line = cmock_call_instance->LineNumber;
-  {
-    UNITY_SET_DETAILS(CMockString_HAL_CAN_DeInit,CMockString_hcan);
-    UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
-  }
-  UNITY_CLR_DETAILS();
-  return cmock_call_instance->ReturnVal;
+    UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
+    CMOCK_HAL_CAN_DeInit_CALL_INSTANCE* cmock_call_instance;
+    UNITY_SET_DETAIL(CMockString_HAL_CAN_DeInit);
+    cmock_call_instance = (CMOCK_HAL_CAN_DeInit_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_DeInit_CallInstance);
+    Mock.HAL_CAN_DeInit_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_DeInit_CallInstance);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
+    cmock_line = cmock_call_instance->LineNumber;
+    {
+        UNITY_SET_DETAILS(CMockString_HAL_CAN_DeInit, CMockString_hcan);
+        UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
+    }
+    UNITY_CLR_DETAILS();
+    return cmock_call_instance->ReturnVal;
 }
 
 void CMockExpectParameters_HAL_CAN_DeInit(CMOCK_HAL_CAN_DeInit_CALL_INSTANCE* cmock_call_instance, CAN_HandleTypeDef* hcan)
 {
-  cmock_call_instance->Expected_hcan = hcan;
+    cmock_call_instance->Expected_hcan = hcan;
 }
 
 void HAL_CAN_DeInit_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, CAN_HandleTypeDef* hcan, HAL_StatusTypeDef cmock_to_return)
 {
-  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_DeInit_CALL_INSTANCE));
-  CMOCK_HAL_CAN_DeInit_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_DeInit_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
-  memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
-  Mock.HAL_CAN_DeInit_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_DeInit_CallInstance, cmock_guts_index);
-  cmock_call_instance->LineNumber = cmock_line;
-  CMockExpectParameters_HAL_CAN_DeInit(cmock_call_instance, hcan);
-  memcpy((void*)(&cmock_call_instance->ReturnVal), (void*)(&cmock_to_return),
-         sizeof(HAL_StatusTypeDef[sizeof(cmock_to_return) == sizeof(HAL_StatusTypeDef) ? 1 : -1])); /* add HAL_StatusTypeDef to :treat_as_array if this causes an error */
+    CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_DeInit_CALL_INSTANCE));
+    CMOCK_HAL_CAN_DeInit_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_DeInit_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
+    memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
+    Mock.HAL_CAN_DeInit_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_DeInit_CallInstance, cmock_guts_index);
+    cmock_call_instance->LineNumber = cmock_line;
+    CMockExpectParameters_HAL_CAN_DeInit(cmock_call_instance, hcan);
+    memcpy((void*)(&cmock_call_instance->ReturnVal), (void*)(&cmock_to_return),
+           sizeof(HAL_StatusTypeDef[sizeof(cmock_to_return) == sizeof(HAL_StatusTypeDef) ? 1 : -1])); /* add HAL_StatusTypeDef to :treat_as_array if this causes an error */
 }
 
 void HAL_CAN_MspInit(CAN_HandleTypeDef* hcan)
 {
-  UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
-  CMOCK_HAL_CAN_MspInit_CALL_INSTANCE* cmock_call_instance;
-  UNITY_SET_DETAIL(CMockString_HAL_CAN_MspInit);
-  cmock_call_instance = (CMOCK_HAL_CAN_MspInit_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_MspInit_CallInstance);
-  Mock.HAL_CAN_MspInit_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_MspInit_CallInstance);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
-  cmock_line = cmock_call_instance->LineNumber;
-  {
-    UNITY_SET_DETAILS(CMockString_HAL_CAN_MspInit,CMockString_hcan);
-    UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
-  }
-  UNITY_CLR_DETAILS();
+    UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
+    CMOCK_HAL_CAN_MspInit_CALL_INSTANCE* cmock_call_instance;
+    UNITY_SET_DETAIL(CMockString_HAL_CAN_MspInit);
+    cmock_call_instance = (CMOCK_HAL_CAN_MspInit_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_MspInit_CallInstance);
+    Mock.HAL_CAN_MspInit_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_MspInit_CallInstance);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
+    cmock_line = cmock_call_instance->LineNumber;
+    {
+        UNITY_SET_DETAILS(CMockString_HAL_CAN_MspInit, CMockString_hcan);
+        UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
+    }
+    UNITY_CLR_DETAILS();
 }
 
 void CMockExpectParameters_HAL_CAN_MspInit(CMOCK_HAL_CAN_MspInit_CALL_INSTANCE* cmock_call_instance, CAN_HandleTypeDef* hcan)
 {
-  cmock_call_instance->Expected_hcan = hcan;
+    cmock_call_instance->Expected_hcan = hcan;
 }
 
 void HAL_CAN_MspInit_CMockExpect(UNITY_LINE_TYPE cmock_line, CAN_HandleTypeDef* hcan)
 {
-  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_MspInit_CALL_INSTANCE));
-  CMOCK_HAL_CAN_MspInit_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_MspInit_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
-  memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
-  Mock.HAL_CAN_MspInit_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_MspInit_CallInstance, cmock_guts_index);
-  cmock_call_instance->LineNumber = cmock_line;
-  CMockExpectParameters_HAL_CAN_MspInit(cmock_call_instance, hcan);
+    CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_MspInit_CALL_INSTANCE));
+    CMOCK_HAL_CAN_MspInit_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_MspInit_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
+    memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
+    Mock.HAL_CAN_MspInit_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_MspInit_CallInstance, cmock_guts_index);
+    cmock_call_instance->LineNumber = cmock_line;
+    CMockExpectParameters_HAL_CAN_MspInit(cmock_call_instance, hcan);
 }
 
 void HAL_CAN_MspDeInit(CAN_HandleTypeDef* hcan)
 {
-  UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
-  CMOCK_HAL_CAN_MspDeInit_CALL_INSTANCE* cmock_call_instance;
-  UNITY_SET_DETAIL(CMockString_HAL_CAN_MspDeInit);
-  cmock_call_instance = (CMOCK_HAL_CAN_MspDeInit_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_MspDeInit_CallInstance);
-  Mock.HAL_CAN_MspDeInit_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_MspDeInit_CallInstance);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
-  cmock_line = cmock_call_instance->LineNumber;
-  {
-    UNITY_SET_DETAILS(CMockString_HAL_CAN_MspDeInit,CMockString_hcan);
-    UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
-  }
-  UNITY_CLR_DETAILS();
+    UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
+    CMOCK_HAL_CAN_MspDeInit_CALL_INSTANCE* cmock_call_instance;
+    UNITY_SET_DETAIL(CMockString_HAL_CAN_MspDeInit);
+    cmock_call_instance = (CMOCK_HAL_CAN_MspDeInit_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_MspDeInit_CallInstance);
+    Mock.HAL_CAN_MspDeInit_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_MspDeInit_CallInstance);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
+    cmock_line = cmock_call_instance->LineNumber;
+    {
+        UNITY_SET_DETAILS(CMockString_HAL_CAN_MspDeInit, CMockString_hcan);
+        UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
+    }
+    UNITY_CLR_DETAILS();
 }
 
 void CMockExpectParameters_HAL_CAN_MspDeInit(CMOCK_HAL_CAN_MspDeInit_CALL_INSTANCE* cmock_call_instance, CAN_HandleTypeDef* hcan)
 {
-  cmock_call_instance->Expected_hcan = hcan;
+    cmock_call_instance->Expected_hcan = hcan;
 }
 
 void HAL_CAN_MspDeInit_CMockExpect(UNITY_LINE_TYPE cmock_line, CAN_HandleTypeDef* hcan)
 {
-  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_MspDeInit_CALL_INSTANCE));
-  CMOCK_HAL_CAN_MspDeInit_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_MspDeInit_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
-  memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
-  Mock.HAL_CAN_MspDeInit_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_MspDeInit_CallInstance, cmock_guts_index);
-  cmock_call_instance->LineNumber = cmock_line;
-  CMockExpectParameters_HAL_CAN_MspDeInit(cmock_call_instance, hcan);
+    CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_MspDeInit_CALL_INSTANCE));
+    CMOCK_HAL_CAN_MspDeInit_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_MspDeInit_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
+    memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
+    Mock.HAL_CAN_MspDeInit_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_MspDeInit_CallInstance, cmock_guts_index);
+    cmock_call_instance->LineNumber = cmock_line;
+    CMockExpectParameters_HAL_CAN_MspDeInit(cmock_call_instance, hcan);
 }
 
 HAL_StatusTypeDef HAL_CAN_Transmit(CAN_HandleTypeDef* hcan, uint32_t Timeout)
 {
-  UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
-  CMOCK_HAL_CAN_Transmit_CALL_INSTANCE* cmock_call_instance;
-  UNITY_SET_DETAIL(CMockString_HAL_CAN_Transmit);
-  cmock_call_instance = (CMOCK_HAL_CAN_Transmit_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_Transmit_CallInstance);
-  Mock.HAL_CAN_Transmit_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_Transmit_CallInstance);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
-  cmock_line = cmock_call_instance->LineNumber;
-  {
-    UNITY_SET_DETAILS(CMockString_HAL_CAN_Transmit,CMockString_hcan);
-    UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
-  }
-  {
-    UNITY_SET_DETAILS(CMockString_HAL_CAN_Transmit,CMockString_Timeout);
-    UNITY_TEST_ASSERT_EQUAL_HEX32(cmock_call_instance->Expected_Timeout, Timeout, cmock_line, CMockStringMismatch);
-  }
-  UNITY_CLR_DETAILS();
-  return cmock_call_instance->ReturnVal;
+    UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
+    CMOCK_HAL_CAN_Transmit_CALL_INSTANCE* cmock_call_instance;
+    UNITY_SET_DETAIL(CMockString_HAL_CAN_Transmit);
+    cmock_call_instance = (CMOCK_HAL_CAN_Transmit_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_Transmit_CallInstance);
+    Mock.HAL_CAN_Transmit_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_Transmit_CallInstance);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
+    cmock_line = cmock_call_instance->LineNumber;
+    {
+        UNITY_SET_DETAILS(CMockString_HAL_CAN_Transmit, CMockString_hcan);
+        UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
+    }
+    {
+        UNITY_SET_DETAILS(CMockString_HAL_CAN_Transmit, CMockString_Timeout);
+        UNITY_TEST_ASSERT_EQUAL_HEX32(cmock_call_instance->Expected_Timeout, Timeout, cmock_line, CMockStringMismatch);
+    }
+    UNITY_CLR_DETAILS();
+    return cmock_call_instance->ReturnVal;
 }
 
 void CMockExpectParameters_HAL_CAN_Transmit(CMOCK_HAL_CAN_Transmit_CALL_INSTANCE* cmock_call_instance, CAN_HandleTypeDef* hcan, uint32_t Timeout)
 {
-  cmock_call_instance->Expected_hcan = hcan;
-  cmock_call_instance->Expected_Timeout = Timeout;
+    cmock_call_instance->Expected_hcan = hcan;
+    cmock_call_instance->Expected_Timeout = Timeout;
 }
 
 void HAL_CAN_Transmit_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, CAN_HandleTypeDef* hcan, uint32_t Timeout, HAL_StatusTypeDef cmock_to_return)
 {
-  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_Transmit_CALL_INSTANCE));
-  CMOCK_HAL_CAN_Transmit_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_Transmit_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
-  memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
-  Mock.HAL_CAN_Transmit_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_Transmit_CallInstance, cmock_guts_index);
-  cmock_call_instance->LineNumber = cmock_line;
-  CMockExpectParameters_HAL_CAN_Transmit(cmock_call_instance, hcan, Timeout);
-  memcpy((void*)(&cmock_call_instance->ReturnVal), (void*)(&cmock_to_return),
-         sizeof(HAL_StatusTypeDef[sizeof(cmock_to_return) == sizeof(HAL_StatusTypeDef) ? 1 : -1])); /* add HAL_StatusTypeDef to :treat_as_array if this causes an error */
+    CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_Transmit_CALL_INSTANCE));
+    CMOCK_HAL_CAN_Transmit_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_Transmit_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
+    memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
+    Mock.HAL_CAN_Transmit_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_Transmit_CallInstance, cmock_guts_index);
+    cmock_call_instance->LineNumber = cmock_line;
+    CMockExpectParameters_HAL_CAN_Transmit(cmock_call_instance, hcan, Timeout);
+    memcpy((void*)(&cmock_call_instance->ReturnVal), (void*)(&cmock_to_return),
+           sizeof(HAL_StatusTypeDef[sizeof(cmock_to_return) == sizeof(HAL_StatusTypeDef) ? 1 : -1])); /* add HAL_StatusTypeDef to :treat_as_array if this causes an error */
 }
 
 HAL_StatusTypeDef HAL_CAN_Transmit_IT(CAN_HandleTypeDef* hcan)
 {
-  UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
-  CMOCK_HAL_CAN_Transmit_IT_CALL_INSTANCE* cmock_call_instance;
-  UNITY_SET_DETAIL(CMockString_HAL_CAN_Transmit_IT);
-  cmock_call_instance = (CMOCK_HAL_CAN_Transmit_IT_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_Transmit_IT_CallInstance);
-  Mock.HAL_CAN_Transmit_IT_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_Transmit_IT_CallInstance);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
-  cmock_line = cmock_call_instance->LineNumber;
-  {
-    UNITY_SET_DETAILS(CMockString_HAL_CAN_Transmit_IT,CMockString_hcan);
-    UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
-  }
-  UNITY_CLR_DETAILS();
-  return cmock_call_instance->ReturnVal;
+    UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
+    CMOCK_HAL_CAN_Transmit_IT_CALL_INSTANCE* cmock_call_instance;
+    UNITY_SET_DETAIL(CMockString_HAL_CAN_Transmit_IT);
+    cmock_call_instance = (CMOCK_HAL_CAN_Transmit_IT_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_Transmit_IT_CallInstance);
+    Mock.HAL_CAN_Transmit_IT_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_Transmit_IT_CallInstance);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
+    cmock_line = cmock_call_instance->LineNumber;
+    {
+        UNITY_SET_DETAILS(CMockString_HAL_CAN_Transmit_IT, CMockString_hcan);
+        UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
+    }
+    UNITY_CLR_DETAILS();
+    return cmock_call_instance->ReturnVal;
 }
 
 void CMockExpectParameters_HAL_CAN_Transmit_IT(CMOCK_HAL_CAN_Transmit_IT_CALL_INSTANCE* cmock_call_instance, CAN_HandleTypeDef* hcan)
 {
-  cmock_call_instance->Expected_hcan = hcan;
+    cmock_call_instance->Expected_hcan = hcan;
 }
 
 void HAL_CAN_Transmit_IT_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, CAN_HandleTypeDef* hcan, HAL_StatusTypeDef cmock_to_return)
 {
-  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_Transmit_IT_CALL_INSTANCE));
-  CMOCK_HAL_CAN_Transmit_IT_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_Transmit_IT_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
-  memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
-  Mock.HAL_CAN_Transmit_IT_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_Transmit_IT_CallInstance, cmock_guts_index);
-  cmock_call_instance->LineNumber = cmock_line;
-  CMockExpectParameters_HAL_CAN_Transmit_IT(cmock_call_instance, hcan);
-  memcpy((void*)(&cmock_call_instance->ReturnVal), (void*)(&cmock_to_return),
-         sizeof(HAL_StatusTypeDef[sizeof(cmock_to_return) == sizeof(HAL_StatusTypeDef) ? 1 : -1])); /* add HAL_StatusTypeDef to :treat_as_array if this causes an error */
+    CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_Transmit_IT_CALL_INSTANCE));
+    CMOCK_HAL_CAN_Transmit_IT_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_Transmit_IT_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
+    memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
+    Mock.HAL_CAN_Transmit_IT_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_Transmit_IT_CallInstance, cmock_guts_index);
+    cmock_call_instance->LineNumber = cmock_line;
+    CMockExpectParameters_HAL_CAN_Transmit_IT(cmock_call_instance, hcan);
+    memcpy((void*)(&cmock_call_instance->ReturnVal), (void*)(&cmock_to_return),
+           sizeof(HAL_StatusTypeDef[sizeof(cmock_to_return) == sizeof(HAL_StatusTypeDef) ? 1 : -1])); /* add HAL_StatusTypeDef to :treat_as_array if this causes an error */
 }
 
 HAL_StatusTypeDef HAL_CAN_Receive(CAN_HandleTypeDef* hcan, uint8_t FIFONumber, uint32_t Timeout)
 {
-  UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
-  CMOCK_HAL_CAN_Receive_CALL_INSTANCE* cmock_call_instance;
-  UNITY_SET_DETAIL(CMockString_HAL_CAN_Receive);
-  cmock_call_instance = (CMOCK_HAL_CAN_Receive_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_Receive_CallInstance);
-  Mock.HAL_CAN_Receive_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_Receive_CallInstance);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
-  cmock_line = cmock_call_instance->LineNumber;
-  {
-    UNITY_SET_DETAILS(CMockString_HAL_CAN_Receive,CMockString_hcan);
-    UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
-  }
-  {
-    UNITY_SET_DETAILS(CMockString_HAL_CAN_Receive,CMockString_FIFONumber);
-    UNITY_TEST_ASSERT_EQUAL_HEX8(cmock_call_instance->Expected_FIFONumber, FIFONumber, cmock_line, CMockStringMismatch);
-  }
-  {
-    UNITY_SET_DETAILS(CMockString_HAL_CAN_Receive,CMockString_Timeout);
-    UNITY_TEST_ASSERT_EQUAL_HEX32(cmock_call_instance->Expected_Timeout, Timeout, cmock_line, CMockStringMismatch);
-  }
-  UNITY_CLR_DETAILS();
-  return cmock_call_instance->ReturnVal;
+    UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
+    CMOCK_HAL_CAN_Receive_CALL_INSTANCE* cmock_call_instance;
+    UNITY_SET_DETAIL(CMockString_HAL_CAN_Receive);
+    cmock_call_instance = (CMOCK_HAL_CAN_Receive_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_Receive_CallInstance);
+    Mock.HAL_CAN_Receive_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_Receive_CallInstance);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
+    cmock_line = cmock_call_instance->LineNumber;
+    {
+        UNITY_SET_DETAILS(CMockString_HAL_CAN_Receive, CMockString_hcan);
+        UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
+    }
+    {
+        UNITY_SET_DETAILS(CMockString_HAL_CAN_Receive, CMockString_FIFONumber);
+        UNITY_TEST_ASSERT_EQUAL_HEX8(cmock_call_instance->Expected_FIFONumber, FIFONumber, cmock_line, CMockStringMismatch);
+    }
+    {
+        UNITY_SET_DETAILS(CMockString_HAL_CAN_Receive, CMockString_Timeout);
+        UNITY_TEST_ASSERT_EQUAL_HEX32(cmock_call_instance->Expected_Timeout, Timeout, cmock_line, CMockStringMismatch);
+    }
+    UNITY_CLR_DETAILS();
+    return cmock_call_instance->ReturnVal;
 }
 
 void CMockExpectParameters_HAL_CAN_Receive(CMOCK_HAL_CAN_Receive_CALL_INSTANCE* cmock_call_instance, CAN_HandleTypeDef* hcan, uint8_t FIFONumber, uint32_t Timeout)
 {
-  cmock_call_instance->Expected_hcan = hcan;
-  cmock_call_instance->Expected_FIFONumber = FIFONumber;
-  cmock_call_instance->Expected_Timeout = Timeout;
+    cmock_call_instance->Expected_hcan = hcan;
+    cmock_call_instance->Expected_FIFONumber = FIFONumber;
+    cmock_call_instance->Expected_Timeout = Timeout;
 }
 
 void HAL_CAN_Receive_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, CAN_HandleTypeDef* hcan, uint8_t FIFONumber, uint32_t Timeout, HAL_StatusTypeDef cmock_to_return)
 {
-  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_Receive_CALL_INSTANCE));
-  CMOCK_HAL_CAN_Receive_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_Receive_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
-  memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
-  Mock.HAL_CAN_Receive_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_Receive_CallInstance, cmock_guts_index);
-  cmock_call_instance->LineNumber = cmock_line;
-  CMockExpectParameters_HAL_CAN_Receive(cmock_call_instance, hcan, FIFONumber, Timeout);
-  memcpy((void*)(&cmock_call_instance->ReturnVal), (void*)(&cmock_to_return),
-         sizeof(HAL_StatusTypeDef[sizeof(cmock_to_return) == sizeof(HAL_StatusTypeDef) ? 1 : -1])); /* add HAL_StatusTypeDef to :treat_as_array if this causes an error */
+    CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_Receive_CALL_INSTANCE));
+    CMOCK_HAL_CAN_Receive_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_Receive_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
+    memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
+    Mock.HAL_CAN_Receive_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_Receive_CallInstance, cmock_guts_index);
+    cmock_call_instance->LineNumber = cmock_line;
+    CMockExpectParameters_HAL_CAN_Receive(cmock_call_instance, hcan, FIFONumber, Timeout);
+    memcpy((void*)(&cmock_call_instance->ReturnVal), (void*)(&cmock_to_return),
+           sizeof(HAL_StatusTypeDef[sizeof(cmock_to_return) == sizeof(HAL_StatusTypeDef) ? 1 : -1])); /* add HAL_StatusTypeDef to :treat_as_array if this causes an error */
 }
 
 HAL_StatusTypeDef HAL_CAN_Receive_IT(CAN_HandleTypeDef* hcan, uint8_t FIFONumber)
 {
-  UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
-  CMOCK_HAL_CAN_Receive_IT_CALL_INSTANCE* cmock_call_instance;
-  UNITY_SET_DETAIL(CMockString_HAL_CAN_Receive_IT);
-  cmock_call_instance = (CMOCK_HAL_CAN_Receive_IT_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_Receive_IT_CallInstance);
-  Mock.HAL_CAN_Receive_IT_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_Receive_IT_CallInstance);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
-  cmock_line = cmock_call_instance->LineNumber;
-  {
-    UNITY_SET_DETAILS(CMockString_HAL_CAN_Receive_IT,CMockString_hcan);
-    UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
-  }
-  {
-    UNITY_SET_DETAILS(CMockString_HAL_CAN_Receive_IT,CMockString_FIFONumber);
-    UNITY_TEST_ASSERT_EQUAL_HEX8(cmock_call_instance->Expected_FIFONumber, FIFONumber, cmock_line, CMockStringMismatch);
-  }
-  UNITY_CLR_DETAILS();
-  return cmock_call_instance->ReturnVal;
+    UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
+    CMOCK_HAL_CAN_Receive_IT_CALL_INSTANCE* cmock_call_instance;
+    UNITY_SET_DETAIL(CMockString_HAL_CAN_Receive_IT);
+    cmock_call_instance = (CMOCK_HAL_CAN_Receive_IT_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_Receive_IT_CallInstance);
+    Mock.HAL_CAN_Receive_IT_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_Receive_IT_CallInstance);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
+    cmock_line = cmock_call_instance->LineNumber;
+    {
+        UNITY_SET_DETAILS(CMockString_HAL_CAN_Receive_IT, CMockString_hcan);
+        UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
+    }
+    {
+        UNITY_SET_DETAILS(CMockString_HAL_CAN_Receive_IT, CMockString_FIFONumber);
+        UNITY_TEST_ASSERT_EQUAL_HEX8(cmock_call_instance->Expected_FIFONumber, FIFONumber, cmock_line, CMockStringMismatch);
+    }
+    UNITY_CLR_DETAILS();
+    return cmock_call_instance->ReturnVal;
 }
 
 void CMockExpectParameters_HAL_CAN_Receive_IT(CMOCK_HAL_CAN_Receive_IT_CALL_INSTANCE* cmock_call_instance, CAN_HandleTypeDef* hcan, uint8_t FIFONumber)
 {
-  cmock_call_instance->Expected_hcan = hcan;
-  cmock_call_instance->Expected_FIFONumber = FIFONumber;
+    cmock_call_instance->Expected_hcan = hcan;
+    cmock_call_instance->Expected_FIFONumber = FIFONumber;
 }
 
 void HAL_CAN_Receive_IT_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, CAN_HandleTypeDef* hcan, uint8_t FIFONumber, HAL_StatusTypeDef cmock_to_return)
 {
-  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_Receive_IT_CALL_INSTANCE));
-  CMOCK_HAL_CAN_Receive_IT_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_Receive_IT_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
-  memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
-  Mock.HAL_CAN_Receive_IT_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_Receive_IT_CallInstance, cmock_guts_index);
-  cmock_call_instance->LineNumber = cmock_line;
-  CMockExpectParameters_HAL_CAN_Receive_IT(cmock_call_instance, hcan, FIFONumber);
-  memcpy((void*)(&cmock_call_instance->ReturnVal), (void*)(&cmock_to_return),
-         sizeof(HAL_StatusTypeDef[sizeof(cmock_to_return) == sizeof(HAL_StatusTypeDef) ? 1 : -1])); /* add HAL_StatusTypeDef to :treat_as_array if this causes an error */
+    CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_Receive_IT_CALL_INSTANCE));
+    CMOCK_HAL_CAN_Receive_IT_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_Receive_IT_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
+    memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
+    Mock.HAL_CAN_Receive_IT_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_Receive_IT_CallInstance, cmock_guts_index);
+    cmock_call_instance->LineNumber = cmock_line;
+    CMockExpectParameters_HAL_CAN_Receive_IT(cmock_call_instance, hcan, FIFONumber);
+    memcpy((void*)(&cmock_call_instance->ReturnVal), (void*)(&cmock_to_return),
+           sizeof(HAL_StatusTypeDef[sizeof(cmock_to_return) == sizeof(HAL_StatusTypeDef) ? 1 : -1])); /* add HAL_StatusTypeDef to :treat_as_array if this causes an error */
 }
 
 HAL_StatusTypeDef HAL_CAN_Sleep(CAN_HandleTypeDef* hcan)
 {
-  UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
-  CMOCK_HAL_CAN_Sleep_CALL_INSTANCE* cmock_call_instance;
-  UNITY_SET_DETAIL(CMockString_HAL_CAN_Sleep);
-  cmock_call_instance = (CMOCK_HAL_CAN_Sleep_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_Sleep_CallInstance);
-  Mock.HAL_CAN_Sleep_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_Sleep_CallInstance);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
-  cmock_line = cmock_call_instance->LineNumber;
-  {
-    UNITY_SET_DETAILS(CMockString_HAL_CAN_Sleep,CMockString_hcan);
-    UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
-  }
-  UNITY_CLR_DETAILS();
-  return cmock_call_instance->ReturnVal;
+    UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
+    CMOCK_HAL_CAN_Sleep_CALL_INSTANCE* cmock_call_instance;
+    UNITY_SET_DETAIL(CMockString_HAL_CAN_Sleep);
+    cmock_call_instance = (CMOCK_HAL_CAN_Sleep_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_Sleep_CallInstance);
+    Mock.HAL_CAN_Sleep_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_Sleep_CallInstance);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
+    cmock_line = cmock_call_instance->LineNumber;
+    {
+        UNITY_SET_DETAILS(CMockString_HAL_CAN_Sleep, CMockString_hcan);
+        UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
+    }
+    UNITY_CLR_DETAILS();
+    return cmock_call_instance->ReturnVal;
 }
 
 void CMockExpectParameters_HAL_CAN_Sleep(CMOCK_HAL_CAN_Sleep_CALL_INSTANCE* cmock_call_instance, CAN_HandleTypeDef* hcan)
 {
-  cmock_call_instance->Expected_hcan = hcan;
+    cmock_call_instance->Expected_hcan = hcan;
 }
 
 void HAL_CAN_Sleep_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, CAN_HandleTypeDef* hcan, HAL_StatusTypeDef cmock_to_return)
 {
-  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_Sleep_CALL_INSTANCE));
-  CMOCK_HAL_CAN_Sleep_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_Sleep_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
-  memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
-  Mock.HAL_CAN_Sleep_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_Sleep_CallInstance, cmock_guts_index);
-  cmock_call_instance->LineNumber = cmock_line;
-  CMockExpectParameters_HAL_CAN_Sleep(cmock_call_instance, hcan);
-  memcpy((void*)(&cmock_call_instance->ReturnVal), (void*)(&cmock_to_return),
-         sizeof(HAL_StatusTypeDef[sizeof(cmock_to_return) == sizeof(HAL_StatusTypeDef) ? 1 : -1])); /* add HAL_StatusTypeDef to :treat_as_array if this causes an error */
+    CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_Sleep_CALL_INSTANCE));
+    CMOCK_HAL_CAN_Sleep_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_Sleep_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
+    memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
+    Mock.HAL_CAN_Sleep_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_Sleep_CallInstance, cmock_guts_index);
+    cmock_call_instance->LineNumber = cmock_line;
+    CMockExpectParameters_HAL_CAN_Sleep(cmock_call_instance, hcan);
+    memcpy((void*)(&cmock_call_instance->ReturnVal), (void*)(&cmock_to_return),
+           sizeof(HAL_StatusTypeDef[sizeof(cmock_to_return) == sizeof(HAL_StatusTypeDef) ? 1 : -1])); /* add HAL_StatusTypeDef to :treat_as_array if this causes an error */
 }
 
 HAL_StatusTypeDef HAL_CAN_WakeUp(CAN_HandleTypeDef* hcan)
 {
-  UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
-  CMOCK_HAL_CAN_WakeUp_CALL_INSTANCE* cmock_call_instance;
-  UNITY_SET_DETAIL(CMockString_HAL_CAN_WakeUp);
-  cmock_call_instance = (CMOCK_HAL_CAN_WakeUp_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_WakeUp_CallInstance);
-  Mock.HAL_CAN_WakeUp_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_WakeUp_CallInstance);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
-  cmock_line = cmock_call_instance->LineNumber;
-  {
-    UNITY_SET_DETAILS(CMockString_HAL_CAN_WakeUp,CMockString_hcan);
-    UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
-  }
-  UNITY_CLR_DETAILS();
-  return cmock_call_instance->ReturnVal;
+    UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
+    CMOCK_HAL_CAN_WakeUp_CALL_INSTANCE* cmock_call_instance;
+    UNITY_SET_DETAIL(CMockString_HAL_CAN_WakeUp);
+    cmock_call_instance = (CMOCK_HAL_CAN_WakeUp_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_WakeUp_CallInstance);
+    Mock.HAL_CAN_WakeUp_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_WakeUp_CallInstance);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
+    cmock_line = cmock_call_instance->LineNumber;
+    {
+        UNITY_SET_DETAILS(CMockString_HAL_CAN_WakeUp, CMockString_hcan);
+        UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
+    }
+    UNITY_CLR_DETAILS();
+    return cmock_call_instance->ReturnVal;
 }
 
 void CMockExpectParameters_HAL_CAN_WakeUp(CMOCK_HAL_CAN_WakeUp_CALL_INSTANCE* cmock_call_instance, CAN_HandleTypeDef* hcan)
 {
-  cmock_call_instance->Expected_hcan = hcan;
+    cmock_call_instance->Expected_hcan = hcan;
 }
 
 void HAL_CAN_WakeUp_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, CAN_HandleTypeDef* hcan, HAL_StatusTypeDef cmock_to_return)
 {
-  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_WakeUp_CALL_INSTANCE));
-  CMOCK_HAL_CAN_WakeUp_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_WakeUp_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
-  memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
-  Mock.HAL_CAN_WakeUp_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_WakeUp_CallInstance, cmock_guts_index);
-  cmock_call_instance->LineNumber = cmock_line;
-  CMockExpectParameters_HAL_CAN_WakeUp(cmock_call_instance, hcan);
-  memcpy((void*)(&cmock_call_instance->ReturnVal), (void*)(&cmock_to_return),
-         sizeof(HAL_StatusTypeDef[sizeof(cmock_to_return) == sizeof(HAL_StatusTypeDef) ? 1 : -1])); /* add HAL_StatusTypeDef to :treat_as_array if this causes an error */
+    CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_WakeUp_CALL_INSTANCE));
+    CMOCK_HAL_CAN_WakeUp_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_WakeUp_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
+    memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
+    Mock.HAL_CAN_WakeUp_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_WakeUp_CallInstance, cmock_guts_index);
+    cmock_call_instance->LineNumber = cmock_line;
+    CMockExpectParameters_HAL_CAN_WakeUp(cmock_call_instance, hcan);
+    memcpy((void*)(&cmock_call_instance->ReturnVal), (void*)(&cmock_to_return),
+           sizeof(HAL_StatusTypeDef[sizeof(cmock_to_return) == sizeof(HAL_StatusTypeDef) ? 1 : -1])); /* add HAL_StatusTypeDef to :treat_as_array if this causes an error */
 }
 
 void HAL_CAN_IRQHandler(CAN_HandleTypeDef* hcan)
 {
-  UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
-  CMOCK_HAL_CAN_IRQHandler_CALL_INSTANCE* cmock_call_instance;
-  UNITY_SET_DETAIL(CMockString_HAL_CAN_IRQHandler);
-  cmock_call_instance = (CMOCK_HAL_CAN_IRQHandler_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_IRQHandler_CallInstance);
-  Mock.HAL_CAN_IRQHandler_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_IRQHandler_CallInstance);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
-  cmock_line = cmock_call_instance->LineNumber;
-  {
-    UNITY_SET_DETAILS(CMockString_HAL_CAN_IRQHandler,CMockString_hcan);
-    UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
-  }
-  UNITY_CLR_DETAILS();
+    UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
+    CMOCK_HAL_CAN_IRQHandler_CALL_INSTANCE* cmock_call_instance;
+    UNITY_SET_DETAIL(CMockString_HAL_CAN_IRQHandler);
+    cmock_call_instance = (CMOCK_HAL_CAN_IRQHandler_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_IRQHandler_CallInstance);
+    Mock.HAL_CAN_IRQHandler_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_IRQHandler_CallInstance);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
+    cmock_line = cmock_call_instance->LineNumber;
+    {
+        UNITY_SET_DETAILS(CMockString_HAL_CAN_IRQHandler, CMockString_hcan);
+        UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
+    }
+    UNITY_CLR_DETAILS();
 }
 
 void CMockExpectParameters_HAL_CAN_IRQHandler(CMOCK_HAL_CAN_IRQHandler_CALL_INSTANCE* cmock_call_instance, CAN_HandleTypeDef* hcan)
 {
-  cmock_call_instance->Expected_hcan = hcan;
+    cmock_call_instance->Expected_hcan = hcan;
 }
 
 void HAL_CAN_IRQHandler_CMockExpect(UNITY_LINE_TYPE cmock_line, CAN_HandleTypeDef* hcan)
 {
-  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_IRQHandler_CALL_INSTANCE));
-  CMOCK_HAL_CAN_IRQHandler_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_IRQHandler_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
-  memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
-  Mock.HAL_CAN_IRQHandler_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_IRQHandler_CallInstance, cmock_guts_index);
-  cmock_call_instance->LineNumber = cmock_line;
-  CMockExpectParameters_HAL_CAN_IRQHandler(cmock_call_instance, hcan);
+    CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_IRQHandler_CALL_INSTANCE));
+    CMOCK_HAL_CAN_IRQHandler_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_IRQHandler_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
+    memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
+    Mock.HAL_CAN_IRQHandler_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_IRQHandler_CallInstance, cmock_guts_index);
+    cmock_call_instance->LineNumber = cmock_line;
+    CMockExpectParameters_HAL_CAN_IRQHandler(cmock_call_instance, hcan);
 }
 
 void HAL_CAN_TxCpltCallback(CAN_HandleTypeDef* hcan)
 {
-  UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
-  CMOCK_HAL_CAN_TxCpltCallback_CALL_INSTANCE* cmock_call_instance;
-  UNITY_SET_DETAIL(CMockString_HAL_CAN_TxCpltCallback);
-  cmock_call_instance = (CMOCK_HAL_CAN_TxCpltCallback_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_TxCpltCallback_CallInstance);
-  Mock.HAL_CAN_TxCpltCallback_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_TxCpltCallback_CallInstance);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
-  cmock_line = cmock_call_instance->LineNumber;
-  {
-    UNITY_SET_DETAILS(CMockString_HAL_CAN_TxCpltCallback,CMockString_hcan);
-    UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
-  }
-  UNITY_CLR_DETAILS();
+    UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
+    CMOCK_HAL_CAN_TxCpltCallback_CALL_INSTANCE* cmock_call_instance;
+    UNITY_SET_DETAIL(CMockString_HAL_CAN_TxCpltCallback);
+    cmock_call_instance = (CMOCK_HAL_CAN_TxCpltCallback_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_TxCpltCallback_CallInstance);
+    Mock.HAL_CAN_TxCpltCallback_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_TxCpltCallback_CallInstance);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
+    cmock_line = cmock_call_instance->LineNumber;
+    {
+        UNITY_SET_DETAILS(CMockString_HAL_CAN_TxCpltCallback, CMockString_hcan);
+        UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
+    }
+    UNITY_CLR_DETAILS();
 }
 
 void CMockExpectParameters_HAL_CAN_TxCpltCallback(CMOCK_HAL_CAN_TxCpltCallback_CALL_INSTANCE* cmock_call_instance, CAN_HandleTypeDef* hcan)
 {
-  cmock_call_instance->Expected_hcan = hcan;
+    cmock_call_instance->Expected_hcan = hcan;
 }
 
 void HAL_CAN_TxCpltCallback_CMockExpect(UNITY_LINE_TYPE cmock_line, CAN_HandleTypeDef* hcan)
 {
-  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_TxCpltCallback_CALL_INSTANCE));
-  CMOCK_HAL_CAN_TxCpltCallback_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_TxCpltCallback_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
-  memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
-  Mock.HAL_CAN_TxCpltCallback_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_TxCpltCallback_CallInstance, cmock_guts_index);
-  cmock_call_instance->LineNumber = cmock_line;
-  CMockExpectParameters_HAL_CAN_TxCpltCallback(cmock_call_instance, hcan);
+    CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_TxCpltCallback_CALL_INSTANCE));
+    CMOCK_HAL_CAN_TxCpltCallback_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_TxCpltCallback_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
+    memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
+    Mock.HAL_CAN_TxCpltCallback_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_TxCpltCallback_CallInstance, cmock_guts_index);
+    cmock_call_instance->LineNumber = cmock_line;
+    CMockExpectParameters_HAL_CAN_TxCpltCallback(cmock_call_instance, hcan);
 }
 
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 {
-  UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
-  CMOCK_HAL_CAN_RxCpltCallback_CALL_INSTANCE* cmock_call_instance;
-  UNITY_SET_DETAIL(CMockString_HAL_CAN_RxCpltCallback);
-  cmock_call_instance = (CMOCK_HAL_CAN_RxCpltCallback_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_RxCpltCallback_CallInstance);
-  Mock.HAL_CAN_RxCpltCallback_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_RxCpltCallback_CallInstance);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
-  cmock_line = cmock_call_instance->LineNumber;
-  {
-    UNITY_SET_DETAILS(CMockString_HAL_CAN_RxCpltCallback,CMockString_hcan);
-    UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
-  }
-  UNITY_CLR_DETAILS();
+    UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
+    CMOCK_HAL_CAN_RxCpltCallback_CALL_INSTANCE* cmock_call_instance;
+    UNITY_SET_DETAIL(CMockString_HAL_CAN_RxCpltCallback);
+    cmock_call_instance = (CMOCK_HAL_CAN_RxCpltCallback_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_RxCpltCallback_CallInstance);
+    Mock.HAL_CAN_RxCpltCallback_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_RxCpltCallback_CallInstance);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
+    cmock_line = cmock_call_instance->LineNumber;
+    {
+        UNITY_SET_DETAILS(CMockString_HAL_CAN_RxCpltCallback, CMockString_hcan);
+        UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
+    }
+    UNITY_CLR_DETAILS();
 }
 
 void CMockExpectParameters_HAL_CAN_RxCpltCallback(CMOCK_HAL_CAN_RxCpltCallback_CALL_INSTANCE* cmock_call_instance, CAN_HandleTypeDef* hcan)
 {
-  cmock_call_instance->Expected_hcan = hcan;
+    cmock_call_instance->Expected_hcan = hcan;
 }
 
 void HAL_CAN_RxCpltCallback_CMockExpect(UNITY_LINE_TYPE cmock_line, CAN_HandleTypeDef* hcan)
 {
-  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_RxCpltCallback_CALL_INSTANCE));
-  CMOCK_HAL_CAN_RxCpltCallback_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_RxCpltCallback_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
-  memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
-  Mock.HAL_CAN_RxCpltCallback_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_RxCpltCallback_CallInstance, cmock_guts_index);
-  cmock_call_instance->LineNumber = cmock_line;
-  CMockExpectParameters_HAL_CAN_RxCpltCallback(cmock_call_instance, hcan);
+    CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_RxCpltCallback_CALL_INSTANCE));
+    CMOCK_HAL_CAN_RxCpltCallback_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_RxCpltCallback_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
+    memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
+    Mock.HAL_CAN_RxCpltCallback_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_RxCpltCallback_CallInstance, cmock_guts_index);
+    cmock_call_instance->LineNumber = cmock_line;
+    CMockExpectParameters_HAL_CAN_RxCpltCallback(cmock_call_instance, hcan);
 }
 
 void HAL_CAN_ErrorCallback(CAN_HandleTypeDef* hcan)
 {
-  UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
-  CMOCK_HAL_CAN_ErrorCallback_CALL_INSTANCE* cmock_call_instance;
-  UNITY_SET_DETAIL(CMockString_HAL_CAN_ErrorCallback);
-  cmock_call_instance = (CMOCK_HAL_CAN_ErrorCallback_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_ErrorCallback_CallInstance);
-  Mock.HAL_CAN_ErrorCallback_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_ErrorCallback_CallInstance);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
-  cmock_line = cmock_call_instance->LineNumber;
-  {
-    UNITY_SET_DETAILS(CMockString_HAL_CAN_ErrorCallback,CMockString_hcan);
-    UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
-  }
-  UNITY_CLR_DETAILS();
+    UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
+    CMOCK_HAL_CAN_ErrorCallback_CALL_INSTANCE* cmock_call_instance;
+    UNITY_SET_DETAIL(CMockString_HAL_CAN_ErrorCallback);
+    cmock_call_instance = (CMOCK_HAL_CAN_ErrorCallback_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_ErrorCallback_CallInstance);
+    Mock.HAL_CAN_ErrorCallback_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_ErrorCallback_CallInstance);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
+    cmock_line = cmock_call_instance->LineNumber;
+    {
+        UNITY_SET_DETAILS(CMockString_HAL_CAN_ErrorCallback, CMockString_hcan);
+        UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
+    }
+    UNITY_CLR_DETAILS();
 }
 
 void CMockExpectParameters_HAL_CAN_ErrorCallback(CMOCK_HAL_CAN_ErrorCallback_CALL_INSTANCE* cmock_call_instance, CAN_HandleTypeDef* hcan)
 {
-  cmock_call_instance->Expected_hcan = hcan;
+    cmock_call_instance->Expected_hcan = hcan;
 }
 
 void HAL_CAN_ErrorCallback_CMockExpect(UNITY_LINE_TYPE cmock_line, CAN_HandleTypeDef* hcan)
 {
-  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_ErrorCallback_CALL_INSTANCE));
-  CMOCK_HAL_CAN_ErrorCallback_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_ErrorCallback_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
-  memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
-  Mock.HAL_CAN_ErrorCallback_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_ErrorCallback_CallInstance, cmock_guts_index);
-  cmock_call_instance->LineNumber = cmock_line;
-  CMockExpectParameters_HAL_CAN_ErrorCallback(cmock_call_instance, hcan);
+    CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_ErrorCallback_CALL_INSTANCE));
+    CMOCK_HAL_CAN_ErrorCallback_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_ErrorCallback_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
+    memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
+    Mock.HAL_CAN_ErrorCallback_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_ErrorCallback_CallInstance, cmock_guts_index);
+    cmock_call_instance->LineNumber = cmock_line;
+    CMockExpectParameters_HAL_CAN_ErrorCallback(cmock_call_instance, hcan);
 }
 
 uint32_t HAL_CAN_GetError(CAN_HandleTypeDef* hcan)
 {
-  UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
-  CMOCK_HAL_CAN_GetError_CALL_INSTANCE* cmock_call_instance;
-  UNITY_SET_DETAIL(CMockString_HAL_CAN_GetError);
-  cmock_call_instance = (CMOCK_HAL_CAN_GetError_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_GetError_CallInstance);
-  Mock.HAL_CAN_GetError_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_GetError_CallInstance);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
-  cmock_line = cmock_call_instance->LineNumber;
-  {
-    UNITY_SET_DETAILS(CMockString_HAL_CAN_GetError,CMockString_hcan);
-    UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
-  }
-  UNITY_CLR_DETAILS();
-  return cmock_call_instance->ReturnVal;
+    UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
+    CMOCK_HAL_CAN_GetError_CALL_INSTANCE* cmock_call_instance;
+    UNITY_SET_DETAIL(CMockString_HAL_CAN_GetError);
+    cmock_call_instance = (CMOCK_HAL_CAN_GetError_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_GetError_CallInstance);
+    Mock.HAL_CAN_GetError_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_GetError_CallInstance);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
+    cmock_line = cmock_call_instance->LineNumber;
+    {
+        UNITY_SET_DETAILS(CMockString_HAL_CAN_GetError, CMockString_hcan);
+        UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
+    }
+    UNITY_CLR_DETAILS();
+    return cmock_call_instance->ReturnVal;
 }
 
 void CMockExpectParameters_HAL_CAN_GetError(CMOCK_HAL_CAN_GetError_CALL_INSTANCE* cmock_call_instance, CAN_HandleTypeDef* hcan)
 {
-  cmock_call_instance->Expected_hcan = hcan;
+    cmock_call_instance->Expected_hcan = hcan;
 }
 
 void HAL_CAN_GetError_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, CAN_HandleTypeDef* hcan, uint32_t cmock_to_return)
 {
-  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_GetError_CALL_INSTANCE));
-  CMOCK_HAL_CAN_GetError_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_GetError_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
-  memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
-  Mock.HAL_CAN_GetError_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_GetError_CallInstance, cmock_guts_index);
-  cmock_call_instance->LineNumber = cmock_line;
-  CMockExpectParameters_HAL_CAN_GetError(cmock_call_instance, hcan);
-  cmock_call_instance->ReturnVal = cmock_to_return;
+    CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_GetError_CALL_INSTANCE));
+    CMOCK_HAL_CAN_GetError_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_GetError_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
+    memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
+    Mock.HAL_CAN_GetError_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_GetError_CallInstance, cmock_guts_index);
+    cmock_call_instance->LineNumber = cmock_line;
+    CMockExpectParameters_HAL_CAN_GetError(cmock_call_instance, hcan);
+    cmock_call_instance->ReturnVal = cmock_to_return;
 }
 
 HAL_CAN_StateTypeDef HAL_CAN_GetState(CAN_HandleTypeDef* hcan)
 {
-  UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
-  CMOCK_HAL_CAN_GetState_CALL_INSTANCE* cmock_call_instance;
-  UNITY_SET_DETAIL(CMockString_HAL_CAN_GetState);
-  cmock_call_instance = (CMOCK_HAL_CAN_GetState_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_GetState_CallInstance);
-  Mock.HAL_CAN_GetState_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_GetState_CallInstance);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
-  cmock_line = cmock_call_instance->LineNumber;
-  {
-    UNITY_SET_DETAILS(CMockString_HAL_CAN_GetState,CMockString_hcan);
-    UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
-  }
-  UNITY_CLR_DETAILS();
-  return cmock_call_instance->ReturnVal;
+    UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
+    CMOCK_HAL_CAN_GetState_CALL_INSTANCE* cmock_call_instance;
+    UNITY_SET_DETAIL(CMockString_HAL_CAN_GetState);
+    cmock_call_instance = (CMOCK_HAL_CAN_GetState_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.HAL_CAN_GetState_CallInstance);
+    Mock.HAL_CAN_GetState_CallInstance = CMock_Guts_MemNext(Mock.HAL_CAN_GetState_CallInstance);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
+    cmock_line = cmock_call_instance->LineNumber;
+    {
+        UNITY_SET_DETAILS(CMockString_HAL_CAN_GetState, CMockString_hcan);
+        UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(cmock_call_instance->Expected_hcan), (void*)(hcan), sizeof(CAN_HandleTypeDef), cmock_line, CMockStringMismatch);
+    }
+    UNITY_CLR_DETAILS();
+    return cmock_call_instance->ReturnVal;
 }
 
 void CMockExpectParameters_HAL_CAN_GetState(CMOCK_HAL_CAN_GetState_CALL_INSTANCE* cmock_call_instance, CAN_HandleTypeDef* hcan)
 {
-  cmock_call_instance->Expected_hcan = hcan;
+    cmock_call_instance->Expected_hcan = hcan;
 }
 
 void HAL_CAN_GetState_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, CAN_HandleTypeDef* hcan, HAL_CAN_StateTypeDef cmock_to_return)
 {
-  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_GetState_CALL_INSTANCE));
-  CMOCK_HAL_CAN_GetState_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_GetState_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
-  memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
-  Mock.HAL_CAN_GetState_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_GetState_CallInstance, cmock_guts_index);
-  cmock_call_instance->LineNumber = cmock_line;
-  CMockExpectParameters_HAL_CAN_GetState(cmock_call_instance, hcan);
-  memcpy((void*)(&cmock_call_instance->ReturnVal), (void*)(&cmock_to_return),
-         sizeof(HAL_CAN_StateTypeDef[sizeof(cmock_to_return) == sizeof(HAL_CAN_StateTypeDef) ? 1 : -1])); /* add HAL_CAN_StateTypeDef to :treat_as_array if this causes an error */
+    CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_HAL_CAN_GetState_CALL_INSTANCE));
+    CMOCK_HAL_CAN_GetState_CALL_INSTANCE* cmock_call_instance = (CMOCK_HAL_CAN_GetState_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
+    memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
+    Mock.HAL_CAN_GetState_CallInstance = CMock_Guts_MemChain(Mock.HAL_CAN_GetState_CallInstance, cmock_guts_index);
+    cmock_call_instance->LineNumber = cmock_line;
+    CMockExpectParameters_HAL_CAN_GetState(cmock_call_instance, hcan);
+    memcpy((void*)(&cmock_call_instance->ReturnVal), (void*)(&cmock_to_return),
+           sizeof(HAL_CAN_StateTypeDef[sizeof(cmock_to_return) == sizeof(HAL_CAN_StateTypeDef) ? 1 : -1])); /* add HAL_CAN_StateTypeDef to :treat_as_array if this causes an error */
 }
 
