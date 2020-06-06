@@ -13,6 +13,22 @@ void clearOrionStatus()
     };
 }
 
+void runTripTests()
+{
+    //Tripping Tests
+    RUN_TEST(test_chargeShouldTripFromHighCellVoltage);
+    RUN_TEST(test_chargeShouldTripDuetoHighTempAndChargingCurrent);
+    RUN_TEST(test_chargeShouldNotTripDuetoOnlyHighTemp);
+    RUN_TEST(test_chargeShouldNotTripIfNoCanMsgReceived);
+    RUN_TEST(test_chargeShouldTripIfChargingCurrentIsTooHigh);
+
+    RUN_TEST(test_dischargeShouldNotTripIfNoCanMsgReceived);
+    RUN_TEST(test_dischargeShouldTripIfMinCellVoltageTooLow);
+    RUN_TEST(test_dischargeShouldTripIfTempTooHighAndCarIsDischarging);
+    RUN_TEST(test_dischargeShouldNotTripIfTempTooHighAndCarIsNotDischarging);
+    RUN_TEST(test_dischargeShouldTripDueToPackCurrentTooHigh);
+}
+
 void test_chargeShouldTripFromHighCellVoltage()
 {
     orionStatus.canMsgReceived = 1;
