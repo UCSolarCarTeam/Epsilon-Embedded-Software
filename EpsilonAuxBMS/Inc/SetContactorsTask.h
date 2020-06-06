@@ -1,5 +1,6 @@
 #pragma once
 #include "AuxBmsTasks.h"
+#include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_adc.h"
 #include "OrionStatus.h"
 
