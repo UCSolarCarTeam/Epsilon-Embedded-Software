@@ -3,8 +3,16 @@
 
 //Include required .h file for unity
 #include "unity.h"
+#include "stm32f4xx_hal.h"
+
 #include "OrionStatus.h"
+#include "AuxStatus.h"
 #include "TripTest.h"
+#include "SetContactorsTaskTest.h"
+
+ADC_HandleTypeDef hadc1;
+AuxStatus auxStatus;
+CAN_HandleTypeDef hcan1;
 
 void setUp(void)
 {
@@ -19,7 +27,7 @@ int main (void)
 {
     UNITY_BEGIN();
 
-    //Tripping Tests
+    runSetContactorsTests();
     RUN_TEST(test_chargeShouldTripFromHighCellVoltage);
     RUN_TEST(test_chargeShouldTripDuetoHighTempAndChargingCurrent);
     RUN_TEST(test_chargeShouldNotTripDuetoOnlyHighTemp);
