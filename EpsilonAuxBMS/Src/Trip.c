@@ -1,5 +1,6 @@
 #include "Trip.h"
 #include "OrionStatus.h"
+#include "AuxBmsTasks.h"
 
 static const float ORION_MAX_CELL_VOLTAGE = 4.20; // Much match orion bms value
 static const float ORION_MIN_CELL_VOLTAGE = 2.55;
@@ -92,4 +93,22 @@ int dischargeShouldTrip()
     }
 
     return dischargeShouldTrip;
+}
+
+int protectionTripping()
+{
+    // If the charge contactor is off, but we are still charging, trip
+    const uint8_t chargeSense = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
+
+    if (!chargeSense && orionStatus.packCurrent < 0)
+    {
+        return 1;
+    }
+
+    return 0;
+}
+
+int carShouldTrip()
+{
+    return (chargeShouldTrip() || dischargeShouldTrip() || protectionTripping());
 }
