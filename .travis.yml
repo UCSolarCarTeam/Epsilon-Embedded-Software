@@ -16,13 +16,12 @@ before_script:
     - source ~/.profile
     - (cd EpsilonLights && CubeMX2Makefile .)
     - (cd EpsilonDriverControls && CubeMX2Makefile .)
-#    - (cd EpsilonAuxBMS && CubeMX2Makefile .)
 
 script:
     - (cd EpsilonLights && make)
     - (cd EpsilonDriverControls && make)
     - (cd EpsilonCCS && make)
-    - (cd EpsilonAuxBMS && make)
+    - (cd EpsilonAuxBMS && ./make.sh)
     - "! (./format.sh EpsilonCCS | grep Formatted)"
     - "! (./format.sh EpsilonLights | grep Formatted)"
     - "! (./format.sh EpsilonDriverControls | grep Formatted)"
