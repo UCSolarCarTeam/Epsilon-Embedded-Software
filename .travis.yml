@@ -25,7 +25,7 @@ script:
     - (cd EpsilonLights && make)
     - (cd EpsilonDriverControls && make)
     - (cd EpsilonCCS && make)
-    - (cd EpsilonAuxBMS && make && cd Tests && make)
+    - (cd EpsilonAuxBMS && make)
     - "! (./format.sh EpsilonCCS | grep Formatted)"
     - "! (./format.sh EpsilonLights | grep Formatted)"
     - "! (./format.sh EpsilonDriverControls | grep Formatted)"
