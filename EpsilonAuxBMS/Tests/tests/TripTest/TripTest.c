@@ -1,17 +1,7 @@
 #include "TripTest.h"
-#include "OrionStatus.h"
+#include "OrionStatusHelper.h"
 #include "unity.h"
 #include "Trip.h"
-
-OrionStatus orionStatus;
-
-void clearOrionStatus()
-{
-    orionStatus = (OrionStatus)
-    {
-        0
-    };
-}
 
 void runTripTests()
 {

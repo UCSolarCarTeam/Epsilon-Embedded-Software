@@ -4,11 +4,8 @@ addons:
             - libc6:i386
             - libncurses5:i386
             - libstdc++6:i386
-before_install:
-    - git clone https://github.com/UCSolarCarTeam/Recruit-Resources.git
 install:
-    - (cd Recruit-Resources/STM32F4Discovery-Resources && sudo ./install.sh)
-    - rm Recruit-Resources -rf
+    - (cd STM32F4Discovery-Resources && sudo ./install.sh)
     - wget 'https://s3-us-west-2.amazonaws.com/ucsolarteam.hostedfiles/astyle'
     - tar -zxvf astyle
     - (cd astyle/build/gcc && make release && sudo make install)
@@ -18,18 +15,15 @@ before_script:
     - source ~/.profile
     - (cd EpsilonLights && CubeMX2Makefile .)
     - (cd EpsilonDriverControls && CubeMX2Makefile .)
-    - (cd EpsilonAuxBMS && CubeMX2Makefile .)
 
 script:
     - (cd EpsilonLights && make)
     - (cd EpsilonDriverControls && make)
     - (cd EpsilonCCS && make)
-    - (cd EpsilonAuxBMS && make)
-    - (cd UnityTestingTool/AuxBMS/ && make && build/EpsilonAuxBMSTests)
+    - (cd EpsilonAuxBMS && ./make.sh)
     - "! (./format.sh EpsilonCCS | grep Formatted)"
     - "! (./format.sh EpsilonLights | grep Formatted)"
     - "! (./format.sh EpsilonDriverControls | grep Formatted)"
-    - "! (./format.sh EpsilonCCS | grep Formatted)"
-    - "! (./format.sh UnityTestingTool/AuxBMS | grep Formatted)"
+    - "! (./format.sh EpsilonAuxBMS | grep Formatted)"
 
 language: c
