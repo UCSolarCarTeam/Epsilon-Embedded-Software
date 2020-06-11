@@ -25,12 +25,10 @@ script:
     - (cd EpsilonLights && make)
     - (cd EpsilonDriverControls && make)
     - (cd EpsilonCCS && make)
-    - (cd EpsilonAuxBMS && make)
-    - (cd UnityTestingTool/AuxBMS/ && make && build/EpsilonAuxBMSTests)
+    - (cd EpsilonAuxBMS && ./make.sh)
     - "! (./format.sh EpsilonCCS | grep Formatted)"
     - "! (./format.sh EpsilonLights | grep Formatted)"
     - "! (./format.sh EpsilonDriverControls | grep Formatted)"
-    - "! (./format.sh EpsilonCCS | grep Formatted)"
-    - "! (./format.sh UnityTestingTool/AuxBMS | grep Formatted)"
+    - "! (./format.sh EpsilonAuxBMS | grep Formatted)"
 
 language: c
