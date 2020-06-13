@@ -53,6 +53,8 @@ osMessageQId canQueue;
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 uint8_t auxBmsInputs[2];
+float   motor0VehicleVelocityInput;
+float   motor1VehicleVelocityInput;
 static osThreadId heartbeatTaskHandle;
 static osThreadId lightsTaskHandle;
 static osThreadId musicTaskHandle;
