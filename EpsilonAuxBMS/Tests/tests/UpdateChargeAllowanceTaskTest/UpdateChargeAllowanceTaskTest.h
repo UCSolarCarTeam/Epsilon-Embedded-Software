@@ -1,0 +1,10 @@
+#pragma once
+
+int runUpdateChargeAllowanceTaskTests();
+
+void test_StandardOperationShouldUpdateStatusesNormally();
+void test_NoDischargeSenseShouldTurnOffPinAndUpdateStatuses();
+void test_NoChargeSenseShouldTurnOffPinAndUpdateStatuses();
+void test_ShouldTripWillDisconnectContactorsAndUpdateStatuses();
+void test_TooHighMaxCellVoltageShouldTurnOffChargeAndUpdateStatuses();
+void test_TooLowMinCellVoltageShouldTurnOffDischargeAndUpdateStatuses();

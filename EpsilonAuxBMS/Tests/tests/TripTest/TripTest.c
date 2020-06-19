@@ -2,6 +2,7 @@
 #include "OrionStatusHelper.h"
 #include "unity.h"
 #include "Trip.h"
+#include "Mockstm32f4xx_hal_gpio.h"
 
 void runTripTests()
 {
@@ -17,6 +18,8 @@ void runTripTests()
     RUN_TEST(test_dischargeShouldTripIfTempTooHighAndCarIsDischarging);
     RUN_TEST(test_dischargeShouldNotTripIfTempTooHighAndCarIsNotDischarging);
     RUN_TEST(test_dischargeShouldTripDueToPackCurrentTooHigh);
+
+    RUN_TEST(test_protectionTripping_tripWhenChargeContactorOffButCurrentNegative);
 }
 
 void test_chargeShouldTripFromHighCellVoltage()
@@ -98,4 +101,12 @@ void test_dischargeShouldTripDueToPackCurrentTooHigh()
     orionStatus.minCellVoltage = 25501;
     orionStatus.packCurrent = 230.f;
     TEST_ASSERT_EQUAL_INT(1, dischargeShouldTrip());
+}
+
+void test_protectionTripping_tripWhenChargeContactorOffButCurrentNegative()
+{
+    HAL_GPIO_ReadPin_ExpectAndReturn(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin, 1);
+
+    orionStatus.packCurrent = -1;
+    TEST_ASSERT_EQUAL_INT(1, protectionTripping());
 }
