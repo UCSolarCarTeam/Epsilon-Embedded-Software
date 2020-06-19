@@ -11,3 +11,4 @@ void test_dischargeShouldTripIfMinCellVoltageTooLow();
 void test_dischargeShouldTripIfTempTooHighAndCarIsDischarging();
 void test_dischargeShouldNotTripIfTempTooHighAndCarIsNotDischarging();
 void test_dischargeShouldTripDueToPackCurrentTooHigh();
+void test_protectionTripping_tripWhenChargeContactorOffButCurrentNegative();

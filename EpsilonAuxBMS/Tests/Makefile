@@ -2,6 +2,7 @@ TESTS_DIR = ./tests
 TESTS = \
 	SetContactorsTaskTest \
 	TripTest \
+	UpdateChargeAllowanceTaskTest \
 
 SUBCLEAN = $(addsuffix .clean,$(TESTS))
 

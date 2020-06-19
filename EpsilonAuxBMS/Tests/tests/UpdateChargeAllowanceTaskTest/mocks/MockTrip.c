@@ -5,8 +5,10 @@
 #include "cmock.h"
 #include "MockTrip.h"
 
+static const char* CMockString_carShouldTrip = "carShouldTrip";
 static const char* CMockString_chargeShouldTrip = "chargeShouldTrip";
 static const char* CMockString_dischargeShouldTrip = "dischargeShouldTrip";
+static const char* CMockString_protectionTripping = "protectionTripping";
 
 typedef struct _CMOCK_chargeShouldTrip_CALL_INSTANCE
 {
@@ -22,10 +24,26 @@ typedef struct _CMOCK_dischargeShouldTrip_CALL_INSTANCE
 
 } CMOCK_dischargeShouldTrip_CALL_INSTANCE;
 
+typedef struct _CMOCK_protectionTripping_CALL_INSTANCE
+{
+    UNITY_LINE_TYPE LineNumber;
+    int ReturnVal;
+
+} CMOCK_protectionTripping_CALL_INSTANCE;
+
+typedef struct _CMOCK_carShouldTrip_CALL_INSTANCE
+{
+    UNITY_LINE_TYPE LineNumber;
+    int ReturnVal;
+
+} CMOCK_carShouldTrip_CALL_INSTANCE;
+
 static struct MockTripInstance
 {
     CMOCK_MEM_INDEX_TYPE chargeShouldTrip_CallInstance;
     CMOCK_MEM_INDEX_TYPE dischargeShouldTrip_CallInstance;
+    CMOCK_MEM_INDEX_TYPE protectionTripping_CallInstance;
+    CMOCK_MEM_INDEX_TYPE carShouldTrip_CallInstance;
 } Mock;
 
 extern jmp_buf AbortFrame;
@@ -47,6 +65,22 @@ void MockTrip_Verify(void)
     if (CMOCK_GUTS_NONE != call_instance)
     {
         UNITY_SET_DETAIL(CMockString_dischargeShouldTrip);
+        UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
+    }
+
+    call_instance = Mock.protectionTripping_CallInstance;
+
+    if (CMOCK_GUTS_NONE != call_instance)
+    {
+        UNITY_SET_DETAIL(CMockString_protectionTripping);
+        UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
+    }
+
+    call_instance = Mock.carShouldTrip_CallInstance;
+
+    if (CMOCK_GUTS_NONE != call_instance)
+    {
+        UNITY_SET_DETAIL(CMockString_carShouldTrip);
         UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
     }
 }
@@ -106,6 +140,54 @@ void dischargeShouldTrip_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, int cm
     UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
     memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
     Mock.dischargeShouldTrip_CallInstance = CMock_Guts_MemChain(Mock.dischargeShouldTrip_CallInstance, cmock_guts_index);
+    cmock_call_instance->LineNumber = cmock_line;
+    cmock_call_instance->ReturnVal = cmock_to_return;
+}
+
+int protectionTripping(void)
+{
+    UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
+    CMOCK_protectionTripping_CALL_INSTANCE* cmock_call_instance;
+    UNITY_SET_DETAIL(CMockString_protectionTripping);
+    cmock_call_instance = (CMOCK_protectionTripping_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.protectionTripping_CallInstance);
+    Mock.protectionTripping_CallInstance = CMock_Guts_MemNext(Mock.protectionTripping_CallInstance);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
+    cmock_line = cmock_call_instance->LineNumber;
+    UNITY_CLR_DETAILS();
+    return cmock_call_instance->ReturnVal;
+}
+
+void protectionTripping_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, int cmock_to_return)
+{
+    CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_protectionTripping_CALL_INSTANCE));
+    CMOCK_protectionTripping_CALL_INSTANCE* cmock_call_instance = (CMOCK_protectionTripping_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
+    memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
+    Mock.protectionTripping_CallInstance = CMock_Guts_MemChain(Mock.protectionTripping_CallInstance, cmock_guts_index);
+    cmock_call_instance->LineNumber = cmock_line;
+    cmock_call_instance->ReturnVal = cmock_to_return;
+}
+
+int carShouldTrip(void)
+{
+    UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
+    CMOCK_carShouldTrip_CALL_INSTANCE* cmock_call_instance;
+    UNITY_SET_DETAIL(CMockString_carShouldTrip);
+    cmock_call_instance = (CMOCK_carShouldTrip_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.carShouldTrip_CallInstance);
+    Mock.carShouldTrip_CallInstance = CMock_Guts_MemNext(Mock.carShouldTrip_CallInstance);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringCalledMore);
+    cmock_line = cmock_call_instance->LineNumber;
+    UNITY_CLR_DETAILS();
+    return cmock_call_instance->ReturnVal;
+}
+
+void carShouldTrip_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, int cmock_to_return)
+{
+    CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_carShouldTrip_CALL_INSTANCE));
+    CMOCK_carShouldTrip_CALL_INSTANCE* cmock_call_instance = (CMOCK_carShouldTrip_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+    UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, CMockStringOutOfMemory);
+    memset(cmock_call_instance, 0, sizeof(*cmock_call_instance));
+    Mock.carShouldTrip_CallInstance = CMock_Guts_MemChain(Mock.carShouldTrip_CallInstance, cmock_guts_index);
     cmock_call_instance->LineNumber = cmock_line;
     cmock_call_instance->ReturnVal = cmock_to_return;
 }
