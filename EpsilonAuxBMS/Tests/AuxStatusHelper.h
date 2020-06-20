@@ -4,3 +4,7 @@
 AuxStatus auxStatus;
 
 void clearAuxStatus();
+
+void setNominalAuxStatus();
+
+void assertAuxStatusEqual(AuxStatus expected);
