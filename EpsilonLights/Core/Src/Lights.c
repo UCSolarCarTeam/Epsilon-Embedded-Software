@@ -38,11 +38,6 @@ void updateLightsTask(void const* arg)
         {
             HAL_GPIO_WritePin(HEAD_GPIO_Port, HEAD_Pin, LIGHT_OFF);
         }
-        else if ((headlights))
-        {
-            // Error state, turn only the low headlights on.
-            HAL_GPIO_WritePin(HEAD_GPIO_Port, HEAD_Pin, LIGHT_ON);
-        }
         else
         {
             HAL_GPIO_WritePin(HEAD_GPIO_Port, HEAD_Pin, headlights);
@@ -158,7 +153,7 @@ void blinkSignalLightsTask(void const* arg)
     }
 }
 
-void updatStrobeLight(void const* arg)
+void updateStrobeLight(void const* arg)
 {
     uint32_t prevWakeTime = osKernelSysTick();
     // Store inputs values
