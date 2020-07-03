@@ -37,6 +37,7 @@ endif
 PATHS = -I . \
 -I $(MOCK_DIR) \
 -I ${AUX_BMS_TESTS_DIR} \
+-I ${AUX_BMS_INC_DIR}/SetContactor/ \
 -I $(AUX_BMS_INC_DIR) \
 -I $(UNITY_SRC_DIR) \
 -I $(CMOCK_DIR) \
@@ -72,8 +73,8 @@ HELPER_SOURCES = \
 UNITY_SOURCES = $(UNITY_SRC_DIR)unity.c  
 CMOCK_SOURCES = $(CMOCK_DIR)cmock.c
 MOCK_SOURCES = \
-	$(MOCK_DIR)MockSetContactorsTask.c \
 	$(MOCK_DIR)MockTrip.c \
+	$(MOCK_DIR)MockStateFunctionsShared.c \
 	$(MOCK_DIR)Mockstm32f4xx_hal_gpio.c \
 	$(MOCK_DIR)Mockcmsis_os.c \
 	$(MOCK_DIR)Mockstm32f4xx_hal_adc.c \
