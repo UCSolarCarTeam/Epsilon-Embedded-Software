@@ -207,6 +207,7 @@ void sendDriverTask(void const* arg)
 void sendDriveCommandsTask(void const* arg)
 {
     uint32_t prevWakeTime = osKernelSysTick();
+    float motorCurrentOut = 0.0f; // Percentage 0 - 1
     uint8_t prevResetStatus = 0;
 
     uint8_t regenQueueIndex = 0;
@@ -251,7 +252,6 @@ void sendDriveCommandsTask(void const* arg)
 
         // Determine data to send
         float motorVelocityOut; // RPM
-        float motorCurrentOut = 0.0f; // Percentage 0 - 1
 
         if (!isNewDirectionSafe(forward, reverse)) // If new direction input isn't safe, zero outputs
         {
