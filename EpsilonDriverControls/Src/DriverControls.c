@@ -6,6 +6,7 @@
 
 #define REGEN_QUEUE_SIZE 5
 #define ACCEL_QUEUE_SIZE 5
+#define BUS_CURRENT_OUT 1.0f // Percentage 0 -1 always 100%
 
 static float regenValuesQueue[REGEN_QUEUE_SIZE] = {0};
 static float accelValuesQueue[ACCEL_QUEUE_SIZE] = {0};
@@ -206,47 +207,30 @@ void sendDriverTask(void const* arg)
 void sendDriveCommandsTask(void const* arg)
 {
     uint32_t prevWakeTime = osKernelSysTick();
-    float newRegen = 0;
-    float newAccel = 0;
-    uint8_t forward = 0;
-    uint8_t reverse = 0;
-    uint8_t brake = 0;
-    uint8_t reset = 0;
-    float busCurrentOut = 1.0f; // Percentage 0 -1 always 100%
-    float motorVelocityOut = 0; // RPM
     float motorCurrentOut = 0.0f; // Percentage 0 - 1
     uint8_t prevResetStatus = 0;
-    float dataToSendFloat[2];
 
     uint8_t regenQueueIndex = 0;
     uint8_t accelQueueIndex = 0;
 
-    char allowCharge;
-
     for (;;)
     {
         osDelayUntil(&prevWakeTime, DRIVE_COMMANDS_FREQ);
+
+        float newRegen = 0;
+        float newAccel = 0;
 
         // Read analog inputs
         if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
         {
             newRegen = (((float)HAL_ADC_GetValue(&hadc1)) / ((float)MAX_ANALOG)) * 100.0; // Convert to full value for reporting
         }
-        else
-        {
-            newRegen = 0;
-        }
 
         regenValuesQueue[regenQueueIndex++] = newRegen;
-
 
         if (HAL_ADC_PollForConversion(&hadc2, ADC_POLL_TIMEOUT) == HAL_OK)
         {
             newAccel = (((float)HAL_ADC_GetValue(&hadc2)) / ((float)MAX_ANALOG)) * 100.0;
-        }
-        else
-        {
-            newAccel = 0;
         }
 
         accelValuesQueue[accelQueueIndex++] = newAccel;
@@ -259,14 +243,16 @@ void sendDriveCommandsTask(void const* arg)
         float accelPercentage = (float)getAvgAccel() / 100.0;
 
         // Determine drive commands
-        forward = !HAL_GPIO_ReadPin(FORWARD_GPIO_Port, FORWARD_Pin); // `!` for active low
-        reverse = !HAL_GPIO_ReadPin(REVERSE_GPIO_Port, REVERSE_Pin);
-        brake = !HAL_GPIO_ReadPin(BRAKES_GPIO_Port, BRAKES_Pin);
+        uint8_t forward = !HAL_GPIO_ReadPin(FORWARD_GPIO_Port, FORWARD_Pin); // `!` for active low
+        uint8_t reverse = !HAL_GPIO_ReadPin(REVERSE_GPIO_Port, REVERSE_Pin);
+        uint8_t brake = !HAL_GPIO_ReadPin(BRAKES_GPIO_Port, BRAKES_Pin);
 
         // Read AuxBMS messages
-        allowCharge = auxBmsInputs[1] & 0x02;
+        char allowCharge = auxBmsInputs[1] & 0x02;
 
         // Determine data to send
+        float motorVelocityOut; // RPM
+
         if (!isNewDirectionSafe(forward, reverse)) // If new direction input isn't safe, zero outputs
         {
             motorVelocityOut = 0;
@@ -322,24 +308,29 @@ void sendDriveCommandsTask(void const* arg)
 
         // Allocate CAN Message, deallocated by sender "sendCanTask()"
         CanMsg* msg = (CanMsg*)osPoolAlloc(canPool);
+
         // Transmit Motor Drive command
+        float dataToSendFloat[2];
         msg->StdId = MOTOR_DRIVE_STDID;
         msg->DLC = MOTOR_DRIVE_DLC;
         dataToSendFloat[0] = motorVelocityOut;
         dataToSendFloat[1] = motorCurrentOut;
         memcpy(msg->Data, dataToSendFloat, sizeof(float) * 2);
         osMessagePut(canQueue, (uint32_t)msg, osWaitForever);
+
         // Allocate new CAN Message, deallocated by sender "sendCanTask()"
         msg = (CanMsg*)osPoolAlloc(canPool);
+
         //Transmit Motor Power command
         msg->StdId = MOTOR_POWER_STDID;
         msg->DLC = MOTOR_POWER_DLC;
         dataToSendFloat[0] = 0.0f; // Reserved (defined by WaveSculptor datasheet)
-        dataToSendFloat[1] = busCurrentOut;
+        dataToSendFloat[1] = BUS_CURRENT_OUT;
         memcpy(msg->Data, dataToSendFloat, sizeof(float) * 2);
         osMessagePut(canQueue, (uint32_t)msg, osWaitForever);
+
         // Transmit Motor Reset command if button switch went from off to on
-        reset = !HAL_GPIO_ReadPin(RESET_GPIO_Port, RESET_Pin); // `!` for active low
+        uint8_t reset = !HAL_GPIO_ReadPin(RESET_GPIO_Port, RESET_Pin); // `!` for active low
 
         if (!prevResetStatus && reset) /// off -> on
         {
