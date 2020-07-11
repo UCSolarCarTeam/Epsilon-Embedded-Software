@@ -252,6 +252,7 @@ void sendDriveCommandsTask(void const* arg)
         // Determine data to send
         float motorVelocityOut; // RPM
         float motorCurrentOut = 0.0f; // Percentage 0 - 1
+
         if (!isNewDirectionSafe(forward, reverse)) // If new direction input isn't safe, zero outputs
         {
             motorVelocityOut = 0;
@@ -307,7 +308,7 @@ void sendDriveCommandsTask(void const* arg)
 
         // Allocate CAN Message, deallocated by sender "sendCanTask()"
         CanMsg* msg = (CanMsg*)osPoolAlloc(canPool);
-        
+
         // Transmit Motor Drive command
         float dataToSendFloat[2];
         msg->StdId = MOTOR_DRIVE_STDID;
