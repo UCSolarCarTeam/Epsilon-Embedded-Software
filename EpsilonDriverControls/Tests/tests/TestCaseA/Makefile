@@ -1,19 +1,19 @@
-TARGET = TripTest
+TARGET = TestCaseA
 EMBEDDED_REPO_ROOT = ../../../../
 
 UNITY_DIR = $(EMBEDDED_REPO_ROOT)/UnityTestingTool/
 UNITY_SRC_DIR = $(UNITY_DIR)/src
 CMOCK_DIR = $(UNITY_DIR)/CMock/src
 
-AUX_BMS_DIR = $(EMBEDDED_REPO_ROOT)/EpsilonAuxBMS/
-AUX_BMS_TESTS_DIR = $(AUX_BMS_DIR)/Tests
-HELPER_DIR = $(AUX_BMS_TESTS_DIR) 
-AUX_BMS_SRC_DIR = $(AUX_BMS_DIR)/Src/
-AUX_BMS_INC_DIR = $(AUX_BMS_DIR)/Inc/
+DRIVER_CONTROLS_DIR = $(EMBEDDED_REPO_ROOT)/EpsilonDriverControls/
+DRIVER_CONTROLS_TESTS_DIR = $(DRIVER_CONTROLS_DIR)/Tests
+HELPER_DIR = $(DRIVER_CONTROLS_TESTS_DIR) 
+DRIVER_CONTROLS_SRC_DIR = $(DRIVER_CONTROLS_DIR)/Src/
+DRIVER_CONTROLS_INC_DIR = $(DRIVER_CONTROLS_DIR)/Inc/
 
-MIDDLEWARES_DIR = $(AUX_BMS_DIR)/Middlewares/
-DRIVERS_PATH = $(AUX_BMS_DIR)/Drivers/
-MOCK_DIR = $(AUX_BMS_TESTS_DIR)/mocks/
+MIDDLEWARES_DIR = $(DRIVER_CONTROLS_DIR)/Middlewares/
+DRIVERS_PATH = $(DRIVER_CONTROLS_DIR)/Drivers/
+MOCK_DIR = $(DRIVER_CONTROLS_TESTS_DIR)/mocks/
 
 ifeq ($(OS),Windows_NT)
   ifeq ($(shell uname -s),) # not in a bash-like shell
@@ -36,8 +36,8 @@ endif
 
 PATHS = -I . \
 -I $(MOCK_DIR) \
--I ${AUX_BMS_TESTS_DIR} \
--I $(AUX_BMS_INC_DIR) \
+-I ${DRIVER_CONTROLS_TESTS_DIR} \
+-I $(DRIVER_CONTROLS_INC_DIR) \
 -I $(UNITY_SRC_DIR) \
 -I $(CMOCK_DIR) \
 -I $(MIDDLEWARES_DIR)/Third_Party/FreeRTOS/Source/CMSIS_RTOS \
@@ -54,30 +54,30 @@ PATHO = build/objs/
 PATHR = build/results/
 
 COMPILE=gcc
-CFLAGS=-I$(UNITY_SRC_DIR) $(PATHS) -DSTM32F407xx
+CFLAGS=$(PATHS) -DSTM32F407xx
 
-AUX_BMS_SOURCES = \
-				$(AUX_BMS_SRC_DIR)Trip.c \
+DRIVER_CONTROLS_SOURCES = \
+				$(DRIVER_CONTROLS_SRC_DIR)DriverControls.c \
 				
 TEST_SOURCES = \
 			main.c \
-			TripTest.c \
-			
+			TestCaseA.c \
+
 HELPER_SOURCES = \
-			$(AUX_BMS_TESTS_DIR)/OrionStatusHelper.c \
-			$(AUX_BMS_TESTS_DIR)/AuxStatusHelper.c \
 
 UNITY_SOURCES = $(UNITY_SRC_DIR)unity.c  
 CMOCK_SOURCES = $(CMOCK_DIR)cmock.c
-MOCK_SOURCES = \
-	$(MOCK_DIR)Mockstm32f4xx_hal_gpio.c \
-	$(MOCK_DIR)Mockcmsis_os.c \
-	$(MOCK_DIR)Mockstm32f4xx_hal_adc.c \
-	$(MOCK_DIR)Mockstm32f4xx_hal_can.c \
 
+MOCK_SOURCES = \
+	$(MOCK_DIR)Mockstm32f4xx_hal_can.c \
+	$(MOCK_DIR)Mockstm32f4xx_hal_gpio.c \
+	$(MOCK_DIR)Mockstm32f4xx_hal_adc.c \
+	$(MOCK_DIR)Mockcmsis_os.c \
+
+	
 # Get object file name of each source
 # Each object file will be compiled as a target
-AUX_BMS_OBJ = $(patsubst $(AUX_BMS_SRC_DIR)%.c, $(PATHO)%.o, $(AUX_BMS_SOURCES))
+DRIVER_CONTROLS_OBJ = $(patsubst $(DRIVER_CONTROLS_SRC_DIR)%.c, $(PATHO)%.o, $(DRIVER_CONTROLS_SOURCES))
 TEST_OBJ = $(patsubst %.c, $(PATHO)%.o, $(TEST_SOURCES))
 UNITY_OBJ = $(patsubst $(UNITY_SRC_DIR)%.c, $(PATHO)%.o, $(UNITY_SOURCES))
 CMOCK_OBJ = $(patsubst $(CMOCK_DIR)%.c, $(PATHO)%.o, $(CMOCK_SOURCES))
@@ -95,7 +95,7 @@ $(PATHO)%.o: $(UNITY_SRC_DIR)/%.c
 	$(COMPILE) -c -o $@ $< $(CFLAGS)
 
 # Parse files within the AuxBMS source
-$(PATHO)%.o: $(AUX_BMS_SRC_DIR)/%.c
+$(PATHO)%.o: $(DRIVER_CONTROLS_SRC_DIR)/%.c
 	$(COMPILE) -c -o $@ $< $(CFLAGS)
 
 # Parse files within the cmock source
@@ -110,7 +110,7 @@ $(PATHO)%.o: $(MOCK_DIR)/%.c
 $(PATHO)%.o: $(HELPER_DIR)/%.c
 	$(COMPILE) -c -o $@ $< $(CFLAGS)
 
-$(TARGET): $(TEST_OBJ) $(UNITY_OBJ) $(AUX_BMS_OBJ) $(MOCK_OBJ) $(CMOCK_OBJ) $(HELPER_OBJ)
+$(TARGET): $(TEST_OBJ) $(UNITY_OBJ) $(DRIVER_CONTROLS_OBJ) $(MOCK_OBJ) $(CMOCK_OBJ) $(HELPER_OBJ)
 	$(COMPILE) -o $(PATHB)$@ $^ $(CFLAGS) 
 
 # Make build directories
