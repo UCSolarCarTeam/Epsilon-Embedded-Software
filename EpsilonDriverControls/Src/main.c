@@ -388,6 +388,35 @@ static void MX_CAN2_UserInit(void)
     hcan2.pTxMsg->IDE = CAN_ID_STD; // Standard CAN, not Extended
     hcan2.pTxMsg->DLC = 1; // Data size in bytes
 }
+
+void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
+{
+    CanRxMsgTypeDef* msg = hcan->pRxMsg;
+
+    if (msg->StdId == AUXBMS_INPUT_STDID && msg->DLC == 2)
+    {
+        auxBmsInputs[0] = msg->Data[0];
+        auxBmsInputs[1] = msg->Data[1];
+    }
+
+    if (msg->StdId == M0_VELOCITY_INPUT_STDID && msg->DLC == 8)
+    {
+        motor0VehicleVelocityInput = arrayToFloat(&(msg->Data[4]));
+    }
+
+    if (msg->StdId == M1_VELOCITY_INPUT_STDID && msg->DLC == 8)
+    {
+        motor1VehicleVelocityInput = arrayToFloat(&(msg->Data[4]));
+    }
+
+    if (HAL_CAN_Receive_IT(hcan, CAN_FIFO0) == HAL_OK)
+        // Toggle green LED for every CAN message received
+    {
+        HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
+    }
+
+    __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
+}
 /* USER CODE END 4 */
 
 /**
