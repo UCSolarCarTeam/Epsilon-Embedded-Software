@@ -5,7 +5,7 @@
 ######################################
 # target
 ######################################
-TARGET = EpsilonAuxBMS
+TARGET = EpsilonDriverControls
 
 ######################################
 # building variables
@@ -25,56 +25,41 @@ BUILD_DIR = build
 # source
 ######################################
 C_SOURCES = \
-  Src/SetContactor/States/Blocked.c \
-  Src/SetContactor/States/ChargeEnableCheck.c \
-  Src/SetContactor/States/CommonEnableCheck.c \
-  Src/SetContactor/States/DischargeEnableCheck.c \
-  Src/SetContactor/States/FirstCheck.c \
-  Src/SetContactor/States/Idle.c \
-  Src/SetContactor/CheckContactorSet.c \
-  Src/SetContactor/SetContactorsTask.c \
-  Src/SetContactor/StateFunctionsShared.c \
-  Src/ReportAuxStatusToCanTask.c \
+  Src/stm32f4xx_hal_timebase_TIM.c \
   Src/stm32f4xx_it.c \
-  Src/UpdateChargeAllowanceTask.c \
+  Src/DriverControls.c \
   Src/main.c \
   Src/stm32f4xx_hal_msp.c \
-  Src/ReportHeartbeatToCanTask.c \
   Src/freertos.c \
-  Src/ReadAuxVoltageTask.c \
-  Src/system_stm32f4xx.c \
-  Src/stm32f4xx_hal_timebase_TIM.c \
-  Src/Trip.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c \
   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c \
   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c \
   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c \
+  Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c \
   Middlewares/Third_Party/FreeRTOS/Source/croutine.c \
-  Middlewares/Third_Party/FreeRTOS/Source/event_groups.c \
-  Middlewares/Third_Party/FreeRTOS/Source/timers.c \
   Middlewares/Third_Party/FreeRTOS/Source/list.c \
   Middlewares/Third_Party/FreeRTOS/Source/queue.c \
+  Middlewares/Third_Party/FreeRTOS/Source/timers.c \
   Middlewares/Third_Party/FreeRTOS/Source/tasks.c \
+  Middlewares/Third_Party/FreeRTOS/Source/event_groups.c \
   Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c \
   Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c \
   Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c  
 ASM_SOURCES = \
-  startup/startup_stm32f407xx.s
+  Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f407xx.s
 
 #######################################
 # binaries
@@ -92,19 +77,17 @@ BIN = $(CP) -O binary -S
 #######################################
 # macros for gcc
 AS_DEFS =
-C_DEFS = -D__weak="__attribute__((weak))" -D__packed="__attribute__((__packed__))" -DUSE_HAL_DRIVER -DSTM32F407xx -D__weak="__attribute__((weak))" -D__packed="__attribute__((__packed__))" -DUSE_HAL_DRIVER -DSTM32F407xx
+C_DEFS = -D__weak="__attribute__((weak))" -D__packed="__attribute__((__packed__))" -DUSE_HAL_DRIVER -DSTM32F407xx
 # includes for gcc
 AS_INCLUDES =
-C_INCLUDES = -IInc
-C_INCLUDES += -IInc/SetContactor
-C_INCLUDES += -IInc/SetContactor/States
-C_INCLUDES += -IDrivers/STM32F4xx_HAL_Driver/Inc
+C_INCLUDES = -IDrivers/STM32F4xx_HAL_Driver/Inc
 C_INCLUDES += -IDrivers/STM32F4xx_HAL_Driver/Inc/Legacy
-C_INCLUDES += -IDrivers/CMSIS/Include
 C_INCLUDES += -IDrivers/CMSIS/Device/ST/STM32F4xx/Include
+C_INCLUDES += -IDrivers/CMSIS/Include
+C_INCLUDES += -IInc
+C_INCLUDES += -IMiddlewares/Third_Party/FreeRTOS/Source/include
 C_INCLUDES += -IMiddlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F
 C_INCLUDES += -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS
-C_INCLUDES += -IMiddlewares/Third_Party/FreeRTOS/Source/include
 # compile gcc flags
 ASFLAGS = -mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
 CFLAGS = -mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections

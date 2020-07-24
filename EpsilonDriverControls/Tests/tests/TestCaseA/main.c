@@ -4,13 +4,8 @@
 //Include required .h file for unity
 #include "unity.h"
 #include "stm32f4xx_hal.h"
+#include "TestCaseA.h"
 
-#include "AuxStatus.h"
-#include "OrionStatusHelper.h"
-#include "SetContactorsTaskTest.h"
-
-AuxStatus auxStatus;
-ADC_HandleTypeDef hadc1;
 
 void setUp(void)
 {
@@ -24,7 +19,7 @@ int main (void)
 {
     UNITY_BEGIN();
 
-    runSetContactorsTests();
+    runDriverControlTests();
 
     return UNITY_END();
 }

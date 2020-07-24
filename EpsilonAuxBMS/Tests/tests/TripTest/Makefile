@@ -53,8 +53,6 @@ PATHD = build/depends/
 PATHO = build/objs/
 PATHR = build/results/
 
-SRCT = $(wildcard $(PATHT)*.c)
-
 COMPILE=gcc
 CFLAGS=-I$(UNITY_SRC_DIR) $(PATHS) -DSTM32F407xx
 

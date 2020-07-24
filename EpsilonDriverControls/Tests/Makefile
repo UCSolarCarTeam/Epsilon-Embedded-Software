@@ -1,18 +1,17 @@
 TESTS_DIR = ./tests
 TESTS = \
-	TripTest \
-	UpdateChargeAllowanceTaskTest \
+	TestCaseA \
 
 SUBCLEAN = $(addsuffix .clean,$(TESTS))
 
 RUN_TEST = $(addsuffix .test,$(TESTS))
 
-default: EpsilonAuxBMSTests test
+default: EpsilonDriverControlsTests test
 
 $(TESTS):
 	cd $(TESTS_DIR)/$@ && make -j4
 	
-EpsilonAuxBMSTests: $(TESTS)
+EpsilonDriverControlsTests: $(TESTS)
 
 $(SUBCLEAN):
 	cd $(TESTS_DIR)/$(basename $@) && make clean

@@ -3,9 +3,9 @@
 
 #include "Mockcmsis_os.h"
 #include "Mockstm32f4xx_hal_gpio.h"
+#include "MockStateFunctionsShared.h"
 #include "UpdateChargeAllowanceTask.h"
 #include "MockTrip.h"
-#include "MockSetContactorsTask.h"
 #include "AuxStatusHelper.h"
 #include "OrionStatusHelper.h"
 #include "stdio.h"
