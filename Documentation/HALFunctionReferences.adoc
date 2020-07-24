@@ -1,3 +1,0 @@
-# HAL Driver References
-
-* Further documentation for http://www.disca.upv.es/aperles/arm_cortex_m3/llibre/st/STM32F439xx_User_Manual/index.html[HAL Driver Functions] (e.g. CAN, ADC, GPIO)
