@@ -17,7 +17,7 @@ before_script:
 
 script:
     - (cd EpsilonLights && make)
-    - (cd EpsilonDriverControls && make)
+    - (cd EpsilonDriverControls && ./make.sh)
     - (cd EpsilonCCS && make)
     - (cd EpsilonAuxBMS && ./make.sh)
     - "! (./format.sh EpsilonCCS | grep Formatted)"
