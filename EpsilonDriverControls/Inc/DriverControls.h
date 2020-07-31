@@ -66,9 +66,28 @@ typedef struct
     uint8_t Data[8];
 } CanMsg;
 
+typedef struct DriveCommandsInfo
+{
+    float motorCurrentOut;
+    uint8_t prevResetStatus;
+    uint8_t regenQueueIndex;
+    uint8_t accelQueueIndex;
+} DriveCommandsInfo;
+
+void sendHeartbeat(uint32_t* prevWakeTimePtr);
 void sendHeartbeatTask(void const* arg);
+
+void sendLights(uint32_t* prevWakeTimePtr);
 void sendLightsTask(void const* arg);
+
+void sendMusic(uint32_t* prevWakeTimePtr);
 void sendMusicTask(void const* arg);
+
+void sendDriver(uint32_t* prevWakeTimePtr);
 void sendDriverTask(void const* arg);
+
+void sendDriveCommands(uint32_t* prevWakeTimePtr, DriveCommandsInfo* driveCommandsInfo);
 void sendDriveCommandsTask(void const* arg);
+
+void sendCan();
 void sendCanTask(void const* arg);
