@@ -1,3 +1,9 @@
 #pragma once
-#include "cmsis_os.h"
+#include "ContactorGatekeeper.h"
+
+extern osThreadId_t chargeContactorGatekeeperTaskHandle;
+
+void closeChargeContactor();
+void openChargeContactor();
 void chargeContactorGatekeeperTask(void* arg);
+void chargeContactorGatekeeper();
