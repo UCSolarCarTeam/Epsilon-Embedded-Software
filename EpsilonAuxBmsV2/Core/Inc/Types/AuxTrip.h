@@ -1,5 +1,7 @@
 #pragma once
 
+// Refer to communications protocol
+
 typedef struct
 {
     unsigned chargeTripDueToHighCellVoltage : 1;
