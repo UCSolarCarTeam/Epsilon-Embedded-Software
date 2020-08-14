@@ -4,12 +4,8 @@
 
 #include "DriverControls.h"
 
-#define REGEN_QUEUE_SIZE 5
-#define ACCEL_QUEUE_SIZE 5
-#define BUS_CURRENT_OUT 1.0f // Percentage 0 -1 always 100%
-
-static float regenValuesQueue[REGEN_QUEUE_SIZE] = {0};
-static float accelValuesQueue[ACCEL_QUEUE_SIZE] = {0};
+float regenValuesQueue[REGEN_QUEUE_SIZE] = {0};
+float accelValuesQueue[ACCEL_QUEUE_SIZE] = {0};
 
 uint32_t getAvgRegen()
 {

@@ -5,6 +5,11 @@
 #include "stm32f4xx_hal_gpio.h"
 #include "stm32f4xx_hal_can.h"
 
+#define REGEN_QUEUE_SIZE 5
+#define ACCEL_QUEUE_SIZE 5
+
+#define BUS_CURRENT_OUT 1.0f // Percentage 0 -1 always 100%
+
 #define HEARTBEAT_CAN_FREQ 1000
 #define HEARTBEAT_STDID 0x700U
 #define HEARTBEAT_DLC 1

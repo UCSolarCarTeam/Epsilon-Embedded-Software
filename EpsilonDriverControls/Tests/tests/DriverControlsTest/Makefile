@@ -1,4 +1,4 @@
-TARGET = TestCaseA
+TARGET = DriverControlsTest
 EMBEDDED_REPO_ROOT = ../../../../
 
 UNITY_DIR = $(EMBEDDED_REPO_ROOT)/UnityTestingTool/
@@ -54,14 +54,14 @@ PATHO = build/objs/
 PATHR = build/results/
 
 COMPILE=gcc
-CFLAGS=$(PATHS) -DSTM32F407xx
+CFLAGS=$(PATHS) -ggdb -DSTM32F407xx
 
 DRIVER_CONTROLS_SOURCES = \
 				$(DRIVER_CONTROLS_SRC_DIR)DriverControls.c \
 				
 TEST_SOURCES = \
 			main.c \
-			TestCaseA.c \
+			DriverControlsTest.c \
 
 HELPER_SOURCES = \
 
