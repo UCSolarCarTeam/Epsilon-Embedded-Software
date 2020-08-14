@@ -1,6 +1,6 @@
 TESTS_DIR = ./tests
 TESTS = \
-	TestCaseA \
+	DriverControlsTest \
 
 SUBCLEAN = $(addsuffix .clean,$(TESTS))
 

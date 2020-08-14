@@ -58,14 +58,8 @@ if [ ! -d "/opt/gcc4mbed" ]; then
         chmod +x linux_install && \
         sed -i '108d;109d;110d;147d' linux_install && \
         ./linux_install)
-    if ! grep "export PATH=\$PATH:/opt/gcc4mbed/gcc-arm-none-eabi/bin/" ~/.profile; then
-        echo "export PATH=\$PATH:/opt/gcc4mbed/gcc-arm-none-eabi/bin/" >> ~/.profile
-    fi
-    export PATH=$PATH:/opt/gcc4mbed/gcc-arm-none-eabi/bin/
-	ln -s /opt/gcc4mbed/gcc-arm-none-eabi/bin/arm-none-eabi-gdb /usr/local/bin/arm-none-eabi-gdb
+    ln -s /opt/gcc4mbed/gcc-arm-none-eabi/bin/* /usr/local/bin/
+    ldconfig -v
 else
     echo "*** ARM compiler already installed"
 fi
-
-# Sourcing Profile
-source ~/.profile
