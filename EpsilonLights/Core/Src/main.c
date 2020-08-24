@@ -122,6 +122,10 @@ int main(void)
         /* Reception Error */
         Error_Handler();
     }
+    if(HAL_CAN_Start(&hcan) != HAL_OK)
+    {
+      Error_Handler();
+    }
 
     /* USER CODE END 2 */
 
