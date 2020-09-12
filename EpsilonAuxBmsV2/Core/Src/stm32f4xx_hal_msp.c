@@ -173,9 +173,9 @@ void HAL_CAN_MspInit(CAN_HandleTypeDef* hcan)
         HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
         /* CAN1 interrupt Init */
-        HAL_NVIC_SetPriority(CAN1_TX_IRQn, 5, 0);
+        HAL_NVIC_SetPriority(CAN1_TX_IRQn, 0, 0);
         HAL_NVIC_EnableIRQ(CAN1_TX_IRQn);
-        HAL_NVIC_SetPriority(CAN1_RX0_IRQn, 5, 0);
+        HAL_NVIC_SetPriority(CAN1_RX0_IRQn, 0, 0);
         HAL_NVIC_EnableIRQ(CAN1_RX0_IRQn);
         /* USER CODE BEGIN CAN1_MspInit 1 */
 
@@ -275,7 +275,7 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
         __HAL_LINKDMA(hspi, hdmarx, hdma_spi3_rx);
 
         /* SPI3 interrupt Init */
-        HAL_NVIC_SetPriority(SPI3_IRQn, 5, 0);
+        HAL_NVIC_SetPriority(SPI3_IRQn, 0, 0);
         HAL_NVIC_EnableIRQ(SPI3_IRQn);
         /* USER CODE BEGIN SPI3_MspInit 1 */
 

@@ -1,5 +1,7 @@
 #pragma once
 
+// Refer to communications protocol
+
 typedef struct AuxStatus
 {
     unsigned commonContactorState : 1;
