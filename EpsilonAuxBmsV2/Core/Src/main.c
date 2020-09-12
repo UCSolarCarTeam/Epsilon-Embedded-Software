@@ -83,6 +83,9 @@ const osThreadAttr_t defaultTask_attributes =
     .stack_size = 128 * 4
 };
 /* USER CODE BEGIN PV */
+// CAN Tx Header
+CAN_TxHeaderTypeDef canTxHdr;
+
 // Queues
 osMessageQueueId_t canRxParserQueue;
 osMessageQueueId_t gpioExtIParserQueue;
@@ -231,12 +234,16 @@ static void MX_SPI3_Init(void);
 void StartDefaultTask(void* argument);
 
 /* USER CODE BEGIN PFP */
+void MX_CAN1_User_Init(void);
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+// CAN Rx STDIDs
+static const uint32_t ORION_MAX_MIN_VOLTAGES_STDID  = 0x305;
+static const uint32_t ORION_TEMP_INFO_STDID = 0x304;
+static const uint32_t ORION_PACK_INFO_STDID = 0x302;
 /* USER CODE END 0 */
 
 /**
@@ -289,6 +296,29 @@ int main(void)
     MX_CAN1_Init();
     MX_SPI3_Init();
     /* USER CODE BEGIN 2 */
+
+    // Additional initialization for CAN
+    MX_CAN1_User_Init();
+
+    //Activate Can Recieve Interrupts
+    if (HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING |
+                                     CAN_IT_ERROR_WARNING |
+                                     CAN_IT_ERROR_PASSIVE |
+                                     CAN_IT_BUSOFF |
+                                     CAN_IT_LAST_ERROR_CODE |
+                                     CAN_IT_ERROR) != HAL_OK)
+    {
+        /* Reception error */
+        Error_Handler();
+    }
+
+    // Start CAN Module
+    if (HAL_CAN_Start(&hcan1) != HAL_OK)
+    {
+        Error_Handler();
+    }
+
+    // Start ADC
     HAL_ADC_Start(&hadc1);
 
     /* USER CODE END 2 */
@@ -643,7 +673,49 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void MX_CAN1_User_Init(void)
+{
+    CAN_FilterTypeDef orionVoltageTempFilterConfig;
+    orionVoltageTempFilterConfig.FilterBank = 0; // Use first filter bank
+    orionVoltageTempFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
+    orionVoltageTempFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+    orionVoltageTempFilterConfig.FilterIdHigh = ORION_MAX_MIN_VOLTAGES_STDID << 5; // Filter registers need to be shifted left 5 bits
+    orionVoltageTempFilterConfig.FilterIdLow = 0;
+    orionVoltageTempFilterConfig.FilterMaskIdHigh = ORION_TEMP_INFO_STDID << 5;
+    orionVoltageTempFilterConfig.FilterMaskIdLow = 0; // Unused
+    orionVoltageTempFilterConfig.FilterFIFOAssignment = 0;
+    orionVoltageTempFilterConfig.FilterActivation = ENABLE;
+    orionVoltageTempFilterConfig.SlaveStartFilterBank = 0; // Set all filter banks for CAN1
 
+    if (HAL_CAN_ConfigFilter(&hcan1, &orionVoltageTempFilterConfig) != HAL_OK)
+    {
+        /* Filter configuration Error */
+        Error_Handler();
+    }
+
+    CAN_FilterTypeDef orionPackInfoFilterConfig;
+    orionPackInfoFilterConfig.FilterBank = 1; // Use secondary filter bank
+    orionPackInfoFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+    orionPackInfoFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
+    orionPackInfoFilterConfig.FilterIdHigh = ORION_PACK_INFO_STDID << 5; // Filter registers need to be shifted left 5 bits
+    orionPackInfoFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
+    orionPackInfoFilterConfig.FilterMaskIdHigh = 0;
+    orionPackInfoFilterConfig.FilterMaskIdLow = 0; // Unused
+    orionPackInfoFilterConfig.FilterFIFOAssignment = 0;
+    orionPackInfoFilterConfig.FilterActivation = ENABLE;
+    orionPackInfoFilterConfig.SlaveStartFilterBank = 0; // Set all filter banks for CAN2
+
+    if (HAL_CAN_ConfigFilter(&hcan1, &orionPackInfoFilterConfig) != HAL_OK)
+    {
+        /* Filter configuration Error */
+        Error_Handler();
+    }
+
+    canTxHdr.ExtId = 0;
+    canTxHdr.RTR = CAN_RTR_DATA;
+    canTxHdr.IDE = CAN_ID_STD;
+    canTxHdr.TransmitGlobalTime = DISABLE;
+}
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
