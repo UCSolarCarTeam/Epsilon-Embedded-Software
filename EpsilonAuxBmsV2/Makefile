@@ -47,7 +47,6 @@ Core/Src/Tasks/ChargeContactorGatekeeperTask.c \
 Core/Src/Tasks/CommonContactorGatekeeperTask.c \
 Core/Src/Tasks/ContactorStatusUpdateTask.c \
 Core/Src/Tasks/DischargeContactorGatekeeperTask.c \
-Core/Src/Tasks/GpioExtIInterruptParserTask.c \
 Core/Src/Tasks/OrionInterfaceTask.c \
 Core/Src/Tasks/ReadAuxVoltageTask.c \
 Core/Src/Tasks/SendAuxStatusTask.c \
