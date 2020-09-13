@@ -1,7 +1,7 @@
 #pragma once
 #include "cmsis_os.h"
 #include "CanRxQueueData.h"
-#include "OrionInterfaceQueueData.h"
+#include "OrionCanInfo.h"
 
 extern osMessageQueueId_t orionInterfaceQueue;
 extern osMessageQueueId_t canRxParserQueue;
@@ -12,4 +12,4 @@ static const uint32_t ORION_TEMP_INFO_STDID = 0x304;
 static const uint32_t ORION_PACK_INFO_STDID = 0x302;
 
 void canRxInterruptParserTask(void* arg);
-void canRxInterruptParser(OrionInterfaceQueueData* queueData);
+void canRxInterruptParser(OrionCanInfo* queueData);

@@ -2,37 +2,31 @@
 
 void orionInterfaceTask(void* arg)
 {
-    for(;;){
-      orionInterface();
+    for (;;)
+    {
+        orionInterface();
     }
 }
 void orionInterface(void)
 {
-  OrionInterfaceQueueData* message = NULL;
-  osStatus_t status = osMessageQueueGet(orionInterfaceQueue, message, NULL, 400);
+    OrionCanInfo* message = NULL;
+    osStatus_t status = osMessageQueueGet(orionInterfaceQueue, message, NULL, 400);
 
-  if(status == osErrorTimeout)
-  {
-    //Set orion can message recieved recently to 0
-  }
-  else
-  {
-    if(message->type == CAN_RX)
+    // Read Orion charge and discharge enable GPIO
+
+    if (status == osErrorTimeout)
     {
-      processCanMessage(message->value.orionCanInfo);
+        //Set orion can message recieved recently to 0
     }
-    else if (message->type == GPIO_EXTI)
+    else
     {
-      processGpioMessage (message->value.gpioNum);
+        // Determine trip conditions and contactor settings based on Orion CAN
     }
-  }
 
+    // Determine trip conditions and contactot settings based on Orion GPIO
 
-}
+    // Set Aux Status and Aux Trip
 
-void processCanMessage(OrionCanInfo canInfo){
-
-}
-void processGpioMessage(uint16_t gpioNum){
+    // Trigger contactor control
 
 }

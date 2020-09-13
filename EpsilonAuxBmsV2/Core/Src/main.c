@@ -31,7 +31,6 @@
 #include "ContactorState.h"
 #include "ErrorTypes.h"
 #include "OrionCanInfo.h"
-#include "OrionInterfaceQueueData.h"
 // Task Includes
 #include "CanRxInterruptParserTask.h"
 #include "CanTxGatekeeperTask.h"
@@ -332,7 +331,7 @@ int main(void)
 
     /* USER CODE BEGIN RTOS_QUEUES */
     canRxParserQueue = osMessageQueueNew(CAN_RX_PARSER_QUEUE_COUNT, sizeof(CanRxQueueData), NULL);
-    orionInterfaceQueue = osMessageQueueNew(ORION_INTERFACE_QUEUE_COUNT, sizeof(OrionInterfaceQueueData), NULL);
+    orionInterfaceQueue = osMessageQueueNew(ORION_INTERFACE_QUEUE_COUNT, sizeof(OrionCanInfo), NULL);
     canTxGatekeeperQueue = osMessageQueueNew(CAN_TX_GATEKEEPER_QUEUE_COUNT, sizeof(CanTxGatekeeperQueueData), NULL);
     /* USER CODE END RTOS_QUEUES */
 
@@ -623,8 +622,8 @@ static void MX_GPIO_Init(void)
 
     /*Configure GPIO pins : ORION_CHARGE_ENABLE_SENSE_Pin ORION_DISCHARGE_ENABLE_SENSE_Pin */
     GPIO_InitStruct.Pin = ORION_CHARGE_ENABLE_SENSE_Pin | ORION_DISCHARGE_ENABLE_SENSE_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_PULLDOWN;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
     /*Configure GPIO pin : CURRENT_SENSE_ENABLE_Pin */
@@ -652,10 +651,6 @@ static void MX_GPIO_Init(void)
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_PULLUP;
     HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
-
-    /* EXTI interrupt init*/
-    HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
 }
 
@@ -718,15 +713,6 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef* hcan)
     message->canRxHeader = hdr;
     memcpy(message->data, data, sizeof(uint8_t) * 8);
     osMessageQueuePut(canRxParserQueue, message, 0, 0);
-}
-
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-    OrionInterfaceQueueData* message = (OrionInterfaceQueueData*)pvPortMalloc(sizeof(OrionInterfaceQueueData));
-    message->type = GPIO_EXTI;
-    message->value.gpioNum = GPIO_Pin; //TODO: Revisit union assignment
-
-    osMessageQueuePut(orionInterfaceQueue, message, 0, 0);
 }
 
 /* USER CODE END 4 */
