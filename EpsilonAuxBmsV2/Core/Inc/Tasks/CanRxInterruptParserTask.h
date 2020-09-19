@@ -12,4 +12,4 @@ static const uint32_t ORION_TEMP_INFO_STDID = 0x304;
 static const uint32_t ORION_PACK_INFO_STDID = 0x302;
 
 void canRxInterruptParserTask(void* arg);
-void canRxInterruptParser(OrionCanInfo* queueData);
+void canRxInterruptParser(OrionCanInfo* queueData, CanRxQueueData* canQueueData);

@@ -8,7 +8,7 @@
 #include "Trip.h"
 
 void orionInterfaceTask(void* arg);
-void orionInterface(void);
+void orionInterface(OrionCanInfo* message);
 void updateAuxStatus(AuxStatus* auxStatusToRead);
 void checkCellVoltage(OrionCanInfo* message, AuxStatus* auxStatusToUpdate);
 

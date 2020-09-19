@@ -2,15 +2,19 @@
 
 void orionInterfaceTask(void* arg)
 {
+    OrionCanInfo message = (OrionCanInfo)
+    {
+        0
+    };
+
     for (;;)
     {
-        orionInterface();
+        orionInterface(&message);
     }
 }
 
-void orionInterface(void)
+void orionInterface(OrionCanInfo* message)
 {
-    OrionCanInfo* message = NULL;
     osStatus_t status = osMessageQueueGet(orionInterfaceQueue, message, NULL, 400);
     AuxStatus localAuxStatus = (AuxStatus)
     {
@@ -26,7 +30,7 @@ void orionInterface(void)
     uint8_t orionChargeEnableSense = HAL_GPIO_ReadPin(ORION_CHARGE_ENABLE_SENSE_GPIO_Port, ORION_CHARGE_ENABLE_SENSE_Pin);
 
 
-    if (status == osErrorTimeout || message == NULL)
+    if (status == osErrorTimeout)
     {
         //Set orion can message recieved recently to 0
         localAuxStatus.orionCanReceivedRecently = 0;

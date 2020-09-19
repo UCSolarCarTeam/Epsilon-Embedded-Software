@@ -709,10 +709,10 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef* hcan)
         return;
     }
 
-    CanRxQueueData* message = (CanRxQueueData*)pvPortMalloc(sizeof(CanRxQueueData));
-    message->canRxHeader = hdr;
-    memcpy(message->data, data, sizeof(uint8_t) * 8);
-    osMessageQueuePut(canRxParserQueue, message, 0, 0);
+    CanRxQueueData message;
+    message.canRxHeader = hdr;
+    memcpy(message.data, data, sizeof(uint8_t) * 8);
+    osMessageQueuePut(canRxParserQueue, &message, 0, 0);
 }
 
 /* USER CODE END 4 */

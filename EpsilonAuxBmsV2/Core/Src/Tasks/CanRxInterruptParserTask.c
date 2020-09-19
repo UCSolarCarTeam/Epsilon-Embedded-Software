@@ -6,22 +6,20 @@ void canRxInterruptParserTask(void* arg)
     {
         0
     };
+    CanRxQueueData canQueueData = (CanRxQueueData)
+    {
+        0
+    };
 
     for (;;)
     {
-        canRxInterruptParser(&queueData);
+        canRxInterruptParser(&queueData, &canQueueData);
     }
 }
 
-void canRxInterruptParser(OrionCanInfo* queueData)
+void canRxInterruptParser(OrionCanInfo* queueData, CanRxQueueData* canQueueData)
 {
-    CanRxQueueData* canQueueData = NULL;
     osMessageQueueGet(canRxParserQueue, canQueueData, NULL, osWaitForever);
-
-    if (canQueueData == NULL)
-    {
-        return;
-    }
 
     CAN_RxHeaderTypeDef hdr = canQueueData->canRxHeader;
     uint8_t* data = canQueueData->data;
@@ -52,6 +50,4 @@ void canRxInterruptParser(OrionCanInfo* queueData)
     {
         osMessageQueuePut(orionInterfaceQueue, queueData, 0, 0);
     }
-
-    vPortFree(canQueueData);
 }
