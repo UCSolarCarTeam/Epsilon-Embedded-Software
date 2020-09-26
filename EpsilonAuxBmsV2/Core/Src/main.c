@@ -31,7 +31,6 @@
 #include "ContactorState.h"
 #include "ErrorTypes.h"
 #include "OrionCanInfo.h"
-#include "OrionInterfaceQueueData.h"
 // Task Includes
 #include "CanRxInterruptParserTask.h"
 #include "CanTxGatekeeperTask.h"
@@ -39,13 +38,13 @@
 #include "CommonContactorGatekeeperTask.h"
 #include "ContactorStatusUpdateTask.h"
 #include "DischargeContactorGatekeeperTask.h"
-#include "GpioExtIInterruptParserTask.h"
 #include "OrionInterfaceTask.h"
 #include "ReadAuxVoltageTask.h"
 #include "SendAuxStatusTask.h"
 #include "SendAuxTripTask.h"
 #include "SendHeartbeatTask.h"
 #include "StartupTask.h"
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -55,10 +54,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define CAN_RX_PARSER_QUEUE_COUNT 1
-#define GPIO_EXTI_PARSER_QUEUE_COUNT 1
-#define ORION_INTERFACE_QUEUE_COUNT 2
-#define CAN_TX_GATEKEEPER_QUEUE_COUNT 3
+#define CAN_RX_PARSER_QUEUE_COUNT 4 // Anticipating 3 messages being received. +1 for extra headroom
+#define ORION_INTERFACE_QUEUE_COUNT 4 // Same reason as above
+#define CAN_TX_GATEKEEPER_QUEUE_COUNT 1
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -84,11 +82,14 @@ const osThreadAttr_t defaultTask_attributes =
 };
 /* USER CODE BEGIN PV */
 // CAN Tx Header
-CAN_TxHeaderTypeDef canTxHdr;
+const CAN_TxHeaderTypeDef baseCanTxHdr = {.ExtId = 0,
+                                          .RTR = CAN_RTR_DATA,
+                                          .IDE = CAN_ID_STD,
+                                          .TransmitGlobalTime = DISABLE
+                                         };
 
 // Queues
 osMessageQueueId_t canRxParserQueue;
-osMessageQueueId_t gpioExtIParserQueue;
 osMessageQueueId_t orionInterfaceQueue;
 osMessageQueueId_t canTxGatekeeperQueue;
 
@@ -110,7 +111,6 @@ AuxBmsContactorState auxBmsContactorState;
 // Task Handles
 osThreadId_t startupTaskHandle;
 osThreadId_t canRxInterruptParserTaskHandle;
-osThreadId_t gpioExtIInterruptParserTaskHandle;
 osThreadId_t orionInterfaceTaskHandle;
 osThreadId_t canTxGatekeeperTaskHandle;
 osThreadId_t sendAuxStatusTaskHandle;
@@ -135,12 +135,7 @@ const osThreadAttr_t  canRxInterruptParserTask_attributes =
     .priority = (osPriority_t) osPriorityHigh1,
     .stack_size = 128 * 4
 };
-const osThreadAttr_t  gpioExtIInterruptParserTask_attributes =
-{
-    .name = "gpioExtIInterruptParserTask",
-    .priority = (osPriority_t) osPriorityHigh1,
-    .stack_size = 128 * 4
-};
+
 const osThreadAttr_t  orionInterfaceTask_attributes =
 {
     .name = "orionInterfaceTask",
@@ -240,10 +235,7 @@ void MX_CAN1_User_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-// CAN Rx STDIDs
-static const uint32_t ORION_MAX_MIN_VOLTAGES_STDID  = 0x305;
-static const uint32_t ORION_TEMP_INFO_STDID = 0x304;
-static const uint32_t ORION_PACK_INFO_STDID = 0x302;
+
 /* USER CODE END 0 */
 
 /**
@@ -343,8 +335,7 @@ int main(void)
 
     /* USER CODE BEGIN RTOS_QUEUES */
     canRxParserQueue = osMessageQueueNew(CAN_RX_PARSER_QUEUE_COUNT, sizeof(CanRxQueueData), NULL);
-    gpioExtIParserQueue = osMessageQueueNew(GPIO_EXTI_PARSER_QUEUE_COUNT, sizeof(uint16_t), NULL);
-    orionInterfaceQueue = osMessageQueueNew(ORION_INTERFACE_QUEUE_COUNT, sizeof(OrionInterfaceQueueData), NULL);
+    orionInterfaceQueue = osMessageQueueNew(ORION_INTERFACE_QUEUE_COUNT, sizeof(OrionCanInfo), NULL);
     canTxGatekeeperQueue = osMessageQueueNew(CAN_TX_GATEKEEPER_QUEUE_COUNT, sizeof(CanTxGatekeeperQueueData), NULL);
     /* USER CODE END RTOS_QUEUES */
 
@@ -355,7 +346,6 @@ int main(void)
     /* USER CODE BEGIN RTOS_THREADS */
     startupTaskHandle = osThreadNew(startupTask, NULL, &startupTask_attributes);
     canRxInterruptParserTaskHandle = osThreadNew(canRxInterruptParserTask, NULL, &canRxInterruptParserTask_attributes);
-    gpioExtIInterruptParserTaskHandle = osThreadNew(gpioExtIInterruptParserTask, NULL, &gpioExtIInterruptParserTask_attributes);
     orionInterfaceTaskHandle = osThreadNew(orionInterfaceTask, NULL, &orionInterfaceTask_attributes);
     canTxGatekeeperTaskHandle = osThreadNew(canTxGatekeeperTask, NULL, &canTxGatekeeperTask_attributes);
     sendAuxStatusTaskHandle = osThreadNew(sendAuxStatusTask, NULL, &sendAuxStatusTask_attributes);
@@ -636,8 +626,8 @@ static void MX_GPIO_Init(void)
 
     /*Configure GPIO pins : ORION_CHARGE_ENABLE_SENSE_Pin ORION_DISCHARGE_ENABLE_SENSE_Pin */
     GPIO_InitStruct.Pin = ORION_CHARGE_ENABLE_SENSE_Pin | ORION_DISCHARGE_ENABLE_SENSE_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_PULLDOWN;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
     /*Configure GPIO pin : CURRENT_SENSE_ENABLE_Pin */
@@ -665,10 +655,6 @@ static void MX_GPIO_Init(void)
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_PULLUP;
     HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
-
-    /* EXTI interrupt init*/
-    HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
 }
 
@@ -710,12 +696,24 @@ void MX_CAN1_User_Init(void)
         /* Filter configuration Error */
         Error_Handler();
     }
-
-    canTxHdr.ExtId = 0;
-    canTxHdr.RTR = CAN_RTR_DATA;
-    canTxHdr.IDE = CAN_ID_STD;
-    canTxHdr.TransmitGlobalTime = DISABLE;
 }
+
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef* hcan)
+{
+    CAN_RxHeaderTypeDef hdr;
+    uint8_t             data[8] = {0};
+
+    if (HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &hdr, data) != HAL_OK)
+    {
+        return;
+    }
+
+    CanRxQueueData message;
+    message.canRxHeader = hdr;
+    memcpy(message.data, data, sizeof(uint8_t) * 8);
+    osMessageQueuePut(canRxParserQueue, &message, 0, 0);
+}
+
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
