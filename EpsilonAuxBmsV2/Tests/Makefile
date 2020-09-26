@@ -6,6 +6,8 @@ TESTS = \
 	DischargeContactorGatekeeperTaskTest \
 	ContactorStatusUpdateTaskTest \
 	CheckCurrentTest \
+	SendAuxStatusTaskTest \
+	SendAuxTripTaskTest \
 	TripTest \
 	OrionInterfaceTest \
 

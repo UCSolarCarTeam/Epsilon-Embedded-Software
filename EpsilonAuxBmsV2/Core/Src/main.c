@@ -82,7 +82,11 @@ const osThreadAttr_t defaultTask_attributes =
 };
 /* USER CODE BEGIN PV */
 // CAN Tx Header
-CAN_TxHeaderTypeDef canTxHdr;
+const CAN_TxHeaderTypeDef baseCanTxHdr = {.ExtId = 0,
+                                          .RTR = CAN_RTR_DATA,
+                                          .IDE = CAN_ID_STD,
+                                          .TransmitGlobalTime = DISABLE
+                                         };
 
 // Queues
 osMessageQueueId_t canRxParserQueue;
@@ -692,11 +696,6 @@ void MX_CAN1_User_Init(void)
         /* Filter configuration Error */
         Error_Handler();
     }
-
-    canTxHdr.ExtId = 0;
-    canTxHdr.RTR = CAN_RTR_DATA;
-    canTxHdr.IDE = CAN_ID_STD;
-    canTxHdr.TransmitGlobalTime = DISABLE;
 }
 
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef* hcan)
