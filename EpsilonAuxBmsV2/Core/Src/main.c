@@ -54,8 +54,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define CAN_RX_PARSER_QUEUE_COUNT 4
-#define ORION_INTERFACE_QUEUE_COUNT 4
+#define CAN_RX_PARSER_QUEUE_COUNT 4 // Anticipating 3 messages being received. +1 for extra headroom
+#define ORION_INTERFACE_QUEUE_COUNT 4 // Same reason as above
 #define CAN_TX_GATEKEEPER_QUEUE_COUNT 1
 /* USER CODE END PD */
 
