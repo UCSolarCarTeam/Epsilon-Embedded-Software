@@ -6,6 +6,7 @@ TESTS = \
 	DischargeContactorGatekeeperTaskTest \
 	ContactorStatusUpdateTaskTest \
 	CheckCurrentTest \
+	TripTest \
 
 SUBCLEAN = $(addsuffix .clean,$(TESTS))
 
