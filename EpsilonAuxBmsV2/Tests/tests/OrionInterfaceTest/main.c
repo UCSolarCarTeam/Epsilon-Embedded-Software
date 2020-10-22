@@ -15,7 +15,7 @@ void tearDown(void)
 
 int main (void)
 {
-     UNITY_BEGIN();
+    UNITY_BEGIN();
 
     runOrionInterfaceTests();
 

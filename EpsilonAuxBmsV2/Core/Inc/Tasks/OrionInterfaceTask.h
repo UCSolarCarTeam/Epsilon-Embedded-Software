@@ -12,6 +12,8 @@ void orionInterface(OrionCanInfo* message);
 void updateAuxStatus(AuxStatus* auxStatusToRead);
 void checkCellVoltage(OrionCanInfo* message, AuxStatus* auxStatusToUpdate);
 
+AuxStatus localAuxStatus;
+AuxTrip localAuxTrip;
 
 extern osMessageQueueId_t orionInterfaceQueue;
 extern AuxStatus auxStatus;

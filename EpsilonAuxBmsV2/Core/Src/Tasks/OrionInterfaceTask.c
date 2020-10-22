@@ -35,19 +35,23 @@ When opening a contactor, it temporarily raises the gatekeeper task’s priority
 void orionInterface(OrionCanInfo* message)
 {
     osStatus_t status = osMessageQueueGet(orionInterfaceQueue, message, NULL, 400);
-    AuxStatus localAuxStatus = (AuxStatus)
-    {
-        0
-    };
-    AuxTrip localAuxTrip = (AuxTrip)
-    {
-        0
-    };
+
+
     uint8_t shouldDisconnectContactors = 0;
     // Read Orion charge and discharge enable GPIO
     uint8_t orionDischargeEnableSense = HAL_GPIO_ReadPin(ORION_DISCHARGE_ENABLE_SENSE_GPIO_Port, ORION_DISCHARGE_ENABLE_SENSE_Pin);
     uint8_t orionChargeEnableSense = HAL_GPIO_ReadPin(ORION_CHARGE_ENABLE_SENSE_GPIO_Port, ORION_CHARGE_ENABLE_SENSE_Pin);
-
+    // Set aux status and aux trip to default values
+    localAuxStatus = (AuxStatus)
+    {
+        0
+    };
+    localAuxStatus.allowCharge = 1;
+    localAuxStatus.allowDischarge = 1;
+    localAuxTrip = (AuxTrip)
+    {
+        0
+    };
 
     if (status == osErrorTimeout) // If waiting on the queue times out
     {
@@ -61,15 +65,18 @@ void orionInterface(OrionCanInfo* message)
         checkCellVoltage(message, &localAuxStatus);
         localAuxStatus.dischargeShouldTrip = checkDischargeTrip(message, &localAuxTrip);
         localAuxStatus.chargeShouldTrip = checkChargeTrip(message, &localAuxTrip);
+        uint8_t protectionTrip = checkProtectionTrip(message, &localAuxTrip); // Without this line, the test_TooHighMaxCellVoltageShouldTurnOffChargeAndUpdateStatuses test fails for some reason
         shouldDisconnectContactors = localAuxStatus.dischargeShouldTrip
                                      || localAuxStatus.chargeShouldTrip
-                                     || checkProtectionTrip(message, &localAuxTrip);
+                                     || protectionTrip;
     }
 
     // Determine trip conditions and contactor settings based on Orion GPIO
-    if (!orionDischargeEnableSense && !orionChargeEnableSense)
+    shouldDisconnectContactors |= (!orionDischargeEnableSense && !orionChargeEnableSense);
+
+    // Set auxStatus if a trip is to occur (due to GPIO or CAN messages)
+    if (shouldDisconnectContactors)
     {
-        shouldDisconnectContactors = 1;
         localAuxStatus.allowCharge = 0;
         localAuxStatus.allowDischarge = 0;
         localAuxStatus.strobeBmsLight = 1;
