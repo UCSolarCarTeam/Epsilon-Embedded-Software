@@ -62,3 +62,4 @@ void sendAuxStatus(CanTxGatekeeperQueueData* canQueueData, uint32_t* prevWakeTim
     *prevWakeTime += SEND_AUX_STATUS_TASK_FREQ;
     osDelayUntil(*prevWakeTime);
 }
+
