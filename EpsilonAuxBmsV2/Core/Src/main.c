@@ -269,10 +269,10 @@ int main(void)
     auxBmsContactorState = (AuxBmsContactorState)
     {
         .commonState = OPEN,
-         .chargeState = OPEN,
-          .dischargeState = OPEN,
-           .startupDone = 0,
-            .contactorsDisconnected = 0
+        .chargeState = OPEN,
+        .dischargeState = OPEN,
+        .startupDone = 0,
+        .contactorsDisconnected = 0
     };
 
     /* USER CODE END 1 */

@@ -14,21 +14,21 @@ void setNominalAuxStatus()
     auxStatus = (AuxStatus)
     {
         .commonContactorState = 1,
-         .chargeContactorState = 1,
-          .dischargeContactorState = 1,
-           .auxVoltage = 1,
-            .highVoltageEnableState = 1,
-             .strobeBmsLight = 0,
-              .allowCharge = 1,
-               .allowDischarge = 1,
-                .orionCanReceivedRecently = 1,
-                 .chargeContactorError = 0,
-                  .dischargeContactorError = 0,
-                   .commonContactorError = 0,
-                    .dischargeShouldTrip = 0,
-                     .chargeShouldTrip = 0,
-                      .chargeOpenButShouldBeClosed = 0,
-                       .dischargeOpenButShouldBeClosed = 0
+        .chargeContactorState = 1,
+        .dischargeContactorState = 1,
+        .auxVoltage = 1,
+        .highVoltageEnableState = 1,
+        .strobeBmsLight = 0,
+        .allowCharge = 1,
+        .allowDischarge = 1,
+        .orionCanReceivedRecently = 1,
+        .chargeContactorError = 0,
+        .dischargeContactorError = 0,
+        .commonContactorError = 0,
+        .dischargeShouldTrip = 0,
+        .chargeShouldTrip = 0,
+        .chargeOpenButShouldBeClosed = 0,
+        .dischargeOpenButShouldBeClosed = 0
     };
 }
 

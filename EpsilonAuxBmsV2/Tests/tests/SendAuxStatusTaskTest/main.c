@@ -19,5 +19,5 @@ int main (void)
 {
 
     runSendAuxStatusTaskTest();
-    
+
 }

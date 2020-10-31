@@ -17,7 +17,7 @@ void tearDown(void)
 
 int main (void)
 {
-    
+
     runSendAuxTripTaskTest();
-    
+
 }
