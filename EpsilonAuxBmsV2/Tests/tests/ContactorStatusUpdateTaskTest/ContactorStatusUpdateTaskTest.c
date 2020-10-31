@@ -57,9 +57,9 @@ void basicAuxStatusUpdateTest()
     SensePinValues expectedPinValues = (SensePinValues)
     {
         .commonSense = GPIO_PIN_RESET,
-        .chargeSense = GPIO_PIN_SET,
-        .dischargeSense = GPIO_PIN_RESET,
-        .hvEnable = GPIO_PIN_SET
+         .chargeSense = GPIO_PIN_SET,
+          .dischargeSense = GPIO_PIN_RESET,
+           .hvEnable = GPIO_PIN_SET
     };
     setSensePinReadValues(expectedPinValues);
 
@@ -91,9 +91,9 @@ void basicInverseAuxStatusUpdateTest()
     SensePinValues expectedPinValues = (SensePinValues)
     {
         .commonSense = GPIO_PIN_SET,
-        .chargeSense = GPIO_PIN_RESET,
-        .dischargeSense = GPIO_PIN_SET,
-        .hvEnable = GPIO_PIN_RESET
+         .chargeSense = GPIO_PIN_RESET,
+          .dischargeSense = GPIO_PIN_SET,
+           .hvEnable = GPIO_PIN_RESET
     };
     setSensePinReadValues(expectedPinValues);
 
@@ -125,9 +125,9 @@ void contactorErrorsTest()
     SensePinValues expectedPinValues = (SensePinValues)
     {
         .commonSense = GPIO_PIN_RESET,
-        .chargeSense = GPIO_PIN_SET,
-        .dischargeSense = GPIO_PIN_SET,
-        .hvEnable = GPIO_PIN_RESET
+         .chargeSense = GPIO_PIN_SET,
+          .dischargeSense = GPIO_PIN_SET,
+           .hvEnable = GPIO_PIN_RESET
     };
     setSensePinReadValues(expectedPinValues);
 
@@ -165,9 +165,9 @@ void startupDoneTest()
     SensePinValues expectedPinValues = (SensePinValues)
     {
         .commonSense = GPIO_PIN_RESET,
-        .chargeSense = GPIO_PIN_RESET,
-        .dischargeSense = GPIO_PIN_RESET,
-        .hvEnable = GPIO_PIN_SET
+         .chargeSense = GPIO_PIN_RESET,
+          .dischargeSense = GPIO_PIN_RESET,
+           .hvEnable = GPIO_PIN_SET
     };
     setSensePinReadValues(expectedPinValues);
 

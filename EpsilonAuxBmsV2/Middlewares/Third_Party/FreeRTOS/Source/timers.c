@@ -244,12 +244,12 @@ BaseType_t xTimerCreateTimerTask( void )
 
             vApplicationGetTimerTaskMemory( &pxTimerTaskTCBBuffer, &pxTimerTaskStackBuffer, &ulTimerTaskStackSize );
             xTimerTaskHandle = xTaskCreateStatic(	prvTimerTask,
-                                                    configTIMER_SERVICE_TASK_NAME,
-                                                    ulTimerTaskStackSize,
-                                                    NULL,
-                                                    ( ( UBaseType_t ) configTIMER_TASK_PRIORITY ) | portPRIVILEGE_BIT,
-                                                    pxTimerTaskStackBuffer,
-                                                    pxTimerTaskTCBBuffer );
+            configTIMER_SERVICE_TASK_NAME,
+            ulTimerTaskStackSize,
+            NULL,
+            ( ( UBaseType_t ) configTIMER_TASK_PRIORITY ) | portPRIVILEGE_BIT,
+            pxTimerTaskStackBuffer,
+            pxTimerTaskTCBBuffer );
 
             if ( xTimerTaskHandle != NULL )
             {
@@ -259,11 +259,11 @@ BaseType_t xTimerCreateTimerTask( void )
 #else
         {
             xReturn = xTaskCreate(	prvTimerTask,
-                                    configTIMER_SERVICE_TASK_NAME,
-                                    configTIMER_TASK_STACK_DEPTH,
-                                    NULL,
-                                    ( ( UBaseType_t ) configTIMER_TASK_PRIORITY ) | portPRIVILEGE_BIT,
-                                    &xTimerTaskHandle );
+            configTIMER_SERVICE_TASK_NAME,
+            configTIMER_TASK_STACK_DEPTH,
+            NULL,
+            ( ( UBaseType_t ) configTIMER_TASK_PRIORITY ) | portPRIVILEGE_BIT,
+            &xTimerTaskHandle );
         }
 #endif /* configSUPPORT_STATIC_ALLOCATION */
     }
