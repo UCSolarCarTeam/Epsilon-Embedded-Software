@@ -3,6 +3,11 @@
 #include "SendAuxStatusTask.h"
 #include "Mockcmsis_os2.h"
 
+/*
+checks to made sure that the data from auxStatus is successfully sent
+into the data array of canQueueData
+*/
+
 osMutexId_t auxStatusOrionInterfaceMutex;
 osMutexId_t auxStatusReadAuxVoltageMutex;
 osMutexId_t auxStatusContactorStatusUpdateMutex;
@@ -31,7 +36,7 @@ CanTxGatekeeperQueueData expectedCanQueueData = (CanTxGatekeeperQueueData)
     };
 
 
-void checkCanQueueDataTest()
+void checkCanQueueDataForAuxStatus()
 {
     
 
@@ -62,7 +67,7 @@ int runSendAuxStatusTaskTest()
 {
     UNITY_BEGIN();
 
-    RUN_TEST(checkCanQueueDataTest);
+    RUN_TEST(checkCanQueueDataForAuxStatus);
     
 
     return UNITY_END();

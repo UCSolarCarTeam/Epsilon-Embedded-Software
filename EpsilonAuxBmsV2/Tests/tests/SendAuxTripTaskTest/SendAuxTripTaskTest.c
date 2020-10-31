@@ -3,7 +3,10 @@
 #include "SendAuxTripTask.h"
 #include "Mockcmsis_os2.h"
 
-
+/*
+checks to made sure that the data from auxTrip is successfully sent
+into the data array of canQueueData
+*/
 osMutexId_t auxTripMutex;
 
 const CAN_TxHeaderTypeDef baseCanTxHdr;
@@ -16,11 +19,17 @@ AuxTrip auxTrip = {
     .protectionTrip = 0
 };
 
-CanTxGatekeeperQueueData canQueueData;
+CanTxGatekeeperQueueData canQueueData = (CanTxGatekeeperQueueData)
+{
+    0
+};
 
-CanTxGatekeeperQueueData actualCanQueueData;
+CanTxGatekeeperQueueData actualCanQueueData = (CanTxGatekeeperQueueData)
+{
+    0
+};
 
-void checkCanQueueData ()
+void checkCanQueueDataForAuxTrip ()
 {
     actualCanQueueData.data[0] = 0b0101001;
 
@@ -31,7 +40,7 @@ void checkCanQueueData ()
     osMutexRelease_ExpectAndReturn(auxTripMutex, 0);
     osDelayUntil_ExpectAndReturn(prevWakeTime + SEND_AUX_TRIP_TASK_FREQ, osOK);
 
-    checkCanQueueData( &canQueueData, &prevWakeTime);
+    sendAuxTrip( &canQueueData, &prevWakeTime);
 
     TEST_ASSERT_EQUAL_MESSAGE(canQueueData.data[0], actualCanQueueData.data[0],"Data bits at index 0 aren't equal");
 
@@ -44,7 +53,7 @@ int runSendAuxTripTaskTest()
 {
     UNITY_BEGIN();
 
-    RUN_TEST(checkCanQueueData);
+    RUN_TEST(checkCanQueueDataForAuxTrip);
     
 
     return UNITY_END();

@@ -17,8 +17,7 @@ void tearDown(void)
 
 int main (void)
 {
-    UNITY_BEGIN();
+    
     runSendAuxTripTaskTest();
-    return UNITY_END();
     
 }

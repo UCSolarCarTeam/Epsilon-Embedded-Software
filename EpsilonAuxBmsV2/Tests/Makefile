@@ -7,7 +7,8 @@ TESTS = \
 	ContactorStatusUpdateTaskTest \
 	CheckCurrentTest \
 	SendAuxStatusTaskTest \
-	SendAuxTripTaskTest \
+	SendAuxTripTaskTest
+	
 
 SUBCLEAN = $(addsuffix .clean,$(TESTS))
 
