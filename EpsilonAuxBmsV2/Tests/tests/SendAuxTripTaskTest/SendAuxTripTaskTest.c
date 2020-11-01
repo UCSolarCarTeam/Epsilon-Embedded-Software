@@ -7,8 +7,8 @@
 checks to made sure that the data from auxTrip is successfully sent
 into the data array of canQueueData
 */
-osMutexId_t auxTripMutex;
 
+osMutexId_t auxTripMutex;
 const CAN_TxHeaderTypeDef baseCanTxHdr;
 osMessageQueueId_t canTxGatekeeperQueue;
 
@@ -33,7 +33,6 @@ CanTxGatekeeperQueueData actualCanQueueData = (CanTxGatekeeperQueueData)
 void checkCanQueueDataForAuxTrip ()
 {
     actualCanQueueData.data[0] = 0b0101001;
-
     uint32_t prevWakeTime = 0;
 
     osMutexAcquire_ExpectAndReturn(auxTripMutex, 100, osOK);
@@ -44,18 +43,13 @@ void checkCanQueueDataForAuxTrip ()
     sendAuxTrip( &canQueueData, &prevWakeTime);
 
     TEST_ASSERT_EQUAL_MESSAGE(canQueueData.data[0], actualCanQueueData.data[0], "Data bits at index 0 aren't equal");
-
-
 }
-
-
 
 int runSendAuxTripTaskTest()
 {
     UNITY_BEGIN();
 
     RUN_TEST(checkCanQueueDataForAuxTrip);
-
 
     return UNITY_END();
 }

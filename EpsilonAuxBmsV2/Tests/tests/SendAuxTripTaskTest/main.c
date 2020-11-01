@@ -6,7 +6,6 @@
 #include "stm32f4xx_hal.h"
 #include "SendAuxTripTaskTest.h"
 
-
 void setUp(void)
 {
 }
@@ -17,7 +16,5 @@ void tearDown(void)
 
 int main (void)
 {
-
-    runSendAuxTripTaskTest();
-
+    return runSendAuxTripTaskTest();
 }
