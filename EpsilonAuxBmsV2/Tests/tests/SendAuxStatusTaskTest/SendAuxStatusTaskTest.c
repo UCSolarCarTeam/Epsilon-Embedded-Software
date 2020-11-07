@@ -67,3 +67,4 @@ int runSendAuxStatusTaskTest()
 
     return UNITY_END();
 }
+
