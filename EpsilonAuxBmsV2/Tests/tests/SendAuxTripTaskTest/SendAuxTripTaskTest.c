@@ -53,4 +53,3 @@ int runSendAuxTripTaskTest()
 
     return UNITY_END();
 }
-
