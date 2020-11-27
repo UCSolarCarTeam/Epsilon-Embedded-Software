@@ -10,6 +10,13 @@ void readAuxVoltageTask(void* arg)
     }
 }
 
+/*
+Reads the auxiliary battery voltage via SPI.
+Triggers the SPI read to occur, then waits for a notification that will occur when the SPI read is done.
+It reads the data and transforms it to determine the voltage and updates the voltage field of the AuxStatus variable
+If the auxVoltageReadyNotification times out, there was an error so set voltage to an error value
+It must acquire the auxStatusReadAuxVoltageMutex before updating the AuxStatus variable
+*/
 void readAuxVoltage(uint32_t* prevWakeTime)
 {
     // Store voltage value from SPI
@@ -19,6 +26,7 @@ void readAuxVoltage(uint32_t* prevWakeTime)
     // Set Chip Select to be low
     HAL_GPIO_WritePin(ADC_nCS_GPIO_Port, ADC_nCS_Pin, GPIO_PIN_RESET);
 
+    // Initiate SPI read
     if (HAL_SPI_Receive_DMA(&hspi3, rxBuff, 2) == HAL_OK)
     {
         //Wait for spi to finish

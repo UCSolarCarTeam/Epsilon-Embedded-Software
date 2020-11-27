@@ -714,6 +714,11 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef* hcan)
     osMessageQueuePut(canRxParserQueue, &message, 0, 0);
 }
 
+void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef* hspi)
+{
+  osThreadFlagsSet(readAuxVoltageTaskHandle,0x1);
+}
+
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
