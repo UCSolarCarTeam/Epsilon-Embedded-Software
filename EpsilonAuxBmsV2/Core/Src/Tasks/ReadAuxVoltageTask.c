@@ -21,13 +21,12 @@ void readAuxVoltage(uint32_t* prevWakeTime)
 {
     // Store voltage value from SPI
     uint16_t spiVoltage = 0;
-    // Data buffer
-    uint8_t rxBuff[2] = {0};
+
     // Set Chip Select to be low
     HAL_GPIO_WritePin(ADC_nCS_GPIO_Port, ADC_nCS_Pin, GPIO_PIN_RESET);
 
     // Initiate SPI read
-    if (HAL_SPI_Receive_DMA(&hspi3, rxBuff, 2) == HAL_OK)
+    if (HAL_SPI_Receive_DMA(&hspi3, spiRxBuff, 2) == HAL_OK)
     {
         //Wait for spi to finish
         uint32_t flags = osThreadFlagsWait(0x1, osFlagsWaitAny, SPI_TIMEOUT);
@@ -43,7 +42,7 @@ void readAuxVoltage(uint32_t* prevWakeTime)
             // rxBuff[1] = 0000 1111
             // rxBuff[0] = 1111 1100
             // data = 11 1111 1111
-            spiVoltage =  0x03FF & ((uint16_t)(rxBuff[1] << 6) | (uint16_t)((rxBuff[0]) >> 2));
+            spiVoltage =  0x03FF & ((uint16_t)(spiRxBuff[1] << 6) | (uint16_t)((spiRxBuff[0]) >> 2));
         }
 
     }
