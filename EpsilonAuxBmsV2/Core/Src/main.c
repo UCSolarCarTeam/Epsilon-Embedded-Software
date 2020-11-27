@@ -81,6 +81,9 @@ const osThreadAttr_t defaultTask_attributes =
     .stack_size = 128 * 4
 };
 /* USER CODE BEGIN PV */
+// SPI Rx Buffer
+uint8_t spiRxBuff[2] = {0};
+
 // CAN Tx Header
 const CAN_TxHeaderTypeDef baseCanTxHdr = {.ExtId = 0,
                                           .RTR = CAN_RTR_DATA,
@@ -716,7 +719,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef* hcan)
 
 void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef* hspi)
 {
-  osThreadFlagsSet(readAuxVoltageTaskHandle,0x1);
+    osThreadFlagsSet(readAuxVoltageTaskHandle, 0x1);
 }
 
 /* USER CODE END 4 */

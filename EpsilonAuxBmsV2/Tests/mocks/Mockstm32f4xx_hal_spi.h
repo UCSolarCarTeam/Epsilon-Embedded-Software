@@ -4,6 +4,7 @@
 
 #include "unity.h"
 #include "stm32f4xx_hal.h"
+#include "HalMockTypeDefs.h"
 #include "stm32f4xx_hal_spi.h"
 
 /* Ignore the following warnings, since we are copying code */
