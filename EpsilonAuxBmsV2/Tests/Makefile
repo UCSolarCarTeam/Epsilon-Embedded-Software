@@ -10,6 +10,7 @@ TESTS = \
 	SendAuxTripTaskTest \
 	TripTest \
 	OrionInterfaceTest \
+	ReadAuxVoltageTaskTest \
 
 SUBCLEAN = $(addsuffix .clean,$(TESTS))
 
