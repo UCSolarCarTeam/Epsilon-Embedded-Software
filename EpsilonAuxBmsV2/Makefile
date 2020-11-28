@@ -88,6 +88,10 @@ Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c \
 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c \
 Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 
+ifeq ($(DEBUG), 1)
+C_SOURCES += Core/Src/Tasks/MemoryDebugTask.c
+endif
+
 # ASM sources
 ASM_SOURCES =  \
 startup_stm32f407xx.s
@@ -137,6 +141,9 @@ C_DEFS =  \
 -DUSE_HAL_DRIVER \
 -DSTM32F407xx
 
+ifeq ($(DEBUG), 1)
+C_DEFS += -DMEMORY_DEBUG
+endif
 
 # AS includes
 AS_INCLUDES =  \
