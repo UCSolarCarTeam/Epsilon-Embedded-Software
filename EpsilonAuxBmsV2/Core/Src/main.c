@@ -722,6 +722,67 @@ void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef* hspi)
     osThreadFlagsSet(readAuxVoltageTaskHandle, 0x1);
 }
 
+void vApplicationMallocFailedHook( void )
+{
+    errorCode = MALLOC_FAILED;
+    Error_Handler();
+}
+
+void vApplicationStackOverflowHook( TaskHandle_t* pxTask, signed char* pcTaskName )
+{
+
+    if (*pxTask == startupTaskHandle)
+    {
+        errorCode = STACK_OVERFLOW_STARTUP_TASK;
+    }
+    else if (*pxTask == canRxInterruptParserTaskHandle)
+    {
+        errorCode = STACK_OVERFLOW_CAN_RX_PARSER_TASK;
+    }
+    else if (*pxTask == orionInterfaceTaskHandle)
+    {
+        errorCode = STACK_OVERFLOW_ORION_INTERFACE_TASK;
+    }
+    else if (*pxTask == canTxGatekeeperTaskHandle)
+    {
+        errorCode = STACK_OVERFLOW_CAN_TX_GTKPR_TASK;
+    }
+    else if (*pxTask == sendAuxStatusTaskHandle)
+    {
+        errorCode = STACK_OVERFLOW_SEND_AUX_STATUS_TASK;
+    }
+    else if (*pxTask == sendHeartbeatTaskHandle)
+    {
+        errorCode = STACK_OVERFLOW_SEND_HEARTBEAT_TASK;
+    }
+    else if (*pxTask == commonContactorGatekeeperTaskHandle)
+    {
+        errorCode = STACK_OVERFLOW_COMMON_CONTACTOR_GATEKEEPER_TASK;
+    }
+    else if (*pxTask == chargeContactorGatekeeperTaskHandle)
+    {
+        errorCode = STACK_OVERFLOW_CHARGE_CONTACTOR_GATEKEEPER_TASK;
+    }
+    else if (*pxTask == dischargeContactorGatekeeperTaskHandle)
+    {
+        errorCode = STACK_OVERFLOW_DISCHARGE_CONTACTOR_GATEKEEPER_TASK;
+    }
+    else if (*pxTask == contactorStatusUpdateTaskHandle)
+    {
+        errorCode = STACK_OVERFLOW_CONTACTOR_STATUS_UPDATE_TASK;
+    }
+    else if (*pxTask == readAuxVoltageTaskHandle)
+    {
+        errorCode = STACK_OVERFLOW_READ_AUX_VOLTAGE_TASK;
+    }
+    else
+    {
+        errorCode = STACK_OVERFLOW;
+    }
+
+    Error_Handler();
+}
+
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -773,6 +834,20 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 void Error_Handler(void)
 {
     /* USER CODE BEGIN Error_Handler_Debug */
+    vTaskSuspendAll();// Suspend Scheduler
+    HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_RESET);
+    uint32_t mailbox;
+    uint8_t data[1] = {errorCode};
+    CAN_TxHeaderTypeDef canTxHeader = baseCanTxHdr;
+    canTxHeader.DLC = 1;
+    //TODO set the STDID
+    HAL_CAN_AddTxMessage(&hcan1, &(canTxHeader), data, &mailbox);
+
+    for (;;)
+    {
+
+    }
+
     /* User can add his own implementation to report the HAL error return state */
 
     /* USER CODE END Error_Handler_Debug */
