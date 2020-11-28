@@ -45,6 +45,11 @@
 #include "SendHeartbeatTask.h"
 #include "StartupTask.h"
 #include <string.h>
+
+#ifdef MEMORY_DEBUG
+#include "MemoryDebugTask.h"
+#endif
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -125,6 +130,10 @@ osThreadId_t dischargeContactorGatekeeperTaskHandle;
 osThreadId_t contactorStatusUpdateTaskHandle;
 osThreadId_t readAuxVoltageTaskHandle;
 
+#ifdef MEMORY_DEBUG
+osThreadId_t memoryDebugTaskHandle;
+#endif
+
 // Thread Attributes
 const osThreadAttr_t startupTask_attributes =
 {
@@ -199,6 +208,14 @@ const osThreadAttr_t  readAuxVoltageTask_attributes =
     .priority = (osPriority_t) osPriorityNormal,
     .stack_size = 128 * 4
 };
+#ifdef MEMORY_DEBUG
+const osThreadAttr_t memoryDebugTask_attributes =
+{
+    .name = "memoryDebugTask",
+    .priority = (osPriority_t) osPriorityNormal,
+    .stack_size = 128 * 4
+};
+#endif
 
 // Mutex Attributes
 const osMutexAttr_t auxStatusOrionInterfaceMutex_attributes =
@@ -359,6 +376,9 @@ int main(void)
     dischargeContactorGatekeeperTaskHandle = osThreadNew(dischargeContactorGatekeeperTask, NULL, &dischargeContactorGatekeeperTask_attributes);
     contactorStatusUpdateTaskHandle = osThreadNew(contactorStatusUpdateTask, NULL, &contactorStatusUpdateTask_attributes);
     readAuxVoltageTaskHandle = osThreadNew(readAuxVoltageTask, NULL, &readAuxVoltageTask_attributes);
+#ifdef MEMORY_DEBUG
+    memoryDebugTaskHandle = osThreadNew(memoryDebugTask, NULL, &memoryDebugTask_attributes);
+#endif
     /* USER CODE END RTOS_THREADS */
 
     /* Start scheduler */
