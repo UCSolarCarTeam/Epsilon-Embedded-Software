@@ -63,7 +63,7 @@ void readAuxVoltage(uint32_t* prevWakeTime)
         else
         {
             float relative_voltage = AUX_NOMINAL_VOLTAGE * spiVoltage / AUX_ADC_NOMINAL_OUTPUT;
-            auxStatus.auxVoltage = ((int)round(relative_voltage)) & 0x1F; // Round and keep bottom 5 bits
+            auxStatus.auxVoltage = myRound(relative_voltage) & 0x1F; // Round and keep bottom 5 bits
         }
 
         osMutexRelease(auxStatusReadAuxVoltageMutex);
@@ -71,4 +71,10 @@ void readAuxVoltage(uint32_t* prevWakeTime)
 
     *prevWakeTime += READ_AUX_VOLTAGE_TASK_FREQ;
     osDelayUntil(*prevWakeTime);
+}
+
+// Doing this because travis can't find <math.h> round
+int myRound(float val)
+{
+    return ((int)(val + 0.5)); // If val >= 0.5, will round up. If val < 0.5, will round down
 }

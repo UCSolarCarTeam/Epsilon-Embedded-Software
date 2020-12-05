@@ -2,10 +2,10 @@
 #include "cmsis_os.h"
 #include "main.h"
 #include "AuxStatus.h"
-#include <math.h>
 
 void readAuxVoltageTask(void* arg);
 void readAuxVoltage(uint32_t* prevWakeTime);
+int myRound(float val);
 
 
 

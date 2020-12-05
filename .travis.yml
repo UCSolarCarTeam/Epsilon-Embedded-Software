@@ -20,7 +20,7 @@ script:
     - (cd EpsilonDriverControls && make)
     - (cd EpsilonCCS && make)
     - (cd EpsilonAuxBMS && ./make.sh)
-    - (cd EpsilonAuxBmsV2 && make)
+    - (cd EpsilonAuxBmsV2 && ./make.sh)
     - "! (./format.sh EpsilonCCS | grep Formatted)"
     - "! (./format.sh EpsilonLights | grep Formatted)"
     - "! (./format.sh EpsilonDriverControls | grep Formatted)"
