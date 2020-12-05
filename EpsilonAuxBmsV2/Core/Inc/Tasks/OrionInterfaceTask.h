@@ -21,3 +21,5 @@ extern AuxTrip auxTrip;
 extern AuxBmsContactorState auxBmsContactorState;
 extern osMutexId_t auxStatusOrionInterfaceMutex;
 extern osMutexId_t auxTripMutex;
+
+static const uint32_t ORION_QUEUE_TIMEOUT = 400; // 400ms. We expect CAN messages from Orion every 200ms, so if we miss 2 messages, we can timeout the wait

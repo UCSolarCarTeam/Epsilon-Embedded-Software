@@ -24,11 +24,11 @@ Look at comms protocol for CAN data assignment
 */
 void sendAuxStatus(CanTxGatekeeperQueueData* canQueueData, uint32_t* prevWakeTime)
 {
-    if (osMutexAcquire(auxStatusOrionInterfaceMutex, 100) == osOK)
+    if (osMutexAcquire(auxStatusOrionInterfaceMutex, MUTEX_TIMEOUT) == osOK)
     {
-        if (osMutexAcquire(auxStatusReadAuxVoltageMutex, 100) == osOK)
+        if (osMutexAcquire(auxStatusReadAuxVoltageMutex, MUTEX_TIMEOUT) == osOK)
         {
-            if (osMutexAcquire(auxStatusContactorStatusUpdateMutex, 100) == osOK)
+            if (osMutexAcquire(auxStatusContactorStatusUpdateMutex, MUTEX_TIMEOUT) == osOK)
             {
                 canQueueData->canTxHeader = baseCanTxHdr;
                 canQueueData->canTxHeader.StdId = AUX_STATUS_STDID;
@@ -49,7 +49,7 @@ void sendAuxStatus(CanTxGatekeeperQueueData* canQueueData, uint32_t* prevWakeTim
                                         (auxStatus.chargeShouldTrip << 1) |
                                         (auxStatus.chargeOpenButShouldBeClosed << 2) |
                                         (auxStatus.dischargeOpenButShouldBeClosed << 3);
-                osMessageQueuePut(canTxGatekeeperQueue, canQueueData, 0, 0);
+                osMessageQueuePut(canTxGatekeeperQueue, canQueueData, 0, TASK_QUEUE_PUT_TIMEOUT);
                 osMutexRelease(auxStatusContactorStatusUpdateMutex);
             }
 
@@ -62,4 +62,3 @@ void sendAuxStatus(CanTxGatekeeperQueueData* canQueueData, uint32_t* prevWakeTim
     *prevWakeTime += SEND_AUX_STATUS_TASK_FREQ;
     osDelayUntil(*prevWakeTime);
 }
-
