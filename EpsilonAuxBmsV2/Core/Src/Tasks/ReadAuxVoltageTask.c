@@ -76,5 +76,5 @@ void readAuxVoltage(uint32_t* prevWakeTime)
 // Doing this because travis can't find <math.h> round
 int myRound(float val)
 {
-    return ((int)(val + 0.5)); // If val >= 0.5, will round up. If val < 0.5, will round down
+    return ((int)(val + 0.5)); // If val fraction >= 0.5, will round up. If val fraction < 0.5, will round down
 }
