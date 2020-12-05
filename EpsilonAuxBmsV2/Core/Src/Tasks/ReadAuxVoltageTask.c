@@ -26,14 +26,14 @@ void readAuxVoltage(uint32_t* prevWakeTime)
     HAL_GPIO_WritePin(ADC_nCS_GPIO_Port, ADC_nCS_Pin, GPIO_PIN_RESET);
 
     // Initiate SPI read
-    if (HAL_SPI_Receive_DMA(&hspi3, spiRxBuff, 2) == HAL_OK)
+    if (HAL_SPI_Receive_DMA(&hspi3, spiRxBuff, AUX_BMS_SPI_BUFFER_SIZE) == HAL_OK)
     {
         //Wait for spi to finish
-        uint32_t flags = osThreadFlagsWait(0x1, osFlagsWaitAny, SPI_TIMEOUT);
+        uint32_t flags = osThreadFlagsWait(SPI_READY_FLAG, osFlagsWaitAny, SPI_TIMEOUT);
 
         if (flags == osFlagsErrorTimeout)
         {
-            spiVoltage = 0xDEAD;
+            spiVoltage = SPI_ERROR_CODE;
         }
         else
         {
@@ -48,17 +48,17 @@ void readAuxVoltage(uint32_t* prevWakeTime)
     }
     else
     {
-        spiVoltage = 0xDEAD;
+        spiVoltage = SPI_ERROR_CODE;
     }
 
     //Set Chip Select to be high.
     HAL_GPIO_WritePin(ADC_nCS_GPIO_Port, ADC_nCS_Pin, GPIO_PIN_SET);
 
-    if (osMutexAcquire(auxStatusReadAuxVoltageMutex, 100) == osOK)
+    if (osMutexAcquire(auxStatusReadAuxVoltageMutex, MUTEX_TIMEOUT) == osOK)
     {
-        if (spiVoltage == 0xDEAD) // Something went wrong during SPI-ADC read
+        if (spiVoltage == SPI_ERROR_CODE) // Something went wrong during SPI-ADC read
         {
-            auxStatus.auxVoltage = 0x1F;
+            auxStatus.auxVoltage = 0x1F; // Set auxVoltage to maximum value (31... this is not expected, as the aux voltage should be ~12, so this indicates an error)
         }
         else
         {

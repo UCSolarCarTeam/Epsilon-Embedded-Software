@@ -24,7 +24,7 @@ Look at comms protocol for CAN data assignment
 */
 void sendAuxTrip(CanTxGatekeeperQueueData* canQueueData, uint32_t* prevWakeTime)
 {
-    if (osMutexAcquire(auxTripMutex, 100) == osOK)
+    if (osMutexAcquire(auxTripMutex, MUTEX_TIMEOUT) == osOK)
     {
         canQueueData->canTxHeader = baseCanTxHdr;
         canQueueData->canTxHeader.StdId = AUX_TRIP_STDID;
@@ -36,7 +36,7 @@ void sendAuxTrip(CanTxGatekeeperQueueData* canQueueData, uint32_t* prevWakeTime)
                                 (auxTrip.dischargeTripDueToHighTemperatureAndCurrent << 4) |
                                 (auxTrip.dischargeTripDueToPackCurrent << 5) |
                                 (auxTrip.protectionTrip << 6);
-        osMessageQueuePut(canTxGatekeeperQueue, canQueueData, 0, 0);
+        osMessageQueuePut(canTxGatekeeperQueue, canQueueData, 0, TASK_QUEUE_PUT_TIMEOUT);
         osMutexRelease(auxTripMutex);
     }
 

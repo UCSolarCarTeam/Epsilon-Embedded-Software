@@ -54,6 +54,6 @@ void canRxInterruptParser(OrionCanInfo* orionQueueData, CanRxQueueData* canQueue
     if (orionMessageReceived)
     {
         HAL_GPIO_TogglePin(GRN_LED_GPIO_Port, GRN_LED_Pin);
-        osMessageQueuePut(orionInterfaceQueue, orionQueueData, 0, 0);
+        osMessageQueuePut(orionInterfaceQueue, orionQueueData, 0, TASK_QUEUE_PUT_TIMEOUT);
     }
 }
