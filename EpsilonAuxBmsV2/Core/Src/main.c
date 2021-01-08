@@ -87,7 +87,7 @@ const osThreadAttr_t defaultTask_attributes =
 };
 /* USER CODE BEGIN PV */
 // SPI Rx Buffer
-uint8_t spiRxBuff[2] = {0};
+uint8_t spiRxBuff[AUX_BMS_SPI_BUFFER_SIZE] = {0};
 
 // CAN Tx Header
 const CAN_TxHeaderTypeDef baseCanTxHdr = {.ExtId = 0,
@@ -734,12 +734,12 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef* hcan)
     CanRxQueueData message;
     message.canRxHeader = hdr;
     memcpy(message.data, data, sizeof(uint8_t) * 8);
-    osMessageQueuePut(canRxParserQueue, &message, 0, 0);
+    osMessageQueuePut(canRxParserQueue, &message, 0, IRQ_QUEUE_PUT_TIMEOUT);
 }
 
 void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef* hspi)
 {
-    osThreadFlagsSet(readAuxVoltageTaskHandle, 0x1);
+    osThreadFlagsSet(readAuxVoltageTaskHandle, SPI_READY_FLAG);
 }
 
 void vApplicationMallocFailedHook( void )

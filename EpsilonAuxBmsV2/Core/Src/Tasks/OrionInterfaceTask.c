@@ -34,7 +34,7 @@ When opening a contactor, it temporarily raises the gatekeeper task’s priority
 */
 void orionInterface(OrionCanInfo* message)
 {
-    osStatus_t status = osMessageQueueGet(orionInterfaceQueue, message, NULL, 400);
+    osStatus_t status = osMessageQueueGet(orionInterfaceQueue, message, NULL, ORION_QUEUE_TIMEOUT);
 
 
     uint8_t shouldDisconnectContactors = 0;
@@ -92,13 +92,13 @@ void orionInterface(OrionCanInfo* message)
 
     // Set Aux Status and Aux Trip
     // Not returning if mutex not acuired so that we can still control the contactors
-    if (osMutexAcquire(auxTripMutex, 100) == osOK)
+    if (osMutexAcquire(auxTripMutex, MUTEX_TIMEOUT) == osOK)
     {
         auxTrip = localAuxTrip;
         osMutexRelease(auxTripMutex);
     }
 
-    if (osMutexAcquire(auxStatusOrionInterfaceMutex, 100) == osOK)
+    if (osMutexAcquire(auxStatusOrionInterfaceMutex, MUTEX_TIMEOUT) == osOK)
     {
         updateAuxStatus(&localAuxStatus);
         osMutexRelease(auxStatusOrionInterfaceMutex);

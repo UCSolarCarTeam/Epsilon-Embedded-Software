@@ -25,7 +25,7 @@ void contactorStatusUpdate(uint32_t* prevWakeTime)
     uint8_t hvEnableState = HAL_GPIO_ReadPin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin);
 
     // Update Aux Status after acquireing mutex
-    if (osMutexAcquire(auxStatusContactorStatusUpdateMutex, 100) != osOK)
+    if (osMutexAcquire(auxStatusContactorStatusUpdateMutex, MUTEX_TIMEOUT) != osOK)
     {
         return;
     }

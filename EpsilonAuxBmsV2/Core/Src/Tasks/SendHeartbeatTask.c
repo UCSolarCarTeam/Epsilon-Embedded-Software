@@ -21,7 +21,7 @@ void sendHeartbeat(CanTxGatekeeperQueueData* canQueueData, uint32_t* prevWakeTim
     canQueueData->canTxHeader.StdId = HEARTBEAT_STDID;
     canQueueData->canTxHeader.DLC = 1;
     canQueueData->data[0] = 1;
-    osMessageQueuePut(canTxGatekeeperQueue, canQueueData, 0, 0);
+    osMessageQueuePut(canTxGatekeeperQueue, canQueueData, 0, TASK_QUEUE_PUT_TIMEOUT);
     *prevWakeTime += SEND_HEARTBEAT_TASK_FREQ;
     osDelayUntil(*prevWakeTime);
 }
