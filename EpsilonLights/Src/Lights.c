@@ -7,41 +7,41 @@ void updateLightsTask(void const* arg)
     // One time osDelayUntil intialization
     uint32_t prevWakeTime = osKernelSysTick();
     // Store inputs values
-    char headlightsOff;
-    char headlightsLow;
-    char headlightsHigh;
-    char rightSignal;
-    char leftSignal;
-    char hazards;
-    char brakes;
-    char bmsStrobe;
-    uint32_t regenBrakeInt;
-    float regenBrakeFloat;
+    
+
+    updateLights lightsCharacteristics;
+    
 
     // NOTE: All Lights Out pins are active low
     for (;;)
     {
-        regenBrakeInt = 0;
-        regenBrakeFloat = 0;
+        updateLightsTask2 (&lightsCharacteristics, &prevWakeTime);
+    }
+}
 
-        osDelayUntil(&prevWakeTime, LIGHTS_UPDATE_FREQ);
-        headlightsOff = (lightsInputs >> HOFF_INPUT_INDEX) & 1;
-        headlightsLow = (lightsInputs >> HLOW_INPUT_INDEX) & 1;
-        headlightsHigh = (lightsInputs >> HHIGH_INPUT_INDEX) & 1;
-        rightSignal = (lightsInputs >> RSIGNAL_INPUT_INDEX) & 1;
-        leftSignal = (lightsInputs >> LSIGNAL_INPUT_INDEX) & 1;
-        hazards = (lightsInputs >> HAZARDS_INPUT_INDEX) & 1;
-        bmsStrobe = ((auxBmsInputs[1] >> 0) & STROBE_FAULT_MASK) & 1;
-        regenBrakeInt |= (driversInputs[1] & REGEN_BRAKE_MASK_1) >> 4;
-        regenBrakeInt |= (driversInputs[2] & REGEN_BRAKE_MASK_2) << 4;
+void updateLightsTask2 (updateLights* lightsCharacteristics, uint32_t* prevWakeTime)
+{
+        lightsCharacteristics -> regenBrakeInt = 0;
+        lightsCharacteristics -> regenBrakeFloat = 0;
+
+        osDelayUntil(prevWakeTime, LIGHTS_UPDATE_FREQ);
+        lightsCharacteristics -> headlightsOff = (lightsInputs >> HOFF_INPUT_INDEX) & 1;
+        lightsCharacteristics -> headlightsLow = (lightsInputs >> HLOW_INPUT_INDEX) & 1;
+        lightsCharacteristics -> headlightsHigh = (lightsInputs >> HHIGH_INPUT_INDEX) & 1;
+        lightsCharacteristics -> rightSignal = (lightsInputs >> RSIGNAL_INPUT_INDEX) & 1;
+        lightsCharacteristics -> leftSignal = (lightsInputs >> LSIGNAL_INPUT_INDEX) & 1;
+        lightsCharacteristics -> hazards = (lightsInputs >> HAZARDS_INPUT_INDEX) & 1;
+        lightsCharacteristics -> bmsStrobe = ((auxBmsInputs[1] >> 0) & STROBE_FAULT_MASK) & 1;
+        lightsCharacteristics -> regenBrakeInt |= (driversInputs[1] & REGEN_BRAKE_MASK_1) >> 4;
+        lightsCharacteristics -> regenBrakeInt |= (driversInputs[2] & REGEN_BRAKE_MASK_2) << 4;
 
         /* UPDATE HEADLIGHTS */
-        if ((headlightsOff))
+        if (( lightsCharacteristics -> headlightsOff))
         {
             HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_OFF);
             HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, LIGHT_OFF);
         }
-        else if ((headlightsLow && headlightsHigh))
+        else if ((lightsCharacteristics -> headlightsLow && lightsCharacteristics -> headlightsHigh))
         {
             // Error state, turn only the low headlights on.
             HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_OFF);
@@ -49,15 +49,15 @@ void updateLightsTask(void const* arg)
         }
         else
         {
-            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, headlightsHigh);
-            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, headlightsLow);
+            HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, lightsCharacteristics -> headlightsHigh);
+            HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, lightsCharacteristics -> headlightsLow);
         }
 
         /* UPDATE BRAKE LIGHTS */
-        brakes = (driversInputs[BRAKES_INPUT_INDEX_P1] >> BRAKES_INPUT_INDEX_P2) & 1;
-        regenBrakeFloat = (float)regenBrakeInt;
+        lightsCharacteristics -> brakes = (driversInputs[BRAKES_INPUT_INDEX_P1] >> BRAKES_INPUT_INDEX_P2) & 1;
+        lightsCharacteristics -> regenBrakeFloat = (float) lightsCharacteristics -> regenBrakeInt;
 
-        if (brakes || regenBrakeFloat > NON_ZERO_THRESHOLD)
+        if (lightsCharacteristics -> brakes || lightsCharacteristics -> regenBrakeFloat > NON_ZERO_THRESHOLD)
         {
             HAL_GPIO_WritePin(BRAKE_GPIO_Port, BRAKE_Pin, LIGHT_ON);
         }
@@ -68,19 +68,19 @@ void updateLightsTask(void const* arg)
 
         /* UPDATE SIGNAL LIGHTS */
         // Set to enable or disable for use in blinkSignalLights
-        if (hazards)
+        if (lightsCharacteristics -> hazards)
         {
             sigLightsHandle.left = LIGHT_ON;
             sigLightsHandle.right = LIGHT_ON;
         }
         else
         {
-            sigLightsHandle.left = leftSignal;
-            sigLightsHandle.right = rightSignal;
+            sigLightsHandle.left = lightsCharacteristics -> leftSignal;
+            sigLightsHandle.right = lightsCharacteristics -> rightSignal;
         }
 
         /* UPDATE BMS STROBE */
-        if (bmsStrobe)
+        if (lightsCharacteristics -> bmsStrobe)
         {
             HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_ON);
         }
@@ -88,9 +88,7 @@ void updateLightsTask(void const* arg)
         {
             HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_OFF);
         }
-    }
 }
-
 // Reasoning for complexity
 // Blinkers should turn on immediately if they are turned on from an off state
 // Blinkers should turn off immediately if they are turned off

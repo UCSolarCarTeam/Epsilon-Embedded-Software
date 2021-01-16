@@ -55,6 +55,20 @@ typedef struct SigLightsHandle
     uint8_t right;
 } SigLightsHandle;
 
+typedef struct updateLights
+    {
+        char headlightsOff;
+        char headlightsLow;
+        char headlightsHigh;
+        char rightSignal;
+        char leftSignal;
+        char hazards;
+        char brakes;
+        char bmsStrobe;
+        uint32_t regenBrakeInt;
+        float regenBrakeFloat;
+    } updateLights;
+
 extern CAN_HandleTypeDef hcan2; // main.c
 extern uint8_t lightsInputs;
 extern uint8_t auxBmsInputs[2];
@@ -77,3 +91,5 @@ void reportLightsToCanTask(void const* arg);
 void sendHeartbeatTask(void const* arg);
 
 void updateStrobeLight(void const* arg);
+
+void updateLightsTask2(updateLights* x, uint32_t* y);
