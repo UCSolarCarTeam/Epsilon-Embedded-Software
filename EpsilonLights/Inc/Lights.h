@@ -93,3 +93,11 @@ void sendHeartbeatTask(void const* arg);
 void updateStrobeLight(void const* arg);
 
 void updateLightsTask2(updateLights* x, uint32_t* y);
+
+void blinkSignalLightsTask2( uint32_t prevWakeTime, uint32_t blinkerTimer, uint8_t prevSigState);
+
+void updateStrobeLight2(uint32_t prevWakeTime ,uint32_t blinkerTimer, char strobeLight);
+
+void reportLightsToCanTask2(uint32_t prevWakeTime, osMutexId* canHandleMutex);
+
+void sendHeartbeatTask2(osMutexId* canHandleMutex,uint32_t prevWakeTime);

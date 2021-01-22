@@ -96,21 +96,9 @@ void updateLightsTask2 (updateLights* lightsCharacteristics, uint32_t* prevWakeT
 //      Example: Signal Left ENABLED
 //               ~200ms pass
 //               Hazards Enabled <- (Left blinker should not reset at this point)
-void blinkSignalLightsTask(void const* arg)
+void blinkSignalLightsTask2( uint32_t prevWakeTime, uint32_t blinkerTimer, uint8_t prevSigState)
 {
-    // One time osDelayUntil intialization
-    uint32_t prevWakeTime = osKernelSysTick();
-    // If blinkerTimer is within (0 - BLINKER_FREQ), turn blinkers on
-    // If blinkerTimer is within (BLINKER_FREQ - BLINKER_FREQ*2), keep blinkers off
-    // If blinkerTimer is greater than (BLINKER_FREQ*2) reset blinkerTimer to 0
-    uint32_t blinkerTimer = 0;
-    // If both signal lights disabled, prevSigState = 0 (DISABLED)
-    // else prevSigState = 1 (ENABLED)
-    uint8_t prevSigState = 0;
-
-    for (;;)
-    {
-        osDelayUntil(&prevWakeTime, LIGHTS_UPDATE_FREQ);
+    osDelayUntil(&prevWakeTime, LIGHTS_UPDATE_FREQ);
 
         // Check if both signal lights inputs are DISABLED
         if (!sigLightsHandle.left && !sigLightsHandle.right) // Going to DISABLED
@@ -158,6 +146,22 @@ void blinkSignalLightsTask(void const* arg)
 
             // Keep prevSigState = 1
         }
+}
+void blinkSignalLightsTask(void const* arg)
+{
+    // One time osDelayUntil intialization
+    uint32_t prevWakeTime = osKernelSysTick();
+    // If blinkerTimer is within (0 - BLINKER_FREQ), turn blinkers on
+    // If blinkerTimer is within (BLINKER_FREQ - BLINKER_FREQ*2), keep blinkers off
+    // If blinkerTimer is greater than (BLINKER_FREQ*2) reset blinkerTimer to 0
+    uint32_t blinkerTimer = 0;
+    // If both signal lights disabled, prevSigState = 0 (DISABLED)
+    // else prevSigState = 1 (ENABLED)
+    uint8_t prevSigState = 0;
+
+    for (;;)
+    {
+        blinkSignalLightsTask2( prevWakeTime, blinkerTimer, prevSigState);
     }
 }
 
@@ -171,11 +175,17 @@ void updateStrobeLight(void const* arg)
     // If blinkerTimer is within (BLINKER_FREQ - BLINKER_FREQ*2), keep blinkers off
     // If blinkerTimer is greater than (BLINKER_FREQ*2) reset blinkerTimer to 0
     uint32_t blinkerTimer = 0;
-    char strobeLight;
+    char strobeLight = 0;
 
     for (;;)
     {
-        osDelayUntil(&prevWakeTime, LIGHTS_UPDATE_FREQ);
+        updateStrobeLight2(prevWakeTime, blinkerTimer, strobeLight);
+    }
+}
+
+void updateStrobeLight2(uint32_t prevWakeTime ,uint32_t blinkerTimer, char strobeLight)
+{
+    osDelayUntil(&prevWakeTime, LIGHTS_UPDATE_FREQ);
         strobeLight = (auxBmsInputs[1] >> 0) & STROBE_FAULT_MASK;
 
         /*Update BMS Strobe*/
@@ -198,7 +208,6 @@ void updateStrobeLight(void const* arg)
         {
             blinkerTimer += LIGHTS_UPDATE_FREQ;
         }
-    }
 }
 
 void reportLightsToCanTask(void const* arg)
@@ -210,11 +219,17 @@ void reportLightsToCanTask(void const* arg)
 
     for (;;)
     {
-        osDelayUntil(&prevWakeTime, LIGHTS_STATUS_FREQ);
+        reportLightsToCanTask2(prevWakeTime, canHandleMutex);
+    }
+}
+
+void reportLightsToCanTask2(uint32_t prevWakeTime, osMutexId* canHandleMutex)
+{
+    osDelayUntil(&prevWakeTime, LIGHTS_STATUS_FREQ);
 
         if (osMutexWait(canHandleMutex, 0) != osOK)
         {
-            continue;
+            return;
         }
 
         // Toggle blue LED for every CAN message sent
@@ -240,7 +255,6 @@ void reportLightsToCanTask(void const* arg)
         // Send CAN msg
         HAL_CAN_Transmit_IT(&hcan2);
         osMutexRelease(canHandleMutex);
-    }
 }
 
 void sendHeartbeatTask(void const* arg)
@@ -252,11 +266,17 @@ void sendHeartbeatTask(void const* arg)
 
     for (;;)
     {
-        osDelayUntil(&prevWakeTime, LIGHTS_HEARTBEAT_FREQ);
+       sendHeartbeatTask2(canHandleMutex, prevWakeTime);
+    }
+}
+
+void sendHeartbeatTask2(osMutexId* canHandleMutex,uint32_t prevWakeTime)
+{
+    osDelayUntil(&prevWakeTime, LIGHTS_HEARTBEAT_FREQ);
 
         if (osMutexWait(canHandleMutex, 0) != osOK)
         {
-            continue;
+            return;
         }
 
         // Toggle green LED for every heartbeat sent
@@ -268,7 +288,6 @@ void sendHeartbeatTask(void const* arg)
         // Send CAN msg
         HAL_CAN_Transmit_IT(&hcan2);
         osMutexRelease(canHandleMutex);
-    }
 }
 
 // Reimplement weak definition in stm32f4xx_hal_can.c
