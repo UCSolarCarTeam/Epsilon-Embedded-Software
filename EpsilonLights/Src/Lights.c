@@ -15,11 +15,11 @@ void updateLightsTask(void const* arg)
     // NOTE: All Lights Out pins are active low
     for (;;)
     {
-        updateLightsTask2 (&lightsCharacteristics, &prevWakeTime);
+        updateLights1 (&lightsCharacteristics, &prevWakeTime);
     }
 }
 
-void updateLightsTask2 (updateLights* lightsCharacteristics, uint32_t* prevWakeTime)
+void updateLights1 (updateLights* lightsCharacteristics, uint32_t* prevWakeTime)
 {
         lightsCharacteristics -> regenBrakeInt = 0;
         lightsCharacteristics -> regenBrakeFloat = 0;
@@ -96,9 +96,9 @@ void updateLightsTask2 (updateLights* lightsCharacteristics, uint32_t* prevWakeT
 //      Example: Signal Left ENABLED
 //               ~200ms pass
 //               Hazards Enabled <- (Left blinker should not reset at this point)
-void blinkSignalLightsTask2( uint32_t prevWakeTime, uint32_t blinkerTimer, uint8_t prevSigState)
+void blinkSignalLights( uint32_t* prevWakeTime, uint32_t* blinkerTimer, uint8_t* prevSigState)
 {
-    osDelayUntil(&prevWakeTime, LIGHTS_UPDATE_FREQ);
+    osDelayUntil(prevWakeTime, LIGHTS_UPDATE_FREQ);
 
         // Check if both signal lights inputs are DISABLED
         if (!sigLightsHandle.left && !sigLightsHandle.right) // Going to DISABLED
@@ -107,20 +107,20 @@ void blinkSignalLightsTask2( uint32_t prevWakeTime, uint32_t blinkerTimer, uint8
             HAL_GPIO_WritePin(RSIGNAL_GPIO_Port, RSIGNAL_Pin, LIGHT_OFF);
             HAL_GPIO_WritePin(LSIGNAL_GPIO_Port, LSIGNAL_Pin, LIGHT_OFF);
             // blinkerTimer will be reset to 0 on ENABLE
-            prevSigState = 0;
+            *prevSigState = 0;
         }
         else if (!prevSigState) // Going from DISABLED to ENABLED
         {
             // Prepare to keep blinkers on (If blinkerTimer is within (0 - BLINKER_FREQ), turn blinkers on)
             HAL_GPIO_WritePin(RSIGNAL_GPIO_Port, RSIGNAL_Pin, sigLightsHandle.right);
             HAL_GPIO_WritePin(LSIGNAL_GPIO_Port, LSIGNAL_Pin, sigLightsHandle.left);
-            blinkerTimer = 0;
-            prevSigState = 1;
+            *blinkerTimer = 0;
+            *prevSigState = 1;
         }
         else // Going from ENABLED to ENABLED
         {
             // Handle Blinking the signal lights
-            if (blinkerTimer >= BLINKER_FREQ)
+            if (*blinkerTimer >= BLINKER_FREQ)
             {
                 // If blinkerTimer is within (BLINKER_FREQ - BLINKER_FREQ*2), keep blinkers off
                 HAL_GPIO_WritePin(RSIGNAL_GPIO_Port, RSIGNAL_Pin, LIGHT_OFF);
@@ -134,14 +134,14 @@ void blinkSignalLightsTask2( uint32_t prevWakeTime, uint32_t blinkerTimer, uint8
             }
 
             // Update blinker timer
-            if (blinkerTimer > BLINKER_FREQ * 2)
+            if (*blinkerTimer > BLINKER_FREQ * 2)
             {
                 // If blinkerTimer is greater than (BLINKER_FREQ*2) reset blinkerTimer to 0
-                blinkerTimer = 0;
+                *blinkerTimer = 0;
             }
             else
             {
-                blinkerTimer += LIGHTS_UPDATE_FREQ;
+                *blinkerTimer += LIGHTS_UPDATE_FREQ;
             }
 
             // Keep prevSigState = 1
@@ -161,7 +161,7 @@ void blinkSignalLightsTask(void const* arg)
 
     for (;;)
     {
-        blinkSignalLightsTask2( prevWakeTime, blinkerTimer, prevSigState);
+        blinkSignalLights( &prevWakeTime, &blinkerTimer, &prevSigState);
     }
 }
 
@@ -175,21 +175,21 @@ void updateStrobeLight(void const* arg)
     // If blinkerTimer is within (BLINKER_FREQ - BLINKER_FREQ*2), keep blinkers off
     // If blinkerTimer is greater than (BLINKER_FREQ*2) reset blinkerTimer to 0
     uint32_t blinkerTimer = 0;
-    char strobeLight = 0;
+    char strobeLight;
 
     for (;;)
     {
-        updateStrobeLight2(prevWakeTime, blinkerTimer, strobeLight);
+        updateStrobeLight2(&prevWakeTime, &blinkerTimer, &strobeLight);
     }
 }
 
-void updateStrobeLight2(uint32_t prevWakeTime ,uint32_t blinkerTimer, char strobeLight)
+void updateStrobeLight2(uint32_t* prevWakeTime ,uint32_t* blinkerTimer, char* strobeLight)
 {
-    osDelayUntil(&prevWakeTime, LIGHTS_UPDATE_FREQ);
-        strobeLight = (auxBmsInputs[1] >> 0) & STROBE_FAULT_MASK;
+    osDelayUntil(prevWakeTime, LIGHTS_UPDATE_FREQ);
+        *strobeLight = (auxBmsInputs[1] >> 0) & STROBE_FAULT_MASK;
 
         /*Update BMS Strobe*/
-        if (strobeLight && (blinkerTimer <= BLINKER_FREQ))
+        if (*strobeLight && (*blinkerTimer <= BLINKER_FREQ))
         {
             HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_ON);
         }
@@ -199,14 +199,14 @@ void updateStrobeLight2(uint32_t prevWakeTime ,uint32_t blinkerTimer, char strob
         }
 
         // Update blinker timer
-        if ((blinkerTimer > BLINKER_FREQ * 2) || !strobeLight)
+        if ((*blinkerTimer > BLINKER_FREQ * 2) || !(*strobeLight))
         {
             // If blinkerTimer is greater than (BLINKER_FREQ*2) reset blinkerTimer to 0
-            blinkerTimer = 0;
+            *blinkerTimer = 0;
         }
         else
         {
-            blinkerTimer += LIGHTS_UPDATE_FREQ;
+            *blinkerTimer += LIGHTS_UPDATE_FREQ;
         }
 }
 
@@ -219,13 +219,13 @@ void reportLightsToCanTask(void const* arg)
 
     for (;;)
     {
-        reportLightsToCanTask2(prevWakeTime, canHandleMutex);
+        reportLightsToCan(&prevWakeTime, canHandleMutex);
     }
 }
 
-void reportLightsToCanTask2(uint32_t prevWakeTime, osMutexId* canHandleMutex)
+void reportLightsToCan(uint32_t* prevWakeTime, osMutexId* canHandleMutex)
 {
-    osDelayUntil(&prevWakeTime, LIGHTS_STATUS_FREQ);
+    osDelayUntil(prevWakeTime, LIGHTS_STATUS_FREQ);
 
         if (osMutexWait(canHandleMutex, 0) != osOK)
         {
@@ -266,13 +266,13 @@ void sendHeartbeatTask(void const* arg)
 
     for (;;)
     {
-       sendHeartbeatTask2(canHandleMutex, prevWakeTime);
+       sendHeartbeat(canHandleMutex, &prevWakeTime);
     }
 }
 
-void sendHeartbeatTask2(osMutexId* canHandleMutex,uint32_t prevWakeTime)
+void sendHeartbeat(osMutexId* canHandleMutex,uint32_t* prevWakeTime)
 {
-    osDelayUntil(&prevWakeTime, LIGHTS_HEARTBEAT_FREQ);
+    osDelayUntil(prevWakeTime, LIGHTS_HEARTBEAT_FREQ);
 
         if (osMutexWait(canHandleMutex, 0) != osOK)
         {

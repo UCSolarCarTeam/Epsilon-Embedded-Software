@@ -92,12 +92,12 @@ void sendHeartbeatTask(void const* arg);
 
 void updateStrobeLight(void const* arg);
 
-void updateLightsTask2(updateLights* x, uint32_t* y);
+void updateLights1(updateLights* x, uint32_t* y);
 
-void blinkSignalLightsTask2( uint32_t prevWakeTime, uint32_t blinkerTimer, uint8_t prevSigState);
+void blinkSignalLights( uint32_t* prevWakeTime, uint32_t* blinkerTimer, uint8_t* prevSigState);
 
-void updateStrobeLight2(uint32_t prevWakeTime ,uint32_t blinkerTimer, char strobeLight);
+void updateStrobeLight2(uint32_t* prevWakeTime ,uint32_t* blinkerTimer, char* strobeLight);
 
-void reportLightsToCanTask2(uint32_t prevWakeTime, osMutexId* canHandleMutex);
+void reportLightsToCan(uint32_t* prevWakeTime, osMutexId* canHandleMutex);
 
-void sendHeartbeatTask2(osMutexId* canHandleMutex,uint32_t prevWakeTime);
+void sendHeartbeat(osMutexId* canHandleMutex,uint32_t* prevWakeTime);
