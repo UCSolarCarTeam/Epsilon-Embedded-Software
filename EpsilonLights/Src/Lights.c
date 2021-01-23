@@ -109,7 +109,7 @@ void blinkSignalLights( uint32_t* prevWakeTime, uint32_t* blinkerTimer, uint8_t*
             // blinkerTimer will be reset to 0 on ENABLE
             *prevSigState = 0;
         }
-        else if (!prevSigState) // Going from DISABLED to ENABLED
+        else if (!*prevSigState) // Going from DISABLED to ENABLED
         {
             // Prepare to keep blinkers on (If blinkerTimer is within (0 - BLINKER_FREQ), turn blinkers on)
             HAL_GPIO_WritePin(RSIGNAL_GPIO_Port, RSIGNAL_Pin, sigLightsHandle.right);
