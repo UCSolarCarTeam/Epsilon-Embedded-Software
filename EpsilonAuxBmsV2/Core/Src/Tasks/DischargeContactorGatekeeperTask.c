@@ -41,7 +41,7 @@ void closeDischargeContactor()
         if (isChargeClosed) // charge contactor closed so delay then try again
         {
             osDelay(CONTACTOR_DELAY);
-            osEventFlagsSet(contactorControlEventBits, DISCHARGE_ON);
+            osEventFlagsSet(contactorControlEventBits, DISCHARGE_CLOSED);
         }
     }
     else  // discharge contactor closed successfully, so turn on HV enable
@@ -52,12 +52,15 @@ void closeDischargeContactor()
 
     if (!isChargeClosed) // Charge not closed so trigger charge contactor gatekeeper task to close charge
     {
-        osEventFlagsSet(contactorControlEventBits, CHARGE_ON);
+        osEventFlagsSet(contactorControlEventBits, CHARGE_CLOSED);
     }
 }
 
 /*
 Opens dicharge contactor and turns off high voltage enable then sets the priority to the task back to normal.
+The priority is changed to realtime by:
+  - OrionInterfaceTask
+  - ContactorStatusUpdateTask
 */
 void openDischargeContactor()
 {
@@ -74,13 +77,13 @@ Note: Opening the contactor has a higher priority than closing the contactor.
 */
 void dischargeContactorGatekeeper()
 {
-    uint32_t contactorFlags = osEventFlagsWait(contactorControlEventBits, DISCHARGE_ON | DISCHARGE_OFF, osFlagsWaitAny, osWaitForever);
+    uint32_t contactorFlags = osEventFlagsWait(contactorControlEventBits, DISCHARGE_CLOSED | DISCHARGE_OPENED, osFlagsWaitAny, osWaitForever);
 
-    if (contactorFlags & DISCHARGE_OFF)
+    if (contactorFlags & DISCHARGE_OPENED)
     {
         openDischargeContactor();
     }
-    else if ((contactorFlags & DISCHARGE_ON) && !auxBmsContactorState.contactorsDisconnected)
+    else if ((contactorFlags & DISCHARGE_CLOSED) && !auxBmsContactorState.contactorsDisconnected)
     {
         closeDischargeContactor();
     }

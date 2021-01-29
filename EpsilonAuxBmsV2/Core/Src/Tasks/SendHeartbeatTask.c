@@ -17,7 +17,7 @@ void sendHeartbeatTask(void* arg)
 // Creates a CAN message for reporting the Aux BMS Heartbeat
 void sendHeartbeat(CanTxGatekeeperQueueData* canQueueData, uint32_t* prevWakeTime)
 {
-    canQueueData->canTxHeader = baseCanTxHdr;
+    canQueueData->canTxHeader = BASE_CAN_TX_HDR;
     canQueueData->canTxHeader.StdId = HEARTBEAT_STDID;
     canQueueData->canTxHeader.DLC = 1;
     canQueueData->data[0] = 1;

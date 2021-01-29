@@ -30,11 +30,11 @@ void canRxInterruptParser(OrionCanInfo* orionQueueData, CanRxQueueData* canQueue
     uint8_t* data = canQueueData->data;
     uint8_t orionMessageReceived = 0;
 
-    if (hdr.StdId == ORION_MAX_MIN_VOLTAGES_STDID && hdr.DLC == 8)
+    if (hdr.StdId == ORION_HIGH_LOW_VOLTAGES_STDID && hdr.DLC == 8)
     {
         // Voltages are 2 bytes each, and memory is stored in little endian format
-        orionQueueData->minCellVoltage = (uint16_t)data[0] | data[1] << 8; // Min Cell voltage
-        orionQueueData->maxCellVoltage = (uint16_t)data[3] | data[4] << 8; // Max Cell Voltage
+        orionQueueData->lowCellVoltage = (uint16_t)data[0] | data[1] << 8; // Min Cell voltage
+        orionQueueData->highCellVoltage = (uint16_t)data[3] | data[4] << 8; // Max Cell Voltage
         orionMessageReceived = 1;
     }
     else if (hdr.StdId == ORION_TEMP_INFO_STDID && hdr.DLC == 8)

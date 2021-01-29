@@ -29,26 +29,29 @@ void closeCommonContactor()
     if (commonSense && currentLow) // Common contactor closed successfully, so trigger charge to turn on
     {
         auxBmsContactorState.commonState = CLOSED;
-        osEventFlagsSet(contactorControlEventBits, CHARGE_ON);
+        osEventFlagsSet(contactorControlEventBits, CHARGE_CLOSED);
     }
     else   // Common contactor not closed successfully, so delay then try again
     {
         auxBmsContactorState.commonState = CONTACTOR_ERROR;
         HAL_GPIO_WritePin(COMMON_ENABLE_GPIO_Port, COMMON_ENABLE_Pin, GPIO_PIN_RESET);
         osDelay (CONTACTOR_DELAY);
-        osEventFlagsSet(contactorControlEventBits, COMMON_ON);
+        osEventFlagsSet(contactorControlEventBits, COMMON_CLOSED);
     }
 }
 
 /*
 Opens common contactor then sets the priority to the task back to normal and then triggers charge and discharge contactors to turn off.
 Note: the priorities of the charge and discharge should've been set to real time prior to this.
+The priority is changed to realtime by:
+  - OrionInterfaceTask
+  - ContactorStatusUpdateTask
 */
 void openCommonContactor()
 {
     HAL_GPIO_WritePin(COMMON_ENABLE_GPIO_Port, COMMON_ENABLE_Pin, GPIO_PIN_RESET);
     auxBmsContactorState.commonState = OPEN;
-    osEventFlagsSet(contactorControlEventBits, DISCHARGE_OFF | CHARGE_OFF);
+    osEventFlagsSet(contactorControlEventBits, DISCHARGE_OPENED | CHARGE_OPENED);
     osThreadSetPriority (commonContactorGatekeeperTaskHandle, osPriorityNormal);
 }
 
@@ -59,13 +62,13 @@ Note: Opening the contactor has a higher priority than closing the contactor.
 */
 void commonContactorGatekeeper()
 {
-    uint32_t contactorFlags = osEventFlagsWait(contactorControlEventBits, COMMON_ON | COMMON_OFF, osFlagsWaitAny, osWaitForever);
+    uint32_t contactorFlags = osEventFlagsWait(contactorControlEventBits, COMMON_CLOSED | COMMON_OPENED, osFlagsWaitAny, osWaitForever);
 
-    if (contactorFlags & COMMON_OFF)
+    if (contactorFlags & COMMON_OPENED)
     {
         openCommonContactor();
     }
-    else if ((contactorFlags & COMMON_ON) && !auxBmsContactorState.contactorsDisconnected) // Only close contactor if the contactors have not been disconnected
+    else if ((contactorFlags & COMMON_CLOSED) && !auxBmsContactorState.contactorsDisconnected) // Only close contactor if the contactors have not been disconnected
     {
         closeCommonContactor();
     }

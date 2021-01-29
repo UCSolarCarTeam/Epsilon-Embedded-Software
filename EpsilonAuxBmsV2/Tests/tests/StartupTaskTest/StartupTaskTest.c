@@ -15,7 +15,7 @@ void startupTaskCurrentLowTest()
 {
     uint32_t prevWakeTime = 0;
     isCurrentLow_ExpectAndReturn(0, 1);
-    osEventFlagsSet_ExpectAndReturn(contactorControlEventBits, COMMON_ON, 0);
+    osEventFlagsSet_ExpectAndReturn(contactorControlEventBits, COMMON_CLOSED, 0);
     osThreadExit_Expect();
     startup(&prevWakeTime);
     TEST_ASSERT_EQUAL_MESSAGE(auxBmsContactorState.commonState, OPEN, "Common contactor state not OPEN");

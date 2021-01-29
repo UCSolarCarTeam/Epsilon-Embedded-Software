@@ -13,5 +13,5 @@ void disconnectContactors()
     osThreadSetPriority (dischargeContactorGatekeeperTaskHandle, osPriorityRealtime);
     osThreadSetPriority (commonContactorGatekeeperTaskHandle, osPriorityRealtime);
 
-    osEventFlagsSet(contactorControlEventBits, COMMON_OFF);
+    osEventFlagsSet(contactorControlEventBits, COMMON_OPENED);
 }

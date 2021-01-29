@@ -24,7 +24,10 @@ void canTxGatekeeper(CanTxGatekeeperQueueData* canTxQueueData)
     if (HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) > 0)
     {
         uint32_t mailbox;
-        HAL_CAN_AddTxMessage(&hcan1, &(canTxQueueData->canTxHeader), canTxQueueData->data, &mailbox);
-        HAL_GPIO_TogglePin(BLU_LED_GPIO_Port, BLU_LED_Pin);
+
+        if (HAL_CAN_AddTxMessage(&hcan1, &(canTxQueueData->canTxHeader), canTxQueueData->data, &mailbox) == HAL_OK)
+        {
+            HAL_GPIO_TogglePin(BLU_LED_GPIO_Port, BLU_LED_Pin);
+        }
     }
 }

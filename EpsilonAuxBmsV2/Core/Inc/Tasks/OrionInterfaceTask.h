@@ -10,7 +10,7 @@
 void orionInterfaceTask(void* arg);
 void orionInterface(OrionCanInfo* message);
 void updateAuxStatus(AuxStatus* auxStatusToRead);
-void checkCellVoltage(OrionCanInfo* message, AuxStatus* auxStatusToUpdate);
+void updateAllowChargeAndAllowDischarge(OrionCanInfo* message, AuxStatus* auxStatusToUpdate);
 
 AuxStatus localAuxStatus;
 AuxTrip localAuxTrip;

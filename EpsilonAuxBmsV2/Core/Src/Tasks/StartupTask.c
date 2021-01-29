@@ -17,9 +17,9 @@ If the precharge current isn’t low it will keep looping till it’s successful
 */
 void startup(uint32_t* prevWakeTime)
 {
-    if (isCurrentLow(0) == 1)
+    if (isCurrentLow(0))
     {
-        osEventFlagsSet(contactorControlEventBits, COMMON_ON);
+        osEventFlagsSet(contactorControlEventBits, COMMON_CLOSED);
         auxBmsContactorState.commonState =  OPEN;
         osThreadExit();
     }
