@@ -17,7 +17,7 @@ void sendAuxStatusTask(void* arg)
 /*
 Executes at 10Hz.
 Reads the auxStatus variable and creates a CAN message for reporting Aux Status.
-Can only read auxStatus variable after acquiring auxStatusOrionInterfaceMutex,  auxStatusReadAuxVoltageMuteauxStatusContactorStatusUpdateMutex.
+Can only read auxStatus variable after acquiring auxStatusOrionInterfaceMutex,  auxStatusReadAuxVoltageMutex, auxStatusContactorStatusUpdateMutex.
 Puts message on canTxGatekeeperQueue.
 
 Look at comms protocol for CAN data assignment
@@ -30,16 +30,16 @@ void sendAuxStatus(CanTxGatekeeperQueueData* canQueueData, uint32_t* prevWakeTim
         {
             if (osMutexAcquire(auxStatusContactorStatusUpdateMutex, MUTEX_TIMEOUT) == osOK)
             {
-                canQueueData->canTxHeader = baseCanTxHdr;
+                canQueueData->canTxHeader = BASE_CAN_TX_HDR;
                 canQueueData->canTxHeader.StdId = AUX_STATUS_STDID;
                 canQueueData->canTxHeader.DLC = 3;
                 canQueueData->data[0] = auxStatus.commonContactorState |
                                         (auxStatus.chargeContactorState << 1) |
                                         (auxStatus.dischargeContactorState << 2) |
                                         (auxStatus.auxVoltage << 3);
-                canQueueData->data[1] = auxStatus.highVoltageEnableState |
-                                        (auxStatus.strobeBmsLight << 1) |
-                                        (auxStatus.allowCharge << 2) |
+                canQueueData->data[1] = auxStatus.strobeBmsLight |
+                                        (auxStatus.allowCharge << 1) |
+                                        (auxStatus.highVoltageEnableState << 2) |
                                         (auxStatus.allowDischarge << 3) |
                                         (auxStatus.orionCanReceivedRecently << 4) |
                                         (auxStatus.chargeContactorError << 5) |

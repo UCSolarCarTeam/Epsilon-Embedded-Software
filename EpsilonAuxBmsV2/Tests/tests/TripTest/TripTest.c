@@ -23,7 +23,7 @@ void runTripTests()
 
 void test_checkDischargeTripDueToLowCell()
 {
-    message.minCellVoltage = 25000;
+    message.lowCellVoltage = 25000;
     returnValue = checkDischargeTrip(&message, &auxTripToUpdate);
 
     TEST_ASSERT_EQUAL_MESSAGE(1, returnValue, "checkDischargeTrip did not return a 1");
@@ -33,7 +33,7 @@ void test_checkDischargeTripDueToLowCell()
 
 void test_checkDischargeTripDueToHighTempAndCurrent()
 {
-    message.minCellVoltage = 30000;
+    message.lowCellVoltage = 30000;
     message.highTemperature = 60;
     message.packCurrent = 1;
     returnValue = checkDischargeTrip(&message, &auxTripToUpdate);
@@ -56,7 +56,7 @@ void test_checkDischargeTripDueToPackCurrent()
 
 void test_checkDischargeTripForNoTrip()
 {
-    message.minCellVoltage = 30000;
+    message.lowCellVoltage = 30000;
     message.packCurrent = 228;
     returnValue = checkDischargeTrip(&message, &auxTripToUpdate);
 
@@ -71,7 +71,7 @@ void test_checkDischargeTripForNoTrip()
 
 void test_checkChargeTripDueToHighCell()
 {
-    message.maxCellVoltage = 43000;
+    message.highCellVoltage = 43000;
     message.highTemperature = 43;
     returnValue = checkChargeTrip(&message, &auxTripToUpdate);
 
@@ -82,7 +82,7 @@ void test_checkChargeTripDueToHighCell()
 
 void test_checkChargeTripDueToHighTempAndCurrent()
 {
-    message.maxCellVoltage = 41000;
+    message.highCellVoltage = 41000;
     message.highTemperature = 45;
     message.packCurrent = -1;
     returnValue = checkChargeTrip(&message, &auxTripToUpdate);

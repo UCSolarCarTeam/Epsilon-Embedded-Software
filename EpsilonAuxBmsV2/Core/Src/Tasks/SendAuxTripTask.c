@@ -26,7 +26,7 @@ void sendAuxTrip(CanTxGatekeeperQueueData* canQueueData, uint32_t* prevWakeTime)
 {
     if (osMutexAcquire(auxTripMutex, MUTEX_TIMEOUT) == osOK)
     {
-        canQueueData->canTxHeader = baseCanTxHdr;
+        canQueueData->canTxHeader = BASE_CAN_TX_HDR;
         canQueueData->canTxHeader.StdId = AUX_TRIP_STDID;
         canQueueData->canTxHeader.DLC = 1;
         canQueueData->data[0] = auxTrip.chargeTripDueToHighCellVoltage |

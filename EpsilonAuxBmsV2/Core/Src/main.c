@@ -90,11 +90,11 @@ const osThreadAttr_t defaultTask_attributes =
 uint8_t spiRxBuff[AUX_BMS_SPI_BUFFER_SIZE] = {0};
 
 // CAN Tx Header
-const CAN_TxHeaderTypeDef baseCanTxHdr = {.ExtId = 0,
-                                          .RTR = CAN_RTR_DATA,
-                                          .IDE = CAN_ID_STD,
-                                          .TransmitGlobalTime = DISABLE
-                                         };
+const CAN_TxHeaderTypeDef BASE_CAN_TX_HDR = {.ExtId = 0,
+                                             .RTR = CAN_RTR_DATA,
+                                             .IDE = CAN_ID_STD,
+                                             .TransmitGlobalTime = DISABLE
+                                            };
 
 // Queues
 osMessageQueueId_t canRxParserQueue;
@@ -688,7 +688,7 @@ void MX_CAN1_User_Init(void)
     orionVoltageTempFilterConfig.FilterBank = 0; // Use first filter bank
     orionVoltageTempFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
     orionVoltageTempFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
-    orionVoltageTempFilterConfig.FilterIdHigh = ORION_MAX_MIN_VOLTAGES_STDID << 5; // Filter registers need to be shifted left 5 bits
+    orionVoltageTempFilterConfig.FilterIdHigh = ORION_HIGH_LOW_VOLTAGES_STDID << 5; // Filter registers need to be shifted left 5 bits
     orionVoltageTempFilterConfig.FilterIdLow = 0;
     orionVoltageTempFilterConfig.FilterMaskIdHigh = ORION_TEMP_INFO_STDID << 5;
     orionVoltageTempFilterConfig.FilterMaskIdLow = 0; // Unused
@@ -858,7 +858,7 @@ void Error_Handler(void)
     HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_RESET);
     uint32_t mailbox;
     uint8_t data[1] = {errorCode};
-    CAN_TxHeaderTypeDef canTxHeader = baseCanTxHdr;
+    CAN_TxHeaderTypeDef canTxHeader = BASE_CAN_TX_HDR;
     canTxHeader.DLC = 1;
     //TODO set the STDID
     HAL_CAN_AddTxMessage(&hcan1, &(canTxHeader), data, &mailbox);

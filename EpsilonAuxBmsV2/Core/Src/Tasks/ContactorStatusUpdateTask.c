@@ -24,24 +24,23 @@ void contactorStatusUpdate(uint32_t* prevWakeTime)
     uint8_t dischargeSense = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
     uint8_t hvEnableState = HAL_GPIO_ReadPin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin);
 
-    // Update Aux Status after acquireing mutex
-    if (osMutexAcquire(auxStatusContactorStatusUpdateMutex, MUTEX_TIMEOUT) != osOK)
+    // Update Aux Status after acquiring mutex
+    if (osMutexAcquire(auxStatusContactorStatusUpdateMutex, MUTEX_TIMEOUT) == osOK)
     {
-        return;
+        auxStatus.commonContactorState = commonSense;
+        auxStatus.chargeContactorState = chargeSense;
+        auxStatus.dischargeContactorState = dischargeSense;
+        auxStatus.highVoltageEnableState = hvEnableState;
+        auxStatus.chargeOpenButShouldBeClosed = auxBmsContactorState.chargeState == CLOSED && !chargeSense;
+        auxStatus.dischargeOpenButShouldBeClosed = auxBmsContactorState.dischargeState == CLOSED && !dischargeSense;
+
+        auxStatus.chargeContactorError = isContactorError(chargeSense, auxBmsContactorState.chargeState);
+        auxStatus.dischargeContactorError = isContactorError(dischargeSense, auxBmsContactorState.dischargeState);
+        auxStatus.commonContactorError = isContactorError(commonSense, auxBmsContactorState.commonState);
+
+        osMutexRelease(auxStatusContactorStatusUpdateMutex);
     }
 
-    auxStatus.commonContactorState = commonSense;
-    auxStatus.chargeContactorState = chargeSense;
-    auxStatus.dischargeContactorState = dischargeSense;
-    auxStatus.highVoltageEnableState = hvEnableState;
-    auxStatus.chargeOpenButShouldBeClosed = auxBmsContactorState.chargeState == CLOSED && !chargeSense;
-    auxStatus.dischargeOpenButShouldBeClosed = auxBmsContactorState.dischargeState == CLOSED && !dischargeSense;
-
-    auxStatus.chargeContactorError = isContactorError(chargeSense, auxBmsContactorState.chargeState);
-    auxStatus.dischargeContactorError = isContactorError(dischargeSense, auxBmsContactorState.dischargeState);
-    auxStatus.commonContactorError = isContactorError(commonSense, auxBmsContactorState.commonState);
-
-    osMutexRelease(auxStatusContactorStatusUpdateMutex);
 
     if ( !auxBmsContactorState.startupDone
             && auxBmsContactorState.commonState == CLOSED

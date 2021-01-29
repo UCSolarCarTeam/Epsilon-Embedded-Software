@@ -40,7 +40,7 @@ void closeChargeContactor()
         if (isDischargeClosed) // Discharge closed so delay and try again
         {
             osDelay(CONTACTOR_DELAY);
-            osEventFlagsSet(contactorControlEventBits, CHARGE_ON);
+            osEventFlagsSet(contactorControlEventBits, CHARGE_CLOSED);
         }
     }
     else // charge contactor closed succesfully
@@ -50,12 +50,15 @@ void closeChargeContactor()
 
     if (!isDischargeClosed) // Discharge not closed so trigger it to turn on again
     {
-        osEventFlagsSet(contactorControlEventBits, DISCHARGE_ON);
+        osEventFlagsSet(contactorControlEventBits, DISCHARGE_CLOSED);
     }
 }
 
 /*
 Opens charge contactor then sets the priority to the task back to normal.
+The priority is changed to realtime by:
+  - OrionInterfaceTask
+  - ContactorStatusUpdateTask
 */
 void openChargeContactor()
 {
@@ -71,13 +74,13 @@ Note: Opening the contactor has a higher priority than closing the contactor.
 */
 void chargeContactorGatekeeper()
 {
-    uint32_t contactorFlags = osEventFlagsWait(contactorControlEventBits, CHARGE_ON | CHARGE_OFF, osFlagsWaitAny, osWaitForever);
+    uint32_t contactorFlags = osEventFlagsWait(contactorControlEventBits, CHARGE_CLOSED | CHARGE_OPENED, osFlagsWaitAny, osWaitForever);
 
-    if (contactorFlags & CHARGE_OFF)
+    if (contactorFlags & CHARGE_OPENED)
     {
         openChargeContactor();
     }
-    else if ((contactorFlags & CHARGE_ON) && !auxBmsContactorState.contactorsDisconnected)
+    else if ((contactorFlags & CHARGE_CLOSED) && !auxBmsContactorState.contactorsDisconnected)
     {
         closeChargeContactor();
     }

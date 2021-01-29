@@ -27,6 +27,12 @@ void test_checkValidVoltageRead()
     osMutexRelease_ExpectAndReturn(auxStatusReadAuxVoltageMutex, 0);
     osDelayUntil_ExpectAndReturn(prevWakeTime + READ_AUX_VOLTAGE_TASK_FREQ, 0);
 
+    // ADC sends 14 bits with 10 bits being useful, however, the SPI can only receive
+    // multiples of 8bits or 16bits. For example: 0000 DDDD DDDD DD00 (where D is the actual data bit)
+    // rxBuff[1] = 0000 DDDD
+    // rxBuff[0] = DDDD DD00
+    // data = DD DDDD DDDD
+
     spiRxBuff[1] = 0b00001100;
     spiRxBuff[0] = 0b10111000;
 

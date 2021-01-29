@@ -12,16 +12,23 @@ osMutexId_t auxStatusOrionInterfaceMutex;
 osMutexId_t auxStatusReadAuxVoltageMutex;
 osMutexId_t auxStatusContactorStatusUpdateMutex;
 
-const CAN_TxHeaderTypeDef baseCanTxHdr;
+const CAN_TxHeaderTypeDef BASE_CAN_TX_HDR;
 osMessageQueueId_t canTxGatekeeperQueue;
 
-AuxStatus auxStatus = { .commonContactorState = 0b1, .chargeContactorState = 0,
-                        .dischargeContactorState = 1, .auxVoltage = 0b11010,
-                        .highVoltageEnableState = 0, .strobeBmsLight = 1,
-                        .allowCharge = 0, .allowDischarge = 1,
-                        .orionCanReceivedRecently = 0, .chargeContactorError = 1,
-                        .dischargeContactorError = 0, .commonContactorError = 1,
-                        .dischargeShouldTrip = 0, .chargeShouldTrip = 1,
+AuxStatus auxStatus = { .commonContactorState = 0b1,
+                        .chargeContactorState = 0,
+                        .dischargeContactorState = 1,
+                        .auxVoltage = 0b11010,
+                        .highVoltageEnableState = 0,
+                        .strobeBmsLight = 1,
+                        .allowCharge = 0,
+                        .allowDischarge = 1,
+                        .orionCanReceivedRecently = 0,
+                        .chargeContactorError = 1,
+                        .dischargeContactorError = 0,
+                        .commonContactorError = 1,
+                        .dischargeShouldTrip = 0,
+                        .chargeShouldTrip = 1,
                         .chargeOpenButShouldBeClosed = 0,
                         .dischargeOpenButShouldBeClosed = 1
                       };
@@ -39,7 +46,7 @@ CanTxGatekeeperQueueData expectedCanQueueData = (CanTxGatekeeperQueueData)
 void checkCanQueueDataForAuxStatus()
 {
     expectedCanQueueData.data[0] = 0b11010101;
-    expectedCanQueueData.data[1] = 0b10101010;
+    expectedCanQueueData.data[1] = 0b10101001;
     expectedCanQueueData.data[2] = 0b1010;
 
     expectedCanQueueData.canTxHeader.StdId = AUX_STATUS_STDID;
