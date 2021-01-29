@@ -9,14 +9,17 @@ into the data array of canQueueData
 */
 
 osMutexId_t auxTripMutex;
-const CAN_TxHeaderTypeDef baseCanTxHdr;
+const CAN_TxHeaderTypeDef BASE_CAN_TX_HDR;
 osMessageQueueId_t canTxGatekeeperQueue;
 
 AuxTrip auxTrip =
 {
-    .chargeTripDueToHighCellVoltage = 1, .chargeTripDueToHighTemperatureAndCurrent = 0,
-    .chargeTripDueToPackCurrent = 0, .dischargeTripDueToLowCellVoltage = 1,
-    .dischargeTripDueToHighTemperatureAndCurrent = 0, .dischargeTripDueToPackCurrent = 1,
+    .chargeTripDueToHighCellVoltage = 1,
+    .chargeTripDueToHighTemperatureAndCurrent = 0,
+    .chargeTripDueToPackCurrent = 0,
+    .dischargeTripDueToLowCellVoltage = 1,
+    .dischargeTripDueToHighTemperatureAndCurrent = 0,
+    .dischargeTripDueToPackCurrent = 1,
     .protectionTrip = 0
 };
 

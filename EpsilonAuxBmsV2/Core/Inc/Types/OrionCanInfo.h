@@ -2,8 +2,8 @@
 
 typedef struct
 {
-    uint16_t maxCellVoltage;
-    uint16_t minCellVoltage;
+    uint16_t highCellVoltage;
+    uint16_t lowCellVoltage;
     unsigned char highTemperature;
     float packCurrent;
 } OrionCanInfo;

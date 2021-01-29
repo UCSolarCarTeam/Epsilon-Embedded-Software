@@ -76,8 +76,8 @@ void test_StandardOperationShouldUpdateStatusesNormally()
 
     setOrionEnableSenseExpects(expectedOrionDischargeSense, expectedOrionChargeSense);
 
-    message.maxCellVoltage = 30000;
-    message.minCellVoltage = 30000;
+    message.highCellVoltage = 30000;
+    message.lowCellVoltage = 30000;
 
     // Explictly define what we are expecting
     setNominalAuxStatus();
@@ -122,7 +122,7 @@ void test_NoDischargeSenseShouldTurnOffPinAndUpdateStatuses()
     setOrionInterfaceOsExpects(1);
     setTripExpects(0, 0, 0);
     setContactorState(CLOSED, CLOSED, 1);
-    setContactorEventFlagsExpects(DISCHARGE_OFF);
+    setContactorEventFlagsExpects(DISCHARGE_OPENED);
     osThreadSetPriority_ExpectAndReturn(dischargeContactorGatekeeperTaskHandle, osPriorityRealtime, 0);
 
     GPIO_PinState expectedOrionDischargeSense = GPIO_PIN_RESET;
@@ -145,7 +145,7 @@ void test_NoChargeSenseShouldTurnOffPinAndUpdateStatuses()
     setOrionInterfaceOsExpects(1);
     setTripExpects(0, 0, 0);
     setContactorState(CLOSED, CLOSED, 1);
-    setContactorEventFlagsExpects(CHARGE_OFF);
+    setContactorEventFlagsExpects(CHARGE_OPENED);
     osThreadSetPriority_ExpectAndReturn(chargeContactorGatekeeperTaskHandle, osPriorityRealtime, 0);
 
     GPIO_PinState expectedOrionDischargeSense = GPIO_PIN_SET;
@@ -169,7 +169,7 @@ void test_ShouldTripWillDisconnectContactorsAndUpdateStatuses()
     setOrionInterfaceOsExpects(1);
     setTripExpects(1, 1, 1); // Will just choose protection. Any of them should work
     setContactorState(CLOSED, CLOSED, 1);
-    setContactorEventFlagsExpects(COMMON_OFF);
+    setContactorEventFlagsExpects(COMMON_OPENED);
     osThreadSetPriority_ExpectAndReturn(commonContactorGatekeeperTaskHandle, osPriorityRealtime, 0);
     osThreadSetPriority_ExpectAndReturn(chargeContactorGatekeeperTaskHandle, osPriorityRealtime, 0);
     osThreadSetPriority_ExpectAndReturn(dischargeContactorGatekeeperTaskHandle, osPriorityRealtime, 0);
@@ -194,20 +194,20 @@ void test_ShouldTripWillDisconnectContactorsAndUpdateStatuses()
 
 // Orion reports a cell voltage above the internal Aux BMS range
 // Test that the charge contactor off event is triggered & statuses are correct
-void test_TooHighMaxCellVoltageShouldTurnOffChargeAndUpdateStatuses()
+void test_TooHighhighCellVoltageShouldTurnOffChargeAndUpdateStatuses()
 {
     setOrionInterfaceOsExpects(1);
     setTripExpects(0, 0, 0);
     setContactorState(CLOSED, CLOSED, 1);
-    setContactorEventFlagsExpects(CHARGE_OFF);
+    setContactorEventFlagsExpects(CHARGE_OPENED);
     osThreadSetPriority_ExpectAndReturn(chargeContactorGatekeeperTaskHandle, osPriorityRealtime, 0);
 
     GPIO_PinState expectedOrionDischargeSense = GPIO_PIN_SET;
     GPIO_PinState expectedOrionChargeSense = GPIO_PIN_SET;
     setOrionEnableSenseExpects(expectedOrionDischargeSense, expectedOrionChargeSense);
 
-    message.minCellVoltage = 30000;
-    message.maxCellVoltage = 41600;
+    message.lowCellVoltage = 30000;
+    message.highCellVoltage = 41600;
 
     setNominalAuxStatus();
     AuxStatus expectedAuxStatus = auxStatus;
@@ -220,12 +220,12 @@ void test_TooHighMaxCellVoltageShouldTurnOffChargeAndUpdateStatuses()
 
 // Orion reports a cell voltage is below the internal Aux BMS range
 // Test that the discharge contactor will be closed & statuses are updated
-void test_TooLowMinCellVoltageShouldTurnOffDischargeAndUpdateStatuses()
+void test_TooLowlowCellVoltageShouldTurnOffDischargeAndUpdateStatuses()
 {
     setOrionInterfaceOsExpects(1);
     setTripExpects(0, 0, 0);
     setContactorState(CLOSED, CLOSED, 1);
-    setContactorEventFlagsExpects(DISCHARGE_OFF);
+    setContactorEventFlagsExpects(DISCHARGE_OPENED);
     osThreadSetPriority_ExpectAndReturn(dischargeContactorGatekeeperTaskHandle, osPriorityRealtime, 0);
 
     GPIO_PinState expectedOrionDischargeSense = GPIO_PIN_SET;
@@ -233,8 +233,8 @@ void test_TooLowMinCellVoltageShouldTurnOffDischargeAndUpdateStatuses()
     setOrionEnableSenseExpects(expectedOrionDischargeSense, expectedOrionChargeSense);
 
 
-    message.minCellVoltage = 25900;
-    message.maxCellVoltage = 30000;
+    message.lowCellVoltage = 25900;
+    message.highCellVoltage = 30000;
 
     setNominalAuxStatus();
     AuxStatus expectedAuxStatus = auxStatus;
@@ -252,6 +252,6 @@ void runOrionInterfaceTests()
     RUN_TEST(test_NoDischargeSenseShouldTurnOffPinAndUpdateStatuses);
     RUN_TEST(test_NoChargeSenseShouldTurnOffPinAndUpdateStatuses);
     RUN_TEST(test_ShouldTripWillDisconnectContactorsAndUpdateStatuses);
-    RUN_TEST(test_TooHighMaxCellVoltageShouldTurnOffChargeAndUpdateStatuses);
-    RUN_TEST(test_TooLowMinCellVoltageShouldTurnOffDischargeAndUpdateStatuses);
+    RUN_TEST(test_TooHighhighCellVoltageShouldTurnOffChargeAndUpdateStatuses);
+    RUN_TEST(test_TooLowlowCellVoltageShouldTurnOffDischargeAndUpdateStatuses);
 }

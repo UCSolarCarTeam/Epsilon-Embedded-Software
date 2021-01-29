@@ -14,7 +14,7 @@ uint8_t checkDischargeTrip(OrionCanInfo* message, AuxTrip* auxTripToUpdate)
     uint8_t tripDuetoHighTempAndCurrent = 0;
     uint8_t tripDuetoPackCurrent = 0;
 
-    if (DEFAULT_VOLTAGE_UNITS * message->minCellVoltage <= ORION_MIN_CELL_VOLTAGE)
+    if (DEFAULT_VOLTAGE_UNITS * message->lowCellVoltage <= ORION_MIN_CELL_VOLTAGE)
     {
         tripDuetoLowCell = 1;
     }
@@ -57,7 +57,7 @@ uint8_t checkChargeTrip(OrionCanInfo* message, AuxTrip* auxTripToUpdate)
     uint8_t tripDuetoHighTempAndCurrent = 0;
     uint8_t tripDuetoPackCurrent = 0;
 
-    if (DEFAULT_VOLTAGE_UNITS * message->maxCellVoltage >= ORION_MAX_CELL_VOLTAGE)
+    if (DEFAULT_VOLTAGE_UNITS * message->highCellVoltage >= ORION_MAX_CELL_VOLTAGE)
     {
         tripDuetoHighCell = 1;
     }

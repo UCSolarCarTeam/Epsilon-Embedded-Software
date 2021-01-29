@@ -38,10 +38,10 @@ void readAuxVoltage(uint32_t* prevWakeTime)
         else
         {
             // ADC sends 14 bits with 10 bits being useful, however, the SPI can only receive
-            // multiples of 8bits or 16bits. For example: 0000 1111 1111 1100
-            // rxBuff[1] = 0000 1111
-            // rxBuff[0] = 1111 1100
-            // data = 11 1111 1111
+            // multiples of 8bits or 16bits. For example: 0000 DDDD DDDD DD00 (where D is the actual data bit)
+            // rxBuff[1] = 0000 DDDD
+            // rxBuff[0] = DDDD DD00
+            // data = DD DDDD DDDD
             spiVoltage =  0x03FF & ((uint16_t)(spiRxBuff[1] << 6) | (uint16_t)((spiRxBuff[0]) >> 2));
         }
 

@@ -62,10 +62,10 @@ void orionInterface(OrionCanInfo* message)
     {
         // Determine trip conditions and contactor settings based on Orion CAN
         localAuxStatus.orionCanReceivedRecently = 1;
-        checkCellVoltage(message, &localAuxStatus);
+        updateAllowChargeAndAllowDischarge(message, &localAuxStatus);
         localAuxStatus.dischargeShouldTrip = checkDischargeTrip(message, &localAuxTrip);
         localAuxStatus.chargeShouldTrip = checkChargeTrip(message, &localAuxTrip);
-        uint8_t protectionTrip = checkProtectionTrip(message, &localAuxTrip); // Without this line, the test_TooHighMaxCellVoltageShouldTurnOffChargeAndUpdateStatuses test fails for some reason
+        uint8_t protectionTrip = checkProtectionTrip(message, &localAuxTrip); // Without this line, the test_TooHighhighCellVoltageShouldTurnOffChargeAndUpdateStatuses test fails for some reason
         shouldDisconnectContactors = localAuxStatus.dischargeShouldTrip
                                      || localAuxStatus.chargeShouldTrip
                                      || protectionTrip;
@@ -115,20 +115,20 @@ void orionInterface(OrionCanInfo* message)
 
         if (!localAuxStatus.allowCharge)
         {
-            contactorControlEventFlags |= CHARGE_OFF;
+            contactorControlEventFlags |= CHARGE_OPENED;
             osThreadSetPriority (chargeContactorGatekeeperTaskHandle, osPriorityRealtime);
         }
         else if (auxBmsContactorState.startupDone)
         {
             if (auxBmsContactorState.chargeState == OPEN)
             {
-                contactorControlEventFlags |= CHARGE_ON;
+                contactorControlEventFlags |= CHARGE_CLOSED;
             }
         }
 
         if (!localAuxStatus.allowDischarge)
         {
-            contactorControlEventFlags |= DISCHARGE_OFF;
+            contactorControlEventFlags |= DISCHARGE_OPENED;
             osThreadSetPriority (dischargeContactorGatekeeperTaskHandle, osPriorityRealtime);
         }
         else if (auxBmsContactorState.startupDone)
@@ -138,7 +138,7 @@ void orionInterface(OrionCanInfo* message)
             // Charge will have a higher priority in closing (and it should trigger discharge to close anyways if discharge is open)
             if ((auxBmsContactorState.dischargeState == OPEN) && (auxBmsContactorState.chargeState == CLOSED))
             {
-                contactorControlEventFlags |= DISCHARGE_ON;
+                contactorControlEventFlags |= DISCHARGE_CLOSED;
             }
         }
 
@@ -164,14 +164,14 @@ Updates allow charge and allow discharge based on the max and min cell voltages 
 If the max cell voltage is greater than the Aux BMS internal limit, then disallow charge.
 If the min cell voltage is lower than the Aux BMS internal limit, then disallow discharge.
 */
-void checkCellVoltage(OrionCanInfo* message, AuxStatus* auxStatusToUpdate)
+void updateAllowChargeAndAllowDischarge(OrionCanInfo* message, AuxStatus* auxStatusToUpdate)
 {
-    if (DEFAULT_VOLTAGE_UNITS * message->maxCellVoltage > AUX_BMS_MAX_CELL_VOLTAGE)
+    if (DEFAULT_VOLTAGE_UNITS * message->highCellVoltage > AUX_BMS_MAX_CELL_VOLTAGE)
     {
         auxStatusToUpdate->allowCharge = 0;
     }
 
-    if (DEFAULT_VOLTAGE_UNITS * message->minCellVoltage < AUX_BMS_MIN_CELL_VOLTAGE)
+    if (DEFAULT_VOLTAGE_UNITS * message->lowCellVoltage < AUX_BMS_MIN_CELL_VOLTAGE)
     {
         auxStatusToUpdate->allowDischarge = 0;
     }
