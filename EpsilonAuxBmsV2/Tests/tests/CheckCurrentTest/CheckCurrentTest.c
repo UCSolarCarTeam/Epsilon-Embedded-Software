@@ -1,10 +1,4 @@
-#include <string.h>
-#include "unity.h"
 #include "CheckCurrentTest.h"
-#include "Mockstm32f4xx_hal_adc.h"
-#include "CheckCurrent.h"
-
-
 
 ADC_HandleTypeDef hadc1;
 
