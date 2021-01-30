@@ -1,8 +1,4 @@
-#include "OrionInterfaceTask.h"
-#include "Mockcmsis_os2.h"
-#include "Mockstm32f4xx_hal_gpio.h"
-#include "MockTrip.h"
-#include "AuxStatusHelper.h"
+#include "OrionInterfaceTest.h"
 
 OrionCanInfo message;
 
@@ -80,7 +76,6 @@ void test_StandardOperationShouldUpdateStatusesNormally()
     message.lowCellVoltage = 30000;
 
     // Explictly define what we are expecting
-    setNominalAuxStatus();
     AuxStatus expectedAuxStatus = auxStatus;
     expectedAuxStatus.strobeBmsLight = 0;
     expectedAuxStatus.allowCharge = 1;
@@ -107,7 +102,6 @@ void test_NoOrionCanMessageReceivedRecently()
     setOrionEnableSenseExpects(expectedOrionDischargeSense, expectedOrionChargeSense);
 
     // Explictly define what we are expecting
-    setNominalAuxStatus();
     AuxStatus expectedAuxStatus = auxStatus;
     expectedAuxStatus.orionCanReceivedRecently = 0;
 
@@ -129,7 +123,6 @@ void test_NoDischargeSenseShouldTurnOffPinAndUpdateStatuses()
     GPIO_PinState expectedOrionChargeSense = GPIO_PIN_SET;
     setOrionEnableSenseExpects(expectedOrionDischargeSense, expectedOrionChargeSense);
 
-    setNominalAuxStatus();
     AuxStatus expectedAuxStatus = auxStatus;
     expectedAuxStatus.allowDischarge = 0;
 
@@ -152,8 +145,6 @@ void test_NoChargeSenseShouldTurnOffPinAndUpdateStatuses()
     GPIO_PinState expectedOrionChargeSense = GPIO_PIN_RESET;
     setOrionEnableSenseExpects(expectedOrionDischargeSense, expectedOrionChargeSense);
 
-
-    setNominalAuxStatus();
     AuxStatus expectedAuxStatus = auxStatus;
     expectedAuxStatus.allowCharge = 0;
 
@@ -178,8 +169,6 @@ void test_ShouldTripWillDisconnectContactorsAndUpdateStatuses()
     GPIO_PinState expectedOrionChargeSense = GPIO_PIN_SET;
     setOrionEnableSenseExpects(expectedOrionDischargeSense, expectedOrionChargeSense);
 
-
-    setNominalAuxStatus();
     AuxStatus expectedAuxStatus = auxStatus;
     expectedAuxStatus.allowCharge = 0;
     expectedAuxStatus.allowDischarge = 0;
@@ -194,7 +183,7 @@ void test_ShouldTripWillDisconnectContactorsAndUpdateStatuses()
 
 // Orion reports a cell voltage above the internal Aux BMS range
 // Test that the charge contactor off event is triggered & statuses are correct
-void test_TooHighhighCellVoltageShouldTurnOffChargeAndUpdateStatuses()
+void test_TooHighHighCellVoltageShouldTurnOffChargeAndUpdateStatuses()
 {
     setOrionInterfaceOsExpects(1);
     setTripExpects(0, 0, 0);
@@ -209,7 +198,6 @@ void test_TooHighhighCellVoltageShouldTurnOffChargeAndUpdateStatuses()
     message.lowCellVoltage = 30000;
     message.highCellVoltage = 41600;
 
-    setNominalAuxStatus();
     AuxStatus expectedAuxStatus = auxStatus;
     expectedAuxStatus.allowCharge = 0;
 
@@ -220,7 +208,7 @@ void test_TooHighhighCellVoltageShouldTurnOffChargeAndUpdateStatuses()
 
 // Orion reports a cell voltage is below the internal Aux BMS range
 // Test that the discharge contactor will be closed & statuses are updated
-void test_TooLowlowCellVoltageShouldTurnOffDischargeAndUpdateStatuses()
+void test_TooLowLowCellVoltageShouldTurnOffDischargeAndUpdateStatuses()
 {
     setOrionInterfaceOsExpects(1);
     setTripExpects(0, 0, 0);
@@ -236,7 +224,6 @@ void test_TooLowlowCellVoltageShouldTurnOffDischargeAndUpdateStatuses()
     message.lowCellVoltage = 25900;
     message.highCellVoltage = 30000;
 
-    setNominalAuxStatus();
     AuxStatus expectedAuxStatus = auxStatus;
     expectedAuxStatus.allowDischarge = 0;
 
@@ -252,6 +239,6 @@ void runOrionInterfaceTests()
     RUN_TEST(test_NoDischargeSenseShouldTurnOffPinAndUpdateStatuses);
     RUN_TEST(test_NoChargeSenseShouldTurnOffPinAndUpdateStatuses);
     RUN_TEST(test_ShouldTripWillDisconnectContactorsAndUpdateStatuses);
-    RUN_TEST(test_TooHighhighCellVoltageShouldTurnOffChargeAndUpdateStatuses);
-    RUN_TEST(test_TooLowlowCellVoltageShouldTurnOffDischargeAndUpdateStatuses);
+    RUN_TEST(test_TooHighHighCellVoltageShouldTurnOffChargeAndUpdateStatuses);
+    RUN_TEST(test_TooLowLowCellVoltageShouldTurnOffDischargeAndUpdateStatuses);
 }

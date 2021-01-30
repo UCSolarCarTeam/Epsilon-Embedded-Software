@@ -1,13 +1,5 @@
-#include <string.h>
-#include "unity.h"
-
 #include "DischargeContactorGatekeeperTaskTest.h"
-#include "Mockcmsis_os2.h"
-#include "ContactorState.h"
-#include "MockCheckCurrent.h"
-#include "Mockstm32f4xx_hal_gpio.h"
-#include "ContactorEventFlags.h"
-#include "DischargeContactorGatekeeperTask.h"
+
 
 osEventFlagsId_t contactorControlEventBits;
 AuxBmsContactorState auxBmsContactorState;

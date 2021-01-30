@@ -6,9 +6,16 @@
 #include "stm32f4xx_hal.h"
 #include "CommonContactorGatekeeperTaskTest.h"
 
+extern osEventFlagsId_t contactorControlEventBits;
+extern AuxBmsContactorState auxBmsContactorState;
 
 void setUp(void)
 {
+    contactorControlEventBits = 0;
+    auxBmsContactorState = (AuxBmsContactorState)
+    {
+        0
+    };
 }
 
 void tearDown(void)
