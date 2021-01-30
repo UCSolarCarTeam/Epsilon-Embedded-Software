@@ -71,8 +71,9 @@ CMOCK_SOURCES = $(CMOCK_DIR)cmock.c
 MOCK_SOURCES = \
 	$(MOCK_DIR)Mockstm32f4xx_hal_can.c \
 	$(MOCK_DIR)Mockstm32f4xx_hal_gpio.c \
-	$(MOCK_DIR)Mockstm32f4xx_hal_adc.c \
 	$(MOCK_DIR)Mockcmsis_os.c \
+	#$(MOCK_DIR)Mockstm32f4xx_hal_adc.c \
+	
 
 	
 # Get object file name of each source

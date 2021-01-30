@@ -2,7 +2,7 @@
 
 #include "Mockstm32f4xx_hal_gpio.h"
 #include "Mockstm32f4xx_hal_can.h"
-#include "Mockstm32f4xx_hal_adc.h"
+//#include "Mockstm32f4xx_hal_adc.h"
 #include "Mockcmsis_os.h"
 
 #include "Lights.h"
@@ -13,19 +13,21 @@ updateLights lightCharacteristics = {0};
 uint8_t lightsInputs;
 uint8_t auxBmsInputs[2];
 uint8_t batteryErrors[5];
+uint8_t driversInputs[4];
 SigLightsHandle sigLightsHandle;
 
+CAN_HandleTypeDef hcan2;
 
 void runLightsTests()
 {
-RUN_TEST(test_headlightsOff);
+RUN_TEST(test_headlightsOff_brakesLightsOff_hazardsOff_bmsStrobeLightsOff);
 }
 
 void test_headlightsOff_brakesLightsOff_hazardsOff_bmsStrobeLightsOff()
 {
     lightsInputs = 0b00000001;
     driversInputs[1] = 0;
-    driverInputs[2] = 0;
+    driversInputs[2] = 0;
     auxBmsInputs[1] = 0;
     driversInputs[3] = 0b00000000;
     uint32_t prevWakeTime = 0;
