@@ -12,7 +12,7 @@ void orionInterfaceTask(void* arg)
         orionInterface(&message);
     }
 }
-#include <stdio.h>
+
 /*
 Essentially reads inputs from Orion and gets the Aux BMS to respond accordingly.
 Determines:
@@ -64,13 +64,11 @@ void orionInterface(OrionCanInfo* message)
         localAuxStatus.orionCanReceivedRecently = 1;
         updateAllowChargeAndAllowDischarge(message, &localAuxStatus);
         updateAuxTrip(message, &localAuxTrip);
-        localAuxStatus.dischargeShouldTrip = checkDischargeTrip(message);
-        localAuxStatus.chargeShouldTrip = checkChargeTrip(message);
-        uint8_t protectionTrip = checkProtectionTrip(message); // Without this line, the test_TooHighhighCellVoltageShouldTurnOffChargeAndUpdateStatuses test fails for some reason
-        shouldDisconnectContactors = localAuxStatus.dischargeShouldTrip
-                                     || localAuxStatus.chargeShouldTrip
-                                     || protectionTrip;
-        //  || checkProtectionTrip(message, &localAuxTrip);
+        localAuxStatus.dischargeShouldTrip = checkDischargeTrip(localAuxTrip);
+        localAuxStatus.chargeShouldTrip = checkChargeTrip(localAuxTrip);
+        shouldDisconnectContactors = localAuxTrip.protectionTrip
+                                    || localAuxStatus.dischargeShouldTrip
+                                    || localAuxStatus.chargeShouldTrip;
     }
 
     // Determine trip conditions and contactor settings based on Orion GPIO
@@ -79,14 +77,12 @@ void orionInterface(OrionCanInfo* message)
     // Set auxStatus if a trip is to occur (due to GPIO or CAN messages)
     if (shouldDisconnectContactors)
     {
-        printf("Disconecting all contactors\n");
         localAuxStatus.allowCharge = 0;
         localAuxStatus.allowDischarge = 0;
         localAuxStatus.strobeBmsLight = 1;
     }
     else if (!orionDischargeEnableSense)
     {
-        printf("Discharge sense is low\n");
         localAuxStatus.allowDischarge = 0;
     }
     else if (!orionChargeEnableSense)
@@ -115,7 +111,6 @@ void orionInterface(OrionCanInfo* message)
     }
     else
     {
-        printf("Allow charge: %d. Allow discharge: %d\n", localAuxStatus.allowCharge, localAuxStatus.allowDischarge );
         uint32_t contactorControlEventFlags = 0;
 
         if (!localAuxStatus.allowCharge)
