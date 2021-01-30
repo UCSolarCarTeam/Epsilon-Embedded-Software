@@ -21,6 +21,20 @@ void runTripTests()
     RUN_TEST(test_checkProtectionTripForNoTrip);
 }
 
+void test_updateAuxTripProtectionTrip()
+{
+    HAL_GPIO_ReadPin_ExpectAndReturn(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin, 1);
+    message.packCurrent = -1;
+
+    auxTripToUpdate = 0;
+
+    AuxTrip expectedAuxTripToUpdate.protectionTrip = 1;
+
+    updateAuxTrip(&message, &auxTripToUpdate);
+
+    TEST_ASSERT_EQUAL_MESSAGE(expectedAuxTripToUpdate.protectionTrip, auxTripToUpdate.protectionTrip, "checkProtectionTrip did not return a 1");
+}
+
 void test_checkDischargeTripDueToLowCell()
 {
     message.lowCellVoltage = 25000;

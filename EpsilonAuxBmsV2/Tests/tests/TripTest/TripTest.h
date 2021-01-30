@@ -1,5 +1,6 @@
 #pragma once
 
+
 void runTripTests();
 void test_checkDischargeTripDueToLowCell();
 void test_checkDischargeTripDueToHighTempAndCurrent();
