@@ -5,16 +5,12 @@
 #include "unity.h"
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_can.h"
-#include "DriverControlsTest.h"
+#include "LightsTest.h"
 
-CAN_HandleTypeDef hcan2;
 
 void setUp(void)
 {
-    static CanTxMsgTypeDef txMessage;
-    hcan2.pTxMsg = &txMessage;
-    setAccelValuesQueue(0);
-    setRegenValuesQueue(0);
+
 }
 
 void tearDown(void)
@@ -26,7 +22,7 @@ int main (void)
 {
     UNITY_BEGIN();
 
-    runDriverControlTests();
+    runLightsTests();
 
     return UNITY_END();
 }

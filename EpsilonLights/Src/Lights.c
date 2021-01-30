@@ -25,7 +25,7 @@ void updateLights1 (updateLights* lightsCharacteristics, uint32_t* prevWakeTime)
         lightsCharacteristics -> regenBrakeFloat = 0;
 
         osDelayUntil(prevWakeTime, LIGHTS_UPDATE_FREQ);
-        lightsCharacteristics -> headlightsOff = (lightsInputs >> HOFF_INPUT_INDEX) & 1;
+        lightsCharacteristics -> headlightsOff = (lightsInputs >> HOFF_INPUT_INDEX) & 1; //0000 1111
         lightsCharacteristics -> headlightsLow = (lightsInputs >> HLOW_INPUT_INDEX) & 1;
         lightsCharacteristics -> headlightsHigh = (lightsInputs >> HHIGH_INPUT_INDEX) & 1;
         lightsCharacteristics -> rightSignal = (lightsInputs >> RSIGNAL_INPUT_INDEX) & 1;
