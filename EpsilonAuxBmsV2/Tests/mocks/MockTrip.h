@@ -24,12 +24,14 @@ void MockTrip_Verify(void);
 
 
 
-#define checkDischargeTrip_ExpectAndReturn(message, auxTripToUpdate, cmock_retval) checkDischargeTrip_CMockExpectAndReturn(__LINE__, message, auxTripToUpdate, cmock_retval)
-void checkDischargeTrip_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, OrionCanInfo* message, AuxTrip* auxTripToUpdate, uint8_t cmock_to_return);
-#define checkChargeTrip_ExpectAndReturn(message, auxTripToUpdate, cmock_retval) checkChargeTrip_CMockExpectAndReturn(__LINE__, message, auxTripToUpdate, cmock_retval)
-void checkChargeTrip_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, OrionCanInfo* message, AuxTrip* auxTripToUpdate, uint8_t cmock_to_return);
-#define checkProtectionTrip_ExpectAndReturn(message, auxTripToUpdate, cmock_retval) checkProtectionTrip_CMockExpectAndReturn(__LINE__, message, auxTripToUpdate, cmock_retval)
-void checkProtectionTrip_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, OrionCanInfo* message, AuxTrip* auxTripToUpdate, uint8_t cmock_to_return);
+#define updateAuxTrip_Expect(message, auxTripToUpdate) updateAuxTrip_CMockExpect(__LINE__, message, auxTripToUpdate)
+void updateAuxTrip_CMockExpect(UNITY_LINE_TYPE cmock_line, OrionCanInfo* message, AuxTrip* auxTripToUpdate);
+#define checkDischargeTrip_ExpectAndReturn(message, cmock_retval) checkDischargeTrip_CMockExpectAndReturn(__LINE__, message, cmock_retval)
+void checkDischargeTrip_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, OrionCanInfo* message, uint8_t cmock_to_return);
+#define checkChargeTrip_ExpectAndReturn(message, cmock_retval) checkChargeTrip_CMockExpectAndReturn(__LINE__, message, cmock_retval)
+void checkChargeTrip_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, OrionCanInfo* message, uint8_t cmock_to_return);
+#define checkProtectionTrip_ExpectAndReturn(message, cmock_retval) checkProtectionTrip_CMockExpectAndReturn(__LINE__, message, cmock_retval)
+void checkProtectionTrip_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, OrionCanInfo* message, uint8_t cmock_to_return);
 
 #if defined(__GNUC__) && !defined(__ICC) && !defined(__TMS470__)
 #if __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ > 6 || (__GNUC_MINOR__ == 6 && __GNUC_PATCHLEVEL__ > 0)))

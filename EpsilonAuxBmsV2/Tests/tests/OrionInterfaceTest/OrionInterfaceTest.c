@@ -34,9 +34,9 @@ void setOrionInterfaceOsExpects(uint8_t orionCanReceivedRecently)
 
 void setTripExpects(uint8_t chargeTrip, uint8_t dischargeTrip, uint8_t protectionTrip)
 {
-    checkChargeTrip_ExpectAndReturn(&message, &localAuxTrip, chargeTrip);
-    checkDischargeTrip_ExpectAndReturn(&message, &localAuxTrip, dischargeTrip);
-    checkProtectionTrip_ExpectAndReturn(&message, &localAuxTrip, protectionTrip);
+    checkChargeTrip_ExpectAndReturn(&message, chargeTrip);
+    checkDischargeTrip_ExpectAndReturn(&message, dischargeTrip);
+    checkProtectionTrip_ExpectAndReturn(&message, protectionTrip);
 }
 
 void setOrionEnableSenseExpects(GPIO_PinState expectedOrionDischargeSense, GPIO_PinState expectedOrionChargeSense)
@@ -84,6 +84,8 @@ void test_StandardOperationShouldUpdateStatusesNormally()
     expectedAuxStatus.chargeShouldTrip = 0;
     expectedAuxStatus.dischargeShouldTrip = 0;
 
+    updateAuxTrip_Expect(&message, &localAuxTrip);
+
     orionInterface(&message);
     assertAuxStatusEqual(expectedAuxStatus);
 }
@@ -126,6 +128,8 @@ void test_NoDischargeSenseShouldTurnOffPinAndUpdateStatuses()
     AuxStatus expectedAuxStatus = auxStatus;
     expectedAuxStatus.allowDischarge = 0;
 
+    updateAuxTrip_Expect(&message, &localAuxTrip);
+
     orionInterface(&message);
 
     assertAuxStatusEqual(expectedAuxStatus);
@@ -147,6 +151,8 @@ void test_NoChargeSenseShouldTurnOffPinAndUpdateStatuses()
 
     AuxStatus expectedAuxStatus = auxStatus;
     expectedAuxStatus.allowCharge = 0;
+
+    updateAuxTrip_Expect(&message, &localAuxTrip);
 
     orionInterface(&message);
 
@@ -176,6 +182,8 @@ void test_ShouldTripWillDisconnectContactorsAndUpdateStatuses()
     expectedAuxStatus.dischargeShouldTrip = 1;
     expectedAuxStatus.chargeShouldTrip = 1;
 
+    updateAuxTrip_Expect(&message, &localAuxTrip);
+
     orionInterface(&message);
 
     assertAuxStatusEqual(expectedAuxStatus);
@@ -200,6 +208,8 @@ void test_TooHighHighCellVoltageShouldTurnOffChargeAndUpdateStatuses()
 
     AuxStatus expectedAuxStatus = auxStatus;
     expectedAuxStatus.allowCharge = 0;
+
+    updateAuxTrip_Expect(&message, &localAuxTrip);
 
     orionInterface(&message);
 
@@ -226,6 +236,8 @@ void test_TooLowLowCellVoltageShouldTurnOffDischargeAndUpdateStatuses()
 
     AuxStatus expectedAuxStatus = auxStatus;
     expectedAuxStatus.allowDischarge = 0;
+
+    updateAuxTrip_Expect(&message, &localAuxTrip);
 
     orionInterface(&message);
 
