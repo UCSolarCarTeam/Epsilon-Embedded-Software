@@ -32,9 +32,9 @@ void updateLights1 (updateLights* lightsCharacteristics, uint32_t* prevWakeTime)
         lightsCharacteristics -> leftSignal = (lightsInputs >> LSIGNAL_INPUT_INDEX) & 1;
         lightsCharacteristics -> hazards = (lightsInputs >> HAZARDS_INPUT_INDEX) & 1;
         lightsCharacteristics -> bmsStrobe = ((auxBmsInputs[1] >> 0) & STROBE_FAULT_MASK) & 1;
-        lightsCharacteristics -> regenBrakeInt |= (driversInputs[1] & REGEN_BRAKE_MASK_1) >> 4;
-        lightsCharacteristics -> regenBrakeInt |= (driversInputs[2] & REGEN_BRAKE_MASK_2) << 4;
-
+        lightsCharacteristics -> regenBrakeInt |= (driversInputs[1] & REGEN_BRAKE_MASK_1) >> 4;// 1010 1111 & 1111 0000 = 1010 0000 // 0000 1010 // 0000 0000 | 0000 1010 = 0000 1010
+        lightsCharacteristics -> regenBrakeInt |= (driversInputs[2] & REGEN_BRAKE_MASK_2) << 4;// 1100 1011 & 1111 1111 = 1100 1011 // 1011 0000 // 0000 1010 | 1011 0000 = 1011 1010
+                                                                                                // 0001 0010 //driverInputs[1] = 0010 0000// driverInputs[2] = 0000 0001
         /* UPDATE HEADLIGHTS */
         if (( lightsCharacteristics -> headlightsOff))
         {
