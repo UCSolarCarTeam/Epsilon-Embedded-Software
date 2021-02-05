@@ -3,12 +3,13 @@
 #include "Trip.h"
 #include "Mockstm32f4xx_hal_gpio.h"
 
-OrionCanInfo message = {0};
-AuxTrip auxTripToUpdate = {0};
+extern OrionCanInfo message;
+extern AuxTrip auxTripToUpdate;
 uint8_t returnValue;
 
 void runTripTests()
 {
+    RUN_TEST(test_updateAuxTripProtectionTrip);
     RUN_TEST(test_checkDischargeTripDueToLowCell);
     RUN_TEST(test_checkDischargeTripDueToHighTempAndCurrent);
     RUN_TEST(test_checkDischargeTripDueToPackCurrent);
@@ -26,12 +27,17 @@ void test_updateAuxTripProtectionTrip()
     HAL_GPIO_ReadPin_ExpectAndReturn(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin, 1);
     message.packCurrent = -1;
 
-    auxTripToUpdate = 0;
-
-    AuxTrip expectedAuxTripToUpdate.protectionTrip = 1;
+    AuxTrip expectedAuxTripToUpdate = {
+        .chargeTripDueToHighCellVoltage = 0,
+        .chargeTripDueToHighTemperatureAndCurrent = 0,
+        .chargeTripDueToPackCurrent = 0,
+        .dischargeTripDueToLowCellVoltage = 0,
+        .dischargeTripDueToHighTemperatureAndCurrent = 0,
+        .dischargeTripDueToPackCurrent = 0,
+        .protectionTrip = 1
+    };
 
     updateAuxTrip(&message, &auxTripToUpdate);
-
     TEST_ASSERT_EQUAL_MESSAGE(expectedAuxTripToUpdate.protectionTrip, auxTripToUpdate.protectionTrip, "checkProtectionTrip did not return a 1");
 }
 
@@ -109,6 +115,7 @@ void test_checkChargeTripForNoTrip()
 
 void test_checkProtectionTripForTrip()
 {
+    message.packCurrent = -1;
     HAL_GPIO_ReadPin_ExpectAndReturn(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin, 1);
     returnValue = checkProtectionTrip(&message);
 

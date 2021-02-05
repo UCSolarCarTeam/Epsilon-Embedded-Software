@@ -1,7 +1,7 @@
 #pragma once
 
-
 void runTripTests();
+void test_updateAuxTripProtectionTrip();
 void test_checkDischargeTripDueToLowCell();
 void test_checkDischargeTripDueToHighTempAndCurrent();
 void test_checkDischargeTripDueToPackCurrent();
