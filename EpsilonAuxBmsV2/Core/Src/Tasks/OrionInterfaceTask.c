@@ -66,11 +66,9 @@ void orionInterface(OrionCanInfo* message)
         updateAuxTrip(message, &localAuxTrip);
         localAuxStatus.dischargeShouldTrip = checkDischargeTrip(message);
         localAuxStatus.chargeShouldTrip = checkChargeTrip(message);
-        uint8_t protectionTrip = checkProtectionTrip(message); // Without this line, the test_TooHighhighCellVoltageShouldTurnOffChargeAndUpdateStatuses test fails for some reason
-        shouldDisconnectContactors = localAuxStatus.dischargeShouldTrip
-                                     || localAuxStatus.chargeShouldTrip
-                                     || protectionTrip;
-        //  || checkProtectionTrip(message, &localAuxTrip);
+        shouldDisconnectContactors = checkProtectionTrip(message)
+                                    || localAuxStatus.dischargeShouldTrip
+                                    || localAuxStatus.chargeShouldTrip;
     }
 
     // Determine trip conditions and contactor settings based on Orion GPIO
