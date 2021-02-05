@@ -10,6 +10,8 @@ uint8_t returnValue;
 void runTripTests()
 {
     RUN_TEST(test_updateAuxTripProtectionTrip);
+    RUN_TEST(test_updateAuxTripAllDischargeTrip);
+    RUN_TEST(test_updateAuxTripAllChargeTrip);
     RUN_TEST(test_checkDischargeTripDueToLowCell);
     RUN_TEST(test_checkDischargeTripDueToHighTempAndCurrent);
     RUN_TEST(test_checkDischargeTripDueToPackCurrent);
@@ -44,7 +46,7 @@ void test_updateAuxTripProtectionTrip()
 void test_updateAuxTripAllDischargeTrip()
 {
     HAL_GPIO_ReadPin_ExpectAndReturn(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin, 0);
-    message.lowCellVoltage = 30000;
+    message.lowCellVoltage = 25000;
     message.highTemperature = 60;
     message.packCurrent = 230;
     
@@ -67,7 +69,7 @@ void test_updateAuxTripAllDischargeTrip()
 void test_updateAuxTripAllChargeTrip()
 {
     HAL_GPIO_ReadPin_ExpectAndReturn(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin, 0);
-    message.highCellVoltage = 41000;
+    message.highCellVoltage = 43000;
     message.highTemperature = 45;
     message.packCurrent = -48;
     
