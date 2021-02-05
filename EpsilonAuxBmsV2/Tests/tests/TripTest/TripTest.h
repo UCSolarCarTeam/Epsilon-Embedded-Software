@@ -2,6 +2,8 @@
 
 void runTripTests();
 void test_updateAuxTripProtectionTrip();
+void test_updateAuxTripAllDischargeTrip();
+void test_updateAuxTripAllChargeTrip();
 void test_checkDischargeTripDueToLowCell();
 void test_checkDischargeTripDueToHighTempAndCurrent();
 void test_checkDischargeTripDueToPackCurrent();
