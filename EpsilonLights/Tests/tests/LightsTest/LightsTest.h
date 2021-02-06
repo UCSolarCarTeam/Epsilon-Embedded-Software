@@ -11,5 +11,15 @@ extern updateLights lightCharacteristics;
 
 void runLightsTests();
 
-void test_headlightsOff_brakesLightsOff_hazardsOff_bmsStrobeLightsOff();
-void test_headlightsLow_breakLightsOn_hazardsOn_bmsStrobeLightOn();
+void test_headLightsOff_brakesLightsOff_hazardsOff_bmsStrobeLightsOff();
+void test_headLightsLow_breakLightsOn_hazardsOn_bmsStrobeLightOn();
+void test_headLightsHigh_headLights_Low_breakLightsOn_hazardsOn_bmsStrobeLightOn();
+void blinkSignalLights_sigLightsLeftOFF_sigLightsRightOFF();
+void blinkSignalLights_sigLightsLeftON_sigLightsRightON_prevSigState_Zero();
+
+void blinkSignalLights_prevSigState0_sigLightsLeftON_sigLightsRightON();
+void keepBlinkersOFF_resetBlinkerTimerToZero(uint32_t prevWakeTime, uint8_t prevSigstate);
+void turnBlinkersON_updateTimer(uint32_t prevWakeTime, uint8_t prevSigState);
+void keepBlinkersOFF_updateTimer(uint32_t prevWakeTime, uint8_t prevSigState);
+
+void updateStrobeLights2_ESTROBEON_UpdateblinkerTimer();
