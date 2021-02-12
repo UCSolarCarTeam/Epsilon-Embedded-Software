@@ -298,7 +298,7 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     if (msg->StdId == LIGHTS_INPUT_STDID && msg->DLC == 1)
     {
         lightsInputs = msg->Data[0];
-    }
+    }  
     else if (msg->StdId == BATTERY_STAT_ERRORS_STDID && msg->DLC == 5)
     {
         batteryErrors[0] = msg->Data[0];
@@ -322,7 +322,7 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 
     __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
 
-    if (HAL_CAN_Receive_IT(hcan, CAN_FIFO0) != HAL_OK)
+    if (HAL_CAN_Receve_IT(hcan, CAN_FIFO0) != HAL_OK)
     {
         HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
     }

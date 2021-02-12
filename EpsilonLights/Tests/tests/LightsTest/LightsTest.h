@@ -23,3 +23,7 @@ void turnBlinkersON_updateTimer(uint32_t prevWakeTime, uint8_t prevSigState);
 void keepBlinkersOFF_updateTimer(uint32_t prevWakeTime, uint8_t prevSigState);
 
 void updateStrobeLights2_ESTROBEON_UpdateblinkerTimer();
+void updateStrobeLights2_ESTROBEOFF_ResetBlinkerTimer();
+void updateStrobeLights2_ESTROBEOFF_UpdateBlinkerTimer();
+void reportLIghtsToCan_test();
+void sendHeartbeat_test();
