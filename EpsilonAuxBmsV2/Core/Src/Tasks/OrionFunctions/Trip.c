@@ -4,7 +4,8 @@
 void updateAuxTrip(OrionCanInfo* message, AuxTrip* auxTripToUpdate)
 {
     uint8_t tripDuetoLowCell = 0;
-    uint8_t tripDuetoHighTempAndCurrent = 0;
+    uint8_t tripDueToHighTempDuringCharge = 0;
+    uint8_t tripDueToHighTempDuringDischarge = 0;
     uint8_t tripDuetoPackCurrent = 0;
     uint8_t tripDuetoHighCell = 0;
 
@@ -22,7 +23,7 @@ void updateAuxTrip(OrionCanInfo* message, AuxTrip* auxTripToUpdate)
     if (message->highTemperature >= ORION_MAX_CHARGE_TEMP
             && message->packCurrent < 0)
     {
-        tripDuetoHighTempAndCurrent = 1;
+        tripDueToHighTempDuringCharge = 1;
     }
 
     // Charge current is negative
@@ -41,7 +42,7 @@ void updateAuxTrip(OrionCanInfo* message, AuxTrip* auxTripToUpdate)
     if (message->highTemperature >= ORION_MAX_DISCHARGE_TEMP
             && message->packCurrent > 0)
     {
-        tripDuetoHighTempAndCurrent = 1;
+        tripDueToHighTempDuringDischarge = 1;
     }
 
     // Discharge current is positive
@@ -52,10 +53,10 @@ void updateAuxTrip(OrionCanInfo* message, AuxTrip* auxTripToUpdate)
 
     auxTripToUpdate->protectionTrip = protectionTrip;
     auxTripToUpdate->dischargeTripDueToLowCellVoltage = tripDuetoLowCell;
-    auxTripToUpdate->dischargeTripDueToHighTemperatureAndCurrent = tripDuetoHighTempAndCurrent;
+    auxTripToUpdate->dischargeTripDueToHighTemperatureAndCurrent = tripDueToHighTempDuringDischarge;
     auxTripToUpdate->dischargeTripDueToPackCurrent = tripDuetoPackCurrent;
     auxTripToUpdate->chargeTripDueToHighCellVoltage = tripDuetoHighCell;
-    auxTripToUpdate->chargeTripDueToHighTemperatureAndCurrent = tripDuetoHighTempAndCurrent;
+    auxTripToUpdate->chargeTripDueToHighTemperatureAndCurrent = tripDueToHighTempDuringCharge;
     auxTripToUpdate->chargeTripDueToPackCurrent = tripDuetoPackCurrent;
 }
 
@@ -69,7 +70,7 @@ Discharge will cause a trip due to:
 uint8_t checkDischargeTrip(OrionCanInfo* message)
 {
     uint8_t tripDuetoLowCell = 0;
-    uint8_t tripDuetoHighTempAndCurrent = 0;
+    uint8_t tripDueToHighTempDuringDischarge = 0;
     uint8_t tripDuetoPackCurrent = 0;
 
     if (DEFAULT_VOLTAGE_UNITS * message->lowCellVoltage <= ORION_MIN_CELL_VOLTAGE)
@@ -82,7 +83,7 @@ uint8_t checkDischargeTrip(OrionCanInfo* message)
     if (message->highTemperature >= ORION_MAX_DISCHARGE_TEMP
             && message->packCurrent > 0)
     {
-        tripDuetoHighTempAndCurrent = 1;
+        tripDueToHighTempDuringDischarge = 1;
     }
 
     // Discharge current is positive
@@ -92,7 +93,7 @@ uint8_t checkDischargeTrip(OrionCanInfo* message)
     }
 
     return tripDuetoLowCell ||
-           tripDuetoHighTempAndCurrent ||
+           tripDueToHighTempDuringDischarge ||
            tripDuetoPackCurrent;
 }
 
@@ -107,7 +108,7 @@ uint8_t checkChargeTrip(OrionCanInfo* message)
 {
 
     uint8_t tripDuetoHighCell = 0;
-    uint8_t tripDuetoHighTempAndCurrent = 0;
+    uint8_t tripDueToHighTempDuringCharge = 0;
     uint8_t tripDuetoPackCurrent = 0;
 
     if (DEFAULT_VOLTAGE_UNITS * message->highCellVoltage >= ORION_MAX_CELL_VOLTAGE)
@@ -120,7 +121,7 @@ uint8_t checkChargeTrip(OrionCanInfo* message)
     if (message->highTemperature >= ORION_MAX_CHARGE_TEMP
             && message->packCurrent < 0)
     {
-        tripDuetoHighTempAndCurrent = 1;
+        tripDueToHighTempDuringCharge = 1;
     }
 
     // Charge current is negative
@@ -130,7 +131,7 @@ uint8_t checkChargeTrip(OrionCanInfo* message)
     }
 
     return tripDuetoHighCell ||
-           tripDuetoHighTempAndCurrent ||
+           tripDueToHighTempDuringCharge ||
            tripDuetoPackCurrent;
 
 }
