@@ -51,8 +51,8 @@ void HAL_CAN_WakeUp_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, CAN_HandleT
 void HAL_CAN_IRQHandler_CMockExpect(UNITY_LINE_TYPE cmock_line, CAN_HandleTypeDef* hcan);
 #define HAL_CAN_TxCpltCallback_Expect(hcan) HAL_CAN_TxCpltCallback_CMockExpect(__LINE__, hcan)
 void HAL_CAN_TxCpltCallback_CMockExpect(UNITY_LINE_TYPE cmock_line, CAN_HandleTypeDef* hcan);
-#define HAL_CAN_RxCpltCallback_Expect(hcan) HAL_CAN_RxCpltCallback_CMockExpect(__LINE__, hcan)
-void HAL_CAN_RxCpltCallback_CMockExpect(UNITY_LINE_TYPE cmock_line, CAN_HandleTypeDef* hcan);
+//#define HAL_CAN_RxCpltCallback_Expect(hcan) HAL_CAN_RxCpltCallback_CMockExpect(__LINE__, hcan)
+//void HAL_CAN_RxCpltCallback_CMockExpect(UNITY_LINE_TYPE cmock_line, CAN_HandleTypeDef* hcan);
 #define HAL_CAN_ErrorCallback_Expect(hcan) HAL_CAN_ErrorCallback_CMockExpect(__LINE__, hcan)
 void HAL_CAN_ErrorCallback_CMockExpect(UNITY_LINE_TYPE cmock_line, CAN_HandleTypeDef* hcan);
 #define HAL_CAN_GetError_ExpectAndReturn(hcan, cmock_retval) HAL_CAN_GetError_CMockExpectAndReturn(__LINE__, hcan, cmock_retval)

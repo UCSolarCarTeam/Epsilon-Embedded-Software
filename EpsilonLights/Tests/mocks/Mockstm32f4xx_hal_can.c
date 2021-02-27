@@ -805,7 +805,7 @@ void HAL_CAN_TxCpltCallback_CMockExpect(UNITY_LINE_TYPE cmock_line, CAN_HandleTy
     CMockExpectParameters_HAL_CAN_TxCpltCallback(cmock_call_instance, hcan);
 }
 
-void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
+/*void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 {
     UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
     CMOCK_HAL_CAN_RxCpltCallback_CALL_INSTANCE* cmock_call_instance;
@@ -836,7 +836,7 @@ void HAL_CAN_RxCpltCallback_CMockExpect(UNITY_LINE_TYPE cmock_line, CAN_HandleTy
     cmock_call_instance->LineNumber = cmock_line;
     CMockExpectParameters_HAL_CAN_RxCpltCallback(cmock_call_instance, hcan);
 }
-
+*/
 void HAL_CAN_ErrorCallback(CAN_HandleTypeDef* hcan)
 {
     UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;

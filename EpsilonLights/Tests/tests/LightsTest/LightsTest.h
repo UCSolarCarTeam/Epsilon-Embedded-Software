@@ -9,6 +9,8 @@ extern uint8_t driversInputs[4];
 extern updateLights lightCharacteristics;
 
 
+void hi();
+
 void runLightsTests();
 
 void test_headLightsOff_brakesLightsOff_hazardsOff_bmsStrobeLightsOff();
@@ -25,5 +27,5 @@ void keepBlinkersOFF_updateTimer(uint32_t prevWakeTime, uint8_t prevSigState);
 void updateStrobeLights2_ESTROBEON_UpdateblinkerTimer();
 void updateStrobeLights2_ESTROBEOFF_ResetBlinkerTimer();
 void updateStrobeLights2_ESTROBEOFF_UpdateBlinkerTimer();
-void reportLIghtsToCan_test();
+void reportLightsToCan_test();
 void sendHeartbeat_test();
