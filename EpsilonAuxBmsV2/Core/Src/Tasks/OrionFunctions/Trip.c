@@ -1,6 +1,5 @@
 #include "Trip.h"
 
-
 void updateAuxTrip(OrionCanInfo* message, AuxTrip* auxTripToUpdate)
 {
     uint8_t tripDuetoLowCell = 0;
@@ -67,34 +66,11 @@ Discharge will cause a trip due to:
   * high temperature while discharging
   * discharge pack current being too high
 */
-uint8_t checkDischargeTrip(OrionCanInfo* message)
+uint8_t checkDischargeTrip(AuxTrip auxTrip)
 {
-    uint8_t tripDuetoLowCell = 0;
-    uint8_t tripDueToHighTempDuringDischarge = 0;
-    uint8_t tripDuetoPackCurrent = 0;
-
-    if (DEFAULT_VOLTAGE_UNITS * message->lowCellVoltage <= ORION_MIN_CELL_VOLTAGE)
-    {
-        tripDuetoLowCell = 1;
-    }
-
-    // It's ok to just have a high temperature,
-    // as long as the car is not discharging
-    if (message->highTemperature >= ORION_MAX_DISCHARGE_TEMP
-            && message->packCurrent > 0)
-    {
-        tripDueToHighTempDuringDischarge = 1;
-    }
-
-    // Discharge current is positive
-    if (message->packCurrent >= ORION_MAX_DISCHARGE_CURRENT)
-    {
-        tripDuetoPackCurrent = 1;
-    }
-
-    return tripDuetoLowCell ||
-           tripDueToHighTempDuringDischarge ||
-           tripDuetoPackCurrent;
+    return auxTrip.dischargeTripDueToLowCellVoltage ||
+           auxTrip.dischargeTripDueToHighTemperatureAndCurrent ||
+           auxTrip.dischargeTripDueToPackCurrent;
 }
 
 /*
@@ -104,34 +80,9 @@ Charge will cause a trip due to:
   * high temperature while charging
   * discharge pack current being too high (absolute value)
 */
-uint8_t checkChargeTrip(OrionCanInfo* message)
+uint8_t checkChargeTrip(AuxTrip auxTrip)
 {
-
-    uint8_t tripDuetoHighCell = 0;
-    uint8_t tripDueToHighTempDuringCharge = 0;
-    uint8_t tripDuetoPackCurrent = 0;
-
-    if (DEFAULT_VOLTAGE_UNITS * message->highCellVoltage >= ORION_MAX_CELL_VOLTAGE)
-    {
-        tripDuetoHighCell = 1;
-    }
-
-    // It's ok to just have a high temperature,
-    // as long as the car is not charging
-    if (message->highTemperature >= ORION_MAX_CHARGE_TEMP
-            && message->packCurrent < 0)
-    {
-        tripDueToHighTempDuringCharge = 1;
-    }
-
-    // Charge current is negative
-    if (message->packCurrent <= ORION_MAX_CHARGE_CURRENT)
-    {
-        tripDuetoPackCurrent = 1;
-    }
-
-    return tripDuetoHighCell ||
-           tripDueToHighTempDuringCharge ||
-           tripDuetoPackCurrent;
-
+    return auxTrip.chargeTripDueToHighCellVoltage ||
+           auxTrip.chargeTripDueToHighTemperatureAndCurrent ||
+           auxTrip.chargeTripDueToPackCurrent;
 }

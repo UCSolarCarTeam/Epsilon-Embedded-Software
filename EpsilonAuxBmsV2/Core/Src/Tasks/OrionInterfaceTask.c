@@ -64,8 +64,8 @@ void orionInterface(OrionCanInfo* message)
         localAuxStatus.orionCanReceivedRecently = 1;
         updateAllowChargeAndAllowDischarge(message, &localAuxStatus);
         updateAuxTrip(message, &localAuxTrip);
-        localAuxStatus.dischargeShouldTrip = checkDischargeTrip(message);
-        localAuxStatus.chargeShouldTrip = checkChargeTrip(message);
+        localAuxStatus.dischargeShouldTrip = checkDischargeTrip(localAuxTrip);
+        localAuxStatus.chargeShouldTrip = checkChargeTrip(localAuxTrip);
         shouldDisconnectContactors = localAuxTrip.protectionTrip
                                     || localAuxStatus.dischargeShouldTrip
                                     || localAuxStatus.chargeShouldTrip;
