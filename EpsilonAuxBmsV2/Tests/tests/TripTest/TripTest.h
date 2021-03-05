@@ -12,5 +12,3 @@ void test_checkChargeTripDueToHighCell();
 void test_checkChargeTripDueToHighTempAndCurrent();
 void test_checkChargeTripDueToPackCurrent();
 void test_checkChargeTripForNoTrip();
-void test_checkProtectionTripForTrip();
-void test_checkProtectionTripForNoTrip();

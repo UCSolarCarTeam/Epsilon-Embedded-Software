@@ -66,7 +66,7 @@ void orionInterface(OrionCanInfo* message)
         updateAuxTrip(message, &localAuxTrip);
         localAuxStatus.dischargeShouldTrip = checkDischargeTrip(message);
         localAuxStatus.chargeShouldTrip = checkChargeTrip(message);
-        shouldDisconnectContactors = checkProtectionTrip(message)
+        shouldDisconnectContactors = localAuxTrip.protectionTrip
                                     || localAuxStatus.dischargeShouldTrip
                                     || localAuxStatus.chargeShouldTrip;
     }
