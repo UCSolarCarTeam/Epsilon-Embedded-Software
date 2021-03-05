@@ -135,13 +135,3 @@ uint8_t checkChargeTrip(OrionCanInfo* message)
            tripDuetoPackCurrent;
 
 }
-
-/*
-If the charge contactor isn't set, but for some reason Orion reports that we're still charging, that is a trip condition.
-*/
-uint8_t checkProtectionTrip(OrionCanInfo* message)
-{
-    const uint8_t chargeSense = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
-    uint8_t protectionTrip = (!chargeSense && message->packCurrent < 0);
-    return protectionTrip;
-}

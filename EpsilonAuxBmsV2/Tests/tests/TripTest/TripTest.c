@@ -20,8 +20,6 @@ void runTripTests()
     RUN_TEST(test_checkChargeTripDueToHighTempAndCurrent);
     RUN_TEST(test_checkChargeTripDueToPackCurrent);
     RUN_TEST(test_checkChargeTripForNoTrip);
-    RUN_TEST(test_checkProtectionTripForTrip);
-    RUN_TEST(test_checkProtectionTripForNoTrip);
 }
 
 void test_updateAuxTripProtectionTrip()
@@ -151,20 +149,4 @@ void test_checkChargeTripForNoTrip()
     message.packCurrent = -46;
     returnValue = checkChargeTrip(&message);
     TEST_ASSERT_EQUAL_MESSAGE(0, returnValue, "checkChargeTrip did not return a 0");
-}
-
-void test_checkProtectionTripForTrip()
-{
-    message.packCurrent = -1;
-    HAL_GPIO_ReadPin_ExpectAndReturn(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin, 1);
-    returnValue = checkProtectionTrip(&message);
-    TEST_ASSERT_EQUAL_MESSAGE(1, returnValue, "checkProtectionTrip did not return a 1");
-}
-
-void test_checkProtectionTripForNoTrip()
-{
-    message.packCurrent = 1;
-    HAL_GPIO_ReadPin_ExpectAndReturn(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin, 0);
-    returnValue = checkProtectionTrip(&message);
-    TEST_ASSERT_EQUAL_MESSAGE(0, returnValue, "checkProtectionTrip did not return a 0");
 }
