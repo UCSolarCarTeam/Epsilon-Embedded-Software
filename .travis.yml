@@ -16,7 +16,7 @@ before_script:
     - (cd EpsilonLights && CubeMX2Makefile .)
 
 script:
-    - (cd EpsilonLights && make)
+    - (cd EpsilonLights && ./make.sh)
     - (cd EpsilonDriverControls && ./make.sh)
     - (cd EpsilonCCS && make)
     - (cd EpsilonAuxBMS && ./make.sh)
