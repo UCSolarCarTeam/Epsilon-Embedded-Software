@@ -322,6 +322,7 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
         auxBmsInputs[1] = msg->Data[1];
     }
 
+
     __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
 
     if (HAL_CAN_Receive_IT(hcan, CAN_FIFO0) != HAL_OK)

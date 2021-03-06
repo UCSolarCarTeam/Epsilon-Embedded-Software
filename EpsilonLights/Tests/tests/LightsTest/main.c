@@ -7,10 +7,17 @@
 #include "stm32f4xx_hal_can.h"
 #include "LightsTest.h"
 
-
+CAN_HandleTypeDef hcan2;
 void setUp(void)
 {
+    static CanTxMsgTypeDef txMessage;
+    hcan2.pTxMsg = &txMessage;
 
+    static CanRxMsgTypeDef rxMessage;
+    hcan2.pRxMsg = &rxMessage;
+
+    static CAN_TypeDef inst;
+    hcan2.Instance = &inst;
 }
 
 void tearDown(void)

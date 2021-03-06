@@ -1,12 +1,12 @@
 #pragma once
 //#include "Lights.h"
 
-extern uint8_t lightsInputs;
-extern uint8_t auxBmsInputs[2];
-extern uint8_t batteryErrors[5];
-extern SigLightsHandle sigLightsHandle;
-extern uint8_t driversInputs[4];
-extern updateLights lightCharacteristics;
+// extern uint8_t lightsInputs;
+// extern uint8_t auxBmsInputs[2];
+// extern uint8_t batteryErrors[5];
+// extern SigLightsHandle sigLightsHandle;
+// extern uint8_t driversInputs[4];
+// extern updateLights lightCharacteristics;
 
 
 void hi();
@@ -29,3 +29,9 @@ void updateStrobeLights2_ESTROBEOFF_ResetBlinkerTimer();
 void updateStrobeLights2_ESTROBEOFF_UpdateBlinkerTimer();
 void reportLightsToCan_test();
 void sendHeartbeat_test();
+
+void HAL_CAN_RxCpltCallback_Lights_Input_StdId_test();
+void HAL_CAN_RxCpltCallback_Battery_Stat_Errors_StdId_test();
+void HAL_CAN_RxCpltCallback_Drivers_Inputs_StdId_test();
+void HAL_CAN_RxCpltCallback_AuxBms_Input_StdId_test();
+void HAL_CAN_RxCpltCallback_Battery_Stat_Errors_StdId_AND_Toggle_Red_Pin_test();
