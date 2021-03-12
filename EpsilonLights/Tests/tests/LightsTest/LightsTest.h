@@ -13,7 +13,7 @@ void hi();
 
 void runLightsTests();
 
-void test_headLightsOff_brakesLightsOff_hazardsOff_bmsStrobeLightsOff();
+void test_updateLights1_headLightsOff_brakesLightsOff_hazardsOff_bmsStrobeLightsOff();
 void test_headLightsLow_breakLightsOn_hazardsOn_bmsStrobeLightOn();
 void test_headLightsHigh_headLights_Low_breakLightsOn_hazardsOn_bmsStrobeLightOn();
 void blinkSignalLights_sigLightsLeftOFF_sigLightsRightOFF();

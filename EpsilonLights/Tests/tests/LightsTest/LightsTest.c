@@ -22,7 +22,7 @@ osMutexId* canHandleMutex;
 
 void runLightsTests()
 {
-    RUN_TEST(test_headLightsOff_brakesLightsOff_hazardsOff_bmsStrobeLightsOff);
+    RUN_TEST(test_updateLights1_headLightsOff_brakesLightsOff_hazardsOff_bmsStrobeLightsOff);
     RUN_TEST(test_headLightsLow_breakLightsOn_hazardsOn_bmsStrobeLightOn);
     RUN_TEST(test_headLightsHigh_headLights_Low_breakLightsOn_hazardsOn_bmsStrobeLightOn);
     RUN_TEST(blinkSignalLights_sigLightsLeftOFF_sigLightsRightOFF);
@@ -40,7 +40,7 @@ void runLightsTests()
     RUN_TEST(HAL_CAN_RxCpltCallback_Battery_Stat_Errors_StdId_AND_Toggle_Red_Pin_test);
 }
 
-void test_headLightsOff_brakesLightsOff_hazardsOff_bmsStrobeLightsOff()
+void test_updateLights1_headLightsOff_brakesLightsOff_hazardsOff_bmsStrobeLightsOff()
 {
     lightsInputs = 0b00000001;
     driversInputs[1] = 0;
