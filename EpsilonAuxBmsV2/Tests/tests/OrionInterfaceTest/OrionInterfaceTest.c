@@ -36,36 +36,51 @@ void runOrionInterfaceTests()
 //     TEST_ASSERT_EQUAL_MESSAGE(0, auxStatusToUpdate.allowDischarge, "auxStatusToUpdate.allowDischarge failed to update");
 // }
 
+// TODO: Find a better naming convetion for unit tests
 void test_osMessageQueueGetTimeout() {
     AuxStatus expectedAuxStatus = {.orionCanReceivedRecently = 0};
+    auxBmsContactorState.startupDone = 0;
+    uint32_t contactorControlEventFlags = 0;
     
     osMessageQueueGet_ExpectAndReturn(orionInterfaceQueue, &message, NULL, ORION_QUEUE_TIMEOUT, osErrorTimeout);
-    HAL_GPIO_ReadPin_ExpectAndReturn(ORION_DISCHARGE_ENABLE_SENSE_GPIO_Port, ORION_DISCHARGE_ENABLE_SENSE_Pin, HAL_ERROR);
-    HAL_GPIO_ReadPin_ExpectAndReturn(ORION_CHARGE_ENABLE_SENSE_GPIO_Port, ORION_CHARGE_ENABLE_SENSE_Pin, HAL_ERROR);
+    HAL_GPIO_ReadPin_ExpectAndReturn(ORION_DISCHARGE_ENABLE_SENSE_GPIO_Port, ORION_DISCHARGE_ENABLE_SENSE_Pin, 1);
+    HAL_GPIO_ReadPin_ExpectAndReturn(ORION_CHARGE_ENABLE_SENSE_GPIO_Port, ORION_CHARGE_ENABLE_SENSE_Pin, 1);
     osMutexAcquire_ExpectAndReturn(auxTripMutex, MUTEX_TIMEOUT, osError);
     osMutexAcquire_ExpectAndReturn(auxStatusOrionInterfaceMutex, MUTEX_TIMEOUT, osOK);
     osMutexRelease_ExpectAndReturn(auxStatusOrionInterfaceMutex, 0);
+    osEventFlagsSet_ExpectAndReturn(contactorControlEventBits, contactorControlEventFlags, 0);
     
+    orionInterface(&message);
     TEST_ASSERT_EQUAL_MESSAGE(expectedAuxStatus.orionCanReceivedRecently, auxStatus.orionCanReceivedRecently, "auxStatus.orionCanReceivedRecently failed to update");
 }
 
 void test_shouldDisconnectContactors() {
     AuxStatus expectedAuxStatus = {
-        .orionCanReceivedRecently = 1,
+        .orionCanReceivedRecently = 0,
         .allowCharge = 0,
         .allowDischarge = 0,
         .strobeBmsLight = 1
     };
+    AuxBmsContactorState expectedAuxBmsContactorState = {.contactorsDisconnected = 1};
+    uint32_t contactorControlEventFlags = 0x28; // CHARGE_OPENED and DISCHARGE_OPENED
 
-    osMessageQueueGet_ExpectAndReturn(orionInterfaceQueue, &message, NULL, ORION_QUEUE_TIMEOUT, osOK);
-    HAL_GPIO_ReadPin_ExpectAndReturn(ORION_DISCHARGE_ENABLE_SENSE_GPIO_Port, ORION_DISCHARGE_ENABLE_SENSE_Pin, HAL_ERROR);
-    HAL_GPIO_ReadPin_ExpectAndReturn(ORION_CHARGE_ENABLE_SENSE_GPIO_Port, ORION_CHARGE_ENABLE_SENSE_Pin, HAL_ERROR);
+    osMessageQueueGet_ExpectAndReturn(orionInterfaceQueue, &message, NULL, ORION_QUEUE_TIMEOUT, osErrorTimeout);
+    HAL_GPIO_ReadPin_ExpectAndReturn(ORION_DISCHARGE_ENABLE_SENSE_GPIO_Port, ORION_DISCHARGE_ENABLE_SENSE_Pin, 0);
+    HAL_GPIO_ReadPin_ExpectAndReturn(ORION_CHARGE_ENABLE_SENSE_GPIO_Port, ORION_CHARGE_ENABLE_SENSE_Pin, 0);
     osMutexAcquire_ExpectAndReturn(auxTripMutex, MUTEX_TIMEOUT, osError);
     osMutexAcquire_ExpectAndReturn(auxStatusOrionInterfaceMutex, MUTEX_TIMEOUT, osOK);
     osMutexRelease_ExpectAndReturn(auxStatusOrionInterfaceMutex, 0);
-
+    
+    // From disconnectContactors() in DisconnectContactors.c
+    osThreadSetPriority_ExpectAndReturn(chargeContactorGatekeeperTaskHandle, osPriorityRealtime, 0);
+    osThreadSetPriority_ExpectAndReturn(dischargeContactorGatekeeperTaskHandle, osPriorityRealtime, 0);
+    osThreadSetPriority_ExpectAndReturn(commonContactorGatekeeperTaskHandle, osPriorityRealtime, 0);
+    osEventFlagsSet_ExpectAndReturn(contactorControlEventBits, COMMON_OPENED, 0);
+    
+    orionInterface(&message);
     TEST_ASSERT_EQUAL_MESSAGE(expectedAuxStatus.orionCanReceivedRecently, auxStatus.orionCanReceivedRecently, "auxStatus.orionCanReceivedRecently failed to update");
     TEST_ASSERT_EQUAL_MESSAGE(expectedAuxStatus.allowCharge, auxStatus.allowCharge, "auxStatus.allowCharge failed to update");
     TEST_ASSERT_EQUAL_MESSAGE(expectedAuxStatus.allowDischarge, auxStatus.allowDischarge, "auxStatus.allowDischarge failed to update");
     TEST_ASSERT_EQUAL_MESSAGE(expectedAuxStatus.strobeBmsLight, auxStatus.strobeBmsLight, "auxStatus.strobeBmsLight failed to update");
+    TEST_ASSERT_EQUAL_MESSAGE(expectedAuxBmsContactorState.contactorsDisconnected, auxBmsContactorState.contactorsDisconnected, "auxBmsContactorState.contactorsDisconnected failed to update");
 }
