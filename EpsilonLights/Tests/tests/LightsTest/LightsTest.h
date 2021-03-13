@@ -10,9 +10,9 @@
 
 void runLightsTests();
 
-void test_updateLights_headLightsOffBrakesLightsOffHazardsOffBmsStrobeLightsOff();
-void test_updateLights_headLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn();
-void test_updateLights_headLightsHighHeadLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn();
+void test_updateLights1_headLightsOffBrakesLightsOffHazardsOffBmsStrobeLightsOff();
+void test_updateLights1_headLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn();
+void test_updateLights1_headLightsHighHeadLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn();
 void test_blinkSignalLights_sigLightsLeftOFFSigLightsRightOFF();
 void test_blinkSignalLights_sigLightsLeftONSigLightsRightONPrevSigStateZero();
 

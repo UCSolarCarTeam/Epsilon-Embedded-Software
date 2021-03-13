@@ -22,9 +22,9 @@ osMutexId* canHandleMutex;
 
 void runLightsTests()
 {
-    RUN_TEST(test_updateLights_headLightsOffBrakesLightsOffHazardsOffBmsStrobeLightsOff);
-    RUN_TEST(test_updateLights_headLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn);
-    RUN_TEST(test_updateLights_headLightsHighHeadLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn);
+    RUN_TEST(test_updateLights1_headLightsOffBrakesLightsOffHazardsOffBmsStrobeLightsOff);
+    RUN_TEST(test_updateLights1_headLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn);
+    RUN_TEST(test_updateLights1_headLightsHighHeadLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn);
     RUN_TEST(test_blinkSignalLights_sigLightsLeftOFFSigLightsRightOFF);
     RUN_TEST(test_blinkSignalLights_sigLightsLeftONSigLightsRightONPrevSigStateZero);
     RUN_TEST(test_blinkSignalLights_prevSigState0SigLightsLeftONSigLightsRightON);
@@ -40,7 +40,7 @@ void runLightsTests()
     RUN_TEST(test_HAL_CAN_RxCpltCallback_batteryStatErrorsStdIdANDToggleRedPin);
 }
 
-void test_updateLights_headLightsOffBrakesLightsOffHazardsOffBmsStrobeLightsOff()
+void test_updateLights1_headLightsOffBrakesLightsOffHazardsOffBmsStrobeLightsOff()
 {
     lightsInputs = 0b00000001;
     driversInputs[1] = 0;
@@ -71,7 +71,7 @@ void test_updateLights_headLightsOffBrakesLightsOffHazardsOffBmsStrobeLightsOff(
 
 }
 
-void test_updateLights_headLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn()
+void test_updateLights1_headLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn()
 {
     lightsInputs = 0b00100010;
     driversInputs[3] = 0b00000001;
@@ -102,7 +102,7 @@ void test_updateLights_headLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn()
                               "sigLightsHandle.right expected to be LIGHT_ON");
 }
 
-void test_updateLights_headLightsHighHeadLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn()
+void test_updateLights1_headLightsHighHeadLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn()
 {
     lightsInputs = 0b0100110;
     driversInputs[3] = 0b00000001;
