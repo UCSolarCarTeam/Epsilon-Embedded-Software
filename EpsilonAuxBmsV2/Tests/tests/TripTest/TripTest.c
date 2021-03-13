@@ -12,14 +12,6 @@ void runTripTests()
     RUN_TEST(test_updateAuxTripProtectionTrip);
     RUN_TEST(test_updateAuxTripAllDischargeTrip);
     RUN_TEST(test_updateAuxTripAllChargeTrip);
-    RUN_TEST(test_checkDischargeTripDueToLowCell);
-    RUN_TEST(test_checkDischargeTripDueToHighTempAndCurrent);
-    RUN_TEST(test_checkDischargeTripDueToPackCurrent);
-    RUN_TEST(test_checkDischargeTripForNoTrip);
-    RUN_TEST(test_checkChargeTripDueToHighCell);
-    RUN_TEST(test_checkChargeTripDueToHighTempAndCurrent);
-    RUN_TEST(test_checkChargeTripDueToPackCurrent);
-    RUN_TEST(test_checkChargeTripForNoTrip);
 }
 
 void test_updateAuxTripProtectionTrip()

@@ -6,25 +6,17 @@
 #include "OrionInterfaceTest.h"
 
 extern OrionCanInfo message;
-extern AuxStatus auxStatus;
-extern AuxTrip auxTrip;
-extern AuxBmsContactorState auxBmsContactorState;
-extern osEventFlagsId_t contactorControlEventBits;
+// extern AuxStatus auxStatus;
+// extern AuxTrip auxTrip;
+// extern AuxBmsContactorState auxBmsContactorState;
+// extern osEventFlagsId_t contactorControlEventBits;
 
 void setUp(void)
 {
-    message.lowCellVoltage = AUX_BMS_MIN_CELL_VOLTAGE / DEFAULT_VOLTAGE_UNITS;
-    message.highCellVoltage = AUX_BMS_MAX_CELL_VOLTAGE / DEFAULT_VOLTAGE_UNITS;
-    setNominalAuxStatus();
-    auxTrip = (AuxTrip)
-    {
-        0
-    };
-    auxBmsContactorState = (AuxBmsContactorState)
-    {
-        0
-    };
-    contactorControlEventBits = 0;
+    message.highCellVoltage = 0;
+    message.lowCellVoltage = 0;
+    message.highTemperature = 0;
+    message.packCurrent = 0;
 }
 
 void tearDown(void)
