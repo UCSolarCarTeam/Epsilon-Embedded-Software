@@ -55,7 +55,7 @@ typedef struct SigLightsHandle
     uint8_t right;
 } SigLightsHandle;
 
-typedef struct updateLights
+typedef struct lightsInfo
 {
     char headlightsOff;
     char headlightsLow;
@@ -67,7 +67,7 @@ typedef struct updateLights
     char bmsStrobe;
     uint32_t regenBrakeInt;
     float regenBrakeFloat;
-} updateLights;
+} lightsInfo;
 
 extern CAN_HandleTypeDef hcan2; // main.c
 extern uint8_t lightsInputs;
@@ -92,7 +92,7 @@ void sendHeartbeatTask(void const* arg);
 
 void updateStrobeLight(void const* arg);
 
-void updateLights1(updateLights* x, uint32_t* y);
+void updateLights1(lightsInfo* x, uint32_t* y);
 
 void blinkSignalLights( uint32_t* prevWakeTime, uint32_t* blinkerTimer, uint8_t* prevSigState);
 
