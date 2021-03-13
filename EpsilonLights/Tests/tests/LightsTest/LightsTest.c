@@ -168,7 +168,7 @@ void test_blinkSignalLights_sigLightsLeftONSigLightsRightONPrevSigStateZero()
     TEST_ASSERT_EQUAL_MESSAGE(1, prevSigState, "prevSigState is supposed to be 1");
 }
 
-void test_blinkSignalLights_prevSigState0SigLightsLeftONSigLightsRightON()
+void test_blinkSignalLights_prevSigState1SigLightsLeftONSigLightsRightON()
 {
     uint32_t prevWakeTime = 0;
     uint8_t prevSigState = 1;
