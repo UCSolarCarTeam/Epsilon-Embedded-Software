@@ -10,7 +10,7 @@
 #include "LightsTest.h"
 #include <stdio.h>
 
-updateLights lightCharacteristics = {0};
+lightsInfo lightCharacteristics = {0};
 
 uint8_t lightsInputs;
 uint8_t auxBmsInputs[2];
@@ -22,25 +22,25 @@ osMutexId* canHandleMutex;
 
 void runLightsTests()
 {
-    RUN_TEST(test_updateLights1_headLightsOff_brakesLightsOff_hazardsOff_bmsStrobeLightsOff);
-    RUN_TEST(test_headLightsLow_breakLightsOn_hazardsOn_bmsStrobeLightOn);
-    RUN_TEST(test_headLightsHigh_headLights_Low_breakLightsOn_hazardsOn_bmsStrobeLightOn);
-    RUN_TEST(blinkSignalLights_sigLightsLeftOFF_sigLightsRightOFF);
-    RUN_TEST(blinkSignalLights_sigLightsLeftON_sigLightsRightON_prevSigState_Zero);
-    RUN_TEST(blinkSignalLights_prevSigState0_sigLightsLeftON_sigLightsRightON);
-    RUN_TEST(updateStrobeLights2_ESTROBEON_UpdateblinkerTimer);
-    RUN_TEST(updateStrobeLights2_ESTROBEOFF_ResetBlinkerTimer);
-    RUN_TEST(updateStrobeLights2_ESTROBEOFF_UpdateBlinkerTimer);
-    RUN_TEST(reportLightsToCan_test);
-    RUN_TEST(sendHeartbeat_test);
-    RUN_TEST(HAL_CAN_RxCpltCallback_Lights_Input_StdId_test);
-    RUN_TEST(HAL_CAN_RxCpltCallback_Battery_Stat_Errors_StdId_test);
-    RUN_TEST(HAL_CAN_RxCpltCallback_Drivers_Inputs_StdId_test);
-    RUN_TEST(HAL_CAN_RxCpltCallback_AuxBms_Input_StdId_test);
-    RUN_TEST(HAL_CAN_RxCpltCallback_Battery_Stat_Errors_StdId_AND_Toggle_Red_Pin_test);
+    RUN_TEST(test_updateLights_headLightsOffBrakesLightsOffHazardsOffBmsStrobeLightsOff);
+    RUN_TEST(test_updateLights_headLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn);
+    RUN_TEST(test_updateLights_headLightsHighHeadLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn);
+    RUN_TEST(test_blinkSignalLights_sigLightsLeftOFFSigLightsRightOFF);
+    RUN_TEST(test_blinkSignalLights_sigLightsLeftONSigLightsRightONPrevSigStateZero);
+    RUN_TEST(test_blinkSignalLights_prevSigState0SigLightsLeftONSigLightsRightON);
+    RUN_TEST(test_updateStrobeLights1_ESTROBEONUpdateBlinkerTimer);
+    RUN_TEST(test_updateStrobeLights1_ESTROBEOFFResetBlinkerTimer);
+    RUN_TEST(test_updateStrobeLights1_ESTROBEOFFUpdateBlinkerTimer);
+    RUN_TEST(test_reportLightsToCan);
+    RUN_TEST(test_sendHeartbeat);
+    RUN_TEST(test_HAL_CAN_RxCpltCall_backLightsInputStdId);
+    RUN_TEST(test_HAL_CAN_RxCpltCallback_batteryStatErrorsStdId);
+    RUN_TEST(test_HAL_CAN_RxCpltCallback_driversInputsStdId);
+    RUN_TEST(test_HAL_CAN_RxCpltCallback_auxBmsInputStdId);
+    RUN_TEST(test_HAL_CAN_RxCpltCallback_batteryStatErrorsStdIdANDToggleRedPin);
 }
 
-void test_updateLights1_headLightsOff_brakesLightsOff_hazardsOff_bmsStrobeLightsOff()
+void test_updateLights_headLightsOffBrakesLightsOffHazardsOffBmsStrobeLightsOff()
 {
     lightsInputs = 0b00000001;
     driversInputs[1] = 0;
@@ -62,7 +62,7 @@ void test_updateLights1_headLightsOff_brakesLightsOff_hazardsOff_bmsStrobeLights
     //bmsstrobe off
     HAL_GPIO_WritePin_Expect(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_OFF);
 
-    updateLights1(&lightCharacteristics, &prevWakeTime);
+    updateLights(&lightCharacteristics, &prevWakeTime);
 
     TEST_ASSERT_EQUAL_MESSAGE(lightCharacteristics.leftSignal, sigLightsHandle.left,
                               "sigLightsHandle.left expected to be 1");
@@ -71,7 +71,7 @@ void test_updateLights1_headLightsOff_brakesLightsOff_hazardsOff_bmsStrobeLights
 
 }
 
-void test_headLightsLow_breakLightsOn_hazardsOn_bmsStrobeLightOn()
+void test_updateLights_headLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn()
 {
     lightsInputs = 0b00100010;
     driversInputs[3] = 0b00000001;
@@ -94,17 +94,15 @@ void test_headLightsLow_breakLightsOn_hazardsOn_bmsStrobeLightOn()
     //bmsStrobe on
     HAL_GPIO_WritePin_Expect(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_ON);
 
-    updateLights1(&lightCharacteristics, &prevWakeTime);
+    updateLights(&lightCharacteristics, &prevWakeTime);
 
     TEST_ASSERT_EQUAL_MESSAGE(LIGHT_ON, sigLightsHandle.left,
                               "sigLightsHandle.left expected to be LIGHT_ON");
     TEST_ASSERT_EQUAL_MESSAGE(LIGHT_ON, sigLightsHandle.right,
                               "sigLightsHandle.right expected to be LIGHT_ON");
-
-
 }
 
-void test_headLightsHigh_headLights_Low_breakLightsOn_hazardsOn_bmsStrobeLightOn()
+void test_updateLights_headLightsHighHeadLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn()
 {
     lightsInputs = 0b0100110;
     driversInputs[3] = 0b00000001;
@@ -124,18 +122,17 @@ void test_headLightsHigh_headLights_Low_breakLightsOn_hazardsOn_bmsStrobeLightOn
     //bmsStrobe on
     HAL_GPIO_WritePin_Expect(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_ON);
 
-    updateLights1(&lightCharacteristics, &prevWakeTime);
+    updateLights(&lightCharacteristics, &prevWakeTime);
 
     TEST_ASSERT_EQUAL_MESSAGE(LIGHT_ON, sigLightsHandle.left,
                               "sigLightsHandle.left expected to be LIGHT_ON");
     TEST_ASSERT_EQUAL_MESSAGE(LIGHT_ON, sigLightsHandle.right,
                               "sigLightsHandle.right expected to be LIGHT_ON");
-
 }
 
 //TESTS for blinkSignalLIghts
 
-void blinkSignalLights_sigLightsLeftOFF_sigLightsRightOFF()
+void test_blinkSignalLights_sigLightsLeftOFFSigLightsRightOFF()
 {
     uint32_t prevWakeTime = 0;
     uint8_t prevSigState = 10;
@@ -144,7 +141,6 @@ void blinkSignalLights_sigLightsLeftOFF_sigLightsRightOFF()
     sigLightsHandle.left = 0;
     sigLightsHandle.right = 0;
 
-
     osDelayUntil_ExpectAndReturn(&prevWakeTime, LIGHTS_UPDATE_FREQ, 0);
     HAL_GPIO_WritePin_Expect(RSIGNAL_GPIO_Port, RSIGNAL_Pin, LIGHT_OFF);
     HAL_GPIO_WritePin_Expect(LSIGNAL_GPIO_Port, LSIGNAL_Pin, LIGHT_OFF);
@@ -152,16 +148,13 @@ void blinkSignalLights_sigLightsLeftOFF_sigLightsRightOFF()
     blinkSignalLights(&prevWakeTime, &blinkerTimer, &prevSigState);
 
     TEST_ASSERT_EQUAL_MESSAGE(0, prevSigState, "prevSigState is supposed to be 0");
-
-
 }
 
-void blinkSignalLights_sigLightsLeftON_sigLightsRightON_prevSigState_Zero()
+void test_blinkSignalLights_sigLightsLeftONSigLightsRightONPrevSigStateZero()
 {
     uint32_t prevWakeTime = 0;
     uint8_t prevSigState = 0;
     uint32_t blinkerTimer = 0;
-
 
     sigLightsHandle.left = 1;
     sigLightsHandle.right = 1;
@@ -173,14 +166,12 @@ void blinkSignalLights_sigLightsLeftON_sigLightsRightON_prevSigState_Zero()
     blinkSignalLights(&prevWakeTime, &blinkerTimer, &prevSigState);
     TEST_ASSERT_EQUAL_MESSAGE(0, blinkerTimer, "blinkerTimer is supposed to be 0");
     TEST_ASSERT_EQUAL_MESSAGE(1, prevSigState, "prevSigState is supposed to be 1");
-
 }
 
-void blinkSignalLights_prevSigState0_sigLightsLeftON_sigLightsRightON()
+void test_blinkSignalLights_prevSigState0SigLightsLeftONSigLightsRightON()
 {
     uint32_t prevWakeTime = 0;
     uint8_t prevSigState = 1;
-
 
     sigLightsHandle.left = 2;
     sigLightsHandle.right = 2;
@@ -188,7 +179,6 @@ void blinkSignalLights_prevSigState0_sigLightsLeftON_sigLightsRightON()
     keepBlinkersOFF_resetBlinkerTimerToZero(prevWakeTime, prevSigState);
     turnBlinkersON_updateTimer(prevWakeTime, prevSigState);
     keepBlinkersOFF_updateTimer(prevWakeTime, prevSigState);
-
 }
 
 void keepBlinkersOFF_resetBlinkerTimerToZero(uint32_t prevWakeTime, uint8_t prevSigState)
@@ -200,37 +190,34 @@ void keepBlinkersOFF_resetBlinkerTimerToZero(uint32_t prevWakeTime, uint8_t prev
     HAL_GPIO_WritePin_Expect(LSIGNAL_GPIO_Port, LSIGNAL_Pin, LIGHT_OFF);
     blinkSignalLights(&prevWakeTime, &blinkerTimer, &prevSigState);
     TEST_ASSERT_EQUAL_MESSAGE(0, blinkerTimer, "blinkerTimer is supposed to be 0");
-
 }
 
 void turnBlinkersON_updateTimer(uint32_t prevWakeTime, uint8_t prevSigState)
 {
     uint32_t blinkerTimer = 300;
     uint32_t expectedBlinkerTimer = blinkerTimer + 10;
+
     osDelayUntil_ExpectAndReturn(&prevWakeTime, LIGHTS_UPDATE_FREQ, 0);
     HAL_GPIO_WritePin_Expect(RSIGNAL_GPIO_Port, RSIGNAL_Pin, sigLightsHandle.right);
     HAL_GPIO_WritePin_Expect(LSIGNAL_GPIO_Port, LSIGNAL_Pin, sigLightsHandle.left);
     blinkSignalLights(&prevWakeTime, &blinkerTimer, &prevSigState);
     TEST_ASSERT_EQUAL_MESSAGE(expectedBlinkerTimer, blinkerTimer, "blinkerTimer is supposed to be expectedBlinkerTimer");
-
 }
 
 void keepBlinkersOFF_updateTimer(uint32_t prevWakeTime, uint8_t prevSigState)
 {
     uint32_t blinkerTimer = 400;
     uint32_t expectedBlinkerTimer = blinkerTimer + 10;
+
     osDelayUntil_ExpectAndReturn(&prevWakeTime, LIGHTS_UPDATE_FREQ, 0);
     HAL_GPIO_WritePin_Expect(RSIGNAL_GPIO_Port, RSIGNAL_Pin, LIGHT_OFF);
     HAL_GPIO_WritePin_Expect(LSIGNAL_GPIO_Port, LSIGNAL_Pin, LIGHT_OFF);
     blinkSignalLights(&prevWakeTime, &blinkerTimer, &prevSigState);
     TEST_ASSERT_EQUAL_MESSAGE(expectedBlinkerTimer, blinkerTimer, "blinkerTimer is supposed to be expectedBlinkerTimer");
-
 }
 
-
-// TESTS for updateStrobeLight2
-
-void updateStrobeLights2_ESTROBEON_UpdateblinkerTimer()
+// TESTS for updateStrobeLight1
+void test_updateStrobeLights1_ESTROBEONUpdateBlinkerTimer()
 {
     uint32_t prevWakeTime = 0;
     uint32_t blinkerTimer = 300;
@@ -242,10 +229,9 @@ void updateStrobeLights2_ESTROBEON_UpdateblinkerTimer()
     HAL_GPIO_WritePin_Expect(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_ON);
     updateStrobeLight2(&prevWakeTime, &blinkerTimer, &strobeLight);
     TEST_ASSERT_EQUAL_MESSAGE(expectedBlinkerTimer, blinkerTimer, "blinkerTimer is supposed to be expectedBlinkerTimer");
-
 }
 
-void updateStrobeLights2_ESTROBEOFF_ResetBlinkerTimer()
+void test_updateStrobeLights1_ESTROBEOFFResetBlinkerTimer()
 {
     uint32_t prevWakeTime = 0;
     uint32_t blinkerTimer = 800;
@@ -258,10 +244,9 @@ void updateStrobeLights2_ESTROBEOFF_ResetBlinkerTimer()
     updateStrobeLight2(&prevWakeTime, &blinkerTimer, &strobeLight);
     TEST_ASSERT_EQUAL_MESSAGE(expectedBlinkerTimer, blinkerTimer,
                               "blinkerTimer is supposed to be expectedBlinkerTimer");
-
 }
 
-void updateStrobeLights2_ESTROBEOFF_UpdateBlinkerTimer()
+void test_updateStrobeLights1_ESTROBEOFFUpdateBlinkerTimer()
 {
     uint32_t prevWakeTime = 0;
     uint32_t blinkerTimer = 400;
@@ -274,22 +259,18 @@ void updateStrobeLights2_ESTROBEOFF_UpdateBlinkerTimer()
     updateStrobeLight2(&prevWakeTime, &blinkerTimer, &strobeLight);
     TEST_ASSERT_EQUAL_MESSAGE(expectedBlinkerTimer, blinkerTimer,
                               "blinkerTimer is supposed to be expectedBlinkerTimer");
-
 }
 
 // TESTS for reportLightsToCan
-void reportLightsToCan_test()
+void test_reportLightsToCan()
 {
     uint32_t prevWakeTime = 0;
     uint32_t expectedValue = 23;
-
-
 
     osDelayUntil_ExpectAndReturn(&prevWakeTime, LIGHTS_STATUS_FREQ, 0);
 
     osMutexWait_ExpectAndReturn(canHandleMutex, 0, osOK);
     HAL_GPIO_TogglePin_Expect(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
-
 
     HAL_GPIO_ReadPin_ExpectAndReturn(HLOW_GPIO_Port, HLOW_Pin, 1);
     HAL_GPIO_ReadPin_ExpectAndReturn(HHIGH_GPIO_Port, HHIGH_Pin, 1);
@@ -304,13 +285,13 @@ void reportLightsToCan_test()
     reportLightsToCan(&prevWakeTime, canHandleMutex);
 
     TEST_ASSERT_EQUAL_MESSAGE(expectedValue, hcan2.pTxMsg->Data[0], "expected value is supposed to be 57");
-
 }
 
 // TEST for sendHeartbeat
-void sendHeartbeat_test()
+void test_sendHeartbeat()
 {
     uint32_t prevWakeTime = 0;
+
     osDelayUntil_ExpectAndReturn(&prevWakeTime, LIGHTS_HEARTBEAT_FREQ, 0);
     osMutexWait_ExpectAndReturn(canHandleMutex, 0, osOK);
     HAL_GPIO_TogglePin_Expect(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
@@ -319,13 +300,12 @@ void sendHeartbeat_test()
 
     sendHeartbeat(canHandleMutex, &prevWakeTime);
 
-
     TEST_ASSERT_EQUAL_MESSAGE(LIGHTS_HEARTBEAT_STDID, hcan2.pTxMsg->StdId, "expected to be LIGHTS_HEARTBEAT_STDID value");
     TEST_ASSERT_EQUAL_MESSAGE(1, hcan2.pTxMsg->Data[0], "hcan2.pTxMsg->Data[0] should be 1");
 }
 
 //TESTS for HAL_CAN_RxCpltCallback
-void HAL_CAN_RxCpltCallback_Lights_Input_StdId_test()
+void test_HAL_CAN_RxCpltCall_backLightsInputStdId()
 {
     hcan2.pRxMsg->StdId = LIGHTS_INPUT_STDID;
     hcan2.pRxMsg->DLC = 1;
@@ -335,12 +315,10 @@ void HAL_CAN_RxCpltCallback_Lights_Input_StdId_test()
 
     HAL_CAN_RxCpltCallback(&hcan2);
 
-
     TEST_ASSERT_EQUAL_MESSAGE(hcan2.pRxMsg->Data[0], lightsInputs, "The actual value is supposed to be 2");
-
 }
 
-void HAL_CAN_RxCpltCallback_Battery_Stat_Errors_StdId_test()
+void test_HAL_CAN_RxCpltCallback_batteryStatErrorsStdId()
 {
     hcan2.pRxMsg->StdId = BATTERY_STAT_ERRORS_STDID;
     hcan2.pRxMsg->DLC = 5;
@@ -354,16 +332,14 @@ void HAL_CAN_RxCpltCallback_Battery_Stat_Errors_StdId_test()
 
     HAL_CAN_RxCpltCallback(&hcan2);
 
-
     TEST_ASSERT_EQUAL_MESSAGE(hcan2.pRxMsg->Data[0], batteryErrors[0], "The actual value is supposed to be 2");
     TEST_ASSERT_EQUAL_MESSAGE(hcan2.pRxMsg->Data[1], batteryErrors[1], "The actual value is supposed to be 1");
     TEST_ASSERT_EQUAL_MESSAGE(hcan2.pRxMsg->Data[2], batteryErrors[2], "The actual value is supposed to be 0");
     TEST_ASSERT_EQUAL_MESSAGE(hcan2.pRxMsg->Data[3], batteryErrors[3], "The actual value is supposed to be 1");
     TEST_ASSERT_EQUAL_MESSAGE(hcan2.pRxMsg->Data[4], batteryErrors[4], "The actual value is supposed to be 2");
-
 }
 
-void HAL_CAN_RxCpltCallback_Drivers_Inputs_StdId_test()
+void test_HAL_CAN_RxCpltCallback_driversInputsStdId()
 {
     hcan2.pRxMsg->StdId = DRIVERS_INPUTS_STDID;
     hcan2.pRxMsg->DLC = 4;
@@ -380,10 +356,9 @@ void HAL_CAN_RxCpltCallback_Drivers_Inputs_StdId_test()
     TEST_ASSERT_EQUAL_MESSAGE(hcan2.pRxMsg->Data[1], driversInputs[1], "The actual value is supposed to be 4");
     TEST_ASSERT_EQUAL_MESSAGE(hcan2.pRxMsg->Data[2], driversInputs[2], "The actual value is supposed to be 3");
     TEST_ASSERT_EQUAL_MESSAGE(hcan2.pRxMsg->Data[3], driversInputs[3], "The actual value is supposed to be 2");
-
 }
 
-void HAL_CAN_RxCpltCallback_AuxBms_Input_StdId_test()
+void test_HAL_CAN_RxCpltCallback_auxBmsInputStdId()
 {
     hcan2.pRxMsg->StdId = AUXBMS_INPUT_STDID;
     hcan2.pRxMsg->DLC = 2;
@@ -394,12 +369,11 @@ void HAL_CAN_RxCpltCallback_AuxBms_Input_StdId_test()
 
     HAL_CAN_RxCpltCallback(&hcan2);
 
-
     TEST_ASSERT_EQUAL_MESSAGE(hcan2.pRxMsg->Data[0], auxBmsInputs[0], "The actual value is supposed to be 5");
     TEST_ASSERT_EQUAL_MESSAGE(hcan2.pRxMsg->Data[1], auxBmsInputs[1], "The actual value is supposed to be 6");
 }
 
-void HAL_CAN_RxCpltCallback_Battery_Stat_Errors_StdId_AND_Toggle_Red_Pin_test()
+void test_HAL_CAN_RxCpltCallback_batteryStatErrorsStdIdANDToggleRedPin()
 {
     hcan2.pRxMsg->StdId = AUXBMS_INPUT_STDID;
     hcan2.pRxMsg->DLC = 2;
@@ -410,7 +384,6 @@ void HAL_CAN_RxCpltCallback_Battery_Stat_Errors_StdId_AND_Toggle_Red_Pin_test()
     HAL_GPIO_TogglePin_Expect(LED_RED_GPIO_Port, LED_RED_Pin);
 
     HAL_CAN_RxCpltCallback(&hcan2);
-
 
     TEST_ASSERT_EQUAL_MESSAGE(hcan2.pRxMsg->Data[0], auxBmsInputs[0], "The actual value is supposed to be 5");
     TEST_ASSERT_EQUAL_MESSAGE(hcan2.pRxMsg->Data[1], auxBmsInputs[1], "The actual value is supposed to be 6");

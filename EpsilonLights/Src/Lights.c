@@ -9,17 +9,17 @@ void updateLightsTask(void const* arg)
     // Store inputs values
 
 
-    updateLights lightsCharacteristics;
+    lightsInfo lightsCharacteristics;
 
 
     // NOTE: All Lights Out pins are active low
     for (;;)
     {
-        updateLights1 (&lightsCharacteristics, &prevWakeTime);
+        updateLights (&lightsCharacteristics, &prevWakeTime);
     }
 }
 
-void updateLights1 (updateLights* lightsCharacteristics, uint32_t* prevWakeTime)
+void updateLights (lightsInfo* lightsCharacteristics, uint32_t* prevWakeTime)
 {
     lightsCharacteristics -> regenBrakeInt = 0;
     lightsCharacteristics -> regenBrakeFloat = 0;
@@ -97,6 +97,24 @@ void updateLights1 (updateLights* lightsCharacteristics, uint32_t* prevWakeTime)
 //      Example: Signal Left ENABLED
 //               ~200ms pass
 //               Hazards Enabled <- (Left blinker should not reset at this point)
+void blinkSignalLightsTask(void const* arg)
+{
+    // One time osDelayUntil intialization
+    uint32_t prevWakeTime = osKernelSysTick();
+    // If blinkerTimer is within (0 - BLINKER_FREQ), turn blinkers on
+    // If blinkerTimer is within (BLINKER_FREQ - BLINKER_FREQ*2), keep blinkers off
+    // If blinkerTimer is greater than (BLINKER_FREQ*2) reset blinkerTimer to 0
+    uint32_t blinkerTimer = 0;
+    // If both signal lights disabled, prevSigState = 0 (DISABLED)
+    // else prevSigState = 1 (ENABLED)
+    uint8_t prevSigState = 0;
+
+    for (;;)
+    {
+        blinkSignalLights( &prevWakeTime, &blinkerTimer, &prevSigState);
+    }
+}
+
 void blinkSignalLights( uint32_t* prevWakeTime, uint32_t* blinkerTimer, uint8_t* prevSigState)
 {
     osDelayUntil(prevWakeTime, LIGHTS_UPDATE_FREQ);
@@ -148,23 +166,7 @@ void blinkSignalLights( uint32_t* prevWakeTime, uint32_t* blinkerTimer, uint8_t*
         // Keep prevSigState = 1
     }
 }
-void blinkSignalLightsTask(void const* arg)
-{
-    // One time osDelayUntil intialization
-    uint32_t prevWakeTime = osKernelSysTick();
-    // If blinkerTimer is within (0 - BLINKER_FREQ), turn blinkers on
-    // If blinkerTimer is within (BLINKER_FREQ - BLINKER_FREQ*2), keep blinkers off
-    // If blinkerTimer is greater than (BLINKER_FREQ*2) reset blinkerTimer to 0
-    uint32_t blinkerTimer = 0;
-    // If both signal lights disabled, prevSigState = 0 (DISABLED)
-    // else prevSigState = 1 (ENABLED)
-    uint8_t prevSigState = 0;
 
-    for (;;)
-    {
-        blinkSignalLights( &prevWakeTime, &blinkerTimer, &prevSigState);
-    }
-}
 
 void updateStrobeLight(void const* arg)
 {
