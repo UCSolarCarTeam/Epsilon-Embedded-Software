@@ -62,7 +62,7 @@ void test_updateLights_headLightsOffBrakesLightsOffHazardsOffBmsStrobeLightsOff(
     //bmsstrobe off
     HAL_GPIO_WritePin_Expect(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_OFF);
 
-    updateLights(&lightCharacteristics, &prevWakeTime);
+    updateLights1(&lightCharacteristics, &prevWakeTime);
 
     TEST_ASSERT_EQUAL_MESSAGE(lightCharacteristics.leftSignal, sigLightsHandle.left,
                               "sigLightsHandle.left expected to be 1");
@@ -94,7 +94,7 @@ void test_updateLights_headLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn()
     //bmsStrobe on
     HAL_GPIO_WritePin_Expect(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_ON);
 
-    updateLights(&lightCharacteristics, &prevWakeTime);
+    updateLights1(&lightCharacteristics, &prevWakeTime);
 
     TEST_ASSERT_EQUAL_MESSAGE(LIGHT_ON, sigLightsHandle.left,
                               "sigLightsHandle.left expected to be LIGHT_ON");
@@ -122,7 +122,7 @@ void test_updateLights_headLightsHighHeadLightsLowBreakLightsOnHazardsOnBmsStrob
     //bmsStrobe on
     HAL_GPIO_WritePin_Expect(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_ON);
 
-    updateLights(&lightCharacteristics, &prevWakeTime);
+    updateLights1(&lightCharacteristics, &prevWakeTime);
 
     TEST_ASSERT_EQUAL_MESSAGE(LIGHT_ON, sigLightsHandle.left,
                               "sigLightsHandle.left expected to be LIGHT_ON");

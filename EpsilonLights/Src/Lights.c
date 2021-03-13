@@ -15,11 +15,11 @@ void updateLightsTask(void const* arg)
     // NOTE: All Lights Out pins are active low
     for (;;)
     {
-        updateLights (&lightsCharacteristics, &prevWakeTime);
+        updateLights1 (&lightsCharacteristics, &prevWakeTime);
     }
 }
 
-void updateLights (lightsInfo* lightsCharacteristics, uint32_t* prevWakeTime)
+void updateLights1 (lightsInfo* lightsCharacteristics, uint32_t* prevWakeTime)
 {
     lightsCharacteristics -> regenBrakeInt = 0;
     lightsCharacteristics -> regenBrakeFloat = 0;

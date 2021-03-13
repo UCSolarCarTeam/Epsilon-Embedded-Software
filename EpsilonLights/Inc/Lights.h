@@ -92,7 +92,7 @@ void sendHeartbeatTask(void const* arg);
 
 void updateStrobeLight(void const* arg);
 
-void updateLights(lightsInfo* x, uint32_t* y);
+void updateLights1(lightsInfo* x, uint32_t* y);
 
 void blinkSignalLights( uint32_t* prevWakeTime, uint32_t* blinkerTimer, uint8_t* prevSigState);
 
