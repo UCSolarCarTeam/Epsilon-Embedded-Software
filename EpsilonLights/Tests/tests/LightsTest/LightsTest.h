@@ -9,7 +9,7 @@
 // extern updateLights lightCharacteristics;
 
 
-void hi();
+
 
 void runLightsTests();
 
