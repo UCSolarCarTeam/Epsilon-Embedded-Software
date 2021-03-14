@@ -41,7 +41,6 @@ void test_onlyUpdateAllowDischarge() {
     TEST_ASSERT_EQUAL_MESSAGE(0, auxStatusToUpdate.allowDischarge, "auxStatusToUpdate.allowDischarge failed to update");
 }
 
-// TODO: Find a better naming convetion for unit tests
 void test_osMessageQueueGetTimeout() {
     AuxStatus expectedAuxStatus = {.orionCanReceivedRecently = 0};
     auxBmsContactorState.startupDone = 0;
