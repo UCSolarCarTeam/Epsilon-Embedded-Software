@@ -6,10 +6,10 @@
 #include "OrionInterfaceTest.h"
 
 extern OrionCanInfo message;
-// extern AuxStatus auxStatus;
-// extern AuxTrip auxTrip;
-// extern AuxBmsContactorState auxBmsContactorState;
-// extern osEventFlagsId_t contactorControlEventBits;
+extern AuxStatus auxStatus;
+extern AuxTrip auxTrip;
+extern AuxBmsContactorState auxBmsContactorState;
+extern osEventFlagsId_t contactorControlEventBits;
 
 void setUp(void)
 {
