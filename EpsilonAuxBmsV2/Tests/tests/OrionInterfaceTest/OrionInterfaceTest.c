@@ -98,7 +98,7 @@ void test_shouldNotDisconnectContactorsChargeStateOpen() {
     };
     auxBmsContactorState.startupDone = 1;
     auxBmsContactorState.chargeState = OPEN;
-    uint32_t contactorControlEventFlags = 0x4; // CHARGE_CLOSED
+    uint32_t contactorControlEventFlags = CHARGE_CLOSED;
 
     osMessageQueueGet_ExpectAndReturn(orionInterfaceQueue, &message, NULL, ORION_QUEUE_TIMEOUT, osErrorTimeout);
     HAL_GPIO_ReadPin_ExpectAndReturn(ORION_DISCHARGE_ENABLE_SENSE_GPIO_Port, ORION_DISCHARGE_ENABLE_SENSE_Pin, 1);
@@ -125,7 +125,7 @@ void test_shouldNotDisconnectContactorsChargeStateClosed() {
     auxBmsContactorState.startupDone = 1;
     auxBmsContactorState.dischargeState == OPEN;
     auxBmsContactorState.chargeState = CLOSED;
-    uint32_t contactorControlEventFlags = 0x10; // DISCHARGE_CLOSED
+    uint32_t contactorControlEventFlags = DISCHARGE_CLOSED;
 
     osMessageQueueGet_ExpectAndReturn(orionInterfaceQueue, &message, NULL, ORION_QUEUE_TIMEOUT, osErrorTimeout);
     HAL_GPIO_ReadPin_ExpectAndReturn(ORION_DISCHARGE_ENABLE_SENSE_GPIO_Port, ORION_DISCHARGE_ENABLE_SENSE_Pin, 1);
