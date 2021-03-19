@@ -16,7 +16,7 @@ void test_updateLights1_headLightsHighHeadLightsLowBreakLightsOnHazardsOnBmsStro
 void test_blinkSignalLights_sigLightsLeftOFFSigLightsRightOFF();
 void test_blinkSignalLights_sigLightsLeftONSigLightsRightONPrevSigStateZero();
 
-void test_blinkSignalLights_prevSigState0SigLightsLeftONSigLightsRightON();
+void test_blinkSignalLights_prevSigState1SigLightsLeftONSigLightsRightON();
 void keepBlinkersOFF_resetBlinkerTimerToZero(uint32_t prevWakeTime, uint8_t prevSigstate);
 void turnBlinkersON_updateTimer(uint32_t prevWakeTime, uint8_t prevSigState);
 void keepBlinkersOFF_updateTimer(uint32_t prevWakeTime, uint8_t prevSigState);

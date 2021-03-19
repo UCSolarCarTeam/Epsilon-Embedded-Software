@@ -27,7 +27,7 @@ void runLightsTests()
     RUN_TEST(test_updateLights1_headLightsHighHeadLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn);
     RUN_TEST(test_blinkSignalLights_sigLightsLeftOFFSigLightsRightOFF);
     RUN_TEST(test_blinkSignalLights_sigLightsLeftONSigLightsRightONPrevSigStateZero);
-    RUN_TEST(test_blinkSignalLights_prevSigState0SigLightsLeftONSigLightsRightON);
+    RUN_TEST(test_blinkSignalLights_prevSigState1SigLightsLeftONSigLightsRightON);
     RUN_TEST(test_updateStrobeLights1_ESTROBEONUpdateBlinkerTimer);
     RUN_TEST(test_updateStrobeLights1_ESTROBEOFFResetBlinkerTimer);
     RUN_TEST(test_updateStrobeLights1_ESTROBEOFFUpdateBlinkerTimer);
