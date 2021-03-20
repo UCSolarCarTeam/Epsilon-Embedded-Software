@@ -9,56 +9,55 @@ void updateLightsTask(void const* arg)
     // Store inputs values
 
 
-    lightsInfo lightsCharacteristics;
-
+    LightsInfo lightsInfo;
+    RegenBrakeInfo regenBrakeInfo;
 
     // NOTE: All Lights Out pins are active low
     for (;;)
     {
-        updateLights1 (&lightsCharacteristics, &prevWakeTime);
+        updateLights(&lightsInfo, &prevWakeTime, &regenBrakeInfo);
     }
 }
 
-void updateLights1 (lightsInfo* lightsCharacteristics, uint32_t* prevWakeTime)
+void updateLights(LightsInfo* lightsInfo, uint32_t* prevWakeTime, RegenBrakeInfo* regenBrakeInfo)
 {
-    lightsCharacteristics -> regenBrakeInt = 0;
-    lightsCharacteristics -> regenBrakeFloat = 0;
+    regenBrakeInfo->regenBrakeInt = 0;
+    regenBrakeInfo->regenBrakeFloat = 0;
 
     osDelayUntil(prevWakeTime, LIGHTS_UPDATE_FREQ);
-    lightsCharacteristics -> headlightsOff = (lightsInputs >> HOFF_INPUT_INDEX) & 1; //0000 1111
-    lightsCharacteristics -> headlightsLow = (lightsInputs >> HLOW_INPUT_INDEX) & 1;
-    lightsCharacteristics -> headlightsHigh = (lightsInputs >> HHIGH_INPUT_INDEX) & 1;
-    lightsCharacteristics -> rightSignal = (lightsInputs >> RSIGNAL_INPUT_INDEX) & 1;
-    lightsCharacteristics -> leftSignal = (lightsInputs >> LSIGNAL_INPUT_INDEX) & 1;
-    lightsCharacteristics -> hazards = (lightsInputs >> HAZARDS_INPUT_INDEX) & 1;
-    lightsCharacteristics -> bmsStrobe = ((auxBmsInputs[1] >> 0) & STROBE_FAULT_MASK) & 1;
-    lightsCharacteristics -> regenBrakeInt |= (driversInputs[1] & REGEN_BRAKE_MASK_1) >> 4;// 1010 1111 & 1111 0000 = 1010 0000 // 0000 1010 // 0000 0000 | 0000 1010 = 0000 1010
-    lightsCharacteristics -> regenBrakeInt |= (driversInputs[2] & REGEN_BRAKE_MASK_2) << 4;// 1100 1011 & 1111 1111 = 1100 1011 // 1011 0000 // 0000 1010 | 1011 0000 = 1011 1010
+    lightsInfo->headlightsOff = (lightsInputs >> HOFF_INPUT_INDEX) & 1;
+    lightsInfo->headlightsLow = (lightsInputs >> HLOW_INPUT_INDEX) & 1;
+    lightsInfo->headlightsHigh = (lightsInputs >> HHIGH_INPUT_INDEX) & 1;
+    lightsInfo->rightSignal = (lightsInputs >> RSIGNAL_INPUT_INDEX) & 1;
+    lightsInfo->leftSignal = (lightsInputs >> LSIGNAL_INPUT_INDEX) & 1;
+    lightsInfo->hazards = (lightsInputs >> HAZARDS_INPUT_INDEX) & 1;
+    lightsInfo->bmsStrobe = ((auxBmsInputs[1] >> 0) & STROBE_FAULT_MASK) & 1;
+    regenBrakeInfo->regenBrakeInt |= (driversInputs[1] & REGEN_BRAKE_MASK_1) >> 4;
+    regenBrakeInfo->regenBrakeInt |= (driversInputs[2] & REGEN_BRAKE_MASK_2) << 4;
 
-    // 0001 0010 //driverInputs[1] = 0010 0000// driverInputs[2] = 0000 0001
     /* UPDATE HEADLIGHTS */
-    if (( lightsCharacteristics -> headlightsOff))
+    if (lightsInfo->headlightsOff)
     {
         HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_OFF);
         HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, LIGHT_OFF);
     }
-    else if ((lightsCharacteristics -> headlightsLow && lightsCharacteristics -> headlightsHigh))
+    else if (lightsInfo->headlightsLow && lightsInfo->headlightsHigh)
     {
-        // Error state, turn only the low headlights on.
+
         HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, LIGHT_OFF);
         HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, LIGHT_ON);
     }
     else
     {
-        HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, lightsCharacteristics -> headlightsHigh);
-        HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, lightsCharacteristics -> headlightsLow);
+        HAL_GPIO_WritePin(HHIGH_GPIO_Port, HHIGH_Pin, lightsInfo->headlightsHigh);
+        HAL_GPIO_WritePin(HLOW_GPIO_Port, HLOW_Pin, lightsInfo->headlightsLow);
     }
 
     /* UPDATE BRAKE LIGHTS */
-    lightsCharacteristics -> brakes = (driversInputs[BRAKES_INPUT_INDEX_P1] >> BRAKES_INPUT_INDEX_P2) & 1;
-    lightsCharacteristics -> regenBrakeFloat = (float) lightsCharacteristics -> regenBrakeInt;
+    lightsInfo->brakes = (driversInputs[BRAKES_INPUT_INDEX_P1] >> BRAKES_INPUT_INDEX_P2) & 1;
+    regenBrakeInfo->regenBrakeFloat = (float) regenBrakeInfo->regenBrakeInt;
 
-    if (lightsCharacteristics -> brakes || lightsCharacteristics -> regenBrakeFloat > NON_ZERO_THRESHOLD)
+    if (lightsInfo->brakes || regenBrakeInfo->regenBrakeFloat > NON_ZERO_THRESHOLD)
     {
         HAL_GPIO_WritePin(BRAKE_GPIO_Port, BRAKE_Pin, LIGHT_ON);
     }
@@ -68,20 +67,20 @@ void updateLights1 (lightsInfo* lightsCharacteristics, uint32_t* prevWakeTime)
     }
 
     /* UPDATE SIGNAL LIGHTS */
-    // Set to enable or disable for use in blinkSignalLights
-    if (lightsCharacteristics -> hazards)
+
+    if (lightsInfo->hazards)
     {
         sigLightsHandle.left = LIGHT_ON;
         sigLightsHandle.right = LIGHT_ON;
     }
     else
     {
-        sigLightsHandle.left = lightsCharacteristics -> leftSignal;
-        sigLightsHandle.right = lightsCharacteristics -> rightSignal;
+        sigLightsHandle.left = lightsInfo->leftSignal;
+        sigLightsHandle.right = lightsInfo->rightSignal;
     }
 
     /* UPDATE BMS STROBE */
-    if (lightsCharacteristics -> bmsStrobe)
+    if (lightsInfo->bmsStrobe)
     {
         HAL_GPIO_WritePin(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_ON);
     }
@@ -111,7 +110,7 @@ void blinkSignalLightsTask(void const* arg)
 
     for (;;)
     {
-        blinkSignalLights( &prevWakeTime, &blinkerTimer, &prevSigState);
+        blinkSignalLights(&prevWakeTime, &blinkerTimer, &prevSigState);
     }
 }
 
@@ -168,7 +167,7 @@ void blinkSignalLights( uint32_t* prevWakeTime, uint32_t* blinkerTimer, uint8_t*
 }
 
 
-void updateStrobeLight(void const* arg)
+void updateStrobeLightTask(void const* arg)
 {
     uint32_t prevWakeTime = osKernelSysTick();
     // Store inputs values
@@ -182,11 +181,11 @@ void updateStrobeLight(void const* arg)
 
     for (;;)
     {
-        updateStrobeLight2(&prevWakeTime, &blinkerTimer, &strobeLight);
+        updateStrobeLight(&prevWakeTime, &blinkerTimer, &strobeLight);
     }
 }
 
-void updateStrobeLight2(uint32_t* prevWakeTime, uint32_t* blinkerTimer, char* strobeLight)
+void updateStrobeLight(uint32_t* prevWakeTime, uint32_t* blinkerTimer, char* strobeLight)
 {
     osDelayUntil(prevWakeTime, LIGHTS_UPDATE_FREQ);
     *strobeLight = (auxBmsInputs[1] >> 0) & STROBE_FAULT_MASK;
