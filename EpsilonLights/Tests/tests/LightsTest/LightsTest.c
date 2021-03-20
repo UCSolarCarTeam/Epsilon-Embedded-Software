@@ -36,6 +36,9 @@ void runLightsTests()
     RUN_TEST(test_HAL_CAN_RxCpltCallback_batteryStatErrorsStdIdANDToggleRedPin);
 }
 
+/*Test updateLights(). Headlights, brakes, hazards and bms strobe are
+off. Checks if lightsInfo.leftSignal matches sigLightsHandle.left and 
+lightsInto.rightSignal matches sigLightsHandle.right  */
 void test_updateLights1_allLightsOff()
 {
     uint32_t prevWakeTime = 0;
@@ -58,9 +61,11 @@ void test_updateLights1_allLightsOff()
                               "sigLightsHandle.left expected to be 1");
     TEST_ASSERT_EQUAL_MESSAGE(lightsInfo.rightSignal, sigLightsHandle.right,
                               "sigLightsHandle.right expected to be 0");
-
 }
 
+/*Test updateLights(). headLightsLow is on, headLightsHigh is off breaklights, hazards, and bme strobe are
+all on. checking to see if sigLightsHandle.left = LIGHT_ON and 
+sigLightsHAndle.right = LIGHTS_ON*/
 void test_updateLights1_headLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn()
 {
     uint32_t prevWakeTime = 0;
@@ -86,7 +91,9 @@ void test_updateLights1_headLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn()
     TEST_ASSERT_EQUAL_MESSAGE(LIGHT_ON, sigLightsHandle.right,
                               "sigLightsHandle.right expected to be LIGHT_ON");
 }
-
+/*test updateLights().When leftSignal is off and rightSignal is off,
+and breaklights, hazards and bms strobe are on. Checking to see that if
+sigLightsHandle.left = LIGHTS_ON and sigLightsHandle.right = LIGHTS_ON */
 void test_updateLights1_headLightsHighHeadLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn()
 {
     uint32_t prevWakeTime = 0;
@@ -111,8 +118,7 @@ void test_updateLights1_headLightsHighHeadLightsLowBreakLightsOnHazardsOnBmsStro
                               "sigLightsHandle.right expected to be LIGHT_ON");
 }
 
-//TESTS for blinkSignalLIghts
-
+/**/
 void test_blinkSignalLights_sigLightsLeftOFFSigLightsRightOFF()
 {
     uint32_t prevWakeTime = 0;
