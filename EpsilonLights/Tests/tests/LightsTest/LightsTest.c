@@ -118,7 +118,8 @@ void test_updateLights1_headLightsHighHeadLightsLowBreakLightsOnHazardsOnBmsStro
                               "sigLightsHandle.right expected to be LIGHT_ON");
 }
 
-/**/
+/*test blinkSignalLights().Both signal lights are disabled. CHecking to see if
+prevSigState is 0 or not*/
 void test_blinkSignalLights_sigLightsLeftOFFSigLightsRightOFF()
 {
     uint32_t prevWakeTime = 0;
@@ -135,6 +136,8 @@ void test_blinkSignalLights_sigLightsLeftOFFSigLightsRightOFF()
     TEST_ASSERT_EQUAL_MESSAGE(0, prevSigState, "prevSigState is supposed to be 0");
 }
 
+/*test blinkSignalLights. left signal and right signal are both on.
+Checking to see if blinkerTimer becomes 0 and if prevSigState becomes 1*/
 void test_blinkSignalLights_sigLightsLeftONSigLightsRightONPrevSigStateZero()
 {
     uint32_t prevWakeTime = 0;
@@ -151,6 +154,8 @@ void test_blinkSignalLights_sigLightsLeftONSigLightsRightONPrevSigStateZero()
     TEST_ASSERT_EQUAL_MESSAGE(1, prevSigState, "prevSigState is supposed to be 1");
 }
 
+/*test blinkSignalLights. left and right signals are both on. 
+prevSigState is 1.*/
 void test_blinkSignalLights_prevSigState1SigLightsLeftONSigLightsRightON()
 {
     uint32_t prevWakeTime = 0;
