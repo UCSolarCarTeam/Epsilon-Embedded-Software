@@ -18,15 +18,15 @@ osMutexId* canHandleMutex;
 
 void runLightsTests()
 {
-    RUN_TEST(test_updateLights1_allLightsOff);
-    RUN_TEST(test_updateLights1_headLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn);
-    RUN_TEST(test_updateLights1_headLightsHighHeadLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn);
+    RUN_TEST(test_updateLights_allLightsOff);
+    RUN_TEST(test_updateLights_headLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn);
+    RUN_TEST(test_updateLights_headLightsHighHeadLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn);
     RUN_TEST(test_blinkSignalLights_sigLightsLeftOFFSigLightsRightOFF);
     RUN_TEST(test_blinkSignalLights_sigLightsLeftONSigLightsRightONPrevSigStateZero);
     RUN_TEST(test_blinkSignalLights_prevSigState1SigLightsLeftONSigLightsRightON);
-    RUN_TEST(test_updateStrobeLights1_ESTROBEONUpdateBlinkerTimer);
-    RUN_TEST(test_updateStrobeLights1_ESTROBEOFFResetBlinkerTimer);
-    RUN_TEST(test_updateStrobeLights1_ESTROBEOFFUpdateBlinkerTimer);
+    RUN_TEST(test_updateStrobeLights_ESTROBEONUpdateBlinkerTimer);
+    RUN_TEST(test_updateStrobeLights_ESTROBEOFFResetBlinkerTimer);
+    RUN_TEST(test_updateStrobeLights_ESTROBEOFFUpdateBlinkerTimer);
     RUN_TEST(test_reportLightsToCan);
     RUN_TEST(test_sendHeartbeat);
     RUN_TEST(test_HAL_CAN_RxCpltCall_backLightsInputStdId);
@@ -37,9 +37,9 @@ void runLightsTests()
 }
 
 /*Test updateLights(). Headlights, brakes, hazards and bms strobe are
-off. Checks if lightsInfo.leftSignal matches sigLightsHandle.left and 
+off. Checks if lightsInfo.leftSignal matches sigLightsHandle.left and
 lightsInto.rightSignal matches sigLightsHandle.right  */
-void test_updateLights1_allLightsOff()
+void test_updateLights_allLightsOff()
 {
     uint32_t prevWakeTime = 0;
     lightsInputs = 0b00000001;
@@ -64,9 +64,9 @@ void test_updateLights1_allLightsOff()
 }
 
 /*Test updateLights(). headLightsLow is on, headLightsHigh is off breaklights, hazards, and bme strobe are
-all on. checking to see if sigLightsHandle.left = LIGHT_ON and 
+all on. checking to see if sigLightsHandle.left = LIGHT_ON and
 sigLightsHAndle.right = LIGHTS_ON*/
-void test_updateLights1_headLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn()
+void test_updateLights_headLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn()
 {
     uint32_t prevWakeTime = 0;
     lightsInputs = 0b00100010;
@@ -94,7 +94,7 @@ void test_updateLights1_headLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn()
 /*test updateLights().When leftSignal is off and rightSignal is off,
 and breaklights, hazards and bms strobe are on. Checking to see that if
 sigLightsHandle.left = LIGHTS_ON and sigLightsHandle.right = LIGHTS_ON */
-void test_updateLights1_headLightsHighHeadLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn()
+void test_updateLights_headLightsHighHeadLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn()
 {
     uint32_t prevWakeTime = 0;
     lightsInputs = 0b0100110;
@@ -154,7 +154,7 @@ void test_blinkSignalLights_sigLightsLeftONSigLightsRightONPrevSigStateZero()
     TEST_ASSERT_EQUAL_MESSAGE(1, prevSigState, "prevSigState is supposed to be 1");
 }
 
-/*test blinkSignalLights. left and right signals are both on. 
+/*test blinkSignalLights. left and right signals are both on.
 prevSigState is 1.*/
 void test_blinkSignalLights_prevSigState1SigLightsLeftONSigLightsRightON()
 {
@@ -207,7 +207,7 @@ void keepBlinkersOFF_updateTimer(uint32_t prevWakeTime, uint8_t prevSigState)
 }
 
 // TESTS for updateStrobeLight1
-void test_updateStrobeLights1_ESTROBEONUpdateBlinkerTimer()
+void test_updateStrobeLights_ESTROBEONUpdateBlinkerTimer()
 {
     uint32_t prevWakeTime = 0;
     uint32_t blinkerTimer = 300;
@@ -222,7 +222,7 @@ void test_updateStrobeLights1_ESTROBEONUpdateBlinkerTimer()
     TEST_ASSERT_EQUAL_MESSAGE(expectedBlinkerTimer, blinkerTimer, "blinkerTimer is supposed to be expectedBlinkerTimer");
 }
 
-void test_updateStrobeLights1_ESTROBEOFFResetBlinkerTimer()
+void test_updateStrobeLights_ESTROBEOFFResetBlinkerTimer()
 {
     uint32_t prevWakeTime = 0;
     uint32_t blinkerTimer = 800;
@@ -238,7 +238,7 @@ void test_updateStrobeLights1_ESTROBEOFFResetBlinkerTimer()
                               "blinkerTimer is supposed to be expectedBlinkerTimer");
 }
 
-void test_updateStrobeLights1_ESTROBEOFFUpdateBlinkerTimer()
+void test_updateStrobeLights_ESTROBEOFFUpdateBlinkerTimer()
 {
     uint32_t prevWakeTime = 0;
     uint32_t blinkerTimer = 400;

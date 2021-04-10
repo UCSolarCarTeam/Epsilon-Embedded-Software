@@ -2,9 +2,9 @@
 
 void runLightsTests();
 
-void test_updateLights1_allLightsOff();
-void test_updateLights1_headLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn();
-void test_updateLights1_headLightsHighHeadLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn();
+void test_updateLights_allLightsOff();
+void test_updateLights_headLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn();
+void test_updateLights_headLightsHighHeadLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn();
 
 void test_blinkSignalLights_sigLightsLeftOFFSigLightsRightOFF();
 void test_blinkSignalLights_sigLightsLeftONSigLightsRightONPrevSigStateZero();
@@ -14,9 +14,9 @@ void keepBlinkersOFF_resetBlinkerTimerToZero(uint32_t prevWakeTime, uint8_t prev
 void turnBlinkersON_updateTimer(uint32_t prevWakeTime, uint8_t prevSigState);
 void keepBlinkersOFF_updateTimer(uint32_t prevWakeTime, uint8_t prevSigState);
 
-void test_updateStrobeLights1_ESTROBEONUpdateBlinkerTimer();
-void test_updateStrobeLights1_ESTROBEOFFResetBlinkerTimer();
-void test_updateStrobeLights1_ESTROBEOFFUpdateBlinkerTimer();
+void test_updateStrobeLights_ESTROBEONUpdateBlinkerTimer();
+void test_updateStrobeLights_ESTROBEOFFResetBlinkerTimer();
+void test_updateStrobeLights_ESTROBEOFFUpdateBlinkerTimer();
 
 void test_reportLightsToCan();
 
