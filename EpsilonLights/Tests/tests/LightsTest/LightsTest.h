@@ -14,9 +14,9 @@ void keepBlinkersOFF_resetBlinkerTimerToZero(uint32_t prevWakeTime, uint8_t prev
 void turnBlinkersON_updateTimer(uint32_t prevWakeTime, uint8_t prevSigState);
 void keepBlinkersOFF_updateTimer(uint32_t prevWakeTime, uint8_t prevSigState);
 
-void test_updateStrobeLights_ESTROBEONUpdateBlinkerTimer();
-void test_updateStrobeLights_ESTROBEOFFResetBlinkerTimer();
-void test_updateStrobeLights_ESTROBEOFFUpdateBlinkerTimer();
+void test_updateStrobeLight_ESTROBEONUpdateBlinkerTimer();
+void test_updateStrobeLight_ESTROBEOFFResetBlinkerTimer();
+void test_updateStrobeLight_ESTROBEOFFUpdateBlinkerTimer();
 
 void test_reportLightsToCan();
 

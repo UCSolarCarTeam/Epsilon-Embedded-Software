@@ -24,9 +24,9 @@ void runLightsTests()
     RUN_TEST(test_blinkSignalLights_sigLightsLeftOFFSigLightsRightOFF);
     RUN_TEST(test_blinkSignalLights_sigLightsLeftONSigLightsRightONPrevSigStateZero);
     RUN_TEST(test_blinkSignalLights_prevSigState1SigLightsLeftONSigLightsRightON);
-    RUN_TEST(test_updateStrobeLights_ESTROBEONUpdateBlinkerTimer);
-    RUN_TEST(test_updateStrobeLights_ESTROBEOFFResetBlinkerTimer);
-    RUN_TEST(test_updateStrobeLights_ESTROBEOFFUpdateBlinkerTimer);
+    RUN_TEST(test_updateStrobeLight_ESTROBEONUpdateBlinkerTimer);
+    RUN_TEST(test_updateStrobeLight_ESTROBEOFFResetBlinkerTimer);
+    RUN_TEST(test_updateStrobeLight_ESTROBEOFFUpdateBlinkerTimer);
     RUN_TEST(test_reportLightsToCan);
     RUN_TEST(test_sendHeartbeat);
     RUN_TEST(test_HAL_CAN_RxCpltCall_backLightsInputStdId);
@@ -160,14 +160,18 @@ void test_blinkSignalLights_prevSigState1SigLightsLeftONSigLightsRightON()
 {
     uint32_t prevWakeTime = 0;
     uint8_t prevSigState = 1;
-    sigLightsHandle.left = 2;
-    sigLightsHandle.right = 2;
+    sigLightsHandle.left = 1;
+    sigLightsHandle.right = 1;
 
     keepBlinkersOFF_resetBlinkerTimerToZero(prevWakeTime, prevSigState);
     turnBlinkersON_updateTimer(prevWakeTime, prevSigState);
     keepBlinkersOFF_updateTimer(prevWakeTime, prevSigState);
 }
 
+/*test blinkSignalLights. Given that the left and right signals are both on and prevSigState is 1,
+the blinkTimer is set to be greater than the blinker frequency*2 (770), then the
+blinkerTimer is expected to reset to Zero.
+*/
 void keepBlinkersOFF_resetBlinkerTimerToZero(uint32_t prevWakeTime, uint8_t prevSigState)
 {
     uint32_t blinkerTimer = 771;
@@ -180,19 +184,25 @@ void keepBlinkersOFF_resetBlinkerTimerToZero(uint32_t prevWakeTime, uint8_t prev
     TEST_ASSERT_EQUAL_MESSAGE(0, blinkerTimer, "blinkerTimer is supposed to be 0");
 }
 
+/*test blinkSignalLights. Both left and right signals are on. Checking to see
+if blinkerTimer is updated when both the signals are on so expected/updated blinkerTimer should be blinkerTimer + 10. */
 void turnBlinkersON_updateTimer(uint32_t prevWakeTime, uint8_t prevSigState)
 {
     uint32_t blinkerTimer = 300;
     uint32_t expectedBlinkerTimer = blinkerTimer + 10;
 
     osDelayUntil_ExpectAndReturn(&prevWakeTime, LIGHTS_UPDATE_FREQ, 0);
-    HAL_GPIO_WritePin_Expect(RSIGNAL_GPIO_Port, RSIGNAL_Pin, sigLightsHandle.right);
-    HAL_GPIO_WritePin_Expect(LSIGNAL_GPIO_Port, LSIGNAL_Pin, sigLightsHandle.left);
+    HAL_GPIO_WritePin_Expect(RSIGNAL_GPIO_Port, RSIGNAL_Pin, LIGHT_ON);
+    HAL_GPIO_WritePin_Expect(LSIGNAL_GPIO_Port, LSIGNAL_Pin, LIGHT_ON);
     blinkSignalLights(&prevWakeTime, &blinkerTimer, &prevSigState);
 
     TEST_ASSERT_EQUAL_MESSAGE(expectedBlinkerTimer, blinkerTimer, "blinkerTimer is supposed to be expectedBlinkerTimer");
 }
-
+/*test blinkSignalLights. Given that the left and right signals are both on and prevSigState is 1,
+the blinkerTimer is set to be greater than the blinker frequency but less than double the frequency
+(385 < blinkerTimer < 770). With thse conditions set, the expected outcome is for the blinkers to remain
+off and the the blinkerTimer will be updated by the lights update frequency(10).
+*/
 void keepBlinkersOFF_updateTimer(uint32_t prevWakeTime, uint8_t prevSigState)
 {
     uint32_t blinkerTimer = 400;
@@ -203,11 +213,14 @@ void keepBlinkersOFF_updateTimer(uint32_t prevWakeTime, uint8_t prevSigState)
     HAL_GPIO_WritePin_Expect(LSIGNAL_GPIO_Port, LSIGNAL_Pin, LIGHT_OFF);
     blinkSignalLights(&prevWakeTime, &blinkerTimer, &prevSigState);
 
-    TEST_ASSERT_EQUAL_MESSAGE(expectedBlinkerTimer, blinkerTimer, "blinkerTimer is supposed to be expectedBlinkerTimer");
+    TEST_ASSERT_EQUAL_MESSAGE(expectedBlinkerTimer, blinkerTimer, "blinkerTimer is supposed to be 410");
 }
 
-// TESTS for updateStrobeLight1
-void test_updateStrobeLights_ESTROBEONUpdateBlinkerTimer()
+/*test updateStrobeLight. Given that the auxBmsInputs signals the strobelight to
+be on, and the blinkerTimer is less than the blinker frequency(385), the strobe light
+is expected to remain on and the blinkerTimer is to be updated by the lights update frequency.
+*/
+void test_updateStrobeLight_ESTROBEONUpdateBlinkerTimer()
 {
     uint32_t prevWakeTime = 0;
     uint32_t blinkerTimer = 300;
@@ -219,10 +232,12 @@ void test_updateStrobeLights_ESTROBEONUpdateBlinkerTimer()
     HAL_GPIO_WritePin_Expect(ESTROBE_GPIO_Port, ESTROBE_Pin, LIGHT_ON);
     updateStrobeLight(&prevWakeTime, &blinkerTimer, &strobeLight);
 
-    TEST_ASSERT_EQUAL_MESSAGE(expectedBlinkerTimer, blinkerTimer, "blinkerTimer is supposed to be expectedBlinkerTimer");
+    TEST_ASSERT_EQUAL_MESSAGE(expectedBlinkerTimer, blinkerTimer, "blinkerTimer is supposed to be 310");
 }
 
-void test_updateStrobeLights_ESTROBEOFFResetBlinkerTimer()
+/*test updateStrobeLight. The STROBE is turned off. Checking to see if blinkerTimer
+is resetted back to 0*/
+void test_updateStrobeLight_ESTROBEOFFResetBlinkerTimer()
 {
     uint32_t prevWakeTime = 0;
     uint32_t blinkerTimer = 800;
@@ -235,10 +250,12 @@ void test_updateStrobeLights_ESTROBEOFFResetBlinkerTimer()
     updateStrobeLight(&prevWakeTime, &blinkerTimer, &strobeLight);
 
     TEST_ASSERT_EQUAL_MESSAGE(expectedBlinkerTimer, blinkerTimer,
-                              "blinkerTimer is supposed to be expectedBlinkerTimer");
+                              "blinkerTimer is supposed to be 0");
 }
 
-void test_updateStrobeLights_ESTROBEOFFUpdateBlinkerTimer()
+/*test updateStrobeLight. The STROBE is turned off. Checking to see if blinkerTimer
+is updated to the new expected BlinkerTimer of 410. */
+void test_updateStrobeLight_ESTROBEOFFUpdateBlinkerTimer()
 {
     uint32_t prevWakeTime = 0;
     uint32_t blinkerTimer = 400;
@@ -251,10 +268,10 @@ void test_updateStrobeLights_ESTROBEOFFUpdateBlinkerTimer()
     updateStrobeLight(&prevWakeTime, &blinkerTimer, &strobeLight);
 
     TEST_ASSERT_EQUAL_MESSAGE(expectedBlinkerTimer, blinkerTimer,
-                              "blinkerTimer is supposed to be expectedBlinkerTimer");
+                              "blinkerTimer is supposed to be 410");
 }
 
-// TESTS for reportLightsToCan
+/*test reportLightsToCan. */
 void test_reportLightsToCan()
 {
     uint32_t prevWakeTime = 0;
