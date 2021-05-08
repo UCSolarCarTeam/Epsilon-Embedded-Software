@@ -19,26 +19,32 @@ osMutexId* canHandleMutex;
 void runLightsTests()
 {
     RUN_TEST(test_updateLights_allLightsOff);
-    RUN_TEST(test_updateLights_headLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn);
-    RUN_TEST(test_updateLights_headLightsHighHeadLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn);
-    RUN_TEST(test_blinkSignalLights_sigLightsLeftOFFSigLightsRightOFF);
-    RUN_TEST(test_blinkSignalLights_sigLightsLeftONSigLightsRightONPrevSigStateZero);
-    RUN_TEST(test_blinkSignalLights_prevSigState1SigLightsLeftONSigLightsRightON);
-    RUN_TEST(test_updateStrobeLight_ESTROBEONUpdateBlinkerTimer);
-    RUN_TEST(test_updateStrobeLight_ESTROBEOFFResetBlinkerTimer);
-    RUN_TEST(test_updateStrobeLight_ESTROBEOFFUpdateBlinkerTimer);
+    RUN_TEST(test_updateLights_case2);
+    RUN_TEST(test_updateLights_case3);
+    RUN_TEST(test_blinkSignalLights_signalLightsInputsDisabled);
+    RUN_TEST(test_blinkSignalLights_enableSignalLightsAfterPreviousStateWasDisabled);
+    RUN_TEST(test_blinkSignalLights_enabledToEnabled_keepBlinkersOffAndResetBlinkerTimerToZero);
+    RUN_TEST(test_blinkSignalLights_enabledToEnabled_turnBlinkersOnAndUpdateTimer);
+    RUN_TEST(test_blinkSignalLights_enabledToEnabled_keepBlinkersOffAndUpdateTimer);
+    RUN_TEST(test_updateStrobeLight_strobeLightOnAndUpdateBlinkerTimer);
+    RUN_TEST(test_updateStrobeLight_strobeLightOffAndResetBlinkerTimer);
+    RUN_TEST(test_updateStrobeLight_strobeLightOffAndUpdateBlinkerTimer);
     RUN_TEST(test_reportLightsToCan);
     RUN_TEST(test_sendHeartbeat);
-    RUN_TEST(test_HAL_CAN_RxCpltCall_backLightsInputStdId);
-    RUN_TEST(test_HAL_CAN_RxCpltCallback_batteryStatErrorsStdId);
-    RUN_TEST(test_HAL_CAN_RxCpltCallback_driversInputsStdId);
-    RUN_TEST(test_HAL_CAN_RxCpltCallback_auxBmsInputStdId);
-    RUN_TEST(test_HAL_CAN_RxCpltCallback_batteryStatErrorsStdIdANDToggleRedPin);
+    RUN_TEST(test_HAL_CAN_RxCpltCallback_lightsInput);
+    RUN_TEST(test_HAL_CAN_RxCpltCallback_batteryStatErrors);
+    RUN_TEST(test_HAL_CAN_RxCpltCallback_driversInputs);
+    RUN_TEST(test_HAL_CAN_RxCpltCallback_auxBmsInput);
+    RUN_TEST(test_HAL_CAN_RxCpltCallback_batteryStatErrorsANDToggleRedPin);
 }
 
-/*Test updateLights(). Headlights, brakes, hazards and bms strobe are
+//TESTS for updateLights()
+
+/*
+Test updateLights(). Headlights, brakes, hazards and bms strobe are
 off. Checks if lightsInfo.leftSignal matches sigLightsHandle.left and
-lightsInto.rightSignal matches sigLightsHandle.right  */
+lightsInto.rightSignal matches sigLightsHandle.right
+*/
 void test_updateLights_allLightsOff()
 {
     uint32_t prevWakeTime = 0;
@@ -63,10 +69,12 @@ void test_updateLights_allLightsOff()
                               "sigLightsHandle.right expected to be 0");
 }
 
-/*Test updateLights(). headLightsLow is on, headLightsHigh is off breaklights, hazards, and bme strobe are
+/*
+Test updateLights(). headLightsLow is on, headLightsHigh is off, breaklights, hazards, and bms strobe are
 all on. checking to see if sigLightsHandle.left = LIGHT_ON and
-sigLightsHAndle.right = LIGHTS_ON*/
-void test_updateLights_headLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn()
+sigLightsHAndle.right = LIGHTS_ON
+*/
+void test_updateLights_case2()
 {
     uint32_t prevWakeTime = 0;
     lightsInputs = 0b00100010;
@@ -91,10 +99,12 @@ void test_updateLights_headLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn()
     TEST_ASSERT_EQUAL_MESSAGE(LIGHT_ON, sigLightsHandle.right,
                               "sigLightsHandle.right expected to be LIGHT_ON");
 }
-/*test updateLights().When leftSignal is off and rightSignal is off,
+/*
+test updateLights().When leftSignal is off and rightSignal is off,
 and breaklights, hazards and bms strobe are on. Checking to see that if
-sigLightsHandle.left = LIGHTS_ON and sigLightsHandle.right = LIGHTS_ON */
-void test_updateLights_headLightsHighHeadLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn()
+sigLightsHandle.left = LIGHTS_ON and sigLightsHandle.right = LIGHTS_ON
+*/
+void test_updateLights_case3()
 {
     uint32_t prevWakeTime = 0;
     lightsInputs = 0b0100110;
@@ -118,9 +128,13 @@ void test_updateLights_headLightsHighHeadLightsLowBreakLightsOnHazardsOnBmsStrob
                               "sigLightsHandle.right expected to be LIGHT_ON");
 }
 
-/*test blinkSignalLights().Both signal lights are disabled. CHecking to see if
-prevSigState is 0 or not*/
-void test_blinkSignalLights_sigLightsLeftOFFSigLightsRightOFF()
+//TESTS for blinkSignalLights()
+
+/*
+test blinkSignalLights().Both signal lights are disabled. CHecking to see if
+prevSigState is 0 or not
+*/
+void test_blinkSignalLights_signalLightsInputsDisabled()
 {
     uint32_t prevWakeTime = 0;
     uint8_t prevSigState = 10;
@@ -136,9 +150,11 @@ void test_blinkSignalLights_sigLightsLeftOFFSigLightsRightOFF()
     TEST_ASSERT_EQUAL_MESSAGE(0, prevSigState, "prevSigState is supposed to be 0");
 }
 
-/*test blinkSignalLights. left signal and right signal are both on.
-Checking to see if blinkerTimer becomes 0 and if prevSigState becomes 1*/
-void test_blinkSignalLights_sigLightsLeftONSigLightsRightONPrevSigStateZero()
+/*
+test blinkSignalLights. left signal and right signal are both on.
+Checking to see if blinkerTimer becomes 0 and if prevSigState becomes 1
+*/
+void test_blinkSignalLights_enableSignalLightsAfterPreviousStateWasDisabled()
 {
     uint32_t prevWakeTime = 0;
     uint8_t prevSigState = 0;
@@ -154,26 +170,19 @@ void test_blinkSignalLights_sigLightsLeftONSigLightsRightONPrevSigStateZero()
     TEST_ASSERT_EQUAL_MESSAGE(1, prevSigState, "prevSigState is supposed to be 1");
 }
 
-/*test blinkSignalLights. left and right signals are both on.
-prevSigState is 1.*/
-void test_blinkSignalLights_prevSigState1SigLightsLeftONSigLightsRightON()
+
+/*
+test blinkSignalLights. Given that the left and right signals are both on and prevSigState is 1, 
+the blinkTimer is set to be greater than the blinker frequency*2 (770), then the
+blinkerTimer is expected to reset to Zero.
+*/
+void test_blinkSignalLights_enabledToEnabled_keepBlinkersOffAndResetBlinkerTimerToZero()
 {
     uint32_t prevWakeTime = 0;
     uint8_t prevSigState = 1;
     sigLightsHandle.left = 1;
     sigLightsHandle.right = 1;
 
-    keepBlinkersOFF_resetBlinkerTimerToZero(prevWakeTime, prevSigState);
-    turnBlinkersON_updateTimer(prevWakeTime, prevSigState);
-    keepBlinkersOFF_updateTimer(prevWakeTime, prevSigState);
-}
-
-/*test blinkSignalLights. Given that the left and right signals are both on and prevSigState is 1,
-the blinkTimer is set to be greater than the blinker frequency*2 (770), then the
-blinkerTimer is expected to reset to Zero.
-*/
-void keepBlinkersOFF_resetBlinkerTimerToZero(uint32_t prevWakeTime, uint8_t prevSigState)
-{
     uint32_t blinkerTimer = 771;
 
     osDelayUntil_ExpectAndReturn(&prevWakeTime, LIGHTS_UPDATE_FREQ, 0);
@@ -184,10 +193,17 @@ void keepBlinkersOFF_resetBlinkerTimerToZero(uint32_t prevWakeTime, uint8_t prev
     TEST_ASSERT_EQUAL_MESSAGE(0, blinkerTimer, "blinkerTimer is supposed to be 0");
 }
 
-/*test blinkSignalLights. Both left and right signals are on. Checking to see
-if blinkerTimer is updated when both the signals are on so expected/updated blinkerTimer should be blinkerTimer + 10. */
-void turnBlinkersON_updateTimer(uint32_t prevWakeTime, uint8_t prevSigState)
+/*
+test blinkSignalLights. Both left and right signals are on. Checking to see
+if blinkerTimer is updated when both the signals are on so expected/updated blinkerTimer should be blinkerTimer + 10.
+*/
+void test_blinkSignalLights_enabledToEnabled_turnBlinkersOnAndUpdateTimer()
 {
+    uint32_t prevWakeTime = 0;
+    uint8_t prevSigState = 1;
+    sigLightsHandle.left = 1;
+    sigLightsHandle.right = 1;
+
     uint32_t blinkerTimer = 300;
     uint32_t expectedBlinkerTimer = blinkerTimer + 10;
 
@@ -196,15 +212,21 @@ void turnBlinkersON_updateTimer(uint32_t prevWakeTime, uint8_t prevSigState)
     HAL_GPIO_WritePin_Expect(LSIGNAL_GPIO_Port, LSIGNAL_Pin, LIGHT_ON);
     blinkSignalLights(&prevWakeTime, &blinkerTimer, &prevSigState);
 
-    TEST_ASSERT_EQUAL_MESSAGE(expectedBlinkerTimer, blinkerTimer, "blinkerTimer is supposed to be expectedBlinkerTimer");
+    TEST_ASSERT_EQUAL_MESSAGE(expectedBlinkerTimer, blinkerTimer, "blinkerTimer is supposed to be 310");
 }
-/*test blinkSignalLights. Given that the left and right signals are both on and prevSigState is 1,
+/*
+test blinkSignalLights. Given that the left and right signals are both on and prevSigState is 1,
 the blinkerTimer is set to be greater than the blinker frequency but less than double the frequency
 (385 < blinkerTimer < 770). With thse conditions set, the expected outcome is for the blinkers to remain
 off and the the blinkerTimer will be updated by the lights update frequency(10).
 */
-void keepBlinkersOFF_updateTimer(uint32_t prevWakeTime, uint8_t prevSigState)
+void test_blinkSignalLights_enabledToEnabled_keepBlinkersOffAndUpdateTimer()
 {
+    uint32_t prevWakeTime = 0;
+    uint8_t prevSigState = 1;
+    sigLightsHandle.left = 1;
+    sigLightsHandle.right = 1;
+
     uint32_t blinkerTimer = 400;
     uint32_t expectedBlinkerTimer = blinkerTimer + 10;
 
@@ -216,11 +238,14 @@ void keepBlinkersOFF_updateTimer(uint32_t prevWakeTime, uint8_t prevSigState)
     TEST_ASSERT_EQUAL_MESSAGE(expectedBlinkerTimer, blinkerTimer, "blinkerTimer is supposed to be 410");
 }
 
-/*test updateStrobeLight. Given that the auxBmsInputs signals the strobelight to
+//TESTS for updateStrobeLight()
+
+/*
+test updateStrobeLight. Given that the auxBmsInputs signals the strobelight to
 be on, and the blinkerTimer is less than the blinker frequency(385), the strobe light
 is expected to remain on and the blinkerTimer is to be updated by the lights update frequency.
 */
-void test_updateStrobeLight_ESTROBEONUpdateBlinkerTimer()
+void test_updateStrobeLight_strobeLightOnAndUpdateBlinkerTimer()
 {
     uint32_t prevWakeTime = 0;
     uint32_t blinkerTimer = 300;
@@ -235,9 +260,11 @@ void test_updateStrobeLight_ESTROBEONUpdateBlinkerTimer()
     TEST_ASSERT_EQUAL_MESSAGE(expectedBlinkerTimer, blinkerTimer, "blinkerTimer is supposed to be 310");
 }
 
-/*test updateStrobeLight. The STROBE is turned off. Checking to see if blinkerTimer
-is resetted back to 0*/
-void test_updateStrobeLight_ESTROBEOFFResetBlinkerTimer()
+/*
+test updateStrobeLight. The STROBE is turned off. Checking to see if blinkerTimer
+is resetted back to 0
+*/
+void test_updateStrobeLight_strobeLightOffAndResetBlinkerTimer()
 {
     uint32_t prevWakeTime = 0;
     uint32_t blinkerTimer = 800;
@@ -253,9 +280,11 @@ void test_updateStrobeLight_ESTROBEOFFResetBlinkerTimer()
                               "blinkerTimer is supposed to be 0");
 }
 
-/*test updateStrobeLight. The STROBE is turned off. Checking to see if blinkerTimer
-is updated to the new expected BlinkerTimer of 410. */
-void test_updateStrobeLight_ESTROBEOFFUpdateBlinkerTimer()
+/*
+test updateStrobeLight. The STROBE is turned off. Checking to see if blinkerTimer
+is updated to the new expected BlinkerTimer of 410.
+*/
+void test_updateStrobeLight_strobeLightOffAndUpdateBlinkerTimer()
 {
     uint32_t prevWakeTime = 0;
     uint32_t blinkerTimer = 400;
@@ -271,7 +300,12 @@ void test_updateStrobeLight_ESTROBEOFFUpdateBlinkerTimer()
                               "blinkerTimer is supposed to be 410");
 }
 
-/*test reportLightsToCan. */
+//TEST for reportLightsToCan()
+
+/*
+test reportLightsToCan.
+Checks to see if the lights data can be turned into a CAN message and be transmitted
+*/
 void test_reportLightsToCan()
 {
     uint32_t prevWakeTime = 0;
@@ -293,7 +327,12 @@ void test_reportLightsToCan()
     TEST_ASSERT_EQUAL_MESSAGE(expectedValue, hcan2.pTxMsg->Data[0], "expected value is supposed to be 57");
 }
 
-// TEST for sendHeartbeat
+// TEST for sendHeartbeat()
+
+/*
+For every heartbeat, the green light should be toggled and a CAN msg should be delivered with the
+correct stdid for the heartbeat with a signal of 1.
+*/
 void test_sendHeartbeat()
 {
     uint32_t prevWakeTime = 0;
@@ -309,8 +348,13 @@ void test_sendHeartbeat()
     TEST_ASSERT_EQUAL_MESSAGE(1, hcan2.pTxMsg->Data[0], "hcan2.pTxMsg->Data[0] should be 1");
 }
 
-//TESTS for HAL_CAN_RxCpltCallback
-void test_HAL_CAN_RxCpltCall_backLightsInputStdId()
+//TESTS for HAL_CAN_RxCpltCallback()
+
+/*
+tests the function when the CAN message is directed to lights input and the message is
+properly received
+*/
+void test_HAL_CAN_RxCpltCallback_lightsInput()
 {
     hcan2.pRxMsg->StdId = LIGHTS_INPUT_STDID;
     hcan2.pRxMsg->DLC = 1;
@@ -322,7 +366,11 @@ void test_HAL_CAN_RxCpltCall_backLightsInputStdId()
     TEST_ASSERT_EQUAL_MESSAGE(hcan2.pRxMsg->Data[0], lightsInputs, "The actual value is supposed to be 2");
 }
 
-void test_HAL_CAN_RxCpltCallback_batteryStatErrorsStdId()
+/*
+tests when the CAN message is directed to battery stat errors and the message is
+properly received
+*/
+void test_HAL_CAN_RxCpltCallback_batteryStatErrors()
 {
     hcan2.pRxMsg->StdId = BATTERY_STAT_ERRORS_STDID;
     hcan2.pRxMsg->DLC = 5;
@@ -342,7 +390,11 @@ void test_HAL_CAN_RxCpltCallback_batteryStatErrorsStdId()
     TEST_ASSERT_EQUAL_MESSAGE(hcan2.pRxMsg->Data[4], batteryErrors[4], "The actual value is supposed to be 2");
 }
 
-void test_HAL_CAN_RxCpltCallback_driversInputsStdId()
+/*
+tests when the CAN message is directed to driversInputs and the message is
+properly received
+*/
+void test_HAL_CAN_RxCpltCallback_driversInputs()
 {
     hcan2.pRxMsg->StdId = DRIVERS_INPUTS_STDID;
     hcan2.pRxMsg->DLC = 4;
@@ -360,7 +412,11 @@ void test_HAL_CAN_RxCpltCallback_driversInputsStdId()
     TEST_ASSERT_EQUAL_MESSAGE(hcan2.pRxMsg->Data[3], driversInputs[3], "The actual value is supposed to be 2");
 }
 
-void test_HAL_CAN_RxCpltCallback_auxBmsInputStdId()
+/*
+tests when the CAN message is directed to the Aux BMS input and the message is
+properly received
+*/
+void test_HAL_CAN_RxCpltCallback_auxBmsInput()
 {
     hcan2.pRxMsg->StdId = AUXBMS_INPUT_STDID;
     hcan2.pRxMsg->DLC = 2;
@@ -374,7 +430,11 @@ void test_HAL_CAN_RxCpltCallback_auxBmsInputStdId()
     TEST_ASSERT_EQUAL_MESSAGE(hcan2.pRxMsg->Data[1], auxBmsInputs[1], "The actual value is supposed to be 6");
 }
 
-void test_HAL_CAN_RxCpltCallback_batteryStatErrorsStdIdANDToggleRedPin()
+/*
+tests when the CAN message is directed to battery stat errors and the message is
+not properly received
+*/
+void test_HAL_CAN_RxCpltCallback_batteryStatErrorsANDToggleRedPin()
 {
     hcan2.pRxMsg->StdId = AUXBMS_INPUT_STDID;
     hcan2.pRxMsg->DLC = 2;

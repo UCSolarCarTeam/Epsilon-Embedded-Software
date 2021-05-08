@@ -3,27 +3,27 @@
 void runLightsTests();
 
 void test_updateLights_allLightsOff();
-void test_updateLights_headLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn();
-void test_updateLights_headLightsHighHeadLightsLowBreakLightsOnHazardsOnBmsStrobeLightOn();
+void test_updateLights_case2();
+void test_updateLights_case3();
 
-void test_blinkSignalLights_sigLightsLeftOFFSigLightsRightOFF();
-void test_blinkSignalLights_sigLightsLeftONSigLightsRightONPrevSigStateZero();
-void test_blinkSignalLights_prevSigState1SigLightsLeftONSigLightsRightON();
+void test_blinkSignalLights_signalLightsInputsDisabled();
+void test_blinkSignalLights_enableSignalLightsAfterPreviousStateWasDisabled();
+void test_blinkSignalLights_EnableSignalLightsAfterPreviousStateWasEnabled();
 
-void keepBlinkersOFF_resetBlinkerTimerToZero(uint32_t prevWakeTime, uint8_t prevSigstate);
-void turnBlinkersON_updateTimer(uint32_t prevWakeTime, uint8_t prevSigState);
-void keepBlinkersOFF_updateTimer(uint32_t prevWakeTime, uint8_t prevSigState);
+void test_blinkSignalLights_enabledToEnabled_keepBlinkersOffAndResetBlinkerTimerToZero();
+void test_blinkSignalLights_enabledToEnabled_turnBlinkersOnAndUpdateTimer();
+void test_blinkSignalLights_enabledToEnabled_keepBlinkersOffAndUpdateTimer();
 
-void test_updateStrobeLight_ESTROBEONUpdateBlinkerTimer();
-void test_updateStrobeLight_ESTROBEOFFResetBlinkerTimer();
-void test_updateStrobeLight_ESTROBEOFFUpdateBlinkerTimer();
+void test_updateStrobeLight_strobeLightOnAndUpdateBlinkerTimer();
+void test_updateStrobeLight_strobeLightOffAndResetBlinkerTimer();
+void test_updateStrobeLight_strobeLightOffAndUpdateBlinkerTimer();
 
 void test_reportLightsToCan();
 
 void test_sendHeartbeat();
 
-void test_HAL_CAN_RxCpltCall_backLightsInputStdId();
-void test_HAL_CAN_RxCpltCallback_batteryStatErrorsStdId();
-void test_HAL_CAN_RxCpltCallback_driversInputsStdId();
-void test_HAL_CAN_RxCpltCallback_auxBmsInputStdId();
-void test_HAL_CAN_RxCpltCallback_batteryStatErrorsStdIdANDToggleRedPin();
+void test_HAL_CAN_RxCpltCallback_lightsInput();
+void test_HAL_CAN_RxCpltCallback_batteryStatErrors();
+void test_HAL_CAN_RxCpltCallback_driversInputs();
+void test_HAL_CAN_RxCpltCallback_auxBmsInput();
+void test_HAL_CAN_RxCpltCallback_batteryStatErrorsANDToggleRedPin();
