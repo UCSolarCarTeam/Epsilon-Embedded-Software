@@ -255,6 +255,7 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
 
     // Read AuxBMS messages
     char allowCharge = auxBmsInputs[1] & 0x02;
+    char allowDischarge = auxBmsInputs[1] & 0x08;
 
     // Determine data to send
     float motorVelocityOut; // RPM
@@ -288,19 +289,27 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
         motorVelocityOut = 0;
         driveCommandsInfo->motorCurrentOut = 0;
     }
-    else if (forward && (accelPercentage > NON_ZERO_THRESHOLD)) // Forward state
+    else if (accelPercentage > NON_ZERO_THRESHOLD)) // Drive state
     {
-        HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
-        motorVelocityOut = MAX_FORWARD_RPM;
-        driveCommandsInfo->motorCurrentOut =
+        if (forward && allowDischarge) // Forward state
+        {
+            HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
+            motorVelocityOut = MAX_FORWARD_RPM;
+            driveCommandsInfo->motorCurrentOut =
+                calculateAccelMotorCurrent(accelPercentage, driveCommandsInfo->motorCurrentOut);
+        }
+        else if (reverse && allowDischarge) // Reverse State
+        {
+            HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
+            motorVelocityOut = MAX_REVERSE_RPM;
+            driveCommandsInfo->motorCurrentOut =
             calculateAccelMotorCurrent(accelPercentage, driveCommandsInfo->motorCurrentOut);
-    }
-    else if (reverse && (accelPercentage > NON_ZERO_THRESHOLD)) // Reverse State
-    {
-        HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
-        motorVelocityOut = MAX_REVERSE_RPM;
-        driveCommandsInfo->motorCurrentOut =
-            calculateAccelMotorCurrent(accelPercentage, driveCommandsInfo->motorCurrentOut);
+        }
+        else
+        {
+            motorVelocityOut = 0;
+            driveCommandsInfo->motorCurrentOut = 0;
+        }
     }
     else // Off state
     {
