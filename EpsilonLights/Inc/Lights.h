@@ -55,24 +55,6 @@ typedef struct SigLightsHandle
     uint8_t right;
 } SigLightsHandle;
 
-typedef struct LightsInfo
-{
-    char headlightsOff;
-    char headlightsLow;
-    char headlightsHigh;
-    char rightSignal;
-    char leftSignal;
-    char hazards;
-    char brakes;
-    char bmsStrobe;
-} LightsInfo;
-
-typedef struct RegenBrakeInfo
-{
-    uint32_t regenBrakeInt;
-    float regenBrakeFloat;
-} RegenBrakeInfo;
-
 extern CAN_HandleTypeDef hcan2; // main.c
 extern uint8_t lightsInputs;
 extern uint8_t auxBmsInputs[2];
@@ -94,14 +76,4 @@ void reportLightsToCanTask(void const* arg);
 // arg : osMutexId* canHandleMutex
 void sendHeartbeatTask(void const* arg);
 
-void updateStrobeLightTask(void const* arg);
-
-void updateLights(LightsInfo* lightsCharacteristics, uint32_t* prevWakeTime, RegenBrakeInfo* regenBrakeInfo);
-
-void blinkSignalLights(uint32_t* prevWakeTime, uint32_t* blinkerTimer, uint8_t* prevSigState);
-
-void updateStrobeLight(uint32_t* prevWakeTime, uint32_t* blinkerTimer, char* strobeLight);
-
-void reportLightsToCan(uint32_t* prevWakeTime, osMutexId* canHandleMutex);
-
-void sendHeartbeat(osMutexId* canHandleMutex, uint32_t* prevWakeTime);
+void updateStrobeLight(void const* arg);

@@ -1,3 +1,0 @@
-:cmock:
-  :includes:
-    - CmsisMockHelper.h
