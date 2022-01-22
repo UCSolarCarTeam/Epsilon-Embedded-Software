@@ -1,0 +1,25 @@
+= AuxBMS Unit Tests
+
+== Compile & run with:
+
+```
+make -j4
+cd build
+./EpsilonAuxBMSTests
+```
+
+== Updating Mock Files
+
+If you need to update the mocks (eg. after a firmware update), make sure you https://github.com/UCSolarCarTeam/CMock[have cmock set up.]
+
+There are various configs necessary to compile certain libraries, located in the `CMockConfigs` folder.
+
+HAL Libraries:
+```
+ruby path/to/cmock.rb -oCMockConfigs/hal-config.yml /path/to/hal/library.h
+```
+
+CMSIC Library
+```
+ruby path/to/cmock.rb -oCMockConfigs/cmsis-config.yml /path/to/cmsis/library.h
+```

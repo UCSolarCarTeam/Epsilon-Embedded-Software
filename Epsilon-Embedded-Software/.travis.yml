@@ -1,0 +1,27 @@
+addons:
+    apt:
+        packages:
+            - libc6:i386
+            - libncurses5:i386
+            - libstdc++6:i386
+install:
+    - (cd STM32F4Discovery-Resources && sudo ./install.sh)
+    - wget 'https://s3-us-west-2.amazonaws.com/ucsolarteam.hostedfiles/astyle'
+    - tar -zxvf astyle
+    - (cd astyle/build/gcc && make release && sudo make install)
+    - rm astyle -rf
+
+before_script:
+    - source ~/.profile
+
+script:
+    - (cd EpsilonLights && ./make.sh)
+    - (cd EpsilonDriverControls && ./make.sh)
+    - (cd EpsilonCCS && make)
+    - (cd EpsilonAuxBMS && ./make.sh)
+    - "! (./format.sh EpsilonCCS | grep Formatted)"
+    - "! (./format.sh EpsilonLights | grep Formatted)"
+    - "! (./format.sh EpsilonDriverControls | grep Formatted)"
+    - "! (./format.sh EpsilonAuxBMS | grep Formatted)"
+
+language: c
