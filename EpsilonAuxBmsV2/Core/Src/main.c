@@ -19,7 +19,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "cmsis_os.h"
+#include "cmsis_os2.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -371,11 +371,12 @@ int main(void)
     sendAuxStatusTaskHandle = osThreadNew(sendAuxStatusTask, NULL, &sendAuxStatusTask_attributes);
     sendAuxTripTaskHandle = osThreadNew(sendAuxTripTask, NULL, &sendAuxTripTask_attributes);
     sendHeartbeatTaskHandle = osThreadNew(sendHeartbeatTask, NULL, &sendHeartbeatTask_attributes);
-    commonContactorGatekeeperTaskHandle = osThreadNew(commonContactorGatekeeperTask, NULL, &commonContactorGatekeeperTask_attributes);
+    /*commonContactorGatekeeperTaskHandle = osThreadNew(commonContactorGatekeeperTask, NULL, &commonContactorGatekeeperTask_attributes);
     chargeContactorGatekeeperTaskHandle = osThreadNew(chargeContactorGatekeeperTask, NULL, &chargeContactorGatekeeperTask_attributes);
     dischargeContactorGatekeeperTaskHandle = osThreadNew(dischargeContactorGatekeeperTask, NULL, &dischargeContactorGatekeeperTask_attributes);
     contactorStatusUpdateTaskHandle = osThreadNew(contactorStatusUpdateTask, NULL, &contactorStatusUpdateTask_attributes);
     readAuxVoltageTaskHandle = osThreadNew(readAuxVoltageTask, NULL, &readAuxVoltageTask_attributes);
+    */
 #ifdef MEMORY_DEBUG
     memoryDebugTaskHandle = osThreadNew(memoryDebugTask, NULL, &memoryDebugTask_attributes);
 #endif
