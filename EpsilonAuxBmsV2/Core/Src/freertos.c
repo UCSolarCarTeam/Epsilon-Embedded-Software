@@ -54,7 +54,7 @@
 /* USER CODE END FunctionPrototypes */
 
 /* Hook prototypes */
-void vApplicationStackOverflowHook(xTaskHandle xTask, signed char* pcTaskName);
+void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName);
 void vApplicationMallocFailedHook(void);
 
 /* USER CODE BEGIN 4 */

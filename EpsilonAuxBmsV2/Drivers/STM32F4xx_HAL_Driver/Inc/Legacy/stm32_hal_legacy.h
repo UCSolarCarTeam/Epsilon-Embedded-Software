@@ -23,7 +23,7 @@
 #define STM32_HAL_LEGACY
 
 #ifdef __cplusplus
-extern "C" {
+ extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
@@ -599,16 +599,16 @@ extern "C" {
 #endif /* STM32L0 || STM32L4 || STM32F4 || STM32F2 || STM32F7 || STM32G4 || STM32H7*/
 
 #if defined(STM32L1)
-#define  GPIO_SPEED_VERY_LOW    GPIO_SPEED_FREQ_LOW
-#define  GPIO_SPEED_LOW         GPIO_SPEED_FREQ_MEDIUM
-#define  GPIO_SPEED_MEDIUM      GPIO_SPEED_FREQ_HIGH
-#define  GPIO_SPEED_HIGH        GPIO_SPEED_FREQ_VERY_HIGH
+ #define  GPIO_SPEED_VERY_LOW    GPIO_SPEED_FREQ_LOW
+ #define  GPIO_SPEED_LOW         GPIO_SPEED_FREQ_MEDIUM
+ #define  GPIO_SPEED_MEDIUM      GPIO_SPEED_FREQ_HIGH
+ #define  GPIO_SPEED_HIGH        GPIO_SPEED_FREQ_VERY_HIGH
 #endif /* STM32L1 */
 
 #if defined(STM32F0) || defined(STM32F3) || defined(STM32F1)
-#define  GPIO_SPEED_LOW    GPIO_SPEED_FREQ_LOW
-#define  GPIO_SPEED_MEDIUM GPIO_SPEED_FREQ_MEDIUM
-#define  GPIO_SPEED_HIGH   GPIO_SPEED_FREQ_HIGH
+ #define  GPIO_SPEED_LOW    GPIO_SPEED_FREQ_LOW
+ #define  GPIO_SPEED_MEDIUM GPIO_SPEED_FREQ_MEDIUM
+ #define  GPIO_SPEED_HIGH   GPIO_SPEED_FREQ_HIGH
 #endif /* STM32F0 || STM32F3 || STM32F1 */
 
 #define GPIO_AF6_DFSDM                            GPIO_AF6_DFSDM1
@@ -971,15 +971,15 @@ extern "C" {
 #define I2S_STANDARD_PHILLIPS      I2S_STANDARD_PHILIPS
 
 #if defined(STM32H7)
-#define I2S_IT_TXE               I2S_IT_TXP
-#define I2S_IT_RXNE              I2S_IT_RXP
+  #define I2S_IT_TXE               I2S_IT_TXP
+  #define I2S_IT_RXNE              I2S_IT_RXP
 
-#define I2S_FLAG_TXE             I2S_FLAG_TXP
-#define I2S_FLAG_RXNE            I2S_FLAG_RXP
+  #define I2S_FLAG_TXE             I2S_FLAG_TXP
+  #define I2S_FLAG_RXNE            I2S_FLAG_RXP
 #endif
 
 #if defined(STM32F7)
-#define I2S_CLOCK_SYSCLK           I2S_CLOCK_PLL
+  #define I2S_CLOCK_SYSCLK           I2S_CLOCK_PLL
 #endif
 /**
   * @}
@@ -1114,16 +1114,16 @@ extern "C" {
 
 #if defined(STM32H7)
 
-#define SPI_FLAG_TXE                    SPI_FLAG_TXP
-#define SPI_FLAG_RXNE                   SPI_FLAG_RXP
+ #define SPI_FLAG_TXE                    SPI_FLAG_TXP
+ #define SPI_FLAG_RXNE                   SPI_FLAG_RXP
 
-#define SPI_IT_TXE                      SPI_IT_TXP
-#define SPI_IT_RXNE                     SPI_IT_RXP
+ #define SPI_IT_TXE                      SPI_IT_TXP
+ #define SPI_IT_RXNE                     SPI_IT_RXP
 
-#define SPI_FRLVL_EMPTY                 SPI_RX_FIFO_0PACKET
-#define SPI_FRLVL_QUARTER_FULL          SPI_RX_FIFO_1PACKET
-#define SPI_FRLVL_HALF_FULL             SPI_RX_FIFO_2PACKET
-#define SPI_FRLVL_FULL                  SPI_RX_FIFO_3PACKET
+ #define SPI_FRLVL_EMPTY                 SPI_RX_FIFO_0PACKET
+ #define SPI_FRLVL_QUARTER_FULL          SPI_RX_FIFO_1PACKET
+ #define SPI_FRLVL_HALF_FULL             SPI_RX_FIFO_2PACKET
+ #define SPI_FRLVL_FULL                  SPI_RX_FIFO_3PACKET
 
 #endif /* STM32H7 */
 
@@ -1517,9 +1517,9 @@ extern "C" {
 #define HAL_DATA_EEPROMEx_Erase    HAL_FLASHEx_DATAEEPROM_Erase
 #define HAL_DATA_EEPROMEx_Program  HAL_FLASHEx_DATAEEPROM_Program
 
-/**
- * @}
- */
+ /**
+  * @}
+  */
 
 /** @defgroup HAL_I2C_Aliased_Functions HAL I2C Aliased Functions maintained for legacy purpose
   * @{
@@ -1554,9 +1554,9 @@ extern "C" {
 #define HAL_FMPI2C_Slave_Sequential_Transmit_DMA  HAL_FMPI2C_Slave_Seq_Transmit_DMA
 #define HAL_FMPI2C_Slave_Sequential_Receive_DMA   HAL_FMPI2C_Slave_Seq_Receive_DMA
 #endif /* STM32F4 */
-/**
- * @}
- */
+ /**
+  * @}
+  */
 
 /** @defgroup HAL_PWR_Aliased HAL PWR Aliased maintained for legacy purpose
   * @{
@@ -1611,9 +1611,9 @@ extern "C" {
 
 #define PWR_MODE_EVT                                  PWR_PVD_MODE_NORMAL
 
-/**
- * @}
- */
+ /**
+  * @}
+  */
 
 /** @defgroup HAL_SMBUS_Aliased_Functions HAL SMBUS Aliased Functions maintained for legacy purpose
   * @{
@@ -1862,15 +1862,15 @@ extern "C" {
 #define __HAL_FREEZE_RTC_DBGMCU __HAL_DBGMCU_FREEZE_RTC
 #define __HAL_UNFREEZE_RTC_DBGMCU __HAL_DBGMCU_UNFREEZE_RTC
 #if defined(STM32H7)
-#define __HAL_FREEZE_WWDG_DBGMCU __HAL_DBGMCU_FREEZE_WWDG1
-#define __HAL_UNFREEZE_WWDG_DBGMCU __HAL_DBGMCU_UnFreeze_WWDG1
-#define __HAL_FREEZE_IWDG_DBGMCU __HAL_DBGMCU_FREEZE_IWDG1
-#define __HAL_UNFREEZE_IWDG_DBGMCU __HAL_DBGMCU_UnFreeze_IWDG1
+  #define __HAL_FREEZE_WWDG_DBGMCU __HAL_DBGMCU_FREEZE_WWDG1
+  #define __HAL_UNFREEZE_WWDG_DBGMCU __HAL_DBGMCU_UnFreeze_WWDG1
+  #define __HAL_FREEZE_IWDG_DBGMCU __HAL_DBGMCU_FREEZE_IWDG1
+  #define __HAL_UNFREEZE_IWDG_DBGMCU __HAL_DBGMCU_UnFreeze_IWDG1
 #else
-#define __HAL_FREEZE_WWDG_DBGMCU __HAL_DBGMCU_FREEZE_WWDG
-#define __HAL_UNFREEZE_WWDG_DBGMCU __HAL_DBGMCU_UNFREEZE_WWDG
-#define __HAL_FREEZE_IWDG_DBGMCU __HAL_DBGMCU_FREEZE_IWDG
-#define __HAL_UNFREEZE_IWDG_DBGMCU __HAL_DBGMCU_UNFREEZE_IWDG
+  #define __HAL_FREEZE_WWDG_DBGMCU __HAL_DBGMCU_FREEZE_WWDG
+  #define __HAL_UNFREEZE_WWDG_DBGMCU __HAL_DBGMCU_UNFREEZE_WWDG
+  #define __HAL_FREEZE_IWDG_DBGMCU __HAL_DBGMCU_FREEZE_IWDG
+  #define __HAL_UNFREEZE_IWDG_DBGMCU __HAL_DBGMCU_UNFREEZE_IWDG
 #endif /* STM32H7 */
 #define __HAL_FREEZE_I2C1_TIMEOUT_DBGMCU __HAL_DBGMCU_FREEZE_I2C1_TIMEOUT
 #define __HAL_UNFREEZE_I2C1_TIMEOUT_DBGMCU __HAL_DBGMCU_UNFREEZE_I2C1_TIMEOUT
@@ -2138,7 +2138,7 @@ extern "C" {
 #define IS_I2S_INSTANCE_EXT             IS_I2S_ALL_INSTANCE_EXT
 
 #if defined(STM32H7)
-#define __HAL_I2S_CLEAR_FREFLAG       __HAL_I2S_CLEAR_TIFREFLAG
+  #define __HAL_I2S_CLEAR_FREFLAG       __HAL_I2S_CLEAR_TIFREFLAG
 #endif
 
 /**
