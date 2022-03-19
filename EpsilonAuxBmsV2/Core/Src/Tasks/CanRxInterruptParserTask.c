@@ -10,10 +10,13 @@ void canRxInterruptParserTask(void* arg)
     {
         0
     };
+    uint8_t voltageReceived = 0;
+    uint8_t tempReceived = 0;
+    uint8_t packReceived = 0;
 
     for (;;)
     {
-        canRxInterruptParser(&orionQueueData, &canQueueData);
+        canRxInterruptParser(&orionQueueData, &canQueueData, voltageReceived, tempReceived, packReceived);
     }
 }
 
@@ -22,7 +25,7 @@ Receives data from the CAN Rx Callback and parses it to be presented to the Orio
 If data is an Orion message, parse it and put it on orionInterfaceQueue as a CAN Rx Interrupt type message
 Toggle green LED to indicate CAN message received
 */
-void canRxInterruptParser(OrionCanInfo* orionQueueData, CanRxQueueData* canQueueData)
+void canRxInterruptParser(OrionCanInfo* orionQueueData, CanRxQueueData* canQueueData, uint8_t voltageReceived, uint8_t tempReceived, uint8_t packReceived)
 {
     osMessageQueueGet(canRxParserQueue, canQueueData, NULL, osWaitForever);
 
@@ -36,11 +39,13 @@ void canRxInterruptParser(OrionCanInfo* orionQueueData, CanRxQueueData* canQueue
         orionQueueData->lowCellVoltage = (uint16_t)data[0] | data[1] << 8; // Min Cell voltage
         orionQueueData->highCellVoltage = (uint16_t)data[3] | data[4] << 8; // Max Cell Voltage
         orionMessageReceived = 1;
+        voltageReceived = 1;
     }
     else if (hdr.StdId == ORION_TEMP_INFO_STDID && hdr.DLC == 8)
     {
         orionQueueData->highTemperature = data[0];
         orionMessageReceived = 1;
+        tempReceived = 1;
     }
     else if (hdr.StdId == ORION_PACK_INFO_STDID && hdr.DLC == 8)
     {
@@ -49,9 +54,10 @@ void canRxInterruptParser(OrionCanInfo* orionQueueData, CanRxQueueData* canQueue
             (data[1] << 8);
         orionQueueData->packCurrent = (float)packCurrentInt / 10.0f;
         orionMessageReceived = 1;
+        packReceived = 1;
     }
 
-    if (orionMessageReceived && orionQueueData->lowCellVoltage != 0 && orionQueueData->highCellVoltage != 0)
+    if (orionMessageReceived && voltageReceived && tempReceived && packReceived)
     {
         HAL_GPIO_TogglePin(GRN_LED_GPIO_Port, GRN_LED_Pin);
         osMessageQueuePut(orionInterfaceQueue, orionQueueData, 0, TASK_QUEUE_PUT_TIMEOUT);
