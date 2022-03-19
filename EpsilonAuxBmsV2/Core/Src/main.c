@@ -645,7 +645,7 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pins : ORION_CHARGE_ENABLE_SENSE_Pin ORION_DISCHARGE_ENABLE_SENSE_Pin */
   GPIO_InitStruct.Pin = ORION_CHARGE_ENABLE_SENSE_Pin|ORION_DISCHARGE_ENABLE_SENSE_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pin : CURRENT_SENSE_ENABLE_Pin */
@@ -665,13 +665,13 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pins : SENSE4_Pin SENSE3_Pin */
   GPIO_InitStruct.Pin = SENSE4_Pin|SENSE3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pins : SENSE2_Pin SENSE1_Pin */
   GPIO_InitStruct.Pin = SENSE2_Pin|SENSE1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
 }

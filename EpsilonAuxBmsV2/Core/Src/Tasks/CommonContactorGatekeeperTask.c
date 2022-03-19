@@ -1,4 +1,5 @@
 #include "CommonContactorGatekeeperTask.h"
+#include <stdio.h>
 
 void commonContactorGatekeeperTask(void* arg)
 {
@@ -19,13 +20,20 @@ void closeCommonContactor()
 {
     auxBmsContactorState.commonState = CLOSING;
     // Enable contactor, then delay
+    uint8_t orionDischargeEnableSense = HAL_GPIO_ReadPin(ORION_DISCHARGE_ENABLE_SENSE_GPIO_Port, ORION_DISCHARGE_ENABLE_SENSE_Pin);
+    uint8_t orionChargeEnableSense = HAL_GPIO_ReadPin(ORION_CHARGE_ENABLE_SENSE_GPIO_Port, ORION_CHARGE_ENABLE_SENSE_Pin);
     HAL_GPIO_WritePin(COMMON_ENABLE_GPIO_Port, COMMON_ENABLE_Pin, GPIO_PIN_SET);
     osDelay(CONTACTOR_DELAY);
 
     // Check contactor is set by reading sense pin and checking that precharge current is low
     uint8_t commonSense = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
     uint8_t currentLow = isCurrentLow(1);
+    orionDischargeEnableSense = HAL_GPIO_ReadPin(ORION_DISCHARGE_ENABLE_SENSE_GPIO_Port, ORION_DISCHARGE_ENABLE_SENSE_Pin);
+    orionChargeEnableSense = HAL_GPIO_ReadPin(ORION_CHARGE_ENABLE_SENSE_GPIO_Port, ORION_CHARGE_ENABLE_SENSE_Pin);
 
+    if (orionDischargeEnableSense && orionChargeEnableSense) {
+        printf("hello");
+    }
     if (commonSense && currentLow) // Common contactor closed successfully, so trigger charge to turn on
     {
         auxBmsContactorState.commonState = CLOSED;
