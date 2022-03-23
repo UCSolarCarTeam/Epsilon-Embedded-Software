@@ -68,8 +68,8 @@ void orionInterface(OrionCanInfo* message)
         localAuxStatus.dischargeShouldTrip = checkDischargeTrip(localAuxTrip);
         localAuxStatus.chargeShouldTrip = checkChargeTrip(localAuxTrip);
         shouldDisconnectContactors = localAuxTrip.protectionTrip
-                                    || localAuxStatus.dischargeShouldTrip
-                                    || localAuxStatus.chargeShouldTrip;
+                                     || localAuxStatus.dischargeShouldTrip
+                                     || localAuxStatus.chargeShouldTrip;
     }
 
     // Determine trip conditions and contactor settings based on Orion GPIO
