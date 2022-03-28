@@ -54,6 +54,14 @@ void closeDischargeContactor()
     {
         osEventFlagsSet(contactorControlEventBits, CHARGE_CLOSED);
     }
+    
+    if ( !auxBmsContactorState.startupDone
+            && auxBmsContactorState.commonState == CLOSED
+            && auxBmsContactorState.chargeState == CLOSED
+            && auxBmsContactorState.dischargeState == CLOSED)
+    {
+        auxBmsContactorState.startupDone = 1;
+    }
 }
 
 /*

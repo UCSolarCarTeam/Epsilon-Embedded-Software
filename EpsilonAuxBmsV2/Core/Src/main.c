@@ -279,7 +279,8 @@ int main(void)
          .chargeState = OPEN,
           .dischargeState = OPEN,
            .startupDone = 0,
-            .contactorsDisconnected = 0
+            .contactorsDisconnected = 0,
+              .orionHappyForStartup = 0
     };
 
   /* USER CODE END 1 */
@@ -374,9 +375,8 @@ int main(void)
     chargeContactorGatekeeperTaskHandle = osThreadNew(chargeContactorGatekeeperTask, NULL, &chargeContactorGatekeeperTask_attributes);
     dischargeContactorGatekeeperTaskHandle = osThreadNew(dischargeContactorGatekeeperTask, NULL, &dischargeContactorGatekeeperTask_attributes);
     contactorStatusUpdateTaskHandle = osThreadNew(contactorStatusUpdateTask, NULL, &contactorStatusUpdateTask_attributes);
-    /*
     readAuxVoltageTaskHandle = osThreadNew(readAuxVoltageTask, NULL, &readAuxVoltageTask_attributes);
-    */
+  
 #ifdef MEMORY_DEBUG
     memoryDebugTaskHandle = osThreadNew(memoryDebugTask, NULL, &memoryDebugTask_attributes);
 #endif
