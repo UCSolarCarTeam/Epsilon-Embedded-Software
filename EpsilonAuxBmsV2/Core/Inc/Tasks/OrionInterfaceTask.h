@@ -11,6 +11,7 @@ void orionInterfaceTask(void* arg);
 void orionInterface(OrionCanInfo* message);
 void updateAuxStatus(AuxStatus* auxStatusToRead);
 void updateAllowChargeAndAllowDischarge(OrionCanInfo* message, AuxStatus* auxStatusToUpdate);
+uint8_t checkIfOrionGood(OrionCanInfo* message);
 
 AuxStatus localAuxStatus;
 AuxTrip localAuxTrip;

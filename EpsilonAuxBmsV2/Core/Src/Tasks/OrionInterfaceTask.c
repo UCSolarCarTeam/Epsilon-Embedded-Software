@@ -34,116 +34,118 @@ When opening a contactor, it temporarily raises the gatekeeper task’s priority
 */
 void orionInterface(OrionCanInfo* message)
 {
-    osStatus_t status = osMessageQueueGet(orionInterfaceQueue, message, NULL, ORION_QUEUE_TIMEOUT);
-    //status = osMessageQueueGet(orionInterfaceQueue, message, NULL, ORION_QUEUE_TIMEOUT);
+    if (auxBmsContactorState.orionHappyForStartup) {
+        osStatus_t status = osMessageQueueGet(orionInterfaceQueue, message, NULL, ORION_QUEUE_TIMEOUT);
+        //status = osMessageQueueGet(orionInterfaceQueue, message, NULL, ORION_QUEUE_TIMEOUT);
 
 
-    uint8_t shouldDisconnectContactors = 0;
-    // Read Orion charge and discharge enable GPIO
-    uint8_t orionDischargeEnableSense = HAL_GPIO_ReadPin(ORION_DISCHARGE_ENABLE_SENSE_GPIO_Port, ORION_DISCHARGE_ENABLE_SENSE_Pin);
-    uint8_t orionChargeEnableSense = HAL_GPIO_ReadPin(ORION_CHARGE_ENABLE_SENSE_GPIO_Port, ORION_CHARGE_ENABLE_SENSE_Pin);
-    // Set aux status and aux trip to default values
-    localAuxStatus = (AuxStatus)
-    {
-        0
-    };
-    localAuxStatus.allowCharge = 1;
-    localAuxStatus.allowDischarge = 1;
-    localAuxTrip = (AuxTrip)
-    {
-        0
-    };
-
-    if (status == osErrorTimeout) // If waiting on the queue times out
-    {
-        //Set orion can message recieved recently to 0
-        localAuxStatus.orionCanReceivedRecently = 0;
-    }
-    else
-    {
-        // Determine trip conditions and contactor settings based on Orion CAN
-        localAuxStatus.orionCanReceivedRecently = 1;
-        updateAllowChargeAndAllowDischarge(message, &localAuxStatus);
-        updateAuxTrip(message, &localAuxTrip);
-        localAuxStatus.dischargeShouldTrip = checkDischargeTrip(localAuxTrip);
-        localAuxStatus.chargeShouldTrip = checkChargeTrip(localAuxTrip);
-        shouldDisconnectContactors = localAuxTrip.protectionTrip
-                                     || localAuxStatus.dischargeShouldTrip
-                                     || localAuxStatus.chargeShouldTrip;
-    }
-
-    // Determine trip conditions and contactor settings based on Orion GPIO
-    shouldDisconnectContactors |= (!orionDischargeEnableSense && !orionChargeEnableSense);
-
-    // Set auxStatus if a trip is to occur (due to GPIO or CAN messages)
-    if (shouldDisconnectContactors)
-    {
-        localAuxStatus.allowCharge = 0;
-        localAuxStatus.allowDischarge = 0;
-        localAuxStatus.strobeBmsLight = 1;
-    }
-    else if (!orionDischargeEnableSense)
-    {
-        localAuxStatus.allowDischarge = 0;
-    }
-    else if (!orionChargeEnableSense)
-    {
-        localAuxStatus.allowCharge = 0;
-    }
-
-    // Set Aux Status and Aux Trip
-    // Not returning if mutex not acuired so that we can still control the contactors
-    if (osMutexAcquire(auxTripMutex, MUTEX_TIMEOUT) == osOK)
-    {
-        auxTrip = localAuxTrip;
-        osMutexRelease(auxTripMutex);
-    }
-
-    if (osMutexAcquire(auxStatusOrionInterfaceMutex, MUTEX_TIMEOUT) == osOK)
-    {
-        updateAuxStatus(&localAuxStatus);
-        osMutexRelease(auxStatusOrionInterfaceMutex);
-    }
-
-    // Trigger contactor control
-    if (shouldDisconnectContactors)
-    {
-        disconnectContactors();
-    }
-    else
-    {
-        uint32_t contactorControlEventFlags = 0;
-
-        if (!localAuxStatus.allowCharge)
+        uint8_t shouldDisconnectContactors = 0;
+        // Read Orion charge and discharge enable GPIO
+        uint8_t orionDischargeEnableSense = HAL_GPIO_ReadPin(ORION_DISCHARGE_ENABLE_SENSE_GPIO_Port, ORION_DISCHARGE_ENABLE_SENSE_Pin);
+        uint8_t orionChargeEnableSense = HAL_GPIO_ReadPin(ORION_CHARGE_ENABLE_SENSE_GPIO_Port, ORION_CHARGE_ENABLE_SENSE_Pin);
+        // Set aux status and aux trip to default values
+        localAuxStatus = (AuxStatus)
         {
-            contactorControlEventFlags |= CHARGE_OPENED;
-            osThreadSetPriority (chargeContactorGatekeeperTaskHandle, osPriorityRealtime);
+            0
+        };
+        localAuxStatus.allowCharge = 1;
+        localAuxStatus.allowDischarge = 1;
+        localAuxTrip = (AuxTrip)
+        {
+            0
+        };
+
+        if (status == osErrorTimeout) // If waiting on the queue times out
+        {
+            //Set orion can message recieved recently to 0
+            localAuxStatus.orionCanReceivedRecently = 0;
         }
-        else if (auxBmsContactorState.startupDone)
+        else
         {
-            if (auxBmsContactorState.chargeState == OPEN)
+            // Determine trip conditions and contactor settings based on Orion CAN
+            localAuxStatus.orionCanReceivedRecently = 1;
+            updateAllowChargeAndAllowDischarge(message, &localAuxStatus);
+            updateAuxTrip(message, &localAuxTrip);
+            localAuxStatus.dischargeShouldTrip = checkDischargeTrip(localAuxTrip);
+            localAuxStatus.chargeShouldTrip = checkChargeTrip(localAuxTrip);
+            shouldDisconnectContactors = localAuxTrip.protectionTrip
+                                        || localAuxStatus.dischargeShouldTrip
+                                        || localAuxStatus.chargeShouldTrip;
+        }
+
+        // Determine trip conditions and contactor settings based on Orion GPIO
+        shouldDisconnectContactors |= (!orionDischargeEnableSense && !orionChargeEnableSense);
+
+        // Set auxStatus if a trip is to occur (due to GPIO or CAN messages)
+        if (shouldDisconnectContactors)
+        {
+            localAuxStatus.allowCharge = 0;
+            localAuxStatus.allowDischarge = 0;
+            localAuxStatus.strobeBmsLight = 1;
+        }
+        else if (!orionDischargeEnableSense)
+        {
+            localAuxStatus.allowDischarge = 0;
+        }
+        else if (!orionChargeEnableSense)
+        {
+            localAuxStatus.allowCharge = 0;
+        }
+
+        // Set Aux Status and Aux Trip
+        // Not returning if mutex not acuired so that we can still control the contactors
+        if (osMutexAcquire(auxTripMutex, MUTEX_TIMEOUT) == osOK)
+        {
+            auxTrip = localAuxTrip;
+            osMutexRelease(auxTripMutex);
+        }
+
+        if (osMutexAcquire(auxStatusOrionInterfaceMutex, MUTEX_TIMEOUT) == osOK)
+        {
+            updateAuxStatus(&localAuxStatus);
+            osMutexRelease(auxStatusOrionInterfaceMutex);
+        }
+
+        // Trigger contactor control
+        if (shouldDisconnectContactors && auxBmsContactorState.startupDone)
+        {
+            disconnectContactors();
+        }
+        else
+        {
+            uint32_t contactorControlEventFlags = 0;
+
+            if (!localAuxStatus.allowCharge)
             {
-                contactorControlEventFlags |= CHARGE_CLOSED;
+                contactorControlEventFlags |= CHARGE_OPENED;
+                osThreadSetPriority (chargeContactorGatekeeperTaskHandle, osPriorityRealtime);
             }
-        }
-
-        if (!localAuxStatus.allowDischarge)
-        {
-            contactorControlEventFlags |= DISCHARGE_OPENED;
-            osThreadSetPriority (dischargeContactorGatekeeperTaskHandle, osPriorityRealtime);
-        }
-        else if (auxBmsContactorState.startupDone)
-        {
-            // Only close discharge if discharge is currently open, and charge is currently closed
-            // The reason for this is so we avoid any race conditions in both contactors closing at the same time
-            // Charge will have a higher priority in closing (and it should trigger discharge to close anyways if discharge is open)
-            if ((auxBmsContactorState.dischargeState == OPEN) && (auxBmsContactorState.chargeState == CLOSED))
+            else if (auxBmsContactorState.startupDone)
             {
-                contactorControlEventFlags |= DISCHARGE_CLOSED;
+                if (auxBmsContactorState.chargeState == OPEN)
+                {
+                    contactorControlEventFlags |= CHARGE_CLOSED;
+                }
             }
-        }
 
-        osEventFlagsSet(contactorControlEventBits, contactorControlEventFlags);
+            if (!localAuxStatus.allowDischarge)
+            {
+                contactorControlEventFlags |= DISCHARGE_OPENED;
+                osThreadSetPriority (dischargeContactorGatekeeperTaskHandle, osPriorityRealtime);
+            }
+            else if (auxBmsContactorState.startupDone)
+            {
+                // Only close discharge if discharge is currently open, and charge is currently closed
+                // The reason for this is so we avoid any race conditions in both contactors closing at the same time
+                // Charge will have a higher priority in closing (and it should trigger discharge to close anyways if discharge is open)
+                if ((auxBmsContactorState.dischargeState == OPEN) && (auxBmsContactorState.chargeState == CLOSED))
+                {
+                    contactorControlEventFlags |= DISCHARGE_CLOSED;
+                }
+            }
+
+            osEventFlagsSet(contactorControlEventBits, contactorControlEventFlags);
+        }
     }
 }
 
@@ -176,4 +178,42 @@ void updateAllowChargeAndAllowDischarge(OrionCanInfo* message, AuxStatus* auxSta
     {
         auxStatusToUpdate->allowDischarge = 0;
     }
+}
+
+uint8_t checkIfOrionGood(OrionCanInfo* message) {
+    osStatus_t status = osMessageQueueGet(orionInterfaceQueue, message, NULL, ORION_QUEUE_TIMEOUT);
+
+    uint8_t orionHappy = 0;
+    // Read Orion charge and discharge enable GPIO
+    uint8_t orionDischargeEnableSense = HAL_GPIO_ReadPin(ORION_DISCHARGE_ENABLE_SENSE_GPIO_Port, ORION_DISCHARGE_ENABLE_SENSE_Pin);
+    uint8_t orionChargeEnableSense = HAL_GPIO_ReadPin(ORION_CHARGE_ENABLE_SENSE_GPIO_Port, ORION_CHARGE_ENABLE_SENSE_Pin);
+    // Set aux status and aux trip to default values
+    localAuxStatus = (AuxStatus)
+    {
+        0
+    };
+    localAuxStatus.allowCharge = 1;
+    localAuxStatus.allowDischarge = 1;
+    localAuxTrip = (AuxTrip)
+    {
+        0
+    };
+
+    if (status == osErrorTimeout) // If waiting on the queue times out
+    {
+        orionHappy = 0;
+    }
+    else
+    {
+        // Determine trip conditions and contactor settings based on Orion CAN
+        localAuxStatus.dischargeShouldTrip = checkDischargeTrip(localAuxTrip);
+        localAuxStatus.chargeShouldTrip = checkChargeTrip(localAuxTrip);
+        orionHappy = localAuxTrip.protectionTrip
+                                     || localAuxStatus.dischargeShouldTrip
+                                     || localAuxStatus.chargeShouldTrip;
+    }
+
+    orionHappy |= (!orionDischargeEnableSense && !orionChargeEnableSense);
+
+    return orionHappy; //if this is 1 it means that orion is NOT happy
 }
