@@ -1,0 +1,5 @@
+../Middlewares/Third_Party/FreeRTOS/Source/list.c:79:6:vListInitialise	0	static
+../Middlewares/Third_Party/FreeRTOS/Source/list.c:100:6:vListInitialiseItem	0	static
+../Middlewares/Third_Party/FreeRTOS/Source/list.c:111:6:vListInsertEnd	0	static
+../Middlewares/Third_Party/FreeRTOS/Source/list.c:134:6:vListInsert	12	static
+../Middlewares/Third_Party/FreeRTOS/Source/list.c:197:13:uxListRemove	0	static

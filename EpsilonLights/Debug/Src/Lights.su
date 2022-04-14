@@ -1,0 +1,11 @@
+../Src/Lights.c:22:6:updateLights	24	static
+../Src/Lights.c:5:6:updateLightsTask	32	static
+../Src/Lights.c:117:6:blinkSignalLights	24	static
+../Src/Lights.c:99:6:blinkSignalLightsTask	24	static
+../Src/Lights.c:188:6:updateStrobeLight	16	static
+../Src/Lights.c:170:6:updateStrobeLightTask	24	static
+../Src/Lights.c:228:6:reportLightsToCan	32	static
+../Src/Lights.c:215:6:reportLightsToCanTask	16	static
+../Src/Lights.c:276:6:sendHeartbeat	8	static
+../Src/Lights.c:263:6:sendHeartbeatTask	16	static
+../Src/Lights.c:297:6:HAL_CAN_RxCpltCallback	8	static

@@ -55,7 +55,32 @@ C_SOURCES = \
   Middlewares/Third_Party/FreeRTOS/Source/tasks.c \
   Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c \
   Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c \
-  Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c  
+  Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c \
+  Tracealyzer/trcAssert.c \
+  Tracealyzer/trcCounter.c \
+  Tracealyzer/trcDiagnostics.c \
+  Tracealyzer/trcEntryTable.c \
+  Tracealyzer/trcError.c \
+  Tracealyzer/trcEvent.c \
+  Tracealyzer/trcEventBuffer.c \
+  Tracealyzer/trcExtension.c \
+  Tracealyzer/trcHardwarePort.c \
+  Tracealyzer/trcHeap.c \
+  Tracealyzer/trcInternalEventBuffer.c \
+  Tracealyzer/trcInterval.c \
+  Tracealyzer/trcISR.c \
+  Tracealyzer/trcKernelPort.c \
+  Tracealyzer/trcMultiCoreEventBuffer.c \
+  Tracealyzer/trcObject.c \
+  Tracealyzer/trcPrint.c \
+  Tracealyzer/trcSnapshotRecorder.c \
+  Tracealyzer/trcStackMonitor.c \
+  Tracealyzer/trcStateMachine.c \
+  Tracealyzer/trcStaticBuffer.c \
+  Tracealyzer/trcStreamingRecorder.c \
+  Tracealyzer/trcString.c \
+  Tracealyzer/trcTask.c \
+  Tracealyzer/trcTimestamp.c
 ASM_SOURCES = \
   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f407xx.s
 
@@ -86,6 +111,9 @@ C_INCLUDES += -IDrivers/STM32F4xx_HAL_Driver/Inc/Legacy
 C_INCLUDES += -IMiddlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F
 C_INCLUDES += -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS
 C_INCLUDES += -IMiddlewares/Third_Party/FreeRTOS/Source/include
+C_INCLUDES += -ITracealyzer/config
+C_INCLUDES += -ITracealyzer/include
+C_INCLUDES += -ITracealyzer
 # compile gcc flags
 ASFLAGS = -mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
 CFLAGS = -mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections

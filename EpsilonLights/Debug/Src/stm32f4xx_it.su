@@ -1,0 +1,4 @@
+../Src/stm32f4xx_it.c:55:6:SysTick_Handler	0	static
+../Src/stm32f4xx_it.c:74:6:TIM2_IRQHandler	0	static
+../Src/stm32f4xx_it.c:86:6:CAN2_TX_IRQHandler	0	static
+../Src/stm32f4xx_it.c:98:6:CAN2_RX0_IRQHandler	0	static

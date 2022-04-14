@@ -86,6 +86,7 @@ int main(void)
     MX_GPIO_Init();
     MX_CAN2_Init();
     /* USER CODE BEGIN 2 */
+    vTraceEnable(TRC_START);
     MX_CAN2_UserInit();
 
     // Setup for next CAN Receive Interrupt
