@@ -87,7 +87,32 @@ Middlewares/Third_Party/FreeRTOS/Source/timers.c \
 Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c \
 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c \
 Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c \
-Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c
+Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c \
+Middlewares/Third_Party/TraceRecorder/trcAssert.c \
+Middlewares/Third_Party/TraceRecorder/trcCounter.c \
+Middlewares/Third_Party/TraceRecorder/trcDiagnostics.c \
+Middlewares/Third_Party/TraceRecorder/trcEntryTable.c \
+Middlewares/Third_Party/TraceRecorder/trcError.c \
+Middlewares/Third_Party/TraceRecorder/trcEvent.c \
+Middlewares/Third_Party/TraceRecorder/trcEventBuffer.c \
+Middlewares/Third_Party/TraceRecorder/trcExtension.c \
+Middlewares/Third_Party/TraceRecorder/trcHardwarePort.c \
+Middlewares/Third_Party/TraceRecorder/trcHeap.c \
+Middlewares/Third_Party/TraceRecorder/trcInternalEventBuffer.c \
+Middlewares/Third_Party/TraceRecorder/trcInterval.c \
+Middlewares/Third_Party/TraceRecorder/trcISR.c \
+Middlewares/Third_Party/TraceRecorder/trcKernelPort.c \
+Middlewares/Third_Party/TraceRecorder/trcMultiCoreEventBuffer.c \
+Middlewares/Third_Party/TraceRecorder/trcObject.c \
+Middlewares/Third_Party/TraceRecorder/trcPrint.c \
+Middlewares/Third_Party/TraceRecorder/trcSnapshotRecorder.c \
+Middlewares/Third_Party/TraceRecorder/trcStackMonitor.c \
+Middlewares/Third_Party/TraceRecorder/trcStateMachine.c \
+Middlewares/Third_Party/TraceRecorder/trcStaticBuffer.c \
+Middlewares/Third_Party/TraceRecorder/trcStreamingRecorder.c \
+Middlewares/Third_Party/TraceRecorder/trcString.c \
+Middlewares/Third_Party/TraceRecorder/trcTask.c \
+Middlewares/Third_Party/TraceRecorder/trcTimestamp.c
 
 ifeq ($(DEBUG), 1)
 C_SOURCES += Core/Src/Tasks/MemoryDebugTask.c
@@ -163,7 +188,9 @@ C_INCLUDES =  \
 -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 \
 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F \
 -IDrivers/CMSIS/Device/ST/STM32F4xx/Include \
--IDrivers/CMSIS/Include
+-IDrivers/CMSIS/Include \
+-IMiddlewares/Third_Party/TraceRecorder/config \
+-IMiddlewares/Third_Party/TraceRecorder/include
 
 
 # compile gcc flags
