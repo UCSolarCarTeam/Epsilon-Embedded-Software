@@ -80,7 +80,9 @@ C_SOURCES = \
   Tracealyzer/trcStreamingRecorder.c \
   Tracealyzer/trcString.c \
   Tracealyzer/trcTask.c \
-  Tracealyzer/trcTimestamp.c
+  Tracealyzer/trcTimestamp.c \
+  Tracealyzer/streamports/Jlink_RTT/SEGGER_RTT.c \
+  Tracealyzer/streamports/Jlink_RTT/trcStreamPort.c
 ASM_SOURCES = \
   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f407xx.s
 
@@ -111,6 +113,8 @@ C_INCLUDES += -IDrivers/STM32F4xx_HAL_Driver/Inc/Legacy
 C_INCLUDES += -IMiddlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F
 C_INCLUDES += -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS
 C_INCLUDES += -IMiddlewares/Third_Party/FreeRTOS/Source/include
+C_INCLUDES += -ITracealyzer/streamports/Jlink_RTT/include
+C_INCLUDES += -ITracealyzer/streamports/Jlink_RTT/config
 C_INCLUDES += -ITracealyzer/config
 C_INCLUDES += -ITracealyzer/include
 C_INCLUDES += -ITracealyzer

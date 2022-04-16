@@ -547,7 +547,7 @@ void vEventGroupDelete( EventGroupHandle_t xEventGroup )
     const List_t* pxTasksWaitingForBits = &( pxEventBits->xTasksWaitingForBits );
     vTaskSuspendAll();
     {
-        traceEVENT_GROUP_DELETE( xEventGroup );
+        traceEVENT_GROUP_DELETE( pxEventBits ); //THIS USE TO TAKE A xEventGroup STRUCT INSTEAD OF A POINTER, TRACEALYZER EXPECTED A POINTER AND THE CREATE VERSION OF THIS FUNCTION ALSO USES A POINTER SO I CHANGED IT, much love, Marcelo
 
         while ( listCURRENT_LIST_LENGTH( pxTasksWaitingForBits ) > ( UBaseType_t ) 0 )
         {
