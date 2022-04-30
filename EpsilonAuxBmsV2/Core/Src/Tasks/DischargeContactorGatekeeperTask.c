@@ -62,6 +62,8 @@ void closeDischargeContactor()
     {
         auxBmsContactorState.startupDone = 1;
     }
+    getTaskState();
+    getTaskStateList();
 }
 
 /*
@@ -96,4 +98,31 @@ void dischargeContactorGatekeeper()
         closeDischargeContactor();
     }
 
+}
+
+void getTaskState() {
+    TaskStatus_t *pxTaskStatusArray;
+    volatile UBaseType_t uxArraySize;
+
+    uxArraySize = uxTaskGetNumberOfTasks();
+    pxTaskStatusArray = pvPortMalloc(uxArraySize * sizeof(TaskStatus_t));
+
+    uxArraySize = uxTaskGetSystemState(pxTaskStatusArray, uxArraySize, NULL);
+
+    //xHandle
+    //pcTaskName
+    //eCurrentState
+        //eRunning, eReady, eBlocked, eSuspended, eDeleted, eInvalid
+
+    vPortFree(pxTaskStatusArray);
+    
+}
+
+void getTaskStateList() { 
+    //might not be able to use this because we need configUSER_STATS_FORMATTING_FUNCTIONS but it's not available in our FreeRTOSConfig.h
+    char *pcWriteBuffer = pvPortMalloc(13 * 320);
+
+    vTaskList(pcWriteBuffer);
+
+    vPortFree(pcWriteBuffer);
 }
