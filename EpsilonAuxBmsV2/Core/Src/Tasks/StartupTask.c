@@ -2,7 +2,7 @@
 
 void startupTask(void* arg)
 {
-    uint32_t prevWakeTime = osKernelSysTick();
+    uint32_t prevWakeTime = xTaskGetTickCount();
     OrionCanInfo message = (OrionCanInfo)
     {
         0
