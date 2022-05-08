@@ -122,7 +122,7 @@ void getTaskStateList() {
     //might not be able to use this because we need configUSER_STATS_FORMATTING_FUNCTIONS but it's not available in our FreeRTOSConfig.h
     char *pcWriteBuffer = pvPortMalloc(13 * 320);
 
-    vTaskList(pcWriteBuffer);
+    //vTaskList(pcWriteBuffer);
 
     vPortFree(pcWriteBuffer);
 }

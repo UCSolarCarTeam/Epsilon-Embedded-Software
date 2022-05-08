@@ -2,7 +2,7 @@
 
 void memoryDebugTask(void* arg)
 {
-    uint32_t prevWakeTime = osKernelSysTick();
+    uint32_t prevWakeTime = xTaskGetTickCount();
 
     for (;;)
     {

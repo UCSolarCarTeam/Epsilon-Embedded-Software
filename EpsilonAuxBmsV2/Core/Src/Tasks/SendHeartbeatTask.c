@@ -6,7 +6,7 @@ void sendHeartbeatTask(void* arg)
     {
         0
     };
-    uint32_t prevWakeTime = osKernelSysTick();
+    uint32_t prevWakeTime = xTaskGetTickCount();
 
     for (;;)
     {
