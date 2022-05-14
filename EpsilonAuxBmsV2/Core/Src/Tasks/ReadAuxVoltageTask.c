@@ -26,16 +26,16 @@ void readAuxVoltage(uint32_t* prevWakeTime)
     HAL_GPIO_WritePin(ADC_nCS_GPIO_Port, ADC_nCS_Pin, GPIO_PIN_RESET);
 
     // Initiate SPI read
-    if (HAL_SPI_Receive_DMA(&hspi3, spiRxBuff, AUX_BMS_SPI_BUFFER_SIZE) == HAL_OK)
+    if (HAL_SPI_Receive(&hspi3, spiRxBuff, AUX_BMS_SPI_BUFFER_SIZE, SPI_TIMEOUT) == HAL_OK)
     {
-        //Wait for spi to finish
-        uint32_t flags = osThreadFlagsWait(SPI_READY_FLAG, osFlagsWaitAny, SPI_TIMEOUT);
+        //Wait for spi to finish && This was used with HAL_SPI_Receive_DMA, not relevant in current context (that I know of)
+        /*uint32_t flags = osThreadFlagsWait(SPI_READY_FLAG, osFlagsWaitAny, SPI_TIMEOUT);
 
         if (flags == osFlagsErrorTimeout)
         {
             spiVoltage = SPI_ERROR_CODE;
         }
-        else
+        else */
         {
             // ADC sends 14 bits with 10 bits being useful, however, the SPI can only receive
             // multiples of 8bits or 16bits. For example: 0000 DDDD DDDD DD00 (where D is the actual data bit)

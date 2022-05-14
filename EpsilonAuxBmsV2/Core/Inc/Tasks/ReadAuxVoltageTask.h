@@ -10,7 +10,7 @@ int myRound(float val);
 
 
 static const uint32_t READ_AUX_VOLTAGE_TASK_FREQ = 100; // 100ms (10Hz)
-static const uint32_t SPI_TIMEOUT = 50;
+static const uint32_t SPI_TIMEOUT = 100;
 static const float AUX_NOMINAL_VOLTAGE = 12.0;
 static const uint16_t AUX_ADC_NOMINAL_OUTPUT = 0x32E; // Pattern = 2.63/3.3 * 0x3FF
 static const uint16_t SPI_ERROR_CODE = 0xDEAD;
