@@ -317,10 +317,11 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
         driversInputs[2] = msg->Data[2];
         driversInputs[3] = msg->Data[3];
     }
-    else if (msg->StdId == AUXBMS_INPUT_STDID && msg->DLC == 2)
+    else if (msg->StdId == AUXBMS_INPUT_STDID && msg->DLC == 3)
     {
         auxBmsInputs[0] = msg->Data[0];
         auxBmsInputs[1] = msg->Data[1];
+        auxBmsInputs[2] = msg->Data[2];
     }
 
 
