@@ -57,7 +57,7 @@ typedef struct SigLightsHandle
 
 extern CAN_HandleTypeDef hcan2; // main.c
 extern uint8_t lightsInputs;
-extern uint8_t auxBmsInputs[2];
+extern uint8_t auxBmsInputs[3];
 extern uint8_t batteryErrors[5];
 extern uint8_t driversInputs[4];
 extern SigLightsHandle sigLightsHandle;
