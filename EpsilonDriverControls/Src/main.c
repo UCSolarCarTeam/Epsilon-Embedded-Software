@@ -52,7 +52,7 @@ osMessageQId canQueue;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-uint8_t auxBmsInputs[2];
+uint8_t auxBmsInputs[3];
 float   motor0VehicleVelocityInput;
 float   motor1VehicleVelocityInput;
 static osThreadId heartbeatTaskHandle;
@@ -405,10 +405,11 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 {
     CanRxMsgTypeDef* msg = hcan->pRxMsg;
 
-    if (msg->StdId == AUXBMS_INPUT_STDID && msg->DLC == 2)
+    if (msg->StdId == AUXBMS_INPUT_STDID && msg->DLC == 3)
     {
         auxBmsInputs[0] = msg->Data[0];
         auxBmsInputs[1] = msg->Data[1];
+        auxBmsInputs[2] = msg->Data[2];
     }
 
     if (msg->StdId == M0_VELOCITY_INPUT_STDID && msg->DLC == 8)
