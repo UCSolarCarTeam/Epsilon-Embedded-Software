@@ -255,7 +255,7 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
 
     // Read AuxBMS messages
     char allowCharge = auxBmsInputs[1] & 0x02;
-    char allowDischarge = auxBmsInputs[0] & 0x04;
+    char allowDischarge = auxBmsInputs[1] & 0x08;
 
     // Determine data to send
     float motorVelocityOut; // RPM
