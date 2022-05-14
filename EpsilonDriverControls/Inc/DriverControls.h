@@ -55,7 +55,7 @@ extern ADC_HandleTypeDef hadc1;
 extern ADC_HandleTypeDef hadc2;
 extern osMessageQId canQueue;
 extern osPoolId canPool;
-extern uint8_t auxBmsInputs[2];
+extern uint8_t auxBmsInputs[3];
 extern float   motor0VehicleVelocityInput;
 extern float   motor1VehicleVelocityInput;
 
