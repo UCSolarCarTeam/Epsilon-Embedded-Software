@@ -5,7 +5,6 @@
 #define MOTOR_FAULTS_PKG_ID 5
 
 // Errors
-#define MOTOR_OVER_SPEED_MASK 0x01
 #define SOFTWARE_OVER_CURRENT_MASK 0x02
 #define DC_BUS_OVER_VOLTAGE_MASK 0x04
 #define BAD_MOTOR_POSITION_HALL_SEQUENCE_MASK 0x08
@@ -13,6 +12,7 @@
 #define CONFIG_READ_ERROR_MASK 0x20
 #define RAIL_15V_UNDER_VOLTAGE_LOCK_OUT_MASK 0x40
 #define DESATURATION_FAULT_MASK 0x80
+#define MOTOR_OVER_SPEED_MASK 0x100
 
 // Limits
 #define OUTPUT_VOLTAGE_PWM_LIMIT_MASK 0x01
@@ -25,7 +25,6 @@
 
 struct MotorErrorFlags
 {
-    unsigned char motorOverSpeed;
     unsigned char softwareOverCurrent;
     unsigned char dcBusOverVoltage;
     unsigned char badMotorPositionHallSequence;
@@ -33,6 +32,7 @@ struct MotorErrorFlags
     unsigned char configReadError;
     unsigned char rail15vUnderVoltageLockOut;
     unsigned char desaturationFault;
+    unsigned char motorOverSpeed;
 };
 
 struct MotorLimitFlags
