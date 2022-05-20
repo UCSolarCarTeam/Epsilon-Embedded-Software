@@ -5,5 +5,5 @@ then
     exit
 fi
 
-(cd ../ && ./format.sh EpsilonAuxBMS)
+(cd ../ && ./format.sh EpsilonLights)
 (make -j4 && cd Tests/ && make)

@@ -1,7 +1,0 @@
-= STM Manual Links & Information
-
-Important Documentation Links:
-
-https://www.st.com/content/ccc/resource/technical/document/reference_manual/3d/6d/5a/66/b4/99/40/d4/DM00031020.pdf/files/DM00031020.pdf/jcr:content/translations/en.DM00031020.pdf[STMF4Board Reference Manual^] - In depth discussion on the capabilities and usage of the MCU.
-
-https://www.keil.com/pack/doc/cmsis/General/html/index.html[Keil CMSIS Reference] - High level descriptions of various functions found in the code. *May not be exactly the most up to date*, but provides a good start.

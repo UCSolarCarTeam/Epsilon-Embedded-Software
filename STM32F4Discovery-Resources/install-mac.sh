@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 
- if [[ $UID != 0 ]]; then
-     echo "Please run this script with sudo:"
-     echo "sudo $0 $*"
-     exit 1
- fi
+# install homebrew
+if ! which brew > /dev/null 2>&1;
+then
+  echo "*** Installing homebrew"
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+else
+  echo "*** Homebrew already installed"
+fi
 
 # brew install git autoconf pkg-config cmake
 brew install git autoconf libusb pkg-config cmake 
@@ -17,11 +20,7 @@ if [ ! -d "/opt/gcc4mbed" ]; then
         sudo chmod +x mac_install && \
         sudo sed -i '' -e '108d;109d;110d;147d' mac_install && \
         sudo ./mac_install)
-    if ! grep "export PATH=\$PATH:/opt/gcc4mbed/gcc-arm-none-eabi/bin/" ~/.profile; then
-        echo "export PATH=\$PATH:/opt/gcc4mbed/gcc-arm-none-eabi/bin/" >> ~/.profile
-    fi
-    export PATH=$PATH:/opt/gcc4mbed/gcc-arm-none-eabi/bin/
-	ln -s /opt/gcc4mbed/gcc-arm-none-eabi/bin/arm-none-eabi-gdb /usr/local/bin/arm-none-eabi-gdb
+	ln -s /opt/gcc4mbed/gcc-arm-none-eabi/bin/* /usr/local/bin/*
 else
     echo "*** ARM compiler already installed"
 fi

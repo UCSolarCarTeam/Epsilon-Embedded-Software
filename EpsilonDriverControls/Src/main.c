@@ -389,6 +389,18 @@ static void MX_CAN2_UserInit(void)
     hcan2.pTxMsg->DLC = 1; // Data size in bytes
 }
 
+float arrayToFloat(uint8_t* data)
+{
+    float result = 0;
+    ((unsigned char*)&result)[0] = data[0];
+    ((unsigned char*)&result)[1] = data[1];
+    ((unsigned char*)&result)[2] = data[2];
+    ((unsigned char*)&result)[3] = data[3];
+
+    return result;
+}
+
+// Reimplement weak definition in stm32f4xx_hal_can.c
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
 {
     CanRxMsgTypeDef* msg = hcan->pRxMsg;

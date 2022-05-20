@@ -1,17 +1,17 @@
 TESTS_DIR = ./tests
 TESTS = \
-	DriverControlsTest \
+	LightsTest \
 
 SUBCLEAN = $(addsuffix .clean,$(TESTS))
 
 RUN_TEST = $(addsuffix .test,$(TESTS))
 
-default: EpsilonDriverControlsTests test
+default: EpsilonLightsTests test
 
 $(TESTS):
 	cd $(TESTS_DIR)/$@ && make -j4
 	
-EpsilonDriverControlsTests: $(TESTS)
+EpsilonLightsTests: $(TESTS)
 
 $(SUBCLEAN):
 	cd $(TESTS_DIR)/$(basename $@) && make clean
