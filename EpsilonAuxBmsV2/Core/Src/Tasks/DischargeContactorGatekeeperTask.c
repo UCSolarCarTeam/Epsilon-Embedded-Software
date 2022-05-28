@@ -38,6 +38,13 @@ void closeDischargeContactor()
         auxBmsContactorState.dischargeState = CONTACTOR_ERROR;
         HAL_GPIO_WritePin(DISCHARGE_ENABLE_GPIO_Port, DISCHARGE_ENABLE_Pin, GPIO_PIN_RESET);
 
+        if (!currentLow) { //means that something closed that isn't supposed to be and that's bad
+            
+            auxTrip.dischargeTripDueToHighCurrent = 1;
+            auxStatus.dischargeContactorError = 1;
+            disconnectContactors();
+        }
+
         if (isChargeClosed) // charge contactor closed so delay then try again
         {
             osDelay(CONTACTOR_DELAY);
