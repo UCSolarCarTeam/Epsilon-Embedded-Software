@@ -11,6 +11,6 @@ typedef struct
     unsigned dischargeTripDueToHighTemperatureAndCurrent : 1;
     unsigned dischargeTripDueToPackCurrent : 1;
     unsigned protectionTrip : 1;
-    unsigned dischargeTripDueToHighCurrent: 1;
-    unsigned chargeTripDueToHighCurrent: 1;
+    unsigned dischargeNotClosedDueToHighCurrent: 1;
+    unsigned chargeNotClosedDueToHighCurrent: 1;
 } AuxTrip;

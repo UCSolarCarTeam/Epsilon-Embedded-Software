@@ -38,11 +38,12 @@ void closeDischargeContactor()
         auxBmsContactorState.dischargeState = CONTACTOR_ERROR;
         HAL_GPIO_WritePin(DISCHARGE_ENABLE_GPIO_Port, DISCHARGE_ENABLE_Pin, GPIO_PIN_RESET);
 
-        if (!currentLow) { //means that something closed that isn't supposed to be and that's bad
-            
-            auxTrip.dischargeTripDueToHighCurrent = 1;
-            auxStatus.dischargeContactorError = 1;
-            disconnectContactors();
+        if (!currentLow) { //something closed that isn't supposed to be 
+            if (osMutexAcquire(auxTripMutex, MUTEX_TIMEOUT) == osOK)
+            {
+                auxTrip.dischargeNotClosedDueToHighCurrent = 1;
+                osMutexRelease(auxTripMutex);
+            }
         }
 
         if (isChargeClosed) // charge contactor closed so delay then try again
