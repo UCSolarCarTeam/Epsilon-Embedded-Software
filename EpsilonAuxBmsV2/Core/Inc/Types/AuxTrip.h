@@ -13,4 +13,5 @@ typedef struct
     unsigned protectionTrip : 1;
     unsigned dischargeNotClosedDueToHighCurrent: 1;
     unsigned chargeNotClosedDueToHighCurrent: 1;
+    unsigned tripDueToOrionMessageTimeout : 1;
 } AuxTrip;
