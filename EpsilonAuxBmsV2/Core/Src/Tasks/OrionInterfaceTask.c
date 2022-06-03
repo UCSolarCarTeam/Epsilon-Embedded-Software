@@ -20,7 +20,7 @@ Determines:
  * When charge/discharge should be open or closed based on GPIO inputs coming from Orion and based on Max/Min cell voltages
 
 It will get info from the CAN Rx Interrupt parser periodically, and each time it does it will set the orionCanMessageReceivedRecently member of AuxStatus to 1 and keep track of the last time it received a message
-If the waiting on the queue times out, that means that no message from Orion has been received recently, so set the orionCanMessageReceivedRecently member of AuxStatus to 0
+If the waiting on the queue times out, that means that no message from Orion has been received recently, so set the orionCanMessageReceivedRecently member of AuxStatus to 0 and trip the car.
 
 Before it finishes or triggers events to control the contactors, it updates the AuxTrip variable, and the AuxStatus variable.
 To update the AuxStatus variable, it must first acquire the auxStatusOrionInterfaceMutex
@@ -58,6 +58,8 @@ void orionInterface(OrionCanInfo* message)
         if (status == osErrorTimeout) // If waiting on the queue times out
         {
             //Set orion can message recieved recently to 0
+            shouldDisconnectContactors = 1;
+            localAuxTrip.tripDueToOrionMessageTimeout = 1;
             localAuxStatus.orionCanReceivedRecently = 0;
         }
         else
