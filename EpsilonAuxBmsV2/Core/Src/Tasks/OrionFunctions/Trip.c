@@ -60,29 +60,33 @@ void updateAuxTrip(OrionCanInfo* message, AuxTrip* auxTripToUpdate)
 }
 
 /*
-Determines whether Discharge should cause a trip based on Orion CAN messages
+Determines whether Discharge should cause a trip based on Orion CAN messages and current line between contactors
 Discharge will cause a trip due to:
   * the min cell voltage being lower than the Orion limit
   * high temperature while discharging
   * discharge pack current being too high
+  * current line between contactors not low enough to close discharge
 */
 uint8_t checkDischargeTrip(AuxTrip auxTrip)
 {
     return auxTrip.dischargeTripDueToLowCellVoltage ||
            auxTrip.dischargeTripDueToHighTemperatureAndCurrent ||
-           auxTrip.dischargeTripDueToPackCurrent;
+           auxTrip.dischargeTripDueToPackCurrent ||
+           auxTrip.dischargeNotClosedDueToHighCurrent; //set in discharge gatekeeper task
 }
 
 /*
-Determines whether charge should cause a trip based on Orion CAN messages
+Determines whether charge should cause a trip based on Orion CAN messages and current line between contactors
 Charge will cause a trip due to:
   * the max cell voltage being higher than the Orion limit
   * high temperature while charging
   * discharge pack current being too high (absolute value)
+  * current line between contactors not low enough to close charge
 */
 uint8_t checkChargeTrip(AuxTrip auxTrip)
 {
     return auxTrip.chargeTripDueToHighCellVoltage ||
            auxTrip.chargeTripDueToHighTemperatureAndCurrent ||
-           auxTrip.chargeTripDueToPackCurrent;
+           auxTrip.chargeTripDueToPackCurrent ||
+           auxTrip.chargeNotClosedDueToHighCurrent; //set in charge gatekeeper task
 }
