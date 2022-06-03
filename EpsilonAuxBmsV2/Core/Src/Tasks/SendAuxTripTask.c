@@ -28,7 +28,7 @@ void sendAuxTrip(CanTxGatekeeperQueueData* canQueueData, uint32_t* prevWakeTime)
     {
         canQueueData->canTxHeader = BASE_CAN_TX_HDR;
         canQueueData->canTxHeader.StdId = AUX_TRIP_STDID;
-        canQueueData->canTxHeader.DLC = 1;
+        canQueueData->canTxHeader.DLC = 2;
         canQueueData->data[0] = auxTrip.chargeTripDueToHighCellVoltage |
                                 (auxTrip.chargeTripDueToHighTemperatureAndCurrent << 1) |
                                 (auxTrip.chargeTripDueToPackCurrent << 2) |
@@ -36,6 +36,8 @@ void sendAuxTrip(CanTxGatekeeperQueueData* canQueueData, uint32_t* prevWakeTime)
                                 (auxTrip.dischargeTripDueToHighTemperatureAndCurrent << 4) |
                                 (auxTrip.dischargeTripDueToPackCurrent << 5) |
                                 (auxTrip.protectionTrip << 6);
+        canQueueData->data[1] = auxTrip.chargeNotClosedDueToHighCurrent |
+                                (auxTrip.dischargeNotClosedDueToHighCurrent << 1);
         osMessageQueuePut(canTxGatekeeperQueue, canQueueData, 0, TASK_QUEUE_PUT_TIMEOUT);
         osMutexRelease(auxTripMutex);
     }
