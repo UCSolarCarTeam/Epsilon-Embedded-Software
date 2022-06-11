@@ -43,9 +43,8 @@ void contactorStatusUpdate(uint32_t* prevWakeTime)
 
 
     if ( !auxBmsContactorState.startupDone
-            && auxBmsContactorState.commonState == CLOSED
-            && auxBmsContactorState.chargeState == CLOSED
-            && auxBmsContactorState.dischargeState == CLOSED)
+            && auxBmsContactorState.commonState == CLOSED )
+            //&& (auxBmsContactorState.chargeState == CLOSED || auxBmsContactorState.dischargeState == CLOSED))
     {
         auxBmsContactorState.startupDone = 1;
     }

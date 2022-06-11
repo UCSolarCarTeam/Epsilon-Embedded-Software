@@ -33,7 +33,7 @@ void closeCommonContactor()
     if (commonSense && currentLow) // Common contactor closed successfully, so trigger charge to turn on
     {
         auxBmsContactorState.commonState = CLOSED;
-        osEventFlagsSet(contactorControlEventBits, CHARGE_CLOSED);
+        //osEventFlagsSet(contactorControlEventBits, CHARGE_CLOSED);
     }
     else   // Common contactor not closed successfully, so delay then try again
     {

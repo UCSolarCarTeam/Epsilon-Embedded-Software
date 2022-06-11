@@ -15,3 +15,5 @@ typedef struct
     unsigned chargeNotClosedDueToHighCurrent: 1;
     unsigned tripDueToOrionMessageTimeout : 1;
 } AuxTrip;
+
+//extern AuxBmsContactorState auxBmsContactorState;
