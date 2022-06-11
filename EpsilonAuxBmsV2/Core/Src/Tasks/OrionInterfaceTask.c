@@ -83,7 +83,10 @@ void orionInterface(OrionCanInfo* message)
         {
             localAuxStatus.allowCharge = 0;
             localAuxStatus.allowDischarge = 0;
-            localAuxStatus.strobeBmsLight = 1;
+
+            if(auxBmsContactorState.startupDone) {
+                localAuxStatus.strobeBmsLight = 1;
+            }
         }
         else if (!orionDischargeEnableSense)
         {

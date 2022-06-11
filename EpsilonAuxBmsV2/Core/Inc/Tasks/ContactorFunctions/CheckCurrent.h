@@ -5,7 +5,7 @@ extern ADC_HandleTypeDef hadc1;
 
 static const float CURRENT_SENSE_RESISTOR  = 0.001; // 1 mOhm
 static const int GAIN  = 250;
-static const float CURRENT_LOWER_THRESHOLD  = 0.25; // Lower current threshold (A)
+static const float CURRENT_LOWER_THRESHOLD  = 0.260; // Lower current threshold (A)
 static const uint32_t ADC_POLL_TIMEOUT  = 10;
 
 static const int MAX_SENSE_DIFF = 10; // The maximum difference between senses read from current amplifier

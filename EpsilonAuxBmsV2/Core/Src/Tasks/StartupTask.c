@@ -22,16 +22,18 @@ If the precharge current isn’t low it will keep looping till it’s successful
 void startup(uint32_t* prevWakeTime, OrionCanInfo *message)
 {
     auxBmsContactorState.orionHappyForStartup = !checkIfOrionGood(message); // 1 means that it should disconnect contactor origionally so orion is not happy if it's one. 
-    if (isCurrentLow(0) && auxBmsContactorState.orionHappyForStartup)
-    {
-        osEventFlagsSet(contactorControlEventBits, COMMON_CLOSED);
-        auxBmsContactorState.commonState =  OPEN;
-        osThreadExit();
-    }
-    else
-    {
-        auxBmsContactorState.commonState =  CONTACTOR_ERROR;
-        *prevWakeTime += STARTUP_TASK_FREQ;
-        osDelayUntil(*prevWakeTime);
+    if(auxBmsContactorState.orionHappyForStartup) {
+        if (isCurrentLow(0))
+        {
+            osEventFlagsSet(contactorControlEventBits, COMMON_CLOSED);
+            auxBmsContactorState.commonState =  OPEN;
+            osThreadExit();
+        }
+        else
+        {
+            auxBmsContactorState.commonState =  CONTACTOR_ERROR;
+            *prevWakeTime += STARTUP_TASK_FREQ;
+            osDelayUntil(*prevWakeTime);
+        }
     }
 }
