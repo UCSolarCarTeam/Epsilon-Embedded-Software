@@ -114,6 +114,7 @@ ErrorCodes errorCode;
 AuxStatus auxStatus;
 AuxTrip auxTrip;
 AuxBmsContactorState auxBmsContactorState;
+uint32_t manualChargeTrip;
 
 // Task Handles
 osThreadId_t startupTaskHandle;
