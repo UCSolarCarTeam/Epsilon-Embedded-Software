@@ -36,8 +36,6 @@ void orionInterface(OrionCanInfo* message)
 {
     if (auxBmsContactorState.orionHappyForStartup) {
         osStatus_t status = osMessageQueueGet(orionInterfaceQueue, message, NULL, ORION_QUEUE_TIMEOUT);
-        //status = osMessageQueueGet(orionInterfaceQueue, message, NULL, ORION_QUEUE_TIMEOUT);
-
 
         uint8_t shouldDisconnectContactors = 0;
         // Read Orion charge and discharge enable GPIO
