@@ -1,0 +1,4 @@
+:cmock:
+  :includes:
+    - stm32f4xx_hal.h
+    - HalMockTypeDefs.h
