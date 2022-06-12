@@ -12,7 +12,7 @@ void orionInterfaceTask(void* arg);
 void orionInterface(OrionCanInfo* message);
 void updateAuxStatus(AuxStatus* auxStatusToRead);
 void updateAllowChargeAndAllowDischarge(OrionCanInfo* message, AuxStatus* auxStatusToUpdate);
-uint8_t checkIfOrionGood(OrionCanInfo* message);
+uint8_t checkIfOrionGood(OrionCanInfo* message, uint32_t* startUpCounter);
 
 AuxStatus localAuxStatus;
 AuxTrip localAuxTrip;

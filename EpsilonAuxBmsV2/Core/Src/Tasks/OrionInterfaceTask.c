@@ -193,7 +193,7 @@ void updateAllowChargeAndAllowDischarge(OrionCanInfo* message, AuxStatus* auxSta
     }
 }
 
-uint8_t checkIfOrionGood(OrionCanInfo* message) {
+uint8_t checkIfOrionGood(OrionCanInfo* message, uint32_t* startUpCounter) {
     osStatus_t status = osMessageQueueGet(orionInterfaceQueue, message, NULL, ORION_QUEUE_TIMEOUT);
 
     uint8_t orionHappy = 0;
@@ -219,6 +219,9 @@ uint8_t checkIfOrionGood(OrionCanInfo* message) {
     else
     {
         // Determine trip conditions and contactor settings based on Orion CAN
+        localAuxStatus.orionCanReceivedRecently = 1;
+        updateAllowChargeAndAllowDischarge(message, &localAuxStatus);
+        updateAuxTrip(message, &localAuxTrip);
         localAuxStatus.dischargeShouldTrip = checkDischargeTrip(localAuxTrip);
         localAuxStatus.chargeShouldTrip = checkChargeTrip(localAuxTrip);
         orionHappy = localAuxTrip.protectionTrip
@@ -227,6 +230,24 @@ uint8_t checkIfOrionGood(OrionCanInfo* message) {
     }
 
     orionHappy |= (!orionDischargeEnableSense && !orionChargeEnableSense);
+
+    startUpCounter += orionHappy;
+
+    if(orionHappy && *startUpCounter > 30) {
+        localAuxStatus.strobeBmsLight = 1;
+    }
+
+    if (osMutexAcquire(auxTripMutex, MUTEX_TIMEOUT) == osOK)
+        {
+            auxTrip = localAuxTrip;
+            osMutexRelease(auxTripMutex);
+        }
+
+        if (osMutexAcquire(auxStatusOrionInterfaceMutex, MUTEX_TIMEOUT) == osOK)
+        {
+            updateAuxStatus(&localAuxStatus);
+            osMutexRelease(auxStatusOrionInterfaceMutex);
+        }
 
     return orionHappy; //if this is 1 it means that orion is NOT happy
 }
