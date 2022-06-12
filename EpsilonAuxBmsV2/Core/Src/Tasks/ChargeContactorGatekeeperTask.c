@@ -24,7 +24,7 @@ void closeChargeContactor()
     auxBmsContactorState.chargeState = CLOSING;
     // Enable contactor, then delay
     HAL_GPIO_WritePin(CHARGE_ENABLE_GPIO_Port, CHARGE_ENABLE_Pin, GPIO_PIN_SET);
-    osDelay(CONTACTOR_DELAY);
+    osDelay(NON_COMMON_CONTACTOR_CHECK_DELAY);
 
     // Check contactor is set by reading sense pin and checking that precharge current is low depending on if discharge is closed/closing
     uint8_t chargeSense = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
@@ -58,7 +58,7 @@ void closeChargeContactor()
 
     if (!isDischargeClosed) // Discharge not closed so trigger it to turn on again
     {
-        osEventFlagsSet(contactorControlEventBits, DISCHARGE_CLOSED);
+        //osEventFlagsSet(contactorControlEventBits, DISCHARGE_CLOSED);
     }
 }
 

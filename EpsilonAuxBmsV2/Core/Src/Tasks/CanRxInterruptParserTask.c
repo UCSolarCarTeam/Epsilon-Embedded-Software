@@ -56,7 +56,7 @@ void canRxInterruptParser(OrionCanInfo* orionQueueData, CanRxQueueData* canQueue
         orionMessageReceived = 1;
         *packReceived = 1;
     }
-    else if (hdr.StdId == DRIVER_CONTROLS_LIGHTS_INPUTS && hdr.DLC == 1) 
+    else if (hdr.StdId == DRIVER_CONTROLS_LIGHTS_INPUTS) 
     {
         manualChargeTrip = data[0] >> 6; //1 means we trip it
     }
