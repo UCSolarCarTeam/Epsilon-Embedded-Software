@@ -3,6 +3,7 @@
 void startupTask(void* arg)
 {
     uint32_t prevWakeTime = xTaskGetTickCount();
+    uint32_t startUpCounter = 0;
     OrionCanInfo message = (OrionCanInfo)
     {
         0
@@ -10,7 +11,7 @@ void startupTask(void* arg)
 
     for (;;)
     {
-        startup(&prevWakeTime, &message);
+        startup(&prevWakeTime, &message, &startUpCounter);
     }
 }
 
@@ -19,9 +20,9 @@ The first task to execute when the processor starts.
 Its purpose is to check that the precharge current is low, then trigger the execution of the Common Contactor Gatekeeper and exit.
 If the precharge current isn’t low it will keep looping till it’s successful.
 */
-void startup(uint32_t* prevWakeTime, OrionCanInfo *message)
+void startup(uint32_t* prevWakeTime, OrionCanInfo *message, uint32_t* startUpCounter)
 {
-    auxBmsContactorState.orionHappyForStartup = !checkIfOrionGood(message); // 1 means that it should disconnect contactor origionally so orion is not happy if it's one. 
+    auxBmsContactorState.orionHappyForStartup = !checkIfOrionGood(message, startUpCounter); // 1 means that it should disconnect contactor origionally so orion is not happy if it's one. 
     if(auxBmsContactorState.orionHappyForStartup) {
         if (isCurrentLow(0))
         {

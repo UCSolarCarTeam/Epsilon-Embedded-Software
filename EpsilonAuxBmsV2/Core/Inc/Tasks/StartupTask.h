@@ -9,7 +9,7 @@
 static const unsigned int STARTUP_TASK_FREQ = 10; // 100 Hz
 
 void startupTask(void* arg);
-void startup(uint32_t* prevWakeTime, OrionCanInfo *message);
+void startup(uint32_t* prevWakeTime, OrionCanInfo *message, uint32_t* startUpCounter);
 
 extern osEventFlagsId_t contactorControlEventBits;
 extern AuxBmsContactorState auxBmsContactorState;
