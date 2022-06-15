@@ -34,7 +34,7 @@ uint32_t getAvgAccel()
 float calculateMotorCurrent(float accelPercentage)
 {
     // To avoid a software overcurrent, our motor config
-    // is set to have 100 A max current, we scale it so we send 55 A
+    // is set to have 100 A max current, we scale it so we send 69 A
     // on full pedal press
 
     if ((accelPercentage - NON_ZERO_THRESHOLD) > 0 )
@@ -219,7 +219,8 @@ void sendDriverTask(void const* arg)
 }
 
 void sendDriveCommands(uint32_t* prevWakeTimePtr,
-                       DriveCommandsInfo* driveCommandsInfo)
+                       DriveCommandsInfo* driveCommandsInfo,
+                       uint32_t* switching)
 {
     osDelayUntil(prevWakeTimePtr, DRIVE_COMMANDS_FREQ);
 
@@ -271,21 +272,38 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
         // To stop without regen braking, zero both motorCurrentOut and motorVelocityOut
         // https://tritium.com.au/includes/TRI88.004v4-Users-Manual.pdf - Section 13
 
-        motorVelocityOut = 0;
-
-        // Alow regen braking based on input from AuxBMS
-        if (allowCharge)
-        {
-            driveCommandsInfo->motorCurrentOut =
-                calculateRegenMotorCurrent(regenPercentage, driveCommandsInfo->motorCurrentOut);
+        if(driveCommandsInfo->motorState == Accelerating) {
+            switching = 1;
         }
-        else
-        {
-            driveCommandsInfo->motorCurrentOut = 0;
+
+        driveCommandsInfo->motorState = RegenBraking;
+
+        if(switching) {
+            driveCommandsInfo->motorCurrentOut =
+                    calculateRegenMotorCurrent(0, driveCommandsInfo->motorCurrentOut);
+
+            if(driveCommandsInfo->motorCurrentOut < 5) {
+                switching = 0;
+            }
+            
+        } else {
+            motorVelocityOut = 0;
+
+            // Alow regen braking based on input from AuxBMS
+            if (allowCharge)
+            {
+                driveCommandsInfo->motorCurrentOut =
+                    calculateRegenMotorCurrent(regenPercentage, driveCommandsInfo->motorCurrentOut);
+            }
+            else
+            {
+                driveCommandsInfo->motorCurrentOut = 0;
+            }
         }
     }
     else if (brake) // Mechanical Brake Pressed
     {
+        driveCommandsInfo->motorState = MechanicalBreaking;
         motorVelocityOut = 0;
         driveCommandsInfo->motorCurrentOut = 0;
     }
@@ -293,6 +311,7 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
     {
         if (forward && allowDischarge) // Forward state
         {
+            driveCommandsInfo->motorState = Accelerating;
             HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
             motorVelocityOut = MAX_FORWARD_RPM;
             driveCommandsInfo->motorCurrentOut =
@@ -300,6 +319,7 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
         }
         else if (reverse && allowDischarge) // Reverse State
         {
+            driveCommandsInfo->motorState = Accelerating;
             HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
             motorVelocityOut = MAX_REVERSE_RPM;
             driveCommandsInfo->motorCurrentOut =
@@ -307,12 +327,14 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
         }
         else
         {
+            driveCommandsInfo->motorState = Off;
             motorVelocityOut = 0;
             driveCommandsInfo->motorCurrentOut = 0;
         }
     }
     else // Off state
     {
+        driveCommandsInfo->motorState = Off;
         motorVelocityOut = 0;
         driveCommandsInfo->motorCurrentOut = 0;
     }
@@ -367,14 +389,17 @@ void sendDriveCommandsTask(void const* arg)
     DriveCommandsInfo driveCommandsInfo =
     {
         .motorCurrentOut = 0.0f,
+        .motorState = Off,
         .prevResetStatus = 0,
         .regenQueueIndex = 0,
         .accelQueueIndex = 0,
     };
 
+    uint32_t switching = 0;
+
     for (;;)
     {
-        sendDriveCommands(&prevWakeTime, &driveCommandsInfo);
+        sendDriveCommands(&prevWakeTime, &driveCommandsInfo, &switching);
     }
 }
 
