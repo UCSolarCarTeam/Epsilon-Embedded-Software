@@ -282,7 +282,7 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
             driveCommandsInfo->motorCurrentOut =
                     calculateRegenMotorCurrent(0, driveCommandsInfo->motorCurrentOut);
 
-            if(driveCommandsInfo->motorCurrentOut < 5) {
+            if(driveCommandsInfo->motorCurrentOut < SWITCHING_CURRENT) {
                 switching = 0;
             }
             
@@ -309,27 +309,43 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
     }
     else if (accelPercentage > NON_ZERO_THRESHOLD) // Drive state
     {
-        if (forward && allowDischarge) // Forward state
-        {
-            driveCommandsInfo->motorState = Accelerating;
-            HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
-            motorVelocityOut = MAX_FORWARD_RPM;
-            driveCommandsInfo->motorCurrentOut =
-            calculateAccelMotorCurrent(accelPercentage, driveCommandsInfo->motorCurrentOut);
+        if(driveCommandsInfo->motorState == RegenBraking) {
+            switching = 1;
         }
-        else if (reverse && allowDischarge) // Reverse State
-        {
-            driveCommandsInfo->motorState = Accelerating;
-            HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
-            motorVelocityOut = MAX_REVERSE_RPM;
+
+        driveCommandsInfo->motorState = Accelerating;
+
+        if(switching) {
             driveCommandsInfo->motorCurrentOut =
-            calculateAccelMotorCurrent(accelPercentage, driveCommandsInfo->motorCurrentOut);
-        }
-        else
-        {
-            driveCommandsInfo->motorState = Off;
-            motorVelocityOut = 0;
-            driveCommandsInfo->motorCurrentOut = 0;
+                    calculateAccelMotorCurrent(0, driveCommandsInfo->motorCurrentOut);
+
+            if(driveCommandsInfo->motorCurrentOut < SWITCHING_CURRENT) {
+                switching = 0;
+            }
+        
+        } else {
+            if (forward && allowDischarge) // Forward state
+            {
+                driveCommandsInfo->motorState = Accelerating;
+                HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
+                motorVelocityOut = MAX_FORWARD_RPM;
+                driveCommandsInfo->motorCurrentOut =
+                calculateAccelMotorCurrent(accelPercentage, driveCommandsInfo->motorCurrentOut);
+            }
+            else if (reverse && allowDischarge) // Reverse State
+            {
+                driveCommandsInfo->motorState = Accelerating;
+                HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
+                motorVelocityOut = MAX_REVERSE_RPM;
+                driveCommandsInfo->motorCurrentOut =
+                calculateAccelMotorCurrent(accelPercentage, driveCommandsInfo->motorCurrentOut);
+            }
+            else
+            {
+                driveCommandsInfo->motorState = Off;
+                motorVelocityOut = 0;
+                driveCommandsInfo->motorCurrentOut = 0;
+            }
         }
     }
     else // Off state
@@ -376,6 +392,7 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
         // Allocate new CAN Message, deallocated by sender "sendCanTask()"
         msg = (CanMsg*)osPoolAlloc(canPool);
         msg->StdId = MOTOR_RESET_STDID;
+        switching = 1;
         osMessagePut(canQueue, (uint32_t)msg, osWaitForever);
     }
 
