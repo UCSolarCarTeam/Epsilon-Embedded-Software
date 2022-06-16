@@ -1,6 +1,6 @@
 #include "Trip.h"
 
-void updateAuxTrip(OrionCanInfo* message, AuxTrip* auxTripToUpdate)
+void updateAuxTrip(OrionCanInfo* message, AuxTrip* auxTripToUpdate, uint32_t manualChargeTrip)
 {
     uint8_t tripDuetoLowCell = 0;
     uint8_t tripDueToHighTempDuringCharge = 0;
@@ -11,13 +11,14 @@ void updateAuxTrip(OrionCanInfo* message, AuxTrip* auxTripToUpdate)
     const uint8_t chargeSense = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin);
     uint8_t protectionTrip = (!chargeSense && message->packCurrent < 0) && 
                                     (!(auxBmsContactorState.commonState == CLOSING) && !(auxBmsContactorState.chargeState == CLOSING) && !(auxBmsContactorState.dischargeState == CLOSING)
-                                     && !(auxBmsContactorState.commonState == CLOSED && auxBmsContactorState.chargeState == OPEN && auxBmsContactorState.dischargeState == OPEN));
+                                     && !(auxBmsContactorState.commonState == CLOSED && auxBmsContactorState.chargeState == OPEN && auxBmsContactorState.dischargeState == OPEN) 
+                                     && !manualChargeTrip);
 
 
     if (DEFAULT_VOLTAGE_UNITS * message->highCellVoltage >= ORION_MAX_CELL_VOLTAGE)
     {
         tripDuetoHighCell = 1;
-    }
+    } 
 
     // It's ok to just have a high temperature,
     // as long as the car is not charging

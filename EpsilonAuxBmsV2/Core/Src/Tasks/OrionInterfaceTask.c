@@ -65,7 +65,7 @@ void orionInterface(OrionCanInfo* message)
             // Determine trip conditions and contactor settings based on Orion CAN
             localAuxStatus.orionCanReceivedRecently = 1;
             updateAllowChargeAndAllowDischarge(message, &localAuxStatus);
-            updateAuxTrip(message, &localAuxTrip);
+            updateAuxTrip(message, &localAuxTrip, manualChargeTrip);
             localAuxStatus.dischargeShouldTrip = checkDischargeTrip(localAuxTrip);
             localAuxStatus.chargeShouldTrip = checkChargeTrip(localAuxTrip);
             shouldDisconnectContactors = localAuxTrip.protectionTrip
@@ -161,11 +161,27 @@ void orionInterface(OrionCanInfo* message)
 }
 
 /*
+Update AuxTrip in such a way to make common trips permanent.
+*/
+void updateGlobalAuxTrip(AuxTrip* auxTripToRead) {
+    auxTrip.chargeTripDueToHighCellVoltage |= auxTripToRead->chargeTripDueToHighCellVoltage;
+    auxTrip.chargeTripDueToHighTemperatureAndCurrent |= auxTripToRead->chargeTripDueToHighTemperatureAndCurrent;
+    auxTrip.chargeTripDueToPackCurrent |= auxTripToRead->chargeTripDueToPackCurrent;
+    auxTrip.dischargeTripDueToLowCellVoltage = auxTripToRead->dischargeTripDueToLowCellVoltage;
+    auxTrip.dischargeTripDueToHighTemperatureAndCurrent |= auxTripToRead->dischargeTripDueToHighTemperatureAndCurrent;
+    auxTrip.dischargeTripDueToPackCurrent |= auxTripToRead->dischargeTripDueToPackCurrent;
+    auxTrip.protectionTrip |= auxTripToRead->protectionTrip;
+    auxTrip.dischargeNotClosedDueToHighCurrent |= auxTripToRead->dischargeNotClosedDueToHighCurrent;
+    auxTrip.chargeNotClosedDueToHighCurrent |= auxTripToRead->chargeNotClosedDueToHighCurrent;
+    auxTrip.tripDueToOrionMessageTimeout |= auxTripToRead->tripDueToOrionMessageTimeout;
+}
+
+/*
 Updates the desired fields of aux status
 */
 void updateAuxStatus(AuxStatus* auxStatusToRead)
 {
-    auxStatus.strobeBmsLight = auxStatusToRead->strobeBmsLight;
+    auxStatus.strobeBmsLight |= auxStatusToRead->strobeBmsLight;
     auxStatus.allowCharge = auxStatusToRead->allowCharge;
     auxStatus.allowDischarge = auxStatusToRead->allowDischarge;
     auxStatus.orionCanReceivedRecently = auxStatusToRead->orionCanReceivedRecently;
@@ -219,7 +235,7 @@ uint8_t checkIfOrionGood(OrionCanInfo* message, uint32_t* startUpCounter) {
         // Determine trip conditions and contactor settings based on Orion CAN
         localAuxStatus.orionCanReceivedRecently = 1;
         updateAllowChargeAndAllowDischarge(message, &localAuxStatus);
-        updateAuxTrip(message, &localAuxTrip);
+        updateAuxTrip(message, &localAuxTrip, manualChargeTrip);
         localAuxStatus.dischargeShouldTrip = checkDischargeTrip(localAuxTrip);
         localAuxStatus.chargeShouldTrip = checkChargeTrip(localAuxTrip);
         orionHappy = localAuxTrip.protectionTrip
