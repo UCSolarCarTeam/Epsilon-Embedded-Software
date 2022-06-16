@@ -10,6 +10,7 @@
 
 void orionInterfaceTask(void* arg);
 void orionInterface(OrionCanInfo* message);
+void updateGlobalAuxTrip(AuxTrip* auxTripToRead);
 void updateAuxStatus(AuxStatus* auxStatusToRead);
 void updateAllowChargeAndAllowDischarge(OrionCanInfo* message, AuxStatus* auxStatusToUpdate);
 uint8_t checkIfOrionGood(OrionCanInfo* message, uint32_t* startUpCounter);
