@@ -38,7 +38,8 @@ void sendAuxTrip(CanTxGatekeeperQueueData* canQueueData, uint32_t* prevWakeTime)
                                 (auxTrip.protectionTrip << 6) | 
                                 (auxTrip.tripDueToOrionMessageTimeout << 7);
         canQueueData->data[1] = auxTrip.chargeNotClosedDueToHighCurrent |
-                                (auxTrip.dischargeNotClosedDueToHighCurrent << 1);
+                                (auxTrip.dischargeNotClosedDueToHighCurrent << 1) |
+                                (auxTrip.tripDueToContactorDisconnectingUnexpectedly << 2);
         osMessageQueuePut(canTxGatekeeperQueue, canQueueData, 0, TASK_QUEUE_PUT_TIMEOUT);
         osMutexRelease(auxTripMutex);
     }
