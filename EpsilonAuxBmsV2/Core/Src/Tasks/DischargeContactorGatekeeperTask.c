@@ -21,8 +21,11 @@ If the contactor closed succesfully and the charge contactor is open, it will tr
 */
 void closeDischargeContactor()
 {
+    while (auxBmsContactorState.chargeState == CLOSING) {}
+
     auxBmsContactorState.dischargeState = CLOSING;
     // Enable contactor, then delay
+
     HAL_GPIO_WritePin(DISCHARGE_ENABLE_GPIO_Port, DISCHARGE_ENABLE_Pin, GPIO_PIN_SET);
     osDelay(NON_COMMON_CONTACTOR_CHECK_DELAY);
 

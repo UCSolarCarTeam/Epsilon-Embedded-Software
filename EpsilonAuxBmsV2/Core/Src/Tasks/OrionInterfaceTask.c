@@ -101,7 +101,7 @@ void orionInterface(OrionCanInfo* message)
         // Not returning if mutex not acuired so that we can still control the contactors
         if (osMutexAcquire(auxTripMutex, MUTEX_TIMEOUT) == osOK)
         {
-            auxTrip = localAuxTrip;
+            updateGlobalAuxTrip(&localAuxTrip);
             osMutexRelease(auxTripMutex);
         }
 
@@ -187,8 +187,8 @@ void updateAuxStatus(AuxStatus* auxStatusToRead)
     auxStatus.allowCharge = auxStatusToRead->allowCharge;
     auxStatus.allowDischarge = auxStatusToRead->allowDischarge;
     auxStatus.orionCanReceivedRecently = auxStatusToRead->orionCanReceivedRecently;
-    auxStatus.dischargeShouldTrip = auxStatusToRead->dischargeShouldTrip;
-    auxStatus.chargeShouldTrip = auxStatusToRead->chargeShouldTrip;
+    auxStatus.dischargeShouldTrip |= auxStatusToRead->dischargeShouldTrip;
+    auxStatus.chargeShouldTrip |= auxStatusToRead->chargeShouldTrip;
 }
 
 /*

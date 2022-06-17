@@ -12,4 +12,4 @@ static const int ORION_MAX_CHARGE_TEMP = 44;
 static const short ORION_MAX_CHARGE_CURRENT = -47;
 
 static const int ORION_MAX_DISCHARGE_TEMP = 59;
-static const short ORION_MAX_DISCHARGE_CURRENT = 229;
+static const short ORION_MAX_DISCHARGE_CURRENT = 229; //229
