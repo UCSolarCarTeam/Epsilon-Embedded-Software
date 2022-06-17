@@ -284,6 +284,7 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
 
             if(driveCommandsInfo->motorCurrentOut < SWITCHING_CURRENT) {
                 switching = 0;
+                driveCommandsInfo->motorCurrentOut = 0;
             }
             
         } else {
@@ -321,6 +322,7 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
 
             if(driveCommandsInfo->motorCurrentOut < SWITCHING_CURRENT) {
                 switching = 0;
+                driveCommandsInfo->motorCurrentOut = 0;
             }
         
         } else {
