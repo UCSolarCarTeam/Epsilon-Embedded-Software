@@ -266,6 +266,16 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
         motorVelocityOut = 0;
         driveCommandsInfo->motorCurrentOut = 0;
     }
+    else if (driveCommandsInfo->resetStatus == SettingReset)
+    {
+        driveCommandsInfo->motorCurrentOut =
+                    calculateRegenMotorCurrent(0, driveCommandsInfo->motorCurrentOut);
+
+            if(driveCommandsInfo->motorCurrentOut < SWITCHING_CURRENT) {
+                driveCommandsInfo->resetStatus = Resetting;
+                driveCommandsInfo->motorCurrentOut = 0;
+            }
+    }
     else if (regenPercentage > NON_ZERO_THRESHOLD) // Regen state
     {
         // To stop using regen braking, set motorCurrentOut to desired value and zero motorVelocityOut
@@ -273,17 +283,17 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
         // https://tritium.com.au/includes/TRI88.004v4-Users-Manual.pdf - Section 13
 
         if(driveCommandsInfo->motorState == Accelerating) {
-            switching = 1;
+            *switching = 1;
         }
 
         driveCommandsInfo->motorState = RegenBraking;
 
-        if(switching) {
+        if(*switching) {
             driveCommandsInfo->motorCurrentOut =
                     calculateRegenMotorCurrent(0, driveCommandsInfo->motorCurrentOut);
 
             if(driveCommandsInfo->motorCurrentOut < SWITCHING_CURRENT) {
-                switching = 0;
+                *switching = 0;
                 driveCommandsInfo->motorCurrentOut = 0;
             }
             
@@ -311,17 +321,17 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
     else if (accelPercentage > NON_ZERO_THRESHOLD) // Drive state
     {
         if(driveCommandsInfo->motorState == RegenBraking) {
-            switching = 1;
+            *switching = 1;
         }
 
         driveCommandsInfo->motorState = Accelerating;
 
-        if(switching) {
+        if(*switching) {
             driveCommandsInfo->motorCurrentOut =
                     calculateAccelMotorCurrent(0, driveCommandsInfo->motorCurrentOut);
 
             if(driveCommandsInfo->motorCurrentOut < SWITCHING_CURRENT) {
-                switching = 0;
+                *switching = 0;
                 driveCommandsInfo->motorCurrentOut = 0;
             }
         
@@ -352,9 +362,26 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
     }
     else // Off state
     {
+        if(driveCommandsInfo->motorState == Accelerating) {
+            *switching = 1;
+        }
+
+        driveCommandsInfo->motorState = Off;
+
+        if(*switching) {
+            driveCommandsInfo->motorCurrentOut =
+                    calculateRegenMotorCurrent(0, driveCommandsInfo->motorCurrentOut);
+
+            if(driveCommandsInfo->motorCurrentOut < SWITCHING_CURRENT) {
+                *switching = 0;
+                driveCommandsInfo->motorCurrentOut = 0;
+            }
+            
+        } else {
         driveCommandsInfo->motorState = Off;
         motorVelocityOut = 0;
         driveCommandsInfo->motorCurrentOut = 0;
+        }
     }
 
     // Reset input velocities to default
@@ -391,11 +418,15 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
 
     if (!driveCommandsInfo->prevResetStatus && reset) /// off -> on
     {
-        // Allocate new CAN Message, deallocated by sender "sendCanTask()"
+        driveCommandsInfo->resetStatus = SettingReset;
+    }
+
+    if(driveCommandsInfo->resetStatus == Resetting) {
+        //Allocate new CAN Message, deallocated by sender "sendCanTask()"
         msg = (CanMsg*)osPoolAlloc(canPool);
         msg->StdId = MOTOR_RESET_STDID;
-        switching = 1;
         osMessagePut(canQueue, (uint32_t)msg, osWaitForever);
+        driveCommandsInfo->resetStatus = NotResetting;
     }
 
     driveCommandsInfo->prevResetStatus = reset;
@@ -409,6 +440,7 @@ void sendDriveCommandsTask(void const* arg)
     {
         .motorCurrentOut = 0.0f,
         .motorState = Off,
+        .resetStatus = NotResetting,
         .prevResetStatus = 0,
         .regenQueueIndex = 0,
         .accelQueueIndex = 0,

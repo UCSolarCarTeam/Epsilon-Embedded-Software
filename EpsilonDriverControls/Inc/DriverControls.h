@@ -26,7 +26,7 @@
 #define DRIVER_STDID 0x703U
 #define DRIVER_DLC 4
 
-#define DRIVE_COMMANDS_FREQ 50
+#define DRIVE_COMMANDS_FREQ 10
 #define MOTOR_DRIVE_STDID 0x501U
 #define MOTOR_DRIVE_DLC 8
 #define MOTOR_POWER_STDID 0x502U
@@ -34,7 +34,7 @@
 #define MOTOR_RESET_STDID 0x503U
 #define MOTOR_PERCENTAGE_REDUCER 1.0f
 
-#define SWITCHING_CURRENT 8
+#define SWITCHING_CURRENT 0.01f
 
 #define ADC_POLL_TIMEOUT 10
 
@@ -73,18 +73,25 @@ typedef struct
     uint8_t Data[8];
 } CanMsg;
 
-enum motorStates {
+enum MotorStates {
     Accelerating,
     RegenBraking,
     MechanicalBreaking,
     Off
 };
 
+enum ResetStatus {
+    NotResetting,
+    SettingReset,
+    Resetting
+};
+
 typedef struct DriveCommandsInfo
 {
     float motorCurrentOut;
-    enum motorStates motorState;
+    enum MotorStates motorState;
     uint8_t prevResetStatus;
+    enum ResetStatus resetStatus;
     uint8_t regenQueueIndex;
     uint8_t accelQueueIndex;
 } DriveCommandsInfo;
