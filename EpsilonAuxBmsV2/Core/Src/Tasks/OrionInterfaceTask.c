@@ -128,7 +128,7 @@ void orionInterface(OrionCanInfo* message)
             }
             else if (auxBmsContactorState.startupDone)
             {
-                if (auxBmsContactorState.chargeState == OPEN && (!(auxBmsContactorState.dischargeState == CLOSING) || !(auxBmsContactorState.dischargeState == CONTACTOR_ERROR)) && !manualChargeTrip)
+                if (auxBmsContactorState.chargeState == OPEN && !((auxBmsContactorState.dischargeState == CLOSING)) && !manualChargeTrip)
                 //if (auxBmsContactorState.chargeState == OPEN && !manualChargeTrip)
                 {
                     contactorControlEventFlags |= CHARGE_CLOSED;
@@ -147,7 +147,7 @@ void orionInterface(OrionCanInfo* message)
                 // Only close discharge if discharge is currently open, and charge is currently closed
                 // The reason for this is so we avoid any race conditions in both contactors closing at the same time
                 // Charge will have a higher priority in closing (and it should trigger discharge to close anyways if discharge is open)
-                if ((auxBmsContactorState.dischargeState == OPEN) && (!(auxBmsContactorState.chargeState == CLOSING) || !(auxBmsContactorState.chargeState == CONTACTOR_ERROR)))
+                if ((auxBmsContactorState.dischargeState == OPEN) && !((auxBmsContactorState.chargeState == CLOSING)))
                 //if ((auxBmsContactorState.dischargeState == OPEN) && ((auxBmsContactorState.chargeState == CLOSED) || (manualChargeTrip && auxBmsContactorState.chargeState == OPEN)))
                 {
                     contactorControlEventFlags |= DISCHARGE_CLOSED;
