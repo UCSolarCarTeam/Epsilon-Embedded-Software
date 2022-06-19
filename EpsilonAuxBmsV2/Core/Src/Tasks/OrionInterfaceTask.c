@@ -34,7 +34,7 @@ When opening a contactor, it temporarily raises the gatekeeper task’s priority
 */
 void orionInterface(OrionCanInfo* message)
 {
-    if (auxBmsContactorState.orionHappyForStartup) {
+    if (auxBmsContactorState.orionHappyForStartup && !auxBmsContactorState.contactorsDisconnected) {
         osStatus_t status = osMessageQueueGet(orionInterfaceQueue, message, NULL, ORION_QUEUE_TIMEOUT);
 
         uint8_t shouldDisconnectContactors = 0;
