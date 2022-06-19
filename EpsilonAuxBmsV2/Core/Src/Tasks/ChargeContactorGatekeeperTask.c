@@ -42,7 +42,7 @@ void closeChargeContactor()
         if (!currentLow) { //something closed that isn't supposed to be 
             if (osMutexAcquire(auxTripMutex, MUTEX_TIMEOUT) == osOK)
             {
-                auxTrip.chargeNotClosedDueToHighCurrent = 1;
+                auxTrip.chargeNotClosedDueToHighCurrent |= 1;
                 osMutexRelease(auxTripMutex);
             }
         }
