@@ -9,6 +9,13 @@ charge and discharge to turn off.
 void disconnectContactors()
 {
     auxBmsContactorState.contactorsDisconnected = 1;
+
+    if (osMutexAcquire(auxStatusOrionInterfaceMutex, MUTEX_TIMEOUT) == osOK)
+    {
+        auxStatus.strobeBmsLight = 1;
+        osMutexRelease(auxStatusOrionInterfaceMutex);
+    }
+
     osThreadSetPriority (chargeContactorGatekeeperTaskHandle, osPriorityRealtime);
     osThreadSetPriority (dischargeContactorGatekeeperTaskHandle, osPriorityRealtime);
     osThreadSetPriority (commonContactorGatekeeperTaskHandle, osPriorityRealtime);
