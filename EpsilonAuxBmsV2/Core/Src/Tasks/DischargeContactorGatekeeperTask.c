@@ -44,7 +44,7 @@ void closeDischargeContactor()
         if (!currentLow) { //something closed that isn't supposed to be 
             if (osMutexAcquire(auxTripMutex, MUTEX_TIMEOUT) == osOK)
             {
-                auxTrip.dischargeNotClosedDueToHighCurrent = 1;
+                auxTrip.dischargeNotClosedDueToHighCurrent |= 1;
                 osMutexRelease(auxTripMutex);
             }
         }

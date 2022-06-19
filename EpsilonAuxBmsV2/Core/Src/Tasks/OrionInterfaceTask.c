@@ -167,7 +167,7 @@ void updateGlobalAuxTrip(AuxTrip* auxTripToRead) {
     auxTrip.chargeTripDueToHighCellVoltage |= auxTripToRead->chargeTripDueToHighCellVoltage;
     auxTrip.chargeTripDueToHighTemperatureAndCurrent |= auxTripToRead->chargeTripDueToHighTemperatureAndCurrent;
     auxTrip.chargeTripDueToPackCurrent |= auxTripToRead->chargeTripDueToPackCurrent;
-    auxTrip.dischargeTripDueToLowCellVoltage = auxTripToRead->dischargeTripDueToLowCellVoltage;
+    auxTrip.dischargeTripDueToLowCellVoltage |= auxTripToRead->dischargeTripDueToLowCellVoltage;
     auxTrip.dischargeTripDueToHighTemperatureAndCurrent |= auxTripToRead->dischargeTripDueToHighTemperatureAndCurrent;
     auxTrip.dischargeTripDueToPackCurrent |= auxTripToRead->dischargeTripDueToPackCurrent;
     auxTrip.protectionTrip |= auxTripToRead->protectionTrip;
@@ -253,7 +253,7 @@ uint8_t checkIfOrionGood(OrionCanInfo* message, uint32_t* startUpCounter) {
 
     if (osMutexAcquire(auxTripMutex, MUTEX_TIMEOUT) == osOK)
         {
-            auxTrip = localAuxTrip;
+            updateGlobalAuxTrip(&localAuxTrip);
             osMutexRelease(auxTripMutex);
         }
 
