@@ -339,7 +339,7 @@ void sendAuxBms()
     packetPayload[7] = auxBmsData.allowDischarge;
     packetPayload[8] = auxBmsData.orionCanReceivedRecently;
     writeBoolsIntoArray(packetPayload, 9, &auxBmsData.contactorDebugInfo, 7);
-    writeBoolsIntoArray(packetPayload, 10, &auxBmsData.auxTrip, 10);
+    writeBoolsIntoArray(packetPayload, 10, &auxBmsData.auxTrip, 11);
 
     addChecksum(packetPayload, AUX_BMS_DETAILS_LENGTH);
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];

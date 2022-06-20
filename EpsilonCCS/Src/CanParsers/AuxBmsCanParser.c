@@ -63,4 +63,5 @@ void parseAuxTrip(uint8_t* data)
 
     auxBmsData.auxTrip.chargeNotClosedDueToHighCurrent = data[1] & CHARGE_NOT_CLOSED_DUE_TO_HIGH_CURRENT_MASK;
     auxBmsData.auxTrip.dischargeNotClosedDueToHighCurrent = data[1] & DISCHARGE_NOT_CLOSED_DUE_TO_HIGH_CURRENT_MASK;
+    auxBmsData.auxTrip.tripDueToContactorDisconnectedUnexpectedly = data[1] & CONTACTOR_DISCONNECTED_UNEXPECTEDLY_MASK;
 }

@@ -30,8 +30,9 @@
 #define DISCHARGE_TRIP_DUE_TO_PACK_CURRENT_MASK (0x20)
 #define PROTECTION_TRIP_MASK (0x40)
 #define TRIP_DUE_TO_ORION_MESSAGE_TIMEOUT_MASK (0x80)
-#define CHARGE_NOT_CLOSED_DUE_TO_HIGH_CURRENT_MASK (0x100)
-#define DISCHARGE_NOT_CLOSED_DUE_TO_HIGH_CURRENT_MASK (0x200)
+#define CHARGE_NOT_CLOSED_DUE_TO_HIGH_CURRENT_MASK (0x01)
+#define DISCHARGE_NOT_CLOSED_DUE_TO_HIGH_CURRENT_MASK (0x02)
+#define CONTACTOR_DISCONNECTED_UNEXPECTEDLY_MASK (0x04)
 
 enum BatteryPrechargeState
 {
@@ -55,6 +56,7 @@ struct AuxTrip
     unsigned char dischargeNotClosedDueToHighCurrent;
     unsigned char chargeNotClosedDueToHighCurrent;
     unsigned char tripDueToOrionMessageTimeout;
+    unsigned char tripDueToContactorDisconnectedUnexpectedly;
 };
 
 struct ContactorDebugInfo
