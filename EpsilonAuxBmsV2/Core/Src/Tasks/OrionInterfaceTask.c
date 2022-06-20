@@ -247,11 +247,12 @@ uint8_t checkIfOrionGood(OrionCanInfo* message, uint32_t* startUpCounter) {
 
     startUpCounter += orionHappy;
 
-    if(orionHappy && *startUpCounter > 30) {
+    if(orionHappy && *startUpCounter > 15) {
         localAuxStatus.strobeBmsLight = 1;
     }
 
-    if (osMutexAcquire(auxTripMutex, MUTEX_TIMEOUT) == osOK)
+    if(orionHappy) {
+        if (osMutexAcquire(auxTripMutex, MUTEX_TIMEOUT) == osOK)
         {
             updateGlobalAuxTrip(&localAuxTrip);
             osMutexRelease(auxTripMutex);
@@ -262,6 +263,25 @@ uint8_t checkIfOrionGood(OrionCanInfo* message, uint32_t* startUpCounter) {
             updateAuxStatus(&localAuxStatus);
             osMutexRelease(auxStatusOrionInterfaceMutex);
         }
+    } else {
+        if (osMutexAcquire(auxTripMutex, MUTEX_TIMEOUT) == osOK)
+        {
+            auxTrip = (AuxTrip)
+        {
+            0
+        };
+            osMutexRelease(auxTripMutex);
+        }
+
+        if (osMutexAcquire(auxStatusOrionInterfaceMutex, MUTEX_TIMEOUT) == osOK)
+        {
+            auxStatus.strobeBmsLight = 0;
+            auxStatus.dischargeShouldTrip = 0;
+            auxStatus.chargeShouldTrip = 0;
+            osMutexRelease(auxStatusOrionInterfaceMutex);
+        }
+
+    }
 
     return orionHappy; //if this is 1 it means that orion is NOT happy
 }
