@@ -188,7 +188,7 @@ void writeBoolsIntoArray(unsigned char* data, int index, unsigned char* values, 
     }
 }
 
-void writeBoolsIntoArray(unsigned char* data, int index, unsigned char* values, int numValues, int startIndex)
+void writeBoolsIntoArrayMultipleBytes(unsigned char* data, int index, unsigned char* values, int numValues, int startIndex)
 {
     index -= 1;
 
