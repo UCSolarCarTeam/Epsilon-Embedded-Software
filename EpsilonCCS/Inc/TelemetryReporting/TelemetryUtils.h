@@ -19,3 +19,4 @@ void writeShortIntoArray(unsigned char* data, int index, short value);
 void writeUShortIntoArray(unsigned char* data, int index, unsigned short value);
 void writeUIntIntoArray(unsigned char* data, int index, unsigned int value);
 void writeBoolsIntoArray(unsigned char* data, int index, unsigned char* values, int numValues);
+void writeBoolsIntoArray(unsigned char* data, int index, unsigned char* values, int numValues, int startIndex);

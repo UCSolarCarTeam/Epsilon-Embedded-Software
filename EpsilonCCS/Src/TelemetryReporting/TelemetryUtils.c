@@ -187,3 +187,22 @@ void writeBoolsIntoArray(unsigned char* data, int index, unsigned char* values, 
         }
     }
 }
+
+void writeBoolsIntoArray(unsigned char* data, int index, unsigned char* values, int numValues, int startIndex)
+{
+    index -= 1;
+
+    for (int i = startIndex; i < numValues + startIndex; i++)
+    {
+        if ((i % 8) == 0)
+        {
+            index++;
+            data[index] = 0;
+        }
+
+        if (values[i])
+        {
+            data[index] += 1 << (i % 8);
+        }
+    }
+}
