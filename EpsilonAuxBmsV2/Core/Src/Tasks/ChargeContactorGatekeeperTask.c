@@ -55,6 +55,8 @@ void closeChargeContactor()
     }
     else // charge contactor closed succesfully
     {
+        HAL_GPIO_WritePin(MPPT_ENABLE_GPIO_Port, MPPT_ENABLE_Pin, GPIO_PIN_SET);
+        osDelay(CONTACTOR_DELAY);
         auxBmsContactorState.chargeState = CLOSED;
     }
 
@@ -72,6 +74,7 @@ The priority is changed to realtime by:
 */
 void openChargeContactor()
 {
+    HAL_GPIO_WritePin(MPPT_ENABLE_GPIO_Port, MPPT_ENABLE_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(CHARGE_ENABLE_GPIO_Port, CHARGE_ENABLE_Pin, GPIO_PIN_RESET);
     auxBmsContactorState.chargeState = OPEN;
     osThreadSetPriority (chargeContactorGatekeeperTaskHandle, osPriorityNormal);
