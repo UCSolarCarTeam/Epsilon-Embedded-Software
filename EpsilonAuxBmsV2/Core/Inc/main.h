@@ -126,6 +126,11 @@ void Error_Handler(void);
 #define DISCHARGE_ENABLE_Pin CONTACTOR_ENABLE3_Pin
 #define DISCHARGE_ENABLE_GPIO_Port CONTACTOR_ENABLE3_GPIO_Port
 
+#define MPPT_SENSE_Pin SENSE4_Pin 
+#define MPPT_SENSE_GPIO_Port SENSE4_GPIO_Port
+#define MPPT_ENABLE_Pin CONTACTOR_ENABLE4_Pin
+#define MPPT_ENABLE_GPIO_Port CONTACTOR_ENABLE4_GPIO_Port
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
