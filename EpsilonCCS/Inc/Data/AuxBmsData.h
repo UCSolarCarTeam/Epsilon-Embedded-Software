@@ -53,9 +53,9 @@ struct AuxTrip
     unsigned char dischargeTripDueToHighTemperatureAndCurrent;
     unsigned char dischargeTripDueToPackCurrent;
     unsigned char protectionTrip;
-    unsigned char dischargeNotClosedDueToHighCurrent;
-    unsigned char chargeNotClosedDueToHighCurrent;
     unsigned char tripDueToOrionMessageTimeout;
+    unsigned char chargeNotClosedDueToHighCurrent;
+    unsigned char dischargeNotClosedDueToHighCurrent;
     unsigned char tripDueToContactorDisconnectedUnexpectedly;
 };
 
