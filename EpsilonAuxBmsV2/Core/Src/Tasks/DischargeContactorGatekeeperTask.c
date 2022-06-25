@@ -51,7 +51,7 @@ void closeDischargeContactor()
 
         if (isChargeClosed) // charge contactor closed so delay then try again
         {
-            osDelay(CONTACTOR_DELAY);
+            osDelay(NON_COMMON_RETRY_CONTACTOR_DELAY);
             osEventFlagsSet(contactorControlEventBits, DISCHARGE_CLOSED);
         }
     }

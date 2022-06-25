@@ -49,15 +49,28 @@ void closeChargeContactor()
 
         if (isDischargeClosed) // Discharge closed so delay and try again
         {
-            osDelay(CONTACTOR_DELAY);
+            osDelay(NON_COMMON_RETRY_CONTACTOR_DELAY);
             osEventFlagsSet(contactorControlEventBits, CHARGE_CLOSED);
         }
     }
     else // charge contactor closed succesfully
     {
-        HAL_GPIO_WritePin(MPPT_ENABLE_GPIO_Port, MPPT_ENABLE_Pin, GPIO_PIN_SET);
-        osDelay(CONTACTOR_DELAY);
-        auxBmsContactorState.chargeState = CLOSED;
+        HAL_GPIO_WritePin(MPPT_ENABLE_GPIO_Port, MPPT_ENABLE_Pin, GPIO_PIN_SET); //engage solar arrays
+        osDelay(NON_COMMON_CONTACTOR_CHECK_DELAY); //wait a second to avoid closing discharge and engaging the arrays at the same time 
+        chargeSense = !HAL_GPIO_ReadPin(CHARGE_SENSE_GPIO_Port, CHARGE_SENSE_Pin); //ensure the precharger did not open the charge contactor when engaging the arrays
+
+        if(!chargeSense) //precharger did not like engaging the arrays
+        {
+            auxBmsContactorState.chargeState = CONTACTOR_ERROR;
+            HAL_GPIO_WritePin(CHARGE_ENABLE_GPIO_Port, CHARGE_ENABLE_Pin, GPIO_PIN_RESET);
+
+            osDelay(NON_COMMON_RETRY_CONTACTOR_DELAY);
+            osEventFlagsSet(contactorControlEventBits, CHARGE_CLOSED);
+        }
+        else //precharger did not open charge
+        {
+            auxBmsContactorState.chargeState = CLOSED; //yay
+        }
     }
 
     if (!isDischargeClosed) // Discharge not closed so trigger it to turn on again
