@@ -43,7 +43,7 @@
 #define NON_ZERO_THRESHOLD 0.17f
 #define MAX_PEDAL_THRESHOLD 0.71f
 #define MAX_ANALOG 4095 // 12bit ADC (2^12)
-#define REGEN_INPUT_SCALING 0.69f
+#define REGEN_INPUT_SCALING 0.175f
 #define MOTOR_CURRENT_SMOOTHING_FACTOR 0.20f // Smooth current output to prevent big jumps (0-1)
 
 #define AUXBMS_INPUT_STDID 0x721U
