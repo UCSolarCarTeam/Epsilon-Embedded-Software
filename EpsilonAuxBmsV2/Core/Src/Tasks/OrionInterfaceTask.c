@@ -65,7 +65,7 @@ void orionInterface(OrionCanInfo* message)
             // Determine trip conditions and contactor settings based on Orion CAN
             localAuxStatus.orionCanReceivedRecently = 1;
             updateAllowChargeAndAllowDischarge(message, &localAuxStatus);
-            updateAuxTrip(message, &localAuxTrip);
+            updateAuxTrip(message, &localAuxTrip, manualChargeTrip);
             localAuxStatus.dischargeShouldTrip = checkDischargeTrip(localAuxTrip);
             localAuxStatus.chargeShouldTrip = checkChargeTrip(localAuxTrip);
             shouldDisconnectContactors = localAuxTrip.protectionTrip
@@ -99,7 +99,7 @@ void orionInterface(OrionCanInfo* message)
         // Not returning if mutex not acuired so that we can still control the contactors
         if (osMutexAcquire(auxTripMutex, MUTEX_TIMEOUT) == osOK)
         {
-            auxTrip = localAuxTrip;
+            updateGlobalAuxTrip(&localAuxTrip);
             osMutexRelease(auxTripMutex);
         }
 
@@ -110,24 +110,30 @@ void orionInterface(OrionCanInfo* message)
         }
 
         // Trigger contactor control
-        if (shouldDisconnectContactors && auxBmsContactorState.startupDone)
+        if (shouldDisconnectContactors)
         {
-            disconnectContactors();
+            if(auxBmsContactorState.startupDone) {
+                disconnectContactors();
+            }
         }
         else
         {
             uint32_t contactorControlEventFlags = 0;
 
-            if (!localAuxStatus.allowCharge)
+            if (!localAuxStatus.allowCharge || manualChargeTrip)
+            //if (!localAuxStatus.allowCharge || manualChargeTrip)
             {
                 contactorControlEventFlags |= CHARGE_OPENED;
                 osThreadSetPriority (chargeContactorGatekeeperTaskHandle, osPriorityRealtime);
             }
             else if (auxBmsContactorState.startupDone)
             {
-                if (auxBmsContactorState.chargeState == OPEN)
+                if (auxBmsContactorState.chargeState == OPEN && !((auxBmsContactorState.dischargeState == CLOSING)) && !manualChargeTrip)
+                //if (auxBmsContactorState.chargeState == OPEN && !manualChargeTrip)
                 {
                     contactorControlEventFlags |= CHARGE_CLOSED;
+
+                    auxBmsContactorState.chargeState = CLOSING;
                 }
             }
 
@@ -141,9 +147,11 @@ void orionInterface(OrionCanInfo* message)
                 // Only close discharge if discharge is currently open, and charge is currently closed
                 // The reason for this is so we avoid any race conditions in both contactors closing at the same time
                 // Charge will have a higher priority in closing (and it should trigger discharge to close anyways if discharge is open)
-                if ((auxBmsContactorState.dischargeState == OPEN) && (auxBmsContactorState.chargeState == CLOSED))
+                if ((auxBmsContactorState.dischargeState == OPEN) && !((auxBmsContactorState.chargeState == CLOSING)))
+                //if ((auxBmsContactorState.dischargeState == OPEN) && ((auxBmsContactorState.chargeState == CLOSED) || (manualChargeTrip && auxBmsContactorState.chargeState == OPEN)))
                 {
                     contactorControlEventFlags |= DISCHARGE_CLOSED;
+                    auxBmsContactorState.dischargeState = CLOSING;
                 }
             }
 
@@ -153,16 +161,32 @@ void orionInterface(OrionCanInfo* message)
 }
 
 /*
+Update AuxTrip in such a way to make common trips permanent.
+*/
+void updateGlobalAuxTrip(AuxTrip* auxTripToRead) {
+    auxTrip.chargeTripDueToHighCellVoltage |= auxTripToRead->chargeTripDueToHighCellVoltage;
+    auxTrip.chargeTripDueToHighTemperatureAndCurrent |= auxTripToRead->chargeTripDueToHighTemperatureAndCurrent;
+    auxTrip.chargeTripDueToPackCurrent |= auxTripToRead->chargeTripDueToPackCurrent;
+    auxTrip.dischargeTripDueToLowCellVoltage |= auxTripToRead->dischargeTripDueToLowCellVoltage;
+    auxTrip.dischargeTripDueToHighTemperatureAndCurrent |= auxTripToRead->dischargeTripDueToHighTemperatureAndCurrent;
+    auxTrip.dischargeTripDueToPackCurrent |= auxTripToRead->dischargeTripDueToPackCurrent;
+    auxTrip.protectionTrip |= auxTripToRead->protectionTrip;
+    auxTrip.dischargeNotClosedDueToHighCurrent |= auxTripToRead->dischargeNotClosedDueToHighCurrent;
+    auxTrip.chargeNotClosedDueToHighCurrent |= auxTripToRead->chargeNotClosedDueToHighCurrent;
+    auxTrip.tripDueToOrionMessageTimeout |= auxTripToRead->tripDueToOrionMessageTimeout;
+}
+
+/*
 Updates the desired fields of aux status
 */
 void updateAuxStatus(AuxStatus* auxStatusToRead)
 {
-    auxStatus.strobeBmsLight = auxStatusToRead->strobeBmsLight;
-    auxStatus.allowCharge = auxStatusToRead->allowCharge;
-    auxStatus.allowDischarge = auxStatusToRead->allowDischarge;
+    auxStatus.strobeBmsLight |= auxStatusToRead->strobeBmsLight;
+    auxStatus.allowCharge = auxStatusToRead->allowCharge && (auxBmsContactorState.chargeState == CLOSED);
+    auxStatus.allowDischarge = auxStatusToRead->allowDischarge && (auxBmsContactorState.dischargeState == CLOSED);
     auxStatus.orionCanReceivedRecently = auxStatusToRead->orionCanReceivedRecently;
-    auxStatus.dischargeShouldTrip = auxStatusToRead->dischargeShouldTrip;
-    auxStatus.chargeShouldTrip = auxStatusToRead->chargeShouldTrip;
+    auxStatus.dischargeShouldTrip |= auxStatusToRead->dischargeShouldTrip;
+    auxStatus.chargeShouldTrip |= auxStatusToRead->chargeShouldTrip;
 }
 
 /*
@@ -183,7 +207,7 @@ void updateAllowChargeAndAllowDischarge(OrionCanInfo* message, AuxStatus* auxSta
     }
 }
 
-uint8_t checkIfOrionGood(OrionCanInfo* message) {
+uint8_t checkIfOrionGood(OrionCanInfo* message, uint32_t* startUpCounter) {
     osStatus_t status = osMessageQueueGet(orionInterfaceQueue, message, NULL, ORION_QUEUE_TIMEOUT);
 
     uint8_t orionHappy = 0;
@@ -209,6 +233,9 @@ uint8_t checkIfOrionGood(OrionCanInfo* message) {
     else
     {
         // Determine trip conditions and contactor settings based on Orion CAN
+        localAuxStatus.orionCanReceivedRecently = 1;
+        updateAllowChargeAndAllowDischarge(message, &localAuxStatus);
+        updateAuxTrip(message, &localAuxTrip, manualChargeTrip);
         localAuxStatus.dischargeShouldTrip = checkDischargeTrip(localAuxTrip);
         localAuxStatus.chargeShouldTrip = checkChargeTrip(localAuxTrip);
         orionHappy = localAuxTrip.protectionTrip
@@ -217,6 +244,44 @@ uint8_t checkIfOrionGood(OrionCanInfo* message) {
     }
 
     orionHappy |= (!orionDischargeEnableSense && !orionChargeEnableSense);
+
+    startUpCounter += orionHappy;
+
+    if(orionHappy && *startUpCounter > 15) {
+        localAuxStatus.strobeBmsLight = 1;
+    }
+
+    if(orionHappy) {
+        if (osMutexAcquire(auxTripMutex, MUTEX_TIMEOUT) == osOK)
+        {
+            updateGlobalAuxTrip(&localAuxTrip);
+            osMutexRelease(auxTripMutex);
+        }
+
+        if (osMutexAcquire(auxStatusOrionInterfaceMutex, MUTEX_TIMEOUT) == osOK)
+        {
+            updateAuxStatus(&localAuxStatus);
+            osMutexRelease(auxStatusOrionInterfaceMutex);
+        }
+    } else {
+        if (osMutexAcquire(auxTripMutex, MUTEX_TIMEOUT) == osOK)
+        {
+            auxTrip = (AuxTrip)
+        {
+            0
+        };
+            osMutexRelease(auxTripMutex);
+        }
+
+        if (osMutexAcquire(auxStatusOrionInterfaceMutex, MUTEX_TIMEOUT) == osOK)
+        {
+            auxStatus.strobeBmsLight = 0;
+            auxStatus.dischargeShouldTrip = 0;
+            auxStatus.chargeShouldTrip = 0;
+            osMutexRelease(auxStatusOrionInterfaceMutex);
+        }
+
+    }
 
     return orionHappy; //if this is 1 it means that orion is NOT happy
 }

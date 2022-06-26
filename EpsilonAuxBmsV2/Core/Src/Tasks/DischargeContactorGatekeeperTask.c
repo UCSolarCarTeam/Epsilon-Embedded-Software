@@ -21,10 +21,13 @@ If the contactor closed succesfully and the charge contactor is open, it will tr
 */
 void closeDischargeContactor()
 {
+    while (auxBmsContactorState.chargeState == CLOSING) {}
+
     auxBmsContactorState.dischargeState = CLOSING;
     // Enable contactor, then delay
+
     HAL_GPIO_WritePin(DISCHARGE_ENABLE_GPIO_Port, DISCHARGE_ENABLE_Pin, GPIO_PIN_SET);
-    osDelay(CONTACTOR_DELAY);
+    osDelay(NON_COMMON_CONTACTOR_CHECK_DELAY);
 
     // Check contactor is set by reading sense pin and checking that precharge current is low
     uint8_t dischargeSense = !HAL_GPIO_ReadPin(DISCHARGE_SENSE_GPIO_Port, DISCHARGE_SENSE_Pin);
@@ -41,14 +44,14 @@ void closeDischargeContactor()
         if (!currentLow) { //something closed that isn't supposed to be 
             if (osMutexAcquire(auxTripMutex, MUTEX_TIMEOUT) == osOK)
             {
-                auxTrip.dischargeNotClosedDueToHighCurrent = 1;
+                auxTrip.dischargeNotClosedDueToHighCurrent |= 1;
                 osMutexRelease(auxTripMutex);
             }
         }
 
         if (isChargeClosed) // charge contactor closed so delay then try again
         {
-            osDelay(CONTACTOR_DELAY);
+            osDelay(NON_COMMON_RETRY_CONTACTOR_DELAY);
             osEventFlagsSet(contactorControlEventBits, DISCHARGE_CLOSED);
         }
     }
@@ -60,18 +63,8 @@ void closeDischargeContactor()
 
     if (!isChargeClosed) // Charge not closed so trigger charge contactor gatekeeper task to close charge
     {
-        osEventFlagsSet(contactorControlEventBits, CHARGE_CLOSED);
+        //osEventFlagsSet(contactorControlEventBits, CHARGE_CLOSED);
     }
-    
-    if ( !auxBmsContactorState.startupDone
-            && auxBmsContactorState.commonState == CLOSED
-            && auxBmsContactorState.chargeState == CLOSED
-            && auxBmsContactorState.dischargeState == CLOSED)
-    {
-        auxBmsContactorState.startupDone = 1;
-    }
-    getTaskState();
-    getTaskStateList();
 }
 
 /*
@@ -106,31 +99,4 @@ void dischargeContactorGatekeeper()
         closeDischargeContactor();
     }
 
-}
-
-void getTaskState() {
-    TaskStatus_t *pxTaskStatusArray;
-    volatile UBaseType_t uxArraySize;
-
-    uxArraySize = uxTaskGetNumberOfTasks();
-    pxTaskStatusArray = pvPortMalloc(uxArraySize * sizeof(TaskStatus_t));
-
-    uxArraySize = uxTaskGetSystemState(pxTaskStatusArray, uxArraySize, NULL);
-
-    //xHandle
-    //pcTaskName
-    //eCurrentState
-        //eRunning, eReady, eBlocked, eSuspended, eDeleted, eInvalid
-
-    vPortFree(pxTaskStatusArray);
-    
-}
-
-void getTaskStateList() { 
-    //might not be able to use this because we need configUSER_STATS_FORMATTING_FUNCTIONS but it's not available in our FreeRTOSConfig.h
-    char *pcWriteBuffer = pvPortMalloc(13 * 320);
-
-    //vTaskList(pcWriteBuffer);
-
-    vPortFree(pcWriteBuffer);
 }

@@ -1,5 +1,8 @@
 #include "ContactorStatusUpdateTask.h"
 
+extern AuxStatus auxStatus;
+extern AuxTrip auxTrip;
+
 void contactorStatusUpdateTask(void* arg)
 {
     uint32_t prevWakeTime = xTaskGetTickCount();
@@ -43,9 +46,8 @@ void contactorStatusUpdate(uint32_t* prevWakeTime)
 
 
     if ( !auxBmsContactorState.startupDone
-            && auxBmsContactorState.commonState == CLOSED
-            && auxBmsContactorState.chargeState == CLOSED
-            && auxBmsContactorState.dischargeState == CLOSED)
+            && auxBmsContactorState.commonState == CLOSED )
+            //&& (auxBmsContactorState.chargeState == CLOSED || auxBmsContactorState.dischargeState == CLOSED))
     {
         auxBmsContactorState.startupDone = 1;
     }
@@ -57,6 +59,18 @@ void contactorStatusUpdate(uint32_t* prevWakeTime)
        )
     {
         disconnectContactors();
+
+        if (osMutexAcquire(auxStatusOrionInterfaceMutex, MUTEX_TIMEOUT) == osOK)
+        {
+            auxStatus.strobeBmsLight |= 1;
+            osMutexRelease(auxStatusOrionInterfaceMutex);
+        }
+
+        if (osMutexAcquire(auxTripMutex, MUTEX_TIMEOUT) == osOK)
+        {
+            auxTrip.tripDueToContactorDisconnectingUnexpectedly |= 1;
+            osMutexRelease(auxTripMutex);
+        }
     }
 
     *prevWakeTime += CONTACTOR_STATUS_UPDATE_FREQ;

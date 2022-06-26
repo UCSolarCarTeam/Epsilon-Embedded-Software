@@ -114,6 +114,7 @@ ErrorCodes errorCode;
 AuxStatus auxStatus;
 AuxTrip auxTrip;
 AuxBmsContactorState auxBmsContactorState;
+uint32_t manualChargeTrip;
 
 // Task Handles
 osThreadId_t startupTaskHandle;
@@ -710,6 +711,24 @@ void MX_CAN1_User_Init(void)
     orionPackInfoFilterConfig.SlaveStartFilterBank = 0; // Set all filter banks for CAN2
 
     if (HAL_CAN_ConfigFilter(&hcan1, &orionPackInfoFilterConfig) != HAL_OK)
+    {
+        /* Filter configuration Error */
+        Error_Handler();
+    }
+
+    CAN_FilterTypeDef driverControlsFilterConfig;
+    driverControlsFilterConfig.FilterBank = 2; // Use tertiary filter bank
+    driverControlsFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+    driverControlsFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // Look for specific can messages
+    driverControlsFilterConfig.FilterIdHigh = DRIVER_CONTROLS_LIGHTS_INPUTS << 5; // Filter registers need to be shifted left 5 bits
+    driverControlsFilterConfig.FilterIdLow = 0; // Filter registers need to be shifted left 5 bits
+    driverControlsFilterConfig.FilterMaskIdHigh = 0;
+    driverControlsFilterConfig.FilterMaskIdLow = 0; // Unused
+    driverControlsFilterConfig.FilterFIFOAssignment = 0;
+    driverControlsFilterConfig.FilterActivation = ENABLE;
+    driverControlsFilterConfig.SlaveStartFilterBank = 0; // Set all filter banks for CAN2
+
+    if (HAL_CAN_ConfigFilter(&hcan1, &driverControlsFilterConfig) != HAL_OK)
     {
         /* Filter configuration Error */
         Error_Handler();

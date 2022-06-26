@@ -22,7 +22,7 @@ void closeCommonContactor()
     uint8_t orionDischargeEnableSense = HAL_GPIO_ReadPin(ORION_DISCHARGE_ENABLE_SENSE_GPIO_Port, ORION_DISCHARGE_ENABLE_SENSE_Pin);
     uint8_t orionChargeEnableSense = HAL_GPIO_ReadPin(ORION_CHARGE_ENABLE_SENSE_GPIO_Port, ORION_CHARGE_ENABLE_SENSE_Pin);
     HAL_GPIO_WritePin(COMMON_ENABLE_GPIO_Port, COMMON_ENABLE_Pin, GPIO_PIN_SET);
-    osDelay(CONTACTOR_DELAY);
+    osDelay(COMMON_CHECK_CONTACTOR_DELAY);
 
     // Check contactor is set by reading sense pin and checking that precharge current is low
     uint8_t commonSense = !HAL_GPIO_ReadPin(COMMON_SENSE_GPIO_Port, COMMON_SENSE_Pin);
@@ -33,13 +33,13 @@ void closeCommonContactor()
     if (commonSense && currentLow) // Common contactor closed successfully, so trigger charge to turn on
     {
         auxBmsContactorState.commonState = CLOSED;
-        osEventFlagsSet(contactorControlEventBits, CHARGE_CLOSED);
+        //osEventFlagsSet(contactorControlEventBits, CHARGE_CLOSED);
     }
     else   // Common contactor not closed successfully, so delay then try again
     {
         auxBmsContactorState.commonState = CONTACTOR_ERROR;
         HAL_GPIO_WritePin(COMMON_ENABLE_GPIO_Port, COMMON_ENABLE_Pin, GPIO_PIN_RESET);
-        osDelay (CONTACTOR_DELAY);
+        osDelay (COMMON_RETRY_CONTACTOR_DELAY);
         osEventFlagsSet(contactorControlEventBits, COMMON_CLOSED);
     }
 }
