@@ -22,17 +22,19 @@
 #define MUSIC_STDID 0x702U
 #define MUSIC_DLC 1
 
-#define DRIVER_CAN_FREQ 50
+#define DRIVER_CAN_FREQ 25
 #define DRIVER_STDID 0x703U
 #define DRIVER_DLC 4
 
-#define DRIVE_COMMANDS_FREQ 100
+#define DRIVE_COMMANDS_FREQ 10
 #define MOTOR_DRIVE_STDID 0x501U
 #define MOTOR_DRIVE_DLC 8
 #define MOTOR_POWER_STDID 0x502U
 #define MOTOR_POWER_DLC 8
 #define MOTOR_RESET_STDID 0x503U
-#define MOTOR_PERCENTAGE_REDUCER 0.53f
+#define MOTOR_PERCENTAGE_REDUCER 1.0f
+
+#define SWITCHING_CURRENT 0.01f
 
 #define ADC_POLL_TIMEOUT 10
 
@@ -41,8 +43,8 @@
 #define NON_ZERO_THRESHOLD 0.17f
 #define MAX_PEDAL_THRESHOLD 0.71f
 #define MAX_ANALOG 4095 // 12bit ADC (2^12)
-#define REGEN_INPUT_SCALING 0.5f
-#define MOTOR_CURRENT_SMOOTHING_FACTOR 0.15f // Smooth current output to prevent big jumps (0-1)
+#define REGEN_INPUT_SCALING 0.175f
+#define MOTOR_CURRENT_SMOOTHING_FACTOR 0.20f // Smooth current output to prevent big jumps (0-1)
 
 #define AUXBMS_INPUT_STDID 0x721U
 
@@ -71,10 +73,25 @@ typedef struct
     uint8_t Data[8];
 } CanMsg;
 
+enum MotorStates {
+    Accelerating,
+    RegenBraking,
+    MechanicalBreaking,
+    Off
+};
+
+enum ResetStatus {
+    NotResetting,
+    SettingReset,
+    Resetting
+};
+
 typedef struct DriveCommandsInfo
 {
     float motorCurrentOut;
+    enum MotorStates motorState;
     uint8_t prevResetStatus;
+    enum ResetStatus resetStatus;
     uint8_t regenQueueIndex;
     uint8_t accelQueueIndex;
 } DriveCommandsInfo;
@@ -91,7 +108,7 @@ void sendMusicTask(void const* arg);
 void sendDriver(uint32_t* prevWakeTimePtr);
 void sendDriverTask(void const* arg);
 
-void sendDriveCommands(uint32_t* prevWakeTimePtr, DriveCommandsInfo* driveCommandsInfo);
+void sendDriveCommands(uint32_t* prevWakeTimePtr, DriveCommandsInfo* driveCommandsInfo, uint32_t* switching);
 void sendDriveCommandsTask(void const* arg);
 
 void sendCan();
