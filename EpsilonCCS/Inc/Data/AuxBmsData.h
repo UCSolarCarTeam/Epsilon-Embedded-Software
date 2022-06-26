@@ -14,13 +14,13 @@
 #define ALLOW_DISCHARGE_MASK (0X08) //Fourth bit
 #define ORION_CAN_RECEIVED_RECENTLY_MASK (0x10) //Fifth bit
 
-#define CHARGE_CONTACTOR_ERROR_MASK (0x10)
-#define DISCHARGE_CONTACTOR_ERROR_MASK (0x20)
-#define COMMON_CONTACTOR_ERROR_MASK (0x40)
-#define DISCHARGE_SHOULD_TRIP_MASK (0x80)
-#define CHARGE_SHOULD_TRIP_MASK (0x01)
-#define CHARGE_OPEN_BUT_SHOULD_BE_CLOSED_MASK (0x02)
-#define DISCHARGE_OPEN_BUT_SHOULD_BE_CLOSED_MASK (0x04)
+#define CHARGE_CONTACTOR_ERROR_MASK (0x20)
+#define DISCHARGE_CONTACTOR_ERROR_MASK (0x40)
+#define COMMON_CONTACTOR_ERROR_MASK (0x80)
+#define DISCHARGE_SHOULD_TRIP_MASK (0x01)
+#define CHARGE_SHOULD_TRIP_MASK (0x02)
+#define CHARGE_OPEN_BUT_SHOULD_BE_CLOSED_MASK (0x04)
+#define DISCHARGE_OPEN_BUT_SHOULD_BE_CLOSED_MASK (0x08)
 
 #define CHARGE_TRIP_DUE_TO_HIGH_CELL_VOLTAGE_MASK (0x01)
 #define CHARGE_TRIP_DUE_TO_HIGH_TEMPERATURE_AND_CURRENT_MASK (0x02)
@@ -29,6 +29,10 @@
 #define DISCHARGE_TRIP_DUE_TO_HIGH_TEMPERATURE_AND_CURRENT_MASK (0x10)
 #define DISCHARGE_TRIP_DUE_TO_PACK_CURRENT_MASK (0x20)
 #define PROTECTION_TRIP_MASK (0x40)
+#define TRIP_DUE_TO_ORION_MESSAGE_TIMEOUT_MASK (0x80)
+#define CHARGE_NOT_CLOSED_DUE_TO_HIGH_CURRENT_MASK (0x01)
+#define DISCHARGE_NOT_CLOSED_DUE_TO_HIGH_CURRENT_MASK (0x02)
+#define TRIP_DUE_TO_CONTACTOR_DISCONNECTED_UNEXPECTEDLY_MASK (0x04)
 
 enum BatteryPrechargeState
 {
@@ -49,6 +53,10 @@ struct AuxTrip
     unsigned char dischargeTripDueToHighTemperatureAndCurrent;
     unsigned char dischargeTripDueToPackCurrent;
     unsigned char protectionTrip;
+    unsigned char tripDueToOrionMessageTimeout;
+    unsigned char chargeNotClosedDueToHighCurrent;
+    unsigned char dischargeNotClosedDueToHighCurrent;
+    unsigned char tripDueToContactorDisconnectedUnexpectedly;
 };
 
 struct ContactorDebugInfo

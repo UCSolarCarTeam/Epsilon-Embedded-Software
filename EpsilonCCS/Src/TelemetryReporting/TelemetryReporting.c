@@ -23,7 +23,7 @@
 #define BATTERY_DETAILS_LENGTH (48)
 #define MPPT_DETAILS_LENGTH (10)
 #define LIGHTS_DETAILS_LENGTH (3)
-#define AUX_BMS_DETAILS_LENGTH (11)
+#define AUX_BMS_DETAILS_LENGTH (12)
 
 #define CCS_TELEM_PERIOD_MS (200) // 5Hz == 200ms
 
@@ -339,7 +339,7 @@ void sendAuxBms()
     packetPayload[7] = auxBmsData.allowDischarge;
     packetPayload[8] = auxBmsData.orionCanReceivedRecently;
     writeBoolsIntoArray(packetPayload, 9, &auxBmsData.contactorDebugInfo, 7);
-    writeBoolsIntoArray(packetPayload, 10, &auxBmsData.auxTrip, 7);
+    writeBoolsIntoArray(packetPayload, 10, &auxBmsData.auxTrip, 11);
 
     addChecksum(packetPayload, AUX_BMS_DETAILS_LENGTH);
     unsigned char packet[unframedPacketLength + FRAMING_LENGTH_INCREASE];

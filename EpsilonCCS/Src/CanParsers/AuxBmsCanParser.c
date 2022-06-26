@@ -59,4 +59,9 @@ void parseAuxTrip(uint8_t* data)
     auxBmsData.auxTrip.dischargeTripDueToHighTemperatureAndCurrent = data[0] & DISCHARGE_TRIP_DUE_TO_HIGH_TEMPERATURE_AND_CURRENT_MASK;
     auxBmsData.auxTrip.dischargeTripDueToPackCurrent = data[0] & DISCHARGE_TRIP_DUE_TO_PACK_CURRENT_MASK;
     auxBmsData.auxTrip.protectionTrip = data[0] & PROTECTION_TRIP_MASK;
+    auxBmsData.auxTrip.tripDueToOrionMessageTimeout = data[0] & TRIP_DUE_TO_ORION_MESSAGE_TIMEOUT_MASK;
+
+    auxBmsData.auxTrip.chargeNotClosedDueToHighCurrent = data[1] & CHARGE_NOT_CLOSED_DUE_TO_HIGH_CURRENT_MASK;
+    auxBmsData.auxTrip.dischargeNotClosedDueToHighCurrent = data[1] & DISCHARGE_NOT_CLOSED_DUE_TO_HIGH_CURRENT_MASK;
+    auxBmsData.auxTrip.tripDueToContactorDisconnectedUnexpectedly = data[1] & TRIP_DUE_TO_CONTACTOR_DISCONNECTED_UNEXPECTEDLY_MASK;
 }
