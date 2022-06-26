@@ -43,6 +43,7 @@ CAN_HandleTypeDef hcan2;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
+uint8_t reset = 0; //used to reset lights board if CAn messaeed hasnt been received in a while
 uint8_t lightsInputs; // Initialized to 0
 uint8_t batteryErrors[5]; //Initialized to {0,0,0,0,0}
 uint8_t driversInputs[4]; // Initialized to 0

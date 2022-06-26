@@ -275,6 +275,7 @@ void sendHeartbeatTask(void const* arg)
 
 void sendHeartbeat(osMutexId* canHandleMutex, uint32_t* prevWakeTime)
 {
+    reset = 1;
     osDelayUntil(prevWakeTime, LIGHTS_HEARTBEAT_FREQ);
 
     if (osMutexWait(canHandleMutex, 0) != osOK)
@@ -287,10 +288,14 @@ void sendHeartbeat(osMutexId* canHandleMutex, uint32_t* prevWakeTime)
     // Set CAN msg address
     hcan2.pTxMsg->StdId = LIGHTS_HEARTBEAT_STDID;
     // Always 1
-    hcan2.pTxMsg->Data[0] = 1;
+    hcan2.pTxMsg->Data[0] = !reset; //for debuggin purposes on telemetry
     // Send CAN msg
     HAL_CAN_Transmit_IT(&hcan2);
     osMutexRelease(canHandleMutex);
+
+    if(reset) {
+        HAL_NVIC_SystemReset();
+    }
 }
 
 // Reimplement weak definition in stm32f4xx_hal_can.c
@@ -324,6 +329,7 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
         auxBmsInputs[2] = msg->Data[2];
     }
 
+    reset = 0;
 
     __HAL_CAN_CLEAR_FLAG(hcan, CAN_FLAG_FMP0);
 

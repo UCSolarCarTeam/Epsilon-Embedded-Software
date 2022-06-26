@@ -74,6 +74,7 @@ typedef struct RegenBrakeInfo
 } RegenBrakeInfo;
 
 extern CAN_HandleTypeDef hcan2; // main.c
+extern uint8_t reset;
 extern uint8_t lightsInputs;
 extern uint8_t auxBmsInputs[3];
 extern uint8_t batteryErrors[5];
