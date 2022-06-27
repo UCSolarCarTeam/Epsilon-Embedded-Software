@@ -79,6 +79,7 @@ void openDischargeContactor()
     HAL_GPIO_WritePin(DISCHARGE_ENABLE_GPIO_Port, DISCHARGE_ENABLE_Pin, GPIO_PIN_RESET);
     auxBmsContactorState.dischargeState = OPEN;
     osThreadSetPriority(dischargeContactorGatekeeperTaskHandle, osPriorityNormal);
+    osDelay(8000);
 }
 
 /*

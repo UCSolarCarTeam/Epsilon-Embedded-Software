@@ -182,7 +182,7 @@ Updates the desired fields of aux status
 void updateAuxStatus(AuxStatus* auxStatusToRead)
 {
     auxStatus.strobeBmsLight |= auxStatusToRead->strobeBmsLight;
-    auxStatus.allowCharge = auxStatusToRead->allowCharge && (auxBmsContactorState.chargeState == CLOSED);
+    auxStatus.allowCharge = auxStatusToRead->allowCharge && (auxBmsContactorState.chargeState == CLOSED || manualChargeTrip);
     auxStatus.allowDischarge = auxStatusToRead->allowDischarge && (auxBmsContactorState.dischargeState == CLOSED);
     auxStatus.orionCanReceivedRecently = auxStatusToRead->orionCanReceivedRecently;
     auxStatus.dischargeShouldTrip |= auxStatusToRead->dischargeShouldTrip;

@@ -91,6 +91,7 @@ void openChargeContactor()
     HAL_GPIO_WritePin(CHARGE_ENABLE_GPIO_Port, CHARGE_ENABLE_Pin, GPIO_PIN_RESET);
     auxBmsContactorState.chargeState = OPEN;
     osThreadSetPriority (chargeContactorGatekeeperTaskHandle, osPriorityNormal);
+    osDelay(8000);
 }
 
 /*
