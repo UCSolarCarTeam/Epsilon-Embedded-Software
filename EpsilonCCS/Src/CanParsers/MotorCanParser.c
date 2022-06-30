@@ -216,38 +216,43 @@ void parseMotorFaultMessage(uint8_t motorId, uint8_t* data)
         return;
     }
 
-    (*limitData).outputVoltagePwm =
+    if(driverControlData.driverInputs.reset & RESET_MASK) {
+        *limitData = (struct MotorLimitFlags) {0};
+        *errorData = (struct MotorErrorFlags) {0};
+    } else {
+    (*limitData).outputVoltagePwm |=
         data[0] & OUTPUT_VOLTAGE_PWM_LIMIT_MASK;
-    (*limitData).motorCurrent =
+    (*limitData).motorCurrent |=
         data[0] & MOTOR_CURRENT_LIMIT_MASK;
-    (*limitData).velocity =
+    (*limitData).velocity |=
         data[0] & VELOCITY_LIMIT_MASK;
-    (*limitData).busCurrent =
+    (*limitData).busCurrent |=
         data[0] & BUS_CURRENT_LIMIT_MASK;
-    (*limitData).busVoltageUpper =
+    (*limitData).busVoltageUpper |=
         data[0] & BUS_VOLTAGE_UPPER_LIMIT_MASK;
-    (*limitData).busVoltageLower =
+    (*limitData).busVoltageLower |=
         data[0] & BUS_VOLTAGE_LOWER_LIMIT_MASK;
-    (*limitData).ipmOrMotorTemperature =
+    (*limitData).ipmOrMotorTemperature |=
         data[0] & IPM_OR_MOTOR_TEMPERATURE_LIMIT_MASK;
 
-    (*errorData).motorOverSpeed =
+    (*errorData).motorOverSpeed |=
         data[1] & MOTOR_OVER_SPEED_MASK;
-    (*errorData).softwareOverCurrent =
+    (*errorData).softwareOverCurrent |=
         data[0] & SOFTWARE_OVER_CURRENT_MASK;
-    (*errorData).dcBusOverVoltage =
+    (*errorData).dcBusOverVoltage |=
         data[0] & DC_BUS_OVER_VOLTAGE_MASK;
-    (*errorData).badMotorPositionHallSequence =
+    (*errorData).badMotorPositionHallSequence |=
         data[0] & BAD_MOTOR_POSITION_HALL_SEQUENCE_MASK;
-    (*errorData).watchdogCausedLastReset =
+    (*errorData).watchdogCausedLastReset |=
         data[0] & WATCHDOG_CAUSED_LAST_RESET_MASK;
-    (*errorData).configReadError =
+    (*errorData).configReadError |=
         data[0] & CONFIG_READ_ERROR_MASK;
-    (*errorData).rail15vUnderVoltageLockOut =
+    (*errorData).rail15vUnderVoltageLockOut |=
         data[0] & RAIL_15V_UNDER_VOLTAGE_LOCK_OUT_MASK;
-    (*errorData).desaturationFault =
+    (*errorData).desaturationFault |=
         data[0] & DESATURATION_FAULT_MASK;
-
+    }
+    
     *rxErrorData = data[7];
     *txErrorData = data[6];
 }
