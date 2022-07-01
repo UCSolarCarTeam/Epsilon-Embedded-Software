@@ -222,9 +222,9 @@ void parseMotorFaultMessage(uint8_t motorId, uint8_t* data)
     } else {
     (*limitData).outputVoltagePwm |=
         data[0] & OUTPUT_VOLTAGE_PWM_LIMIT_MASK;
-    (*limitData).motorCurrent |=
+    (*limitData).motorCurrent =
         data[0] & MOTOR_CURRENT_LIMIT_MASK;
-    (*limitData).velocity |=
+    (*limitData).velocity =
         data[0] & VELOCITY_LIMIT_MASK;
     (*limitData).busCurrent |=
         data[0] & BUS_CURRENT_LIMIT_MASK;
