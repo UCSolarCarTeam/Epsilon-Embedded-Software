@@ -1391,8 +1391,8 @@ extern volatile uint32_t uiTraceSystemState;
 	trcKERNEL_HOOKS_KERNEL_SERVICE(TRACE_GET_OBJECT_EVENT_CODE(SEND, TRCFAILED, QUEUE, pxMutex), QUEUE, pxMutex);
 
 /* Called when a message is sent to a queue */	/* CS IS NEW ! */
-#undef traceQUEUE_SEND
-#define traceQUEUE_SEND( pxQueue ) \
+#undef traceQUEUE_SET_SEND
+#define traceQUEUE_SET_SEND( pxQueue ) \
 	trcKERNEL_HOOKS_KERNEL_SERVICE(xCopyPosition == queueSEND_TO_BACK ? (TRACE_GET_OBJECT_EVENT_CODE(SEND, TRCSUCCESS, QUEUE, pxQueue)) : TRACE_QUEUE_SEND_TO_FRONT_TRCSUCCESS, QUEUE, pxQueue); \
 	trcKERNEL_HOOKS_SET_OBJECT_STATE(QUEUE, pxQueue, TRACE_GET_OBJECT_TRACE_CLASS(QUEUE, pxQueue) == TRACE_CLASS_MUTEX ? (uint8_t)0 : (uint8_t)(pxQueue->uxMessagesWaiting + 1));
 
@@ -2403,8 +2403,8 @@ TraceHeapHandle_t xTraceKernelPortGetSystemHeapHandle(void);
 	prvTraceStoreEvent_Handle(PSF_EVENT_MUTEX_GIVE_RECURSIVE_FAILED, (void*)(pxMutex))
 
 /* Called when a message is sent to a queue */	/* CS IS NEW ! */
-#undef traceQUEUE_SEND
-#define traceQUEUE_SEND( pxQueue ) \
+#undef traceQUEUE_SET_SEND
+#define traceQUEUE_SET_SEND( pxQueue ) \
 	switch ((pxQueue)->ucQueueType) \
 	{ \
 		case queueQUEUE_TYPE_BASE: \

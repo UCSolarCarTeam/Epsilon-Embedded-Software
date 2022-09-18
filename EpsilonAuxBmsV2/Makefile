@@ -112,7 +112,8 @@ Middlewares/Third_Party/TraceRecorder/trcStaticBuffer.c \
 Middlewares/Third_Party/TraceRecorder/trcStreamingRecorder.c \
 Middlewares/Third_Party/TraceRecorder/trcString.c \
 Middlewares/Third_Party/TraceRecorder/trcTask.c \
-Middlewares/Third_Party/TraceRecorder/trcTimestamp.c
+Middlewares/Third_Party/TraceRecorder/trcTimestamp.c \
+Middlewares/Third_Party/TraceRecorder/streamports/ARM_ITM/trcStreamPort.c
 
 ifeq ($(DEBUG), 1)
 C_SOURCES += Core/Src/Tasks/MemoryDebugTask.c
@@ -190,7 +191,9 @@ C_INCLUDES =  \
 -IDrivers/CMSIS/Device/ST/STM32F4xx/Include \
 -IDrivers/CMSIS/Include \
 -IMiddlewares/Third_Party/TraceRecorder/config \
--IMiddlewares/Third_Party/TraceRecorder/include
+-IMiddlewares/Third_Party/TraceRecorder/include \
+-IMiddlewares/Third_Party/TraceRecorder/streamports/ARM_ITM/config \
+-IMiddlewares/Third_Party/TraceRecorder/streamports/ARM_ITM/include
 
 
 # compile gcc flags
