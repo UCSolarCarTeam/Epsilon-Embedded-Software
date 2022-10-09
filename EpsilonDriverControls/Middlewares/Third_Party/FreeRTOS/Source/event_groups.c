@@ -547,7 +547,7 @@ void vEventGroupDelete( EventGroupHandle_t xEventGroup )
     const List_t* pxTasksWaitingForBits = &( pxEventBits->xTasksWaitingForBits );
     vTaskSuspendAll();
     {
-        traceEVENT_GROUP_DELETE( xEventGroup );
+        traceEVENT_GROUP_DELETE( pxEventBits );
 
         while ( listCURRENT_LIST_LENGTH( pxTasksWaitingForBits ) > ( UBaseType_t ) 0 )
         {

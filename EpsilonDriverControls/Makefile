@@ -25,39 +25,65 @@ BUILD_DIR = build
 # source
 ######################################
 C_SOURCES = \
-  Src/stm32f4xx_hal_timebase_TIM.c \
-  Src/stm32f4xx_it.c \
-  Src/DriverControls.c \
-  Src/main.c \
-  Src/stm32f4xx_hal_msp.c \
-  Src/freertos.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c \
-  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c \
-  Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c \
-  Middlewares/Third_Party/FreeRTOS/Source/croutine.c \
+  Middlewares/Third_Party/TraceRecorder/trcISR.c \
+  Middlewares/Third_Party/TraceRecorder/trcObject.c \
+  Middlewares/Third_Party/TraceRecorder/trcStackMonitor.c \
+  Middlewares/Third_Party/TraceRecorder/trcPrint.c \
+  Middlewares/Third_Party/TraceRecorder/trcTask.c \
+  Middlewares/Third_Party/TraceRecorder/trcMultiCoreEventBuffer.c \
+  Middlewares/Third_Party/TraceRecorder/trcStreamingRecorder.c \
+  Middlewares/Third_Party/TraceRecorder/trcDiagnostics.c \
+  Middlewares/Third_Party/TraceRecorder/trcEventBuffer.c \
+  Middlewares/Third_Party/TraceRecorder/trcEvent.c \
+  Middlewares/Third_Party/TraceRecorder/trcError.c \
+  Middlewares/Third_Party/TraceRecorder/trcHeap.c \
+  Middlewares/Third_Party/TraceRecorder/trcKernelPort.c \
+  Middlewares/Third_Party/TraceRecorder/trcString.c \
+  Middlewares/Third_Party/TraceRecorder/trcExtension.c \
+  Middlewares/Third_Party/TraceRecorder/trcInterval.c \
+  Middlewares/Third_Party/TraceRecorder/trcInternalEventBuffer.c \
+  Middlewares/Third_Party/TraceRecorder/trcCounter.c \
+  Middlewares/Third_Party/TraceRecorder/trcSnapshotRecorder.c \
+  Middlewares/Third_Party/TraceRecorder/trcEntryTable.c \
+  Middlewares/Third_Party/TraceRecorder/trcTimestamp.c \
+  Middlewares/Third_Party/TraceRecorder/trcStateMachine.c \
+  Middlewares/Third_Party/TraceRecorder/trcStaticBuffer.c \
+  Middlewares/Third_Party/TraceRecorder/trcHardwarePort.c \
+  Middlewares/Third_Party/TraceRecorder/trcAssert.c \
+  Middlewares/Third_Party/TraceRecorder/streamports/ARM_ITM/trcStreamPort.c \
   Middlewares/Third_Party/FreeRTOS/Source/list.c \
-  Middlewares/Third_Party/FreeRTOS/Source/queue.c \
   Middlewares/Third_Party/FreeRTOS/Source/timers.c \
+  Middlewares/Third_Party/FreeRTOS/Source/croutine.c \
+  Middlewares/Third_Party/FreeRTOS/Source/queue.c \
   Middlewares/Third_Party/FreeRTOS/Source/tasks.c \
   Middlewares/Third_Party/FreeRTOS/Source/event_groups.c \
   Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c \
   Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c \
-  Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c  
+  Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c \
+  Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c \
+  Src/freertos.c \
+  Src/stm32f4xx_hal_msp.c \
+  Src/stm32f4xx_hal_timebase_TIM.c \
+  Src/stm32f4xx_it.c \
+  Src/DriverControls.c \
+  Src/main.c   
 ASM_SOURCES = \
   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f407xx.s
 
@@ -80,14 +106,19 @@ AS_DEFS =
 C_DEFS = -D__weak="__attribute__((weak))" -D__packed="__attribute__((__packed__))" -DUSE_HAL_DRIVER -DSTM32F407xx
 # includes for gcc
 AS_INCLUDES =
-C_INCLUDES = -IDrivers/STM32F4xx_HAL_Driver/Inc
-C_INCLUDES += -IDrivers/STM32F4xx_HAL_Driver/Inc/Legacy
-C_INCLUDES += -IDrivers/CMSIS/Device/ST/STM32F4xx/Include
-C_INCLUDES += -IDrivers/CMSIS/Include
-C_INCLUDES += -IInc
+C_INCLUDES = -IInc
+C_INCLUDES += -IMiddlewares/Third_Party/TraceRecorder/streamports/ARM_ITM/include
+C_INCLUDES += -IMiddlewares/Third_Party/TraceRecorder/streamports/ARM_ITM/config
+C_INCLUDES += -IMiddlewares/Third_Party/TraceRecorder/include
+C_INCLUDES += -IMiddlewares/Third_Party/TraceRecorder/extras/TraceRecorderInit/include
+C_INCLUDES += -IMiddlewares/Third_Party/TraceRecorder/config
 C_INCLUDES += -IMiddlewares/Third_Party/FreeRTOS/Source/include
 C_INCLUDES += -IMiddlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F
 C_INCLUDES += -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS
+C_INCLUDES += -IDrivers/STM32F4xx_HAL_Driver/Inc
+C_INCLUDES += -IDrivers/STM32F4xx_HAL_Driver/Inc/Legacy
+C_INCLUDES += -IDrivers/CMSIS/Device/ST/STM32F4xx/Include
+C_INCLUDES += -IDrivers/CMSIS/Include
 # compile gcc flags
 ASFLAGS = -mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
 CFLAGS = -mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections

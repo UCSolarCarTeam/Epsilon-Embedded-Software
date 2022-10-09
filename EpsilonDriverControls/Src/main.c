@@ -96,6 +96,7 @@ int main(void)
     MX_ADC1_Init();
     MX_ADC2_Init();
     /* USER CODE BEGIN 2 */
+    vTraceEnable(TRC_START);
     MX_CAN2_UserInit();
     HAL_ADC_Start(&hadc1);
     HAL_ADC_Start(&hadc2);
