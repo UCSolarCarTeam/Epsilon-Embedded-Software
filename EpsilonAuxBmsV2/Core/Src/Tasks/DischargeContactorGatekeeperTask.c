@@ -24,6 +24,7 @@ void closeDischargeContactor()
     while (auxBmsContactorState.chargeState == CLOSING) {}
 
     auxBmsContactorState.dischargeState = CLOSING;
+    vTracePrint(dischargeStateTrace, "CLOSING");
     // Enable contactor, then delay
 
     HAL_GPIO_WritePin(DISCHARGE_ENABLE_GPIO_Port, DISCHARGE_ENABLE_Pin, GPIO_PIN_SET);
@@ -39,6 +40,7 @@ void closeDischargeContactor()
     if (contactorError) // discharge contactor not closed successfully
     {
         auxBmsContactorState.dischargeState = CONTACTOR_ERROR;
+        vTracePrint(dischargeStateTrace, "CONTACTOR ERROR");
         HAL_GPIO_WritePin(DISCHARGE_ENABLE_GPIO_Port, DISCHARGE_ENABLE_Pin, GPIO_PIN_RESET);
 
         if (!currentLow) { //something closed that isn't supposed to be 
@@ -58,6 +60,7 @@ void closeDischargeContactor()
     else  // discharge contactor closed successfully, so turn on HV enable
     {
         auxBmsContactorState.dischargeState = CLOSED;
+        vTracePrint(dischargeStateTrace, "CLOSED");
         HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_SET);
     }
 
@@ -78,6 +81,7 @@ void openDischargeContactor()
     HAL_GPIO_WritePin(HV_ENABLE_GPIO_Port, HV_ENABLE_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(DISCHARGE_ENABLE_GPIO_Port, DISCHARGE_ENABLE_Pin, GPIO_PIN_RESET);
     auxBmsContactorState.dischargeState = OPEN;
+    vTracePrint(dischargeStateTrace, "OPEN");
     osThreadSetPriority(dischargeContactorGatekeeperTaskHandle, osPriorityNormal);
 }
 

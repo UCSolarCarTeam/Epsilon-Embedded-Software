@@ -18,6 +18,7 @@ If the contactor close succesfully it will trigger the charge contactor gatekeep
 void closeCommonContactor()
 {
     auxBmsContactorState.commonState = CLOSING;
+    vTracePrint(commonStateTrace, "CLOSING");
     // Enable contactor, then delay
     uint8_t orionDischargeEnableSense = HAL_GPIO_ReadPin(ORION_DISCHARGE_ENABLE_SENSE_GPIO_Port, ORION_DISCHARGE_ENABLE_SENSE_Pin);
     uint8_t orionChargeEnableSense = HAL_GPIO_ReadPin(ORION_CHARGE_ENABLE_SENSE_GPIO_Port, ORION_CHARGE_ENABLE_SENSE_Pin);
@@ -33,11 +34,13 @@ void closeCommonContactor()
     if (commonSense && currentLow) // Common contactor closed successfully, so trigger charge to turn on
     {
         auxBmsContactorState.commonState = CLOSED;
+        vTracePrint(commonStateTrace, "CLOSED");
         //osEventFlagsSet(contactorControlEventBits, CHARGE_CLOSED);
     }
     else   // Common contactor not closed successfully, so delay then try again
     {
         auxBmsContactorState.commonState = CONTACTOR_ERROR;
+        vTracePrint(commonStateTrace, "CONTACTOR ERROR");
         HAL_GPIO_WritePin(COMMON_ENABLE_GPIO_Port, COMMON_ENABLE_Pin, GPIO_PIN_RESET);
         osDelay (COMMON_RETRY_CONTACTOR_DELAY);
         osEventFlagsSet(contactorControlEventBits, COMMON_CLOSED);
@@ -55,6 +58,7 @@ void openCommonContactor()
 {
     HAL_GPIO_WritePin(COMMON_ENABLE_GPIO_Port, COMMON_ENABLE_Pin, GPIO_PIN_RESET);
     auxBmsContactorState.commonState = OPEN;
+    vTracePrint(commonStateTrace, "OPEN");
     osEventFlagsSet(contactorControlEventBits, DISCHARGE_OPENED | CHARGE_OPENED);
     osThreadSetPriority (commonContactorGatekeeperTaskHandle, osPriorityNormal);
 }

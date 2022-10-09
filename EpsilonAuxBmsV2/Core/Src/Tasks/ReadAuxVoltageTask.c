@@ -59,11 +59,13 @@ void readAuxVoltage(uint32_t* prevWakeTime)
         if (spiVoltage == SPI_ERROR_CODE) // Something went wrong during SPI-ADC read
         {
             auxStatus.auxVoltage = 0x1F; // Set auxVoltage to maximum value (31... this is not expected, as the aux voltage should be ~12, so this indicates an error)
+            vTracePrint(auxVoltageTrace, "31"); //send error to trace
         }
         else
         {
             float relative_voltage = AUX_NOMINAL_VOLTAGE * spiVoltage / AUX_ADC_NOMINAL_OUTPUT;
             auxStatus.auxVoltage = myRound(relative_voltage) & 0x1F; // Round and keep bottom 5 bits
+            vTracePrintF(auxVoltageTrace, "%d", myRound(relative_voltage)); //send voltage to trace
         }
 
         osMutexRelease(auxStatusReadAuxVoltageMutex);

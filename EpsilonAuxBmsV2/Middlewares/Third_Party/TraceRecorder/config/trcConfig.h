@@ -158,7 +158,7 @@ extern "C" {
  *
  * Default value is 10.
  */
-#define TRC_CFG_STACK_MONITOR_MAX_TASKS 10
+#define TRC_CFG_STACK_MONITOR_MAX_TASKS 20
 
 /**
  * @def TRC_CFG_STACK_MONITOR_MAX_REPORTS
@@ -214,7 +214,7 @@ extern "C" {
  * @brief The stack size of the Tracealyzer Control (TzCtrl) task.
  * See TRC_CFG_CTRL_TASK_PRIORITY for further information about TzCtrl.
  */
-#define TRC_CFG_CTRL_TASK_STACK_SIZE 1024
+#define TRC_CFG_CTRL_TASK_STACK_SIZE 2048
 
 /**
  * @def TRC_CFG_RECORDER_BUFFER_ALLOCATION

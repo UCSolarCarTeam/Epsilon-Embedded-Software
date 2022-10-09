@@ -130,6 +130,21 @@ osThreadId_t dischargeContactorGatekeeperTaskHandle;
 osThreadId_t contactorStatusUpdateTaskHandle;
 osThreadId_t readAuxVoltageTaskHandle;
 
+//Trace Handles
+traceHandle CanRxTraceHandle;
+traceHandle CanTxTraceHandle;
+traceHandle SPIRxTraceHandle;
+
+traceString auxVoltageTrace;
+traceString lowCellVoltageTrace;
+traceString highCellVoltageTrace;
+traceString packCurrentTrace;
+traceString batteryTemperatureTrace;
+traceString commonStateTrace;
+traceString chargeStateTrace;
+traceString dischargeStateTrace;
+traceString manualChargeTripTrace;
+
 #ifdef MEMORY_DEBUG
 osThreadId_t memoryDebugTaskHandle;
 #endif
@@ -299,7 +314,22 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
+  //initialize ISR and output channels
   vTraceEnable(TRC_START);
+  CanRxTraceHandle = xTraceSetISRProperties("ISRCanRx", CANInterruptPriority);
+  CanTxTraceHandle = xTraceSetISRProperties("ISRCanTx", CANInterruptPriority);
+  SPIRxTraceHandle = xTraceSetISRProperties("ISRSPIRx", SPIInterruptPriority);
+
+  xTraceStringRegister("auxVoltage", &auxVoltageTrace);
+  xTraceStringRegister("lowcellVoltage", &lowCellVoltageTrace);
+  xTraceStringRegister("highCellVoltage", &highCellVoltageTrace);
+  xTraceStringRegister("busCurrent", &packCurrentTrace);
+  xTraceStringRegister("batteryTeperature", &batteryTemperatureTrace);
+  xTraceStringRegister("commonState", &commonStateTrace);
+  xTraceStringRegister("chargeState", &chargeStateTrace);
+  xTraceStringRegister("dischargeState", &dischargeStateTrace);
+  xTraceStringRegister("manualChargeTripTrace", &manualChargeTripTrace);
+
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -358,6 +388,10 @@ int main(void)
     canRxParserQueue = osMessageQueueNew(CAN_RX_PARSER_QUEUE_COUNT, sizeof(CanRxQueueData), NULL);
     orionInterfaceQueue = osMessageQueueNew(ORION_INTERFACE_QUEUE_COUNT, sizeof(OrionCanInfo), NULL);
     canTxGatekeeperQueue = osMessageQueueNew(CAN_TX_GATEKEEPER_QUEUE_COUNT, sizeof(CanTxGatekeeperQueueData), NULL);
+
+    vTraceSetQueueName(canRxParserQueue, "canRxParserQueue");
+    vTraceSetQueueName(orionInterfaceQueue, "orionInterfaceQueue");
+    vTraceSetQueueName(canTxGatekeeperQueue, "canTxGatekeeperQueue");
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
@@ -737,11 +771,13 @@ void MX_CAN1_User_Init(void)
 
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef* hcan)
 {
+    vTraceStoreISRBegin(CanRxTraceHandle);
     CAN_RxHeaderTypeDef hdr;
     uint8_t             data[8] = {0};
 
     if (HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &hdr, data) != HAL_OK)
     {
+        vTraceStoreISREnd(0);
         return;
     }
 
@@ -749,11 +785,14 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef* hcan)
     message.canRxHeader = hdr;
     memcpy(message.data, data, sizeof(uint8_t) * 8);
     osMessageQueuePut(canRxParserQueue, &message, 0, IRQ_QUEUE_PUT_TIMEOUT);
+    vTraceStoreISREnd(0);
 }
 
 void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef* hspi)
 {
+    vTraceStoreISRBegin(SPIRxTraceHandle);
     osThreadFlagsSet(readAuxVoltageTaskHandle, SPI_READY_FLAG);
+    vTraceStoreISREnd(0);
 }
 
 void vApplicationMallocFailedHook( void )

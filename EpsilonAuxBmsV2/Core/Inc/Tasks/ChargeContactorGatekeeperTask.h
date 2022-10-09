@@ -10,3 +10,5 @@ void closeChargeContactor();
 void openChargeContactor();
 void chargeContactorGatekeeperTask(void* arg);
 void chargeContactorGatekeeper();
+
+extern traceString chargeStateTrace;

@@ -38,12 +38,15 @@ void canRxInterruptParser(OrionCanInfo* orionQueueData, CanRxQueueData* canQueue
         // Voltages are 2 bytes each, and memory is stored in little endian format
         orionQueueData->lowCellVoltage = (uint16_t)data[0] | data[1] << 8; // Min Cell voltage
         orionQueueData->highCellVoltage = (uint16_t)data[3] | data[4] << 8; // Max Cell Voltage
+        vTracePrintF(lowCellVoltageTrace,"%dh", orionQueueData->lowCellVoltage * DEFAULT_VOLTAGE_UNITS);
+        vTracePrintF(highCellVoltageTrace, "%dh", orionQueueData->highCellVoltage * DEFAULT_VOLTAGE_UNITS);
         orionMessageReceived = 1;
         *voltageReceived = 1;
     }
     else if (hdr.StdId == ORION_TEMP_INFO_STDID && hdr.DLC == 8)
     {
         orionQueueData->highTemperature = data[0];
+        vTracePrintF(batteryTemperatureTrace, "%d", orionQueueData->highTemperature);
         orionMessageReceived = 1;
         *tempReceived = 1;
     }
@@ -53,12 +56,14 @@ void canRxInterruptParser(OrionCanInfo* orionQueueData, CanRxQueueData* canQueue
             (data[0] << 0) |
             (data[1] << 8);
         orionQueueData->packCurrent = (float)packCurrentInt / 10.0f;
+        vTracePrintF(packCurrentTrace, "%f", orionQueueData->packCurrent);
         orionMessageReceived = 1;
         *packReceived = 1;
     }
     else if (hdr.StdId == DRIVER_CONTROLS_LIGHTS_INPUTS) 
     {
         manualChargeTrip = data[0] >> 6; //1 means we trip it
+
     }
 
     if (orionMessageReceived && *voltageReceived && *tempReceived && *packReceived)

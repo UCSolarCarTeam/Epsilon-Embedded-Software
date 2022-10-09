@@ -22,3 +22,5 @@ extern AuxStatus auxStatus;
 extern SPI_HandleTypeDef hspi3;
 // Data buffer
 extern uint8_t spiRxBuff[AUX_BMS_SPI_BUFFER_SIZE];
+// Trace Channel
+extern traceString auxVoltageTrace;

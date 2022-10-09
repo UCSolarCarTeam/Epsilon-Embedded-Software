@@ -7,3 +7,5 @@ void commonContactorGatekeeperTask(void* arg);
 void commonContactorGatekeeper();
 void closeCommonContactor();
 void openCommonContactor();
+
+extern traceString commonStateTrace;

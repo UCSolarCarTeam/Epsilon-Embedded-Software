@@ -24,6 +24,7 @@ void closeChargeContactor()
     while (auxBmsContactorState.dischargeState == CLOSING) {}
 
     auxBmsContactorState.chargeState = CLOSING;
+    vTracePrint(chargeStateTrace, "CLOSING");
     // Enable contactor, then delay
     HAL_GPIO_WritePin(CHARGE_ENABLE_GPIO_Port, CHARGE_ENABLE_Pin, GPIO_PIN_SET);
     osDelay(NON_COMMON_CONTACTOR_CHECK_DELAY);
@@ -37,6 +38,7 @@ void closeChargeContactor()
     if (contactorError) // charge contactor not closed successfully
     {
         auxBmsContactorState.chargeState = CONTACTOR_ERROR;
+        vTracePrint(chargeStateTrace, "CONTACTOR ERROR");
         HAL_GPIO_WritePin(CHARGE_ENABLE_GPIO_Port, CHARGE_ENABLE_Pin, GPIO_PIN_RESET);
 
         if (!currentLow) { //something closed that isn't supposed to be 
@@ -62,6 +64,7 @@ void closeChargeContactor()
         if(!chargeSense) //precharger did not like engaging the arrays
         {
             auxBmsContactorState.chargeState = CONTACTOR_ERROR;
+            vTracePrint(chargeStateTrace, "CONTACTOR ERROR");
             HAL_GPIO_WritePin(CHARGE_ENABLE_GPIO_Port, CHARGE_ENABLE_Pin, GPIO_PIN_RESET);
 
             osDelay(NON_COMMON_RETRY_CONTACTOR_DELAY);
@@ -70,6 +73,7 @@ void closeChargeContactor()
         else //precharger did not open charge
         {
             auxBmsContactorState.chargeState = CLOSED; //yay
+            vTracePrint(chargeStateTrace, "CLOSED");
         }
     }
 
@@ -90,6 +94,7 @@ void openChargeContactor()
     HAL_GPIO_WritePin(MPPT_ENABLE_GPIO_Port, MPPT_ENABLE_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(CHARGE_ENABLE_GPIO_Port, CHARGE_ENABLE_Pin, GPIO_PIN_RESET);
     auxBmsContactorState.chargeState = OPEN;
+    vTracePrint(chargeStateTrace, "OPEN");
     osThreadSetPriority (chargeContactorGatekeeperTaskHandle, osPriorityNormal);
 }
 

@@ -11,3 +11,5 @@ void dischargeContactorGatekeeperTask(void* arg);
 void closeDischargeContactor();
 void openDischargeContactor();
 void dischargeContactorGatekeeper();
+
+extern traceString dischargeStateTrace;

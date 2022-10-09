@@ -2,6 +2,7 @@
 #include "cmsis_os.h"
 #include "CanRxQueueData.h"
 #include "OrionCanInfo.h"
+#include "OrionConstants.h"
 
 extern osMessageQueueId_t orionInterfaceQueue;
 extern osMessageQueueId_t canRxParserQueue;
@@ -15,3 +16,10 @@ static const uint32_t DRIVER_CONTROLS_LIGHTS_INPUTS = 0x701;
 
 void canRxInterruptParserTask(void* arg);
 void canRxInterruptParser(OrionCanInfo* orionQueueData, CanRxQueueData* canQueueData, uint8_t *voltageReceived, uint8_t *tempReceived, uint8_t *packReceived);
+
+//Trace channels
+extern traceString lowCellVoltageTrace;
+extern traceString highCellVoltageTrace;
+extern traceString packCurrentTrace;
+extern traceString batteryTemperatureTrace;
+extern traceString manualChargeTripTrace;

@@ -131,6 +131,9 @@ void Error_Handler(void);
 #define MPPT_ENABLE_Pin CONTACTOR_ENABLE4_Pin
 #define MPPT_ENABLE_GPIO_Port CONTACTOR_ENABLE4_GPIO_Port
 
+#define CANInterruptPriority 5 //obtained from stm32f4xx_hal_msp.c file
+#define SPIInterruptPriority 5 //obtained from CubeMX
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

@@ -7,6 +7,7 @@
 #include "DisconnectContactors.h"
 #include "Trip.h"
 #include "ContactorGatekeeper.h"
+#include "trcTypes.h"
 
 void orionInterfaceTask(void* arg);
 void orionInterface(OrionCanInfo* message);
