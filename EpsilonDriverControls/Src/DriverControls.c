@@ -231,6 +231,7 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
     if (HAL_ADC_PollForConversion(&hadc1, ADC_POLL_TIMEOUT) == HAL_OK)
     {
         newRegen = (((float)HAL_ADC_GetValue(&hadc1)) / ((float)MAX_ANALOG)) * 100.0; // Convert to full value for reporting
+        vTracePrintF(polledRegenTrace, "%f", newRegen);
     }
 
     regenValuesQueue[driveCommandsInfo->regenQueueIndex++] = newRegen;
@@ -238,6 +239,7 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
     if (HAL_ADC_PollForConversion(&hadc2, ADC_POLL_TIMEOUT) == HAL_OK)
     {
         newAccel = (((float)HAL_ADC_GetValue(&hadc2)) / ((float)MAX_ANALOG)) * 100.0;
+        vTracePrintF(polledAccelerationTrace, "%f", newRegen);
     }
 
     accelValuesQueue[driveCommandsInfo->accelQueueIndex++] = newAccel;
@@ -248,6 +250,8 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
     // Convert values back to floating percentages for motors
     float regenPercentage = (float)getAvgRegen() / 100.0;
     float accelPercentage = (float)getAvgAccel() / 100.0;
+    vTracePrintF(averageRegenTrace, "%f", regenPercentage);
+    vTracePrintF(averageAccelerationTrace, "%f", accelPercentage);
 
     // Determine drive commands
     uint8_t forward = !HAL_GPIO_ReadPin(FORWARD_GPIO_Port, FORWARD_Pin); // `!` for active low
@@ -274,6 +278,7 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
             if(driveCommandsInfo->motorCurrentOut < SWITCHING_CURRENT) {
                 driveCommandsInfo->resetStatus = Resetting;
                 driveCommandsInfo->motorCurrentOut = 0;
+                vTracePrint(motorStateTrace, "Resetting");
             }
     }
     else if (regenPercentage > NON_ZERO_THRESHOLD) // Regen state
@@ -287,6 +292,7 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
         }
 
         driveCommandsInfo->motorState = RegenBraking;
+        vTracePrintF(motorStateTrace, "RegenBraking");
 
         if(*switching) {
             driveCommandsInfo->motorCurrentOut =
@@ -315,6 +321,7 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
     else if (brake) // Mechanical Brake Pressed
     {
         driveCommandsInfo->motorState = MechanicalBreaking;
+        vTracePrintF(motorStateTrace, "mechanicalBraking");
         motorVelocityOut = 0;
         driveCommandsInfo->motorCurrentOut = 0;
     }
@@ -325,6 +332,7 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
         }
 
         driveCommandsInfo->motorState = Accelerating;
+        vTracePrintF(motorStateTrace, "Accelerating");
 
         if(*switching) {
             driveCommandsInfo->motorCurrentOut =
@@ -339,6 +347,7 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
             if (forward && allowDischarge) // Forward state
             {
                 driveCommandsInfo->motorState = Accelerating;
+                vTracePrintF(motorStateTrace, "Accelerating");
                 HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
                 motorVelocityOut = MAX_FORWARD_RPM;
                 driveCommandsInfo->motorCurrentOut =
@@ -347,6 +356,7 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
             else if (reverse && allowDischarge) // Reverse State
             {
                 driveCommandsInfo->motorState = Accelerating;
+                vTracePrintF(motorStateTrace, "Accelerating");
                 HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
                 motorVelocityOut = MAX_REVERSE_RPM;
                 driveCommandsInfo->motorCurrentOut =
@@ -355,6 +365,7 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
             else
             {
                 driveCommandsInfo->motorState = Off;
+                vTracePrintF(motorStateTrace, "trying to discharge but not allowed");
                 motorVelocityOut = 0;
                 driveCommandsInfo->motorCurrentOut = 0;
             }
@@ -367,6 +378,7 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
         }
 
         driveCommandsInfo->motorState = Off;
+        vTracePrintF(motorStateTrace, "Off");
 
         if(*switching) {
             driveCommandsInfo->motorCurrentOut =
@@ -402,6 +414,9 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
     memcpy(msg->Data, dataToSendFloat, sizeof(float) * 2);
     osMessagePut(canQueue, (uint32_t)msg, osWaitForever);
 
+    //trace debug
+    vTracePrintF(requestedCurrentTrace, "%d", driveCommandsInfo->motorCurrentOut);
+
     // Allocate new CAN Message, deallocated by sender "sendCanTask()"
     msg = (CanMsg*)osPoolAlloc(canPool);
 
@@ -419,6 +434,7 @@ void sendDriveCommands(uint32_t* prevWakeTimePtr,
     if (!driveCommandsInfo->prevResetStatus && reset) /// off -> on
     {
         driveCommandsInfo->resetStatus = SettingReset;
+        vTracePrintF(motorStateTrace, "SettingReset");
     }
 
     if(driveCommandsInfo->resetStatus == Resetting) {

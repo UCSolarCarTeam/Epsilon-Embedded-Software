@@ -61,6 +61,14 @@ static osThreadId musicTaskHandle;
 static osThreadId driverTaskHandle;
 static osThreadId driveCommandsTaskHandle;
 static osThreadId canTaskHandle;
+
+//Trace handles
+traceString requestedCurrentTrace;
+traceString motorStateTrace;
+traceString polledAccelerationTrace;
+traceString polledRegenTrace;
+traceString averageAccelerationTrace;
+traceString averageRegenTrace;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -96,10 +104,17 @@ int main(void)
     MX_ADC1_Init();
     MX_ADC2_Init();
     /* USER CODE BEGIN 2 */
-    vTraceEnable(TRC_START);
     MX_CAN2_UserInit();
     HAL_ADC_Start(&hadc1);
     HAL_ADC_Start(&hadc2);
+
+    vTraceEnable(TRC_START);
+    xTraceStringRegister("requestedCurrent", requestedCurrentTrace);
+    xTraceStringRegister("motorState", motorStateTrace);
+    xTraceStringRegister("polledAcceleration", polledAccelerationTrace);
+    xTraceStringRegister("polledRegen", polledRegenTrace);
+    xTraceStringRegister("averageAcceleration", averageAccelerationTrace);
+    xTraceStringRegister("averageRegen", averageRegenTrace);
 
     // Setup for next CAN Receive Interrupt
     if (HAL_CAN_Receive_IT(&hcan2, CAN_FIFO0) != HAL_OK)
