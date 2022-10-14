@@ -32,6 +32,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define CANInterruptPriority 5 //obtained from stm32f4xx_hal_msp.c file
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
