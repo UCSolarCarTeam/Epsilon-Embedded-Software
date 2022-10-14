@@ -57,6 +57,7 @@ C_SOURCES = \
   Middlewares/Third_Party/FreeRTOS/Source/queue.c \
   Middlewares/Third_Party/FreeRTOS/Source/tasks.c \
   Middlewares/Third_Party/FreeRTOS/Source/event_groups.c \
+  Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c \
   Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c \
   Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c \
   Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c \
@@ -73,19 +74,22 @@ C_SOURCES = \
   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c \
   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c \
   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c \
   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c \
   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c \
   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c \
+  Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c \
   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c \
-  Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c \
+  Src/syscalls.c \
   Src/freertos.c \
+  Src/system_stm32f4xx.c \
   Src/stm32f4xx_hal_msp.c \
-  Src/stm32f4xx_hal_timebase_TIM.c \
+  Src/stm32f4xx_hal_timebase_tim.c \
   Src/stm32f4xx_it.c \
   Src/DriverControls.c \
-  Src/main.c   
+  Src/main.c 
 ASM_SOURCES = \
-  Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f407xx.s
+  startup/startup_stm32f407xx.s
 
 #######################################
 # binaries

@@ -460,24 +460,31 @@ void sendCan()
 
     if (evt.status == osEventMessage)
     {
+        
         CanMsg* msg = (CanMsg*)evt.value.p;
-        // Populate CAN Message
-        hcan2.pTxMsg->StdId = msg->StdId;
-        hcan2.pTxMsg->DLC = msg->DLC;
-        memcpy(hcan2.pTxMsg->Data, msg->Data, sizeof(uint8_t) * msg->DLC);
+        // Populate CAN header
+        CAN_TxHeaderTypeDef hdr = {0};
+        hdr.StdId = msg->StdId;
+        hdr.DLC = msg->DLC;
+
         // Send CAN Message
+        if (HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) > 0)
+        {
+            uint32_t mailbox;
+
+            if (HAL_CAN_AddTxMessage(&hcan2, &(hdr), msg->Data, &mailbox) == HAL_OK)
+            {
+                HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
+            }
+            else 
+            {
+                HAL_CAN_Init(&hcan2);
+            }
+        }
 
         // Deallocate CAN message
         osPoolFree(canPool, msg);
-
-        if (HAL_CAN_Transmit_IT(&hcan2) == HAL_OK)
-        {
-            HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
-        }
-        else
-        {
-            HAL_CAN_Init(&hcan2);
-        }
+        
     }
 }
 
