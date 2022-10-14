@@ -65,6 +65,14 @@ static osThreadId driverTaskHandle;
 static osThreadId driveCommandsTaskHandle;
 static osThreadId canTaskHandle;
 
+//Trace handles
+traceString requestedCurrentTrace;
+traceString motorStateTrace;
+traceString polledAccelerationTrace;
+traceString polledRegenTrace;
+traceString averageAccelerationTrace;
+traceString averageRegenTrace;
+
 traceHandle CanRxTraceHandle;
 /* USER CODE END PV */
 
@@ -119,6 +127,14 @@ int main(void)
   MX_ADC2_Init();
   /* USER CODE BEGIN 2 */
   vTraceEnable(TRC_START);
+  xTraceStringRegister("requestedCurrent", requestedCurrentTrace);
+  xTraceStringRegister("motorState", motorStateTrace);
+  xTraceStringRegister("polledAcceleration", polledAccelerationTrace);
+  xTraceStringRegister("polledRegen", polledRegenTrace);
+  xTraceStringRegister("averageAcceleration", averageAccelerationTrace);
+  xTraceStringRegister("averageRegen", averageRegenTrace);
+
+
   CanRxTraceHandle = xTraceSetISRProperties("ISRCanRx", CANInterruptPriority);
     MX_CAN2_UserInit();
     HAL_ADC_Start(&hadc1);

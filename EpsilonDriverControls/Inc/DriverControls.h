@@ -4,6 +4,7 @@
 #include "stm32f4xx_hal_conf.h"
 #include "stm32f4xx_hal_gpio.h"
 #include "stm32f4xx_hal_can.h"
+#include "trcRecorder.h"
 
 #define REGEN_QUEUE_SIZE 5
 #define ACCEL_QUEUE_SIZE 5
@@ -65,6 +66,13 @@ extern osPoolId canPool;
 extern uint8_t auxBmsInputs[3];
 extern float   motor0VehicleVelocityInput;
 extern float   motor1VehicleVelocityInput;
+
+extern traceString requestedCurrentTrace;
+extern traceString motorStateTrace;
+extern traceString polledAccelerationTrace;
+extern traceString polledRegenTrace;
+extern traceString averageAccelerationTrace;
+extern traceString averageRegenTrace;
 
 typedef struct
 {

@@ -118,7 +118,7 @@ void Error_Handler(void);
 #define BRAKES_Pin GPIO_PIN_1
 #define BRAKES_GPIO_Port GPIOE
 /* USER CODE BEGIN Private defines */
-#define CANInterruptPriority 5 //obtained from stm32f4xx_hal_msp.c file
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
