@@ -36,6 +36,7 @@
 
 /* USER CODE BEGIN Includes */
 #include "DriverControls.h"
+#include "MotorControlTask.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -49,6 +50,9 @@ osPoolId canPool;
 
 osMessageQDef(canQueue, 64, CanMsg);
 osMessageQId canQueue;
+
+TIM_HandleTypeDef htim6;
+TIM_HandleTypeDef htim7;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
@@ -100,6 +104,13 @@ int main(void)
     HAL_ADC_Start(&hadc1);
     HAL_ADC_Start(&hadc2);
 
+    motor_cmd = motor_cmd_init();
+    last_motor_cmd = motor_cmd_init();
+
+    // Start Timer for Motor Safety Task ADC Logging
+    HAL_TIM_Base_Start_IT(&htim7);
+    HAL_TIM_Base_Start_IT(&htim6);
+
     // Setup for next CAN Receive Interrupt
     if (HAL_CAN_Receive_IT(&hcan2, CAN_FIFO0) != HAL_OK)
     {
@@ -147,11 +158,42 @@ int main(void)
 
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
-    while (1)
-    {
+    while (1){
+        // Polling for carriage return: "\r"
+        uint8_t command_status = CheckBuffer(dma_uart_buf, command_end);
+
+        // Command Status 0 means that the command is still being received
+        if(command_status == 0){
+            command_end++;
+
+        // Command Status 1 means that the command is ready to be parsed
+        } else if(command_status == 1){
+        	parse_status = ParseMotorCommand(&motor_cmd, dma_uart_buf, last_message, &adc_log_en, &last_motor_cmd, &huart2);
+
+          if(parse_status != 1){
+            char error_message[20] = {0};
+            sprintf(error_message, "Command Error: %d\r\n", parse_status);
+            HAL_UART_Transmit(&huart2, (uint8_t*)error_message, strlen(error_message), 100);
+          }
+
+        	HAL_UART_DMAStop(&huart2);
+        	HAL_UART_Receive_DMA(&huart2, dma_uart_buf, UART_BUF_LEN);
+
+        	memset(dma_uart_buf, 0, sizeof(dma_uart_buf));
+
+        	command_end = &dma_uart_buf[0];
+        }
+
+        uint32_t command_end_addr = (uint32_t)command_end;
+        uint32_t buf_end_addr = (uint32_t)(&dma_uart_buf[UART_BUF_LEN] - 1);
+
+        if(command_end_addr >= buf_end_addr){
+        	command_end = &dma_uart_buf[0];
+        }
         /* USER CODE END WHILE */
+
         /* USER CODE BEGIN 3 */
-    }
+      }
 
     /* USER CODE END 3 */
 }
